@@ -52,8 +52,8 @@ android {
                     device = "Pixel 2"
                     apiLevel = 30
                     systemImageSource = "aosp-atd"
-                    // AGP 10 changes the implicit default to arm64-v8a. This ATD image is
-                    // x86-only and has no NDK translation, so pin the ABI explicitly.
+                    // The GMD default follows the selected system image/host. Pin the tested
+                    // APK ABI explicitly so CI does not depend on host-specific inference.
                     testedAbi = "x86"
                 }
             }
