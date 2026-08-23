@@ -7,8 +7,16 @@ data class ExplorationSnapshot(
     val state: ExplorationState,
     val currentLocation: LocationSample? = null,
     val newlyDiscovered: List<MysterySpot> = emptyList(),
+    val acceptedLocationCount: Int = 0,
     val rejectedLocationCount: Int = 0,
-)
+) {
+    val totalLocationSampleCount: Int
+        get() = acceptedLocationCount + rejectedLocationCount
+
+    val rejectedLocationRatePercent: Int
+        get() = if (totalLocationSampleCount == 0) 0
+        else ((rejectedLocationCount * 100.0) / totalLocationSampleCount).toInt()
+}
 
 class ExplorationSession(
     initialState: ExplorationState,
@@ -42,6 +50,7 @@ class ExplorationSession(
             state = update.state,
             currentLocation = sample,
             newlyDiscovered = update.newlyDiscovered,
+            acceptedLocationCount = snapshot.acceptedLocationCount + 1,
             rejectedLocationCount = snapshot.rejectedLocationCount,
         )
         return snapshot
@@ -62,13 +71,18 @@ class ExplorationSession(
         previousAccepted = null
     }
 
-    /** Restart GPS tracking while preserving long-term visit/progress state. */
+    /** Restart GPS/replay tracking while preserving long-term derived progress. */
     fun restartTracking() {
         previousAccepted = null
-        snapshot = snapshot.copy(currentLocation = null, newlyDiscovered = emptyList())
+        snapshot = snapshot.copy(
+            currentLocation = null,
+            newlyDiscovered = emptyList(),
+            acceptedLocationCount = 0,
+            rejectedLocationCount = 0,
+        )
     }
 
-    /** Restore persisted derived progress. Raw location samples are never restored. */
+    /** Restore persisted derived progress. Raw samples and short-lived quality counters are never restored. */
     fun restore(state: ExplorationState) {
         previousAccepted = null
         snapshot = ExplorationSnapshot(state)
