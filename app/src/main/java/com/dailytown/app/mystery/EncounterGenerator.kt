@@ -8,7 +8,11 @@ data class EncounterSelection(
     val poi: Poi,
     val template: MysteryTemplate,
     val encounter: MysteryEncounter,
-)
+    val context: EncounterContext,
+    val isRevisit: Boolean,
+) {
+    val rarity: EncounterRarity get() = template.rarity
+}
 
 class EncounterGenerator(
     private val templates: List<MysteryTemplate> = MysteryTemplateCatalog.defaults(),
@@ -54,6 +58,8 @@ class EncounterGenerator(
                 templateId = template.id,
                 poiId = poi.id,
             ),
+            context = context,
+            isRevisit = poi.id in visitedPoiIds,
         )
     }
 
