@@ -18,8 +18,9 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithText("Daily Town").fetchSemanticsNode()
         composeRule.onNodeWithText("경로 리플레이").performClick()
 
-        // Compose test v2 uses a StandardTestDispatcher. Synchronize queued recomposition
-        // explicitly instead of polling wall-clock time, which is flaky on managed devices.
+        // Compose test v2 uses a StandardTestDispatcher. Advance the frame clock so state
+        // written by the click is recomposed before inspecting the UI, then drain remaining work.
+        composeRule.mainClock.advanceTimeBy(1_000L)
         composeRule.waitForIdle()
 
         composeRule.onNodeWithText("서울시청 → 덕수궁 테스트 경로 재생 중")
