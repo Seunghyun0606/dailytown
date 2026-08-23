@@ -3,11 +3,22 @@ name: Internal Debug APK
 on:
   workflow_dispatch:
 
+concurrency:
+  group: internal-debug-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against committed NAVER credentials
+        shell: bash
+        run: |
+          if git grep -nE "NAVER_MAP_NCP_KEY_ID[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"; then
+            echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file."
+            exit 1
+          fi
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -21,24 +32,33 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
-      - name: Verify NAVER credential secret
+      - name: Verify NAVER credential injection
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
-        run: |
-          if [ -z "$NAVER_MAP_NCP_KEY_ID" ]; then
-            echo "::error::Repository secret NAVER_MAP_NCP_KEY_ID is required for a credentialed internal APK."
-            exit 1
-          fi
+        run: gradle verifyNaverMapCredential
       - name: Unit tests
         run: gradle testDebugUnitTest
+      - name: Compile instrumented tests
+        run: gradle assembleDebugAndroidTest
+      - name: Android lint
+        run: gradle lintDebug
       - name: Build credentialed debug APK
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
         run: gradle assembleDebug
+      - name: Generate APK integrity metadata
+        shell: bash
+        run: |
+          cd app/build/outputs/apk/debug
+          sha256sum app-debug.apk > app-debug.apk.sha256
+          printf 'package=com.dailytown.app\nversion=0.7.0\ncommit=%s\n' "$GITHUB_SHA" > build-metadata.txt
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
           name: dailytown-internal-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/debug/app-debug.apk.sha256
+            app/build/outputs/apk/debug/build-metadata.txt
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
