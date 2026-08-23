@@ -16,6 +16,7 @@ import com.naver.maps.map.overlay.Marker
 /**
  * NAVER-specific rendering adapter. Nothing outside this class needs NAVER SDK types.
  * When credentials are missing, it renders a safe placeholder while replay/location/domain flows stay testable.
+ * Authentication failures are translated into safe in-app diagnostics without exposing the NCP key ID.
  */
 class NaverMapAdapter(
     private val ncpKeyId: String,
@@ -24,6 +25,9 @@ class NaverMapAdapter(
 
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
+    private var naverMapSdk: NaverMapSdk? = null
+    private var authErrorView: TextView? = null
+    private var authFailedListener: NaverMapSdk.OnAuthFailedListener? = null
     private var pendingCamera: Pair<GeoPoint, Double>? = null
     private var pendingMarkers: List<MapMarkerSpec> = emptyList()
     private var pendingLocation: UserLocationSpec? = null
@@ -48,15 +52,48 @@ class NaverMapAdapter(
             }
         }
 
-        NaverMapSdk.getInstance(context).client = NaverMapSdk.NcpKeyClient(ncpKeyId)
-        return MapView(context).also { view ->
-            mapView = view
-            view.onCreate(null)
-            view.getMapAsync { map ->
-                naverMap = map
-                flushState()
-            }
+        val container = FrameLayout(context)
+        val view = MapView(context)
+        val errorView = TextView(context).apply {
+            gravity = Gravity.CENTER
+            visibility = View.GONE
+            setPadding(24, 16, 24, 16)
         }
+        container.addView(
+            view,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+            ),
+        )
+        container.addView(
+            errorView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP,
+            ),
+        )
+
+        val sdk = NaverMapSdk.getInstance(context)
+        val listener = NaverMapSdk.OnAuthFailedListener { exception ->
+            errorView.text = authFailureMessage(exception)
+            errorView.visibility = View.VISIBLE
+        }
+        naverMapSdk = sdk
+        authErrorView = errorView
+        authFailedListener = listener
+        sdk.client = NaverMapSdk.NcpKeyClient(ncpKeyId)
+        sdk.onAuthFailedListener = listener
+
+        mapView = view
+        view.onCreate(null)
+        view.getMapAsync { map ->
+            naverMap = map
+            errorView.visibility = View.GONE
+            flushState()
+        }
+        return container
     }
 
     override fun setCamera(target: GeoPoint, zoom: Double) {
@@ -83,9 +120,17 @@ class NaverMapAdapter(
     override fun onDestroy() {
         renderedMarkers.values.forEach { it.map = null }
         renderedMarkers.clear()
+        val sdk = naverMapSdk
+        val listener = authFailedListener
+        if (sdk != null && listener != null && sdk.onAuthFailedListener === listener) {
+            sdk.onAuthFailedListener = null
+        }
         mapView?.onDestroy()
         mapView = null
         naverMap = null
+        naverMapSdk = null
+        authErrorView = null
+        authFailedListener = null
     }
 
     private fun flushState() {
@@ -117,6 +162,13 @@ class NaverMapAdapter(
             overlay.position = location.position.toLatLng()
             location.bearingDegrees?.let { overlay.bearing = it.coerceIn(0f, 360f) }
         }
+    }
+
+    private fun authFailureMessage(exception: NaverMapSdk.AuthFailedException): String = when (exception.errorCode) {
+        401 -> "NAVER Maps 인증 실패 (401)\nNCP Key ID와 Android 패키지 등록을 확인하세요."
+        429 -> "NAVER Maps 사용 불가 (429)\nDynamic Map 선택 여부와 사용량 한도를 확인하세요."
+        800 -> "NAVER Maps 인증 정보 없음 (800)\nNAVER_MAP_NCP_KEY_ID 주입 상태를 확인하세요."
+        else -> "NAVER Maps 인증 오류 (${exception.errorCode})\nNAVER Cloud Maps 설정을 확인하세요."
     }
 
     private fun GeoPoint.toLatLng() = LatLng(latitude, longitude)
