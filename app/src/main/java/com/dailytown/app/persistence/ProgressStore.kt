@@ -77,9 +77,9 @@ data class ExplorationProgress(
         val normalized = normalizePeriods(date)
         return normalized.copy(
             encounterVisitedPoiIds = normalized.encounterVisitedPoiIds + poiId,
-            recentPoiIds = pushRecent(normalized.recentPoiIds, poiId),
-            recentTemplateIds = pushRecent(normalized.recentTemplateIds, templateId),
-            recentPairKeys = pushRecent(normalized.recentPairKeys, "$poiId:$templateId"),
+            recentPoiIds = pushRecentUnique(normalized.recentPoiIds, listOf(poiId), maxSize = 12),
+            recentTemplateIds = pushRecentUnique(normalized.recentTemplateIds, listOf(templateId), maxSize = 12),
+            recentPairKeys = pushRecentUnique(normalized.recentPairKeys, listOf("$poiId:$templateId"), maxSize = 12),
             daily = normalized.daily.recordDiscovery(poiId),
             weekly = normalized.weekly.recordDiscovery(poiId),
         )
