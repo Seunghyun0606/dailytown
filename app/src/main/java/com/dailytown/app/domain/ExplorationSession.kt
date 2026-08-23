@@ -46,6 +46,16 @@ class ExplorationSession(
         return snapshot
     }
 
+    fun applyCompanionBond(delta: Int) {
+        if (delta == 0) return
+        val companion = snapshot.state.companion
+        snapshot = snapshot.copy(
+            state = snapshot.state.copy(
+                companion = companion.copy(bond = (companion.bond + delta).coerceAtLeast(0)),
+            ),
+        )
+    }
+
     /** Restart GPS tracking while preserving long-term visit/progress state. */
     fun restartTracking() {
         previousAccepted = null
