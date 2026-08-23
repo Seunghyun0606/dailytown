@@ -6,9 +6,12 @@
 - [x] Pure exploration engine and distance calculation
 - [x] Provider-neutral map contract
 - [x] Android CI: unit tests + lint + debug APK
+- [x] Instrumented-test APK compilation in normal CI
+- [x] Gradle Managed Device + credential-free replay UI smoke-test lane
 - [x] Android application identity finalized as `com.dailytown.app`
 - [x] Credentialed `Internal Debug APK` GitHub Actions workflow
 - [x] Real-device smoke-test documentation
+- [x] Emulator vs physical-device test strategy documented
 
 ## Real movement loop — implemented
 
@@ -17,6 +20,7 @@
 - [x] Foreground exploration session
 - [x] Accuracy/impossible-jump filtering
 - [x] Replay route for credential-free testing
+- [x] Replay route smoke-tested on a managed virtual-device path
 - [x] Local persistence of derived exploration progress with DataStore
 - [x] Do not persist raw high-frequency GPS traces
 - [x] Battery saver / balanced / precise location request presets
