@@ -86,11 +86,20 @@ The content system separates a physical place from an encounter template. The sa
 
 ## 8. Field-test telemetry and acceptance strategy
 
-`FieldTestSessionMonitor` records only coarse battery start/end snapshots and derived session metrics. It does not receive or store GPS coordinates.
+`FieldTestSessionMonitor` records only coarse battery start/end snapshots and derived movement metrics. `GameplaySessionMonitor` records only session-local counters for offered/hinted/discovered/resolved encounters, clue collections, and revisit counts. Neither monitor stores GPS coordinates, POI IDs, encounter IDs, template IDs, or event payloads.
 
-Battery evidence uses Android's battery level/scale and, where supported by the device, the remaining charge counter. If the device is charging during the measurement window or the required battery properties are unavailable, battery-consumption acceptance remains `NOT_EVALUATED` rather than inventing a result.
+Battery evidence uses Android's battery level/scale and, where supported by the device, the remaining charge counter. Any session connected to external power is marked `EXTERNALLY_POWERED` and cannot create battery PASS/FAIL evidence. Missing battery properties likewise stay unevaluated.
 
 For route accuracy, the tester may enter only a pre-verified total route distance in meters. The app compares that scalar reference with `ExplorationSession.sessionDistanceMeters` and calculates percentage error. No reference-route geometry or raw trace is required.
+
+Gameplay quality is derived as:
+
+- encounters/session = encounters that reached `DISCOVERED`, not merely generated candidates
+- encounter resolution rate = resolved / discovered encounters
+- revisit share = revisit offers / all offers
+- repeat-area fatigue proxy = unresolved share of **discovered revisit** encounters
+
+The repeat-area fatigue metric is explicitly a proxy, not a sentiment measurement. If the session contains no discovered revisits, it remains unavailable instead of reporting a misleading 0%.
 
 `FieldTestAcceptanceEvaluator` evaluates recorded evidence against **human-approved** criteria and intentionally ships with no hard-coded product thresholds.
 
@@ -101,6 +110,9 @@ Supported criteria currently include:
 - required provider-neutral map health
 - maximum route-distance error percentage
 - maximum battery percentage-point drain per hour
+- minimum discovered encounters per session
+- minimum encounter resolution rate
+- maximum repeat-area fatigue proxy
 
 Closed-test builds can supply criteria without source changes through Gradle properties or environment variables:
 
@@ -110,23 +122,27 @@ FIELD_TEST_MAX_GPS_REJECTION_PERCENT
 FIELD_TEST_REQUIRE_MAP_READY
 FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT
 FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR
+FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION
+FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT
+FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT
 ```
 
-Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configured values fail Gradle configuration rather than being ignored. Field-test diagnostics include configured acceptance state, failed metric keys, session/reference distance, distance error, and coarse battery consumption metrics while retaining the no-raw-GPS/no-credential privacy boundary.
+Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configured values fail Gradle configuration rather than being ignored. Field-test diagnostics include only derived counters/rates, configured acceptance state, and failed metric keys while retaining the no-raw-GPS/no-event-ID/no-credential privacy boundary.
 
 ## 9. Test boundaries
 
-- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration, session-distance, battery/distance telemetry, and acceptance-evaluation rules.
+- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration/distance, battery/distance telemetry, gameplay telemetry, and acceptance-evaluation rules.
 - Android UI/replay integration: AOSP ATD managed device, with the tested APK ABI explicitly pinned.
 - Normal pull-request CI: unit tests, instrumented-test compilation, lint, debug build, credential hard-code guard.
 - Credentialed internal APK: manual Actions workflow with value-blind credential verification, optional acceptance-policy injection, and artifact SHA-256 metadata.
-- Real GPS accuracy, battery behavior, OEM differences, and final NAVER package/key/map-health validation: physical Android device.
+- Real GPS accuracy, battery behavior, OEM differences, gameplay feel, and final NAVER package/key/map-health validation: physical Android device.
 
 ## 10. Privacy baseline
 
 - Raw high-frequency location stays on device unless a future server feature explicitly requires upload.
 - Persist derived visit/progress events rather than continuous traces by default.
-- Session duration, session distance, GPS accept/reject rates, route-distance error, and coarse battery consumption are derived metrics and are not raw location traces.
+- Session duration/distance, GPS rates, route-distance error, coarse battery consumption, encounter counts/rates, and repeat-area fatigue proxy are derived metrics.
+- Session diagnostics never export POI IDs, encounter IDs, template IDs, or event payloads.
 - Never commit or log production credentials.
 - Diagnostics contain package/build/map-health/derived counters/acceptance results but no raw coordinates, provider exception payloads, or credential values.
 - Add explicit consent and retention policy before analytics/location backend integration.
