@@ -89,6 +89,7 @@ fun DailyTownApp(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
     var referenceDistanceText by remember { mutableStateOf("") }
+    var sessionToken by remember { mutableIntStateOf(0) }
 
     val reminderPreference = remember { reminderManager.preference() }
     var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
@@ -141,6 +142,7 @@ fun DailyTownApp(
     }
 
     fun start(mode: TrackingMode) {
+        sessionToken += 1
         session.restartTracking()
         encounterCoordinator.reset()
         gameplaySessionMonitor.reset()
@@ -500,6 +502,30 @@ fun DailyTownApp(
                         }) { Text("진단 리포트 공유") }
                     }
                 }
+
+                FieldTestComparisonCard(
+                    sessionToken = sessionToken,
+                    canRecordCurrentSession = trackingMode == TrackingMode.OFF && snapshot.totalLocationSampleCount > 0,
+                    buildDiagnostic = {
+                        val sessionMetrics = fieldTestSessionMonitor.metrics(
+                            sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                            sessionDurationSeconds = snapshot.trackingDurationSeconds,
+                            referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
+                        )
+                        FieldTestDiagnosticBuilder.build(
+                            progress = normalizedProgress,
+                            acceptedLocationCount = snapshot.acceptedLocationCount,
+                            rejectedLocationCount = snapshot.rejectedLocationCount,
+                            trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                            sessionMetrics = sessionMetrics,
+                            gameplayMetrics = gameplayMetrics,
+                            appVersion = BuildConfig.VERSION_NAME,
+                            mapProvider = mapAdapter.providerId.name,
+                            mapHealth = mapHealth,
+                            trackingPreset = trackingPreset,
+                        )
+                    },
+                )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = {
