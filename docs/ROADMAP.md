@@ -13,7 +13,7 @@
 - [x] Real-device smoke-test documentation
 - [x] Emulator vs physical-device test strategy documented
 - [x] Replay/emulator path no longer eagerly initializes Google Play Services fused location
-- [x] Explicit x86 ABI for AOSP ATD so the lane remains stable across the AGP 10 default change
+- [x] Explicit tested APK ABI for AOSP ATD to avoid host-dependent ABI inference
 - [x] Value-blind Gradle verification for credential injection and APK SHA-256 metadata
 
 ## Real movement loop — implemented
@@ -28,6 +28,8 @@
 - [x] Do not persist raw high-frequency GPS traces
 - [x] Battery saver / balanced / precise location request presets
 - [x] Match GPS acceptance tolerance to the active tracking preset
+- [x] Per-tracking-session accepted/rejected GPS sample counters and rejection-rate metric
+- [x] Reset short-lived GPS quality counters on a new tracking session while preserving game progress
 
 Human TODO:
 - [ ] Select representative real test neighborhoods and acceptance walking routes
@@ -92,7 +94,7 @@ Human TODO:
 - [x] In-app opt-in local exploration reminder with Android 13+ notification permission handling
 - [x] Battery-friendly inexact reminder scheduling and reboot/app-update restoration
 - [x] Privacy-safe field-test diagnostic sharing with derived metrics only
-- [x] Diagnostic includes package/build/map-config status but never raw coordinates or credential values
+- [x] Diagnostic includes package/build/map-config and GPS acceptance/rejection metrics but never raw coordinates or credential values
 
 Blocked on a human/product/data decision rather than engineering:
 - [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
@@ -110,4 +112,4 @@ Blocked on a human/product/data decision rather than engineering:
 - [ ] Privacy disclosure and location retention policy
 - [ ] Signing/release credentials
 - [ ] Play Console/internal testers
-- [ ] Field-test acceptance thresholds for session duration, battery impact, distance accuracy, encounters/session, completion rate, and repeat-area fatigue
+- [ ] Field-test acceptance thresholds for session duration, battery impact, distance accuracy, GPS rejection rate, encounters/session, completion rate, and repeat-area fatigue
