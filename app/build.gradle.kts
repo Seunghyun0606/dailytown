@@ -41,6 +41,21 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    // Deterministic virtual-device lane for UI/integration smoke tests. Google ATD keeps
+    // Play Services available for FusedLocationProviderClient while tests themselves use
+    // Daily Town's credential-free replay route instead of depending on real GPS.
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel2Api30Atd") {
+                    device = "Pixel 2"
+                    apiLevel = 30
+                    systemImageSource = "google-atd"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
