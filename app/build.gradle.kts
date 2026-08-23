@@ -9,6 +9,40 @@ val naverMapNcpKeyId = providers.gradleProperty("NAVER_MAP_NCP_KEY_ID")
 val resolvedNaverMapNcpKeyId = naverMapNcpKeyId.get()
 val naverMapConfigured = resolvedNaverMapNcpKeyId.isNotBlank() && !resolvedNaverMapNcpKeyId.startsWith("TODO_")
 
+fun optionalConfig(name: String): String = providers.gradleProperty(name)
+    .orElse(providers.environmentVariable(name))
+    .orElse("")
+    .get()
+    .trim()
+
+fun optionalNonNegativeLong(name: String): Long {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return -1L
+    return raw.toLongOrNull()?.takeIf { it >= 0L }
+        ?: error("$name must be a non-negative integer when configured.")
+}
+
+fun optionalPercent(name: String): Int {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return -1
+    return raw.toIntOrNull()?.takeIf { it in 0..100 }
+        ?: error("$name must be an integer from 0 to 100 when configured.")
+}
+
+fun optionalBoolean(name: String): Boolean {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return false
+    return when (raw.lowercase()) {
+        "true" -> true
+        "false" -> false
+        else -> error("$name must be true or false when configured.")
+    }
+}
+
+val fieldTestMinSessionSeconds = optionalNonNegativeLong("FIELD_TEST_MIN_SESSION_SECONDS")
+val fieldTestMaxGpsRejectionPercent = optionalPercent("FIELD_TEST_MAX_GPS_REJECTION_PERCENT")
+val fieldTestRequireMapReady = optionalBoolean("FIELD_TEST_REQUIRE_MAP_READY")
+
 android {
     namespace = "com.dailytown.app"
     compileSdk = 37
@@ -30,6 +64,12 @@ android {
         )
         // Safe runtime diagnostic flag: the credential value itself is never displayed.
         buildConfigField("boolean", "NAVER_MAP_CONFIGURED", naverMapConfigured.toString())
+
+        // Optional closed-field-test policy. -1/false means the human criterion is not set yet,
+        // so diagnostics must report NOT_EVALUATED rather than inventing product thresholds.
+        buildConfigField("long", "FIELD_TEST_MIN_SESSION_SECONDS", "${fieldTestMinSessionSeconds}L")
+        buildConfigField("int", "FIELD_TEST_MAX_GPS_REJECTION_PERCENT", fieldTestMaxGpsRejectionPercent.toString())
+        buildConfigField("boolean", "FIELD_TEST_REQUIRE_MAP_READY", fieldTestRequireMapReady.toString())
     }
 
     buildFeatures {
