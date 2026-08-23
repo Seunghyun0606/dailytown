@@ -1,6 +1,7 @@
 package com.dailytown.app.mystery
 
 enum class EncounterPhase { HIDDEN, HINTED, DISCOVERED, RESOLVED }
+enum class EncounterRarity { COMMON, UNCOMMON, RARE }
 
 enum class MysteryMechanic {
     TRACE_CHAIN,
@@ -18,6 +19,7 @@ data class MysteryTemplate(
     val mechanic: MysteryMechanic,
     val requiredClues: Int,
     val tags: Set<String> = emptySet(),
+    val rarity: EncounterRarity = EncounterRarity.COMMON,
 )
 
 data class MysteryEncounter(
@@ -64,7 +66,19 @@ object MysteryTemplateCatalog {
         MysteryTemplate("symbol-match", MysteryMechanic.SYMBOL_MATCH, 3, setOf("observe", "match")),
         MysteryTemplate("lost-object", MysteryMechanic.LOST_OBJECT, 2, setOf("search", "route")),
         MysteryTemplate("photo-angle", MysteryMechanic.PHOTO_ANGLE, 2, setOf("viewpoint", "compare")),
-        MysteryTemplate("local-memory", MysteryMechanic.LOCAL_MEMORY, 2, setOf("place", "story")),
-        MysteryTemplate("companion-sense", MysteryMechanic.COMPANION_SENSE, 2, setOf("companion", "choice")),
+        MysteryTemplate(
+            "local-memory",
+            MysteryMechanic.LOCAL_MEMORY,
+            2,
+            setOf("place", "story", "revisit"),
+            rarity = EncounterRarity.UNCOMMON,
+        ),
+        MysteryTemplate(
+            "companion-sense",
+            MysteryMechanic.COMPANION_SENSE,
+            2,
+            setOf("companion", "choice", "rare"),
+            rarity = EncounterRarity.RARE,
+        ),
     )
 }
