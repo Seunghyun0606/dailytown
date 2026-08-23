@@ -6,7 +6,7 @@ import kotlin.math.roundToInt
 data class BatterySnapshot(
     val levelPercent: Int?,
     val chargeCounterMicroAh: Int?,
-    val charging: Boolean,
+    val externallyPowered: Boolean,
 )
 
 fun interface BatterySnapshotSource {
@@ -16,7 +16,7 @@ fun interface BatterySnapshotSource {
 enum class BatteryMeasurementStatus {
     NOT_STARTED,
     UNAVAILABLE,
-    CHARGING,
+    EXTERNALLY_POWERED,
     VALID,
 }
 
@@ -93,8 +93,8 @@ class FieldTestSessionMonitor(
         if (start == null || end == null) {
             return BatteryDerivedMetrics(BatteryMeasurementStatus.NOT_STARTED)
         }
-        if (start.charging || end.charging) {
-            return BatteryDerivedMetrics(BatteryMeasurementStatus.CHARGING)
+        if (start.externallyPowered || end.externallyPowered) {
+            return BatteryDerivedMetrics(BatteryMeasurementStatus.EXTERNALLY_POWERED)
         }
 
         val startPercent = start.levelPercent
