@@ -52,9 +52,25 @@ android {
                     device = "Pixel 2"
                     apiLevel = 30
                     systemImageSource = "aosp-atd"
+                    // AGP 10 changes the implicit default to arm64-v8a. This ATD image is
+                    // x86-only and has no NDK translation, so pin the ABI explicitly.
+                    testedAbi = "x86"
                 }
             }
         }
+    }
+}
+
+// Credential verification is intentionally value-blind: CI can prove that injection is
+// wired without ever echoing the NCP Key ID to logs or committing it to source control.
+tasks.register("verifyNaverMapCredential") {
+    group = "verification"
+    description = "Fails unless NAVER_MAP_NCP_KEY_ID is supplied through Gradle or environment."
+    doLast {
+        check(naverMapConfigured) {
+            "NAVER_MAP_NCP_KEY_ID is required for credentialed Daily Town builds."
+        }
+        println("NAVER Maps credential wiring verified for com.dailytown.app")
     }
 }
 
