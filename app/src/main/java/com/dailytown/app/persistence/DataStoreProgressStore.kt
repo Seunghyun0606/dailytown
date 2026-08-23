@@ -28,6 +28,7 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
             recentPoiIds = decodeList(prefs[Keys.recentPoiIds]),
             recentTemplateIds = decodeList(prefs[Keys.recentTemplateIds]),
             recentPairKeys = decodeList(prefs[Keys.recentPairKeys]),
+            companionMemoryKeys = prefs[Keys.companionMemoryKeys].orEmpty(),
             daily = PeriodProgress(
                 periodKey = prefs[Keys.dailyPeriodKey].orEmpty(),
                 distanceWalkedMeters = prefs[Keys.dailyDistanceMeters] ?: 0.0,
@@ -57,6 +58,7 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
             prefs[Keys.recentPoiIds] = encodeList(progress.recentPoiIds)
             prefs[Keys.recentTemplateIds] = encodeList(progress.recentTemplateIds)
             prefs[Keys.recentPairKeys] = encodeList(progress.recentPairKeys)
+            prefs[Keys.companionMemoryKeys] = progress.companionMemoryKeys
             writePeriod(prefs, progress.daily, daily = true)
             writePeriod(prefs, progress.weekly, daily = false)
         }
@@ -97,6 +99,7 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
         val recentPoiIds = stringPreferencesKey("recent_poi_ids")
         val recentTemplateIds = stringPreferencesKey("recent_template_ids")
         val recentPairKeys = stringPreferencesKey("recent_pair_keys")
+        val companionMemoryKeys = stringSetPreferencesKey("companion_memory_keys")
 
         val dailyPeriodKey = stringPreferencesKey("daily_period_key")
         val dailyDistanceMeters = doublePreferencesKey("daily_distance_meters")
