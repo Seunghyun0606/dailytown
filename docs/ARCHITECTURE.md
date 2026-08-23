@@ -84,7 +84,7 @@ The content system separates a physical place from an encounter template. The sa
 
 `EncounterGenerator` ranks POI × template candidates, while `EncounterCoordinator` owns the runtime transition from selection through hinted/discovered states. This keeps the ranking mechanics testable without Compose or Android dependencies.
 
-## 8. Field-test telemetry and acceptance strategy
+## 8. Field-test telemetry, comparison, and acceptance strategy
 
 `FieldTestSessionMonitor` records only coarse battery start/end snapshots and derived movement metrics. `GameplaySessionMonitor` records only session-local counters for offered/hinted/discovered/resolved encounters, clue collections, and revisit counts. Neither monitor stores GPS coordinates, POI IDs, encounter IDs, template IDs, or event payloads.
 
@@ -100,6 +100,12 @@ Gameplay quality is derived as:
 - repeat-area fatigue proxy = unresolved share of **discovered revisit** encounters
 
 The repeat-area fatigue metric is explicitly a proxy, not a sentiment measurement. If the session contains no discovered revisits, it remains unavailable instead of reporting a misleading 0%.
+
+`FieldTestComparisonRecorder` compares multiple completed sessions without expanding the privacy boundary. A tester manually classifies each completed session as `NEW_AREA` or `REPEAT_AREA`; the recorder stores at most 20 **derived** `FieldTestSessionSummary` values in process memory only. It never persists coordinates, route geometry, free-form place labels, POI/encounter/template IDs, or raw event payloads.
+
+Comparison cohorts report both the rounded average and `evidenceCount/sessionCount` for every metric. Missing battery, route-reference, revisit, or other evidence is excluded from the average rather than converted to zero. The comparison report exposes `repeat area - new area` deltas only when both cohorts contain evaluable evidence and deliberately does not automatically label a positive/negative delta as good or bad because metric semantics differ.
+
+The in-app comparison recorder uses a short-lived session token only to block duplicate taps for the same completed session. The token is not exported, persisted, or included in the comparison model/report. Comparison data disappears when the app process ends or the tester explicitly resets it.
 
 `FieldTestAcceptanceEvaluator` evaluates recorded evidence against **human-approved** criteria and intentionally ships with no hard-coded product thresholds.
 
@@ -131,7 +137,7 @@ Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configu
 
 ## 9. Test boundaries
 
-- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration/distance, battery/distance telemetry, gameplay telemetry, and acceptance-evaluation rules.
+- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration/distance, battery/distance telemetry, gameplay telemetry, multi-session cohort comparison, missing-evidence handling, and acceptance-evaluation rules.
 - Android UI/replay integration: AOSP ATD managed device, with the tested APK ABI explicitly pinned.
 - Normal pull-request CI: unit tests, instrumented-test compilation, lint, debug build, credential hard-code guard.
 - Credentialed internal APK: manual Actions workflow with value-blind credential verification, optional acceptance-policy injection, and artifact SHA-256 metadata.
@@ -142,7 +148,8 @@ Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configu
 - Raw high-frequency location stays on device unless a future server feature explicitly requires upload.
 - Persist derived visit/progress events rather than continuous traces by default.
 - Session duration/distance, GPS rates, route-distance error, coarse battery consumption, encounter counts/rates, and repeat-area fatigue proxy are derived metrics.
-- Session diagnostics never export POI IDs, encounter IDs, template IDs, or event payloads.
+- Per-session comparison summaries are process-memory-only, bounded, and contain no free-form place labels or raw event/location identifiers.
+- Session diagnostics and comparison reports never export POI IDs, encounter IDs, template IDs, route geometry, or event payloads.
 - Never commit or log production credentials.
 - Diagnostics contain package/build/map-health/derived counters/acceptance results but no raw coordinates, provider exception payloads, or credential values.
 - Add explicit consent and retention policy before analytics/location backend integration.
