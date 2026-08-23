@@ -26,6 +26,7 @@ class ExplorationSessionTest {
         assertEquals(1, second.state.cluesFound)
         assertEquals(2, second.acceptedLocationCount)
         assertEquals(0, second.rejectedLocationCount)
+        assertEquals(3, second.trackingDurationSeconds)
     }
 
     @Test
@@ -37,12 +38,13 @@ class ExplorationSessionTest {
         val point = GeoPoint(37.5665, 126.9780)
 
         session.onLocation(LocationSample(point, 8f, null, 1_000L))
-        val snapshot = session.onLocation(LocationSample(point, 120f, null, 2_000L))
+        val snapshot = session.onLocation(LocationSample(point, 120f, null, 6_000L))
 
         assertEquals(1, snapshot.acceptedLocationCount)
         assertEquals(1, snapshot.rejectedLocationCount)
         assertEquals(2, snapshot.totalLocationSampleCount)
         assertEquals(50, snapshot.rejectedLocationRatePercent)
+        assertEquals(5, snapshot.trackingDurationSeconds)
         assertEquals(point, snapshot.currentLocation?.point)
     }
 
@@ -55,7 +57,7 @@ class ExplorationSessionTest {
         )
         val point = GeoPoint(37.5665, 126.9780)
         session.onLocation(LocationSample(point, 8f, null, 1_000L))
-        session.onLocation(LocationSample(point, 120f, null, 2_000L))
+        session.onLocation(LocationSample(point, 120f, null, 6_000L))
 
         session.restartTracking()
         val restarted = session.current()
@@ -63,6 +65,23 @@ class ExplorationSessionTest {
         assertEquals(321.0, restarted.state.distanceWalkedMeters, 0.0)
         assertEquals(0, restarted.acceptedLocationCount)
         assertEquals(0, restarted.rejectedLocationCount)
+        assertEquals(0, restarted.trackingDurationSeconds)
         assertEquals(null, restarted.currentLocation)
+    }
+
+    @Test
+    fun `non monotonic elapsed realtime never creates a negative session duration`() {
+        val session = ExplorationSession(
+            initialState = ExplorationState(Companion("moru", "모루", 12)),
+            spots = emptyList(),
+        )
+        val point = GeoPoint(37.5665, 126.9780)
+
+        session.onLocation(LocationSample(point, 8f, null, 5_000L))
+        val snapshot = session.onLocation(LocationSample(point, 8f, null, 4_000L))
+
+        assertEquals(0, snapshot.trackingDurationSeconds)
+        assertEquals(1, snapshot.acceptedLocationCount)
+        assertEquals(1, snapshot.rejectedLocationCount)
     }
 }
