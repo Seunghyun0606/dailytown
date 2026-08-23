@@ -18,6 +18,9 @@ class FieldTestAcceptanceTest {
                 mapHealth = MapHealthStatus.READY,
                 distanceErrorPercent = 1,
                 batteryDrainPercentPerHour = 3,
+                discoveredEncountersPerSession = 3,
+                encounterResolutionRatePercent = 80,
+                repeatAreaFatigueProxyPercent = 10,
             ),
         )
 
@@ -34,6 +37,9 @@ class FieldTestAcceptanceTest {
                 requiredMapHealth = MapHealthStatus.READY,
                 maximumDistanceErrorPercent = 10,
                 maximumBatteryDrainPercentPerHour = 8,
+                minimumDiscoveredEncountersPerSession = 2,
+                minimumEncounterResolutionRatePercent = 60,
+                maximumRepeatAreaFatiguePercent = 40,
             ),
             input = FieldTestAcceptanceInput(
                 sessionDurationSeconds = 900,
@@ -41,30 +47,45 @@ class FieldTestAcceptanceTest {
                 mapHealth = MapHealthStatus.READY,
                 distanceErrorPercent = 6,
                 batteryDrainPercentPerHour = 5,
+                discoveredEncountersPerSession = 3,
+                encounterResolutionRatePercent = 67,
+                repeatAreaFatigueProxyPercent = 25,
             ),
         )
 
         assertEquals(AcceptanceCheckStatus.PASS, result.overall)
-        assertEquals(5, result.checks.size)
+        assertEquals(8, result.checks.size)
         assertTrue(result.failedKeys.isEmpty())
     }
 
     @Test
-    fun `failed distance and battery metrics report their keys`() {
+    fun `failed distance battery and gameplay metrics report their keys`() {
         val result = evaluator.evaluate(
             criteria = FieldTestAcceptanceCriteria(
                 maximumDistanceErrorPercent = 10,
                 maximumBatteryDrainPercentPerHour = 6,
+                minimumDiscoveredEncountersPerSession = 2,
+                minimumEncounterResolutionRatePercent = 60,
+                maximumRepeatAreaFatiguePercent = 40,
             ),
             input = FieldTestAcceptanceInput(
                 distanceErrorPercent = 18,
                 batteryDrainPercentPerHour = 9,
+                discoveredEncountersPerSession = 1,
+                encounterResolutionRatePercent = 50,
+                repeatAreaFatigueProxyPercent = 75,
             ),
         )
 
         assertEquals(AcceptanceCheckStatus.FAIL, result.overall)
         assertEquals(
-            listOf("distanceErrorPercent", "batteryDrainPercentPerHour"),
+            listOf(
+                "distanceErrorPercent",
+                "batteryDrainPercentPerHour",
+                "discoveredEncountersPerSession",
+                "encounterResolutionRatePercent",
+                "repeatAreaFatigueProxyPercent",
+            ),
             result.failedKeys,
         )
     }
@@ -96,12 +117,18 @@ class FieldTestAcceptanceTest {
                 maximumGpsRejectionRatePercent = 10,
                 maximumDistanceErrorPercent = 10,
                 maximumBatteryDrainPercentPerHour = 8,
+                minimumDiscoveredEncountersPerSession = 2,
+                minimumEncounterResolutionRatePercent = 60,
+                maximumRepeatAreaFatiguePercent = 40,
             ),
             input = FieldTestAcceptanceInput(
                 sessionDurationSeconds = 900,
                 gpsRejectionRatePercent = null,
                 distanceErrorPercent = null,
                 batteryDrainPercentPerHour = null,
+                discoveredEncountersPerSession = null,
+                encounterResolutionRatePercent = null,
+                repeatAreaFatigueProxyPercent = null,
             ),
         )
 
@@ -117,6 +144,18 @@ class FieldTestAcceptanceTest {
         assertEquals(
             AcceptanceCheckStatus.NOT_EVALUATED,
             result.checks.first { it.key == "batteryDrainPercentPerHour" }.status,
+        )
+        assertEquals(
+            AcceptanceCheckStatus.NOT_EVALUATED,
+            result.checks.first { it.key == "discoveredEncountersPerSession" }.status,
+        )
+        assertEquals(
+            AcceptanceCheckStatus.NOT_EVALUATED,
+            result.checks.first { it.key == "encounterResolutionRatePercent" }.status,
+        )
+        assertEquals(
+            AcceptanceCheckStatus.NOT_EVALUATED,
+            result.checks.first { it.key == "repeatAreaFatigueProxyPercent" }.status,
         )
     }
 }
