@@ -12,6 +12,8 @@ data class FieldTestAcceptanceCriteria(
     val minimumSessionDurationSeconds: Long? = null,
     val maximumGpsRejectionRatePercent: Int? = null,
     val requiredMapHealth: MapHealthStatus? = null,
+    val maximumDistanceErrorPercent: Int? = null,
+    val maximumBatteryDrainPercentPerHour: Int? = null,
 ) {
     init {
         require(minimumSessionDurationSeconds == null || minimumSessionDurationSeconds >= 0) {
@@ -20,18 +22,28 @@ data class FieldTestAcceptanceCriteria(
         require(maximumGpsRejectionRatePercent == null || maximumGpsRejectionRatePercent in 0..100) {
             "maximumGpsRejectionRatePercent must be between 0 and 100"
         }
+        require(maximumDistanceErrorPercent == null || maximumDistanceErrorPercent in 0..100) {
+            "maximumDistanceErrorPercent must be between 0 and 100"
+        }
+        require(maximumBatteryDrainPercentPerHour == null || maximumBatteryDrainPercentPerHour >= 0) {
+            "maximumBatteryDrainPercentPerHour must be non-negative"
+        }
     }
 
     val isConfigured: Boolean
         get() = minimumSessionDurationSeconds != null ||
             maximumGpsRejectionRatePercent != null ||
-            requiredMapHealth != null
+            requiredMapHealth != null ||
+            maximumDistanceErrorPercent != null ||
+            maximumBatteryDrainPercentPerHour != null
 }
 
 data class FieldTestAcceptanceInput(
     val sessionDurationSeconds: Long? = null,
     val gpsRejectionRatePercent: Int? = null,
     val mapHealth: MapHealthStatus? = null,
+    val distanceErrorPercent: Int? = null,
+    val batteryDrainPercentPerHour: Int? = null,
 )
 
 data class FieldTestAcceptanceCheck(
@@ -63,35 +75,23 @@ class FieldTestAcceptanceEvaluator {
     ): FieldTestAcceptanceResult {
         val checks = buildList {
             criteria.minimumSessionDurationSeconds?.let { minimum ->
-                val measured = input.sessionDurationSeconds
-                add(
-                    FieldTestAcceptanceCheck(
-                        key = "sessionDurationSeconds",
-                        status = when {
-                            measured == null -> AcceptanceCheckStatus.NOT_EVALUATED
-                            measured >= minimum -> AcceptanceCheckStatus.PASS
-                            else -> AcceptanceCheckStatus.FAIL
-                        },
-                        measuredValue = measured?.toString(),
-                        expectedValue = ">=$minimum",
-                    ),
-                )
+                add(maximumOrMinimumCheck(
+                    key = "sessionDurationSeconds",
+                    measured = input.sessionDurationSeconds,
+                    expected = minimum,
+                    passes = { measured, expected -> measured >= expected },
+                    expectedValue = ">=$minimum",
+                ))
             }
 
             criteria.maximumGpsRejectionRatePercent?.let { maximum ->
-                val measured = input.gpsRejectionRatePercent
-                add(
-                    FieldTestAcceptanceCheck(
-                        key = "gpsRejectionRatePercent",
-                        status = when {
-                            measured == null -> AcceptanceCheckStatus.NOT_EVALUATED
-                            measured <= maximum -> AcceptanceCheckStatus.PASS
-                            else -> AcceptanceCheckStatus.FAIL
-                        },
-                        measuredValue = measured?.toString(),
-                        expectedValue = "<=$maximum",
-                    ),
-                )
+                add(maximumOrMinimumCheck(
+                    key = "gpsRejectionRatePercent",
+                    measured = input.gpsRejectionRatePercent,
+                    expected = maximum,
+                    passes = { measured, expected -> measured <= expected },
+                    expectedValue = "<=$maximum",
+                ))
             }
 
             criteria.requiredMapHealth?.let { required ->
@@ -109,6 +109,26 @@ class FieldTestAcceptanceEvaluator {
                     ),
                 )
             }
+
+            criteria.maximumDistanceErrorPercent?.let { maximum ->
+                add(maximumOrMinimumCheck(
+                    key = "distanceErrorPercent",
+                    measured = input.distanceErrorPercent,
+                    expected = maximum,
+                    passes = { measured, expected -> measured <= expected },
+                    expectedValue = "<=$maximum",
+                ))
+            }
+
+            criteria.maximumBatteryDrainPercentPerHour?.let { maximum ->
+                add(maximumOrMinimumCheck(
+                    key = "batteryDrainPercentPerHour",
+                    measured = input.batteryDrainPercentPerHour,
+                    expected = maximum,
+                    passes = { measured, expected -> measured <= expected },
+                    expectedValue = "<=$maximum",
+                ))
+            }
         }
 
         val overall = when {
@@ -119,4 +139,21 @@ class FieldTestAcceptanceEvaluator {
         }
         return FieldTestAcceptanceResult(overall = overall, checks = checks)
     }
+
+    private fun <T : Comparable<T>> maximumOrMinimumCheck(
+        key: String,
+        measured: T?,
+        expected: T,
+        passes: (T, T) -> Boolean,
+        expectedValue: String,
+    ): FieldTestAcceptanceCheck = FieldTestAcceptanceCheck(
+        key = key,
+        status = when {
+            measured == null -> AcceptanceCheckStatus.NOT_EVALUATED
+            passes(measured, expected) -> AcceptanceCheckStatus.PASS
+            else -> AcceptanceCheckStatus.FAIL
+        },
+        measuredValue = measured?.toString(),
+        expectedValue = expectedValue,
+    )
 }
