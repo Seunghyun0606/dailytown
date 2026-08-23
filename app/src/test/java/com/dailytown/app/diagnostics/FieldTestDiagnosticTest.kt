@@ -32,6 +32,7 @@ class FieldTestDiagnosticTest {
             mapProvider = "naver",
             mapHealth = MapHealth(MapHealthStatus.READY),
             trackingPreset = LocationTrackingPreset.BALANCED,
+            acceptanceCriteria = FieldTestAcceptanceCriteria(),
             generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
         ).render()
 
@@ -42,11 +43,37 @@ class FieldTestDiagnosticTest {
         assertTrue(text.contains("acceptedLocationCount=9"))
         assertTrue(text.contains("rejectedLocationCount=1"))
         assertTrue(text.contains("rejectedLocationRatePercent=10"))
+        assertTrue(text.contains("acceptanceConfigured=false"))
+        assertTrue(text.contains("acceptanceOverall=NOT_EVALUATED"))
         assertTrue(text.contains("privacy=derived_metrics_only_no_raw_gps"))
         assertFalse(text.contains("latitude", ignoreCase = true))
         assertFalse(text.contains("longitude", ignoreCase = true))
         assertFalse(text.contains("NAVER_MAP_NCP_KEY_ID"))
         assertFalse(text.contains("apiKey", ignoreCase = true))
+    }
+
+    @Test
+    fun `configured acceptance result is included in diagnostic output`() {
+        val text = FieldTestDiagnosticBuilder.build(
+            progress = ExplorationProgress(),
+            acceptedLocationCount = 8,
+            rejectedLocationCount = 2,
+            trackingDurationSeconds = 700,
+            appVersion = "test",
+            mapProvider = "naver",
+            mapHealth = MapHealth(MapHealthStatus.READY),
+            trackingPreset = LocationTrackingPreset.BALANCED,
+            acceptanceCriteria = FieldTestAcceptanceCriteria(
+                minimumSessionDurationSeconds = 600,
+                maximumGpsRejectionRatePercent = 10,
+                requiredMapHealth = MapHealthStatus.READY,
+            ),
+            generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
+        ).render()
+
+        assertTrue(text.contains("acceptanceConfigured=true"))
+        assertTrue(text.contains("acceptanceOverall=FAIL"))
+        assertTrue(text.contains("acceptanceFailedKeys=gpsRejectionRatePercent"))
     }
 
     @Test
@@ -63,6 +90,7 @@ class FieldTestDiagnosticTest {
                 userMessage = "safe user message",
             ),
             trackingPreset = LocationTrackingPreset.BALANCED,
+            acceptanceCriteria = FieldTestAcceptanceCriteria(),
             generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
         ).render()
 
@@ -79,6 +107,7 @@ class FieldTestDiagnosticTest {
             appVersion = "test",
             mapProvider = "naver",
             trackingPreset = LocationTrackingPreset.BALANCED,
+            acceptanceCriteria = FieldTestAcceptanceCriteria(),
             generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
         ).render()
 
@@ -87,5 +116,6 @@ class FieldTestDiagnosticTest {
         assertFalse(text.contains("rejectedLocationRatePercent="))
         assertFalse(text.contains("mapHealthStatus="))
         assertFalse(text.contains("trackingDurationSeconds="))
+        assertTrue(text.contains("acceptanceOverall=NOT_EVALUATED"))
     }
 }
