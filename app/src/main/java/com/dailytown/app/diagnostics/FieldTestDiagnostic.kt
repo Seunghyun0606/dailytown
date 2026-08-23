@@ -18,9 +18,9 @@ data class FieldTestDiagnostic(
     val inventoryClueCount: Int,
     val companionBond: Int,
     val companionMemoryCount: Int,
-    val acceptedLocationCount: Int,
+    val acceptedLocationCount: Int?,
     val rejectedLocationCount: Int,
-    val rejectedLocationRatePercent: Int,
+    val rejectedLocationRatePercent: Int?,
     val dailyDistanceMeters: Int,
     val dailyDiscoveries: Int,
     val dailyResolutions: Int,
@@ -42,9 +42,9 @@ data class FieldTestDiagnostic(
         appendLine("inventoryClueCount=$inventoryClueCount")
         appendLine("companionBond=$companionBond")
         appendLine("companionMemoryCount=$companionMemoryCount")
-        appendLine("acceptedLocationCount=$acceptedLocationCount")
+        acceptedLocationCount?.let { appendLine("acceptedLocationCount=$it") }
         appendLine("rejectedLocationCount=$rejectedLocationCount")
-        appendLine("rejectedLocationRatePercent=$rejectedLocationRatePercent")
+        rejectedLocationRatePercent?.let { appendLine("rejectedLocationRatePercent=$it") }
         appendLine("dailyDistanceMeters=$dailyDistanceMeters")
         appendLine("dailyDiscoveries=$dailyDiscoveries")
         appendLine("dailyResolutions=$dailyResolutions")
@@ -58,18 +58,19 @@ data class FieldTestDiagnostic(
 object FieldTestDiagnosticBuilder {
     fun build(
         progress: ExplorationProgress,
-        acceptedLocationCount: Int,
         rejectedLocationCount: Int,
         appVersion: String,
         mapProvider: String,
         trackingPreset: LocationTrackingPreset,
+        acceptedLocationCount: Int? = null,
         packageId: String = BuildConfig.APPLICATION_ID,
         mapCredentialConfigured: Boolean = BuildConfig.NAVER_MAP_CONFIGURED,
         generatedAt: Instant = Instant.now(),
     ): FieldTestDiagnostic {
-        val sampleCount = acceptedLocationCount + rejectedLocationCount
-        val rejectedRate = if (sampleCount == 0) 0
-        else ((rejectedLocationCount * 100.0) / sampleCount).toInt()
+        val rejectedRate = acceptedLocationCount?.let { accepted ->
+            val sampleCount = accepted + rejectedLocationCount
+            if (sampleCount == 0) 0 else ((rejectedLocationCount * 100.0) / sampleCount).toInt()
+        }
 
         return FieldTestDiagnostic(
             generatedAt = generatedAt.toString(),
