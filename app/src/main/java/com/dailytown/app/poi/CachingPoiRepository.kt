@@ -81,7 +81,9 @@ class CachingPoiRepository(
                 existing.coverageRadiusMeters == entry.coverageRadiusMeters
         }
         entries.add(0, entry)
-        while (entries.size > maxEntries.coerceAtLeast(1)) entries.removeLast()
+        while (entries.size > maxEntries.coerceAtLeast(1)) {
+            entries.removeAt(entries.lastIndex)
+        }
     }
 
     private fun filter(items: List<Poi>, center: GeoPoint, radiusMeters: Double): List<Poi> =
