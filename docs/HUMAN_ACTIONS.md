@@ -58,7 +58,9 @@ Engineering support is implemented, but the product thresholds must be chosen by
 - [ ] Decide whether provider-neutral map health **`READY`** is a mandatory closed-test gate.
 - [ ] Approve the maximum acceptable route-distance error percentage.
 - [ ] Approve the maximum acceptable battery percentage-point drain per hour.
-- [ ] Later, approve encounters/session, completion-rate, and repeat-area-fatigue thresholds after those measurements exist.
+- [ ] Approve the minimum number of encounters that must reach **`DISCOVERED`** during a representative session. Generated-but-never-reached candidates are intentionally not counted.
+- [ ] Approve the minimum encounter resolution-rate percentage (`resolved / discovered`).
+- [ ] Approve the maximum repeat-area-fatigue proxy percentage. The proxy is the unresolved share of **discovered revisit encounters** and should be used for comparative route testing, not treated as direct user sentiment.
 
 Once approved, configure the supported criteria as Gradle properties or environment variables. They are normal configuration values, **not secrets**:
 
@@ -68,6 +70,9 @@ FIELD_TEST_MAX_GPS_REJECTION_PERCENT=<0..100>
 FIELD_TEST_REQUIRE_MAP_READY=true
 FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT=<0..100>
 FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR=<non-negative integer>
+FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION=<non-negative integer>
+FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT=<0..100>
+FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT=<0..100>
 ```
 
 For GitHub-hosted `Internal Debug APK` builds, use repository Variables with the same names. The generated `field-test-policy.txt` records these non-secret policy values next to the APK. Do not put the NAVER credential into these variables; `NAVER_MAP_NCP_KEY_ID` remains a Secret.
@@ -76,9 +81,9 @@ Invalid configured values intentionally fail Gradle configuration rather than be
 
 ## Real-device validation
 
-- [ ] Select representative test neighborhoods and walking routes.
+- [ ] Select representative test neighborhoods and walking routes, including at least one mostly-new area and one repeat-area route.
 - [ ] For each route, record a trusted **total route distance in meters** from the chosen reference source. Do not copy route geometry into the app; only enter the scalar meter value in `기준 경로 거리` before sharing the diagnostic.
-- [ ] Run battery-comparison routes with the phone **unplugged**. A session that starts or ends while charging intentionally reports battery measurement as non-comparable instead of producing a PASS/FAIL.
+- [ ] Run battery-comparison routes with the phone **unplugged**. A session that starts or ends while externally powered intentionally reports battery measurement as non-comparable instead of producing a PASS/FAIL.
 - [ ] Keep screen brightness, tracking preset, device, and route conditions reasonably consistent across battery-comparison runs.
 - [ ] Run on a physical Android device outdoors after NAVER package restriction matches `com.dailytown.app`.
 - [ ] Confirm the in-app provider-neutral map health reaches **`READY` / 지도 정상** after the NAVER map initializes.
@@ -90,12 +95,15 @@ Invalid configured values intentionally fail Gradle configuration rather than be
 - [ ] Verify GPS accepted/rejected counters, rejection rate, impossible-jump filtering, and per-session distance.
 - [ ] Verify the diagnostic shows `sessionDistanceMeters`, optional `referenceDistanceMeters`, and `distanceErrorPercent` without latitude/longitude fields.
 - [ ] Verify supported devices report coarse battery start/end percentage and, where available, charge consumed in mAh. OEMs that do not expose a charge counter are allowed to omit the mAh field.
-- [ ] Verify `batteryDrainPercentPerHour` is absent/unevaluated for charging sessions or zero-duration evidence rather than being fabricated.
-- [ ] Walk the same route twice and verify repeat handling feels intentional rather than empty.
+- [ ] Verify `batteryDrainPercentPerHour` is absent/unevaluated for external-power sessions or zero-duration evidence rather than being fabricated.
+- [ ] During a representative route, verify the in-app session summary increments offered/discovered/resolved encounters and collected clues only when those transitions actually happen.
+- [ ] Verify the diagnostic exports gameplay **counts/rates only** and contains no `poiId`, `encounterId`, `templateId`, or equivalent event identifiers.
+- [ ] Compare new-area vs repeat-area diagnostics. If there are no discovered revisit encounters, confirm `repeatAreaFatigueProxyPercent` is omitted/unevaluated rather than shown as 0%.
+- [ ] Walk the same route multiple times and judge whether the measured revisit resolution/fatigue proxy matches the subjective feeling of repetition closely enough to use as a product signal.
 - [ ] Verify daily/weekly counters reset only when the corresponding period changes.
 - [ ] Force/observe a progress-load failure in a debug test if practical and confirm the app shows the temporary progress mode while persistence remains disabled; this protects existing stored progress from being overwritten by a fallback state.
 - [ ] Enable/disable the optional local reminder and verify Android 13+ notification permission flow.
-- [ ] Share a field-test diagnostic and verify it contains package/build/map-health/session/distance/battery/game/acceptance counters but no coordinates, provider exception payloads, or credential values.
+- [ ] Share a field-test diagnostic and verify it contains package/build/map-health/session/distance/battery/gameplay/acceptance counters but no coordinates, provider exception payloads, event IDs, or credential values.
 - [ ] After acceptance criteria are configured, verify the diagnostic reports `PASS`, `FAIL`, or `NOT_EVALUATED` as expected and lists only failed metric keys, not sensitive raw data.
 
 ## External beta / release
@@ -107,8 +115,7 @@ Before any external beta or store submission:
 - [ ] Create signing/release credentials outside the repository.
 - [ ] Decide analytics/crash-reporting vendor and consent policy before adding telemetry SDKs.
 - [ ] Configure Play Console internal testers.
-- [ ] Define the remaining field-test acceptance thresholds for encounters/session, completion rate, and repeat-area fatigue.
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
+Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
