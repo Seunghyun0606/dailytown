@@ -53,14 +53,18 @@ Engineering does not need to wait: current templates define mechanics only and c
 
 - [ ] Select representative test neighborhoods and walking routes.
 - [ ] Run on a physical Android device outdoors after NAVER package restriction matches `com.dailytown.app`.
+- [ ] Confirm the in-app provider-neutral map health reaches **`READY` / 지도 정상** after the NAVER map initializes.
+- [ ] If map health becomes **`AUTH_ERROR`**, share the safe diagnostic and record only the provider error code (for example 401/429/800); do not copy or expose the credential value.
 - [ ] Verify NAVER map tiles, user-location overlay, encounter markers, and camera movement.
 - [ ] Verify precise/approximate location permission behavior.
 - [ ] Verify battery saver / balanced / precise tracking presets.
-- [ ] Verify GPS rejection counters and impossible-jump filtering.
+- [ ] Verify changing the preset while DEVICE tracking is active pauses the session before a new location request is started.
+- [ ] Verify GPS accepted/rejected counters, rejection rate, and impossible-jump filtering.
+- [ ] Record derived session duration and GPS rejection rate for each representative walking route; raw GPS traces are not required for the MVP acceptance report.
 - [ ] Walk the same route twice and verify repeat handling feels intentional rather than empty.
 - [ ] Verify daily/weekly counters reset only when the corresponding period changes.
 - [ ] Enable/disable the optional local reminder and verify Android 13+ notification permission flow.
-- [ ] Share a field-test diagnostic and verify it contains package/build/game counters but no coordinates or credential values.
+- [ ] Share a field-test diagnostic and verify it contains package/build/map-health/session/game counters but no coordinates, provider exception payloads, or credential values.
 
 ## External beta / release
 
@@ -71,8 +75,8 @@ Before any external beta or store submission:
 - [ ] Create signing/release credentials outside the repository.
 - [ ] Decide analytics/crash-reporting vendor and consent policy before adding telemetry SDKs.
 - [ ] Configure Play Console internal testers.
-- [ ] Define field-test acceptance thresholds for session duration, battery impact, distance accuracy, encounters/session, completion rate, and repeat-area fatigue.
+- [ ] Define field-test acceptance thresholds for session duration, battery impact, distance accuracy, GPS rejection rate, encounters/session, completion rate, and repeat-area fatigue.
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, derived progress persistence, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
+Replay exploration, GPS filtering, derived progress persistence, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
