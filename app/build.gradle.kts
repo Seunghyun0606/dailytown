@@ -4,6 +4,7 @@ plugins {
 }
 
 val naverMapNcpKeyId = providers.gradleProperty("NAVER_MAP_NCP_KEY_ID")
+    .orElse(providers.environmentVariable("NAVER_MAP_NCP_KEY_ID"))
     .orElse("TODO_NCP_KEY_ID")
 
 android {
@@ -11,11 +12,14 @@ android {
     compileSdk = 37
 
     defaultConfig {
+        // TODO(release-package): `com.dailytown.app` is still an MVP placeholder.
+        // When the final Android applicationId is chosen, update the NAVER Dynamic Map
+        // Android package restriction in NCP Console before shipping the credentialed build.
         applicationId = "com.dailytown.app"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
-        versionName = "0.3.0"
+        versionName = "0.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField(
