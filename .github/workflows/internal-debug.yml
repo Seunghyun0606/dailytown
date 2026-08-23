@@ -10,6 +10,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Optional, non-secret closed-field-test policy. Empty repository variables remain
+      # unconfigured and are rendered as NOT_EVALUATED by the app diagnostic.
+      FIELD_TEST_MIN_SESSION_SECONDS: ${{ vars.FIELD_TEST_MIN_SESSION_SECONDS }}
+      FIELD_TEST_MAX_GPS_REJECTION_PERCENT: ${{ vars.FIELD_TEST_MAX_GPS_REJECTION_PERCENT }}
+      FIELD_TEST_REQUIRE_MAP_READY: ${{ vars.FIELD_TEST_REQUIRE_MAP_READY }}
     steps:
       - uses: actions/checkout@v4
       - name: Guard against committed NAVER credentials
@@ -52,6 +58,11 @@ jobs:
           cd app/build/outputs/apk/debug
           sha256sum app-debug.apk > app-debug.apk.sha256
           printf 'package=com.dailytown.app\nversion=0.7.0\ncommit=%s\n' "$GITHUB_SHA" > build-metadata.txt
+          printf 'FIELD_TEST_MIN_SESSION_SECONDS=%s\nFIELD_TEST_MAX_GPS_REJECTION_PERCENT=%s\nFIELD_TEST_REQUIRE_MAP_READY=%s\n' \
+            "${FIELD_TEST_MIN_SESSION_SECONDS:-unset}" \
+            "${FIELD_TEST_MAX_GPS_REJECTION_PERCENT:-unset}" \
+            "${FIELD_TEST_REQUIRE_MAP_READY:-unset}" \
+            > field-test-policy.txt
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
@@ -60,5 +71,6 @@ jobs:
             app/build/outputs/apk/debug/app-debug.apk
             app/build/outputs/apk/debug/app-debug.apk.sha256
             app/build/outputs/apk/debug/build-metadata.txt
+            app/build/outputs/apk/debug/field-test-policy.txt
           if-no-files-found: error
           retention-days: 14
