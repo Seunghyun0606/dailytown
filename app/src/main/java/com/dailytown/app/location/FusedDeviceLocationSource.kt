@@ -15,9 +15,15 @@ import com.google.android.gms.location.Priority
 class FusedDeviceLocationSource(
     private val context: Context,
     private val config: LocationTrackingConfig = LocationTrackingPreset.BALANCED.config,
-    private val client: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context),
+    client: FusedLocationProviderClient? = null,
 ) : LocationSource {
     override val name: String = "device"
+
+    // Keep Google Play Services lazy so replay-only/emulator paths do not initialize
+    // fused location until the user explicitly starts real device tracking.
+    private val client: FusedLocationProviderClient by lazy(LazyThreadSafetyMode.NONE) {
+        client ?: LocationServices.getFusedLocationProviderClient(context)
+    }
 
     private var callback: LocationCallback? = null
 
@@ -52,15 +58,16 @@ class FusedDeviceLocationSource(
         try {
             client.requestLocationUpdates(request, newCallback, context.mainLooper)
                 .addOnFailureListener(onError)
-        } catch (security: SecurityException) {
+        } catch (error: Throwable) {
             callback = null
-            onError(security)
+            onError(error)
         }
     }
 
     override fun stop() {
-        callback?.let(client::removeLocationUpdates)
+        val activeCallback = callback ?: return
         callback = null
+        client.removeLocationUpdates(activeCallback)
     }
 
     private fun priority(mode: LocationPriorityMode): Int = when (mode) {
