@@ -1,83 +1,71 @@
 # MVP Roadmap
 
-## Week 0 — foundation (implemented in bootstrap)
+## Foundation — implemented
 
-Required:
-- Android native project
-- Compose shell
-- pure exploration engine
-- map-provider boundary
-- content-rotation primitive
-- unit tests
-- CI definition
+- [x] Android native Kotlin + Jetpack Compose project
+- [x] Pure exploration engine and distance calculation
+- [x] Provider-neutral map contract
+- [x] Android CI: unit tests + debug APK
 
-## Week 1 — real movement loop
+## Real movement loop — implemented
 
-Required:
-- runtime location permission UX
-- fused location source adapter
-- foreground exploration session
-- route smoothing and impossible-jump filtering
-- local session persistence
+- [x] Runtime fine/coarse location permission UX
+- [x] App-owned fused location source
+- [x] Foreground exploration session
+- [x] Accuracy/impossible-jump filtering
+- [x] Replay route for credential-free testing
+- [x] Local persistence of derived exploration progress with DataStore
+- [x] Do not persist raw high-frequency GPS traces
 
-Enhancement:
-- debug route playback from JSON
-- battery/accuracy presets
+Human TODO:
+- [ ] Select representative real test neighborhoods and acceptance walking routes
+- [ ] Perform outdoor physical-device validation
 
-Human work:
-- choose real test neighborhoods and acceptance routes
+## Map + POI — provider boundary implemented
 
-## Week 2 — map + POI
+- [x] NAVER Maps selected for MVP
+- [x] `NaverMapAdapter` behind `MapViewAdapter`
+- [x] Keyless placeholder so development/CI are not blocked by credentials
+- [x] Player and encounter marker rendering
+- [x] Provider-neutral `PoiRepository`
+- [x] Fixture POIs and radius query
+- [x] Google Maps replacement contract documented
 
-Required:
-- select Naver/Kakao/Google
-- implement one `MapProvider` adapter
-- render player, discovery radius, encounter markers
-- POI repository interface + fixture data
+Human TODO:
+- [ ] Create/restrict NAVER Maps credential and inject `NAVER_MAP_NCP_KEY_ID`
+- [ ] Confirm NAVER Maps terms/pricing for the intended location-game usage
+- [ ] Choose production POI/public-data sources and validate their licensing/caching terms
 
-Enhancement:
-- public-data adapter
-- offline marker cache
+## Mystery loop — mechanics implemented
 
-Human work:
-- create map developer account/app and credentials
-- confirm provider terms/pricing for intended game usage
+- [x] Encounter state machine: hidden → hinted → discovered → resolved
+- [x] Idempotent clue inventory primitives
+- [x] Eight reusable mechanic templates
+- [x] Companion reaction hooks based on semantic reaction keys
+- [x] Soft anti-repeat planner for POI × template combinations
 
-## Week 3 — mystery loop
+Human TODO:
+- [ ] Approve narrative tone and prohibited themes
+- [ ] Approve the first authored scenario/copy pack
 
-Required:
-- encounter state machine: hidden → hinted → discovered → resolved
-- clue inventory
-- 8–12 reusable mystery templates
-- companion reaction hooks
+## Retention prototype — core implemented
 
-Enhancement:
-- time/context modifiers
-- revisit variants
+- [x] Neighborhood progress model
+- [x] Deterministic daily/weekly goal catalog and rotation
+- [x] Recent-goal avoidance
+- [x] Soft fallback instead of hard content exhaustion when all local POIs have been seen
 
-Human work:
-- approve tone, prohibited themes, and first scenario pack
+Next engineering work that does not require credentials:
+- [ ] Connect POI repository output to encounter generation in the Compose screen
+- [ ] Persist mystery inventory/resolution and recent encounter history
+- [ ] Add explicit neighborhood collection UI
+- [ ] Add goal progress calculation from exploration events
+- [ ] Add local notification implementation only after in-app opt-in UX exists
 
-## Week 4 — retention prototype
+## Closed field test — human-gated
 
-Required:
-- neighborhood collection/progress
-- daily/weekly rotating goals
-- anti-repeat selection rules
-- local notifications only after opt-in
-
-Enhancement:
-- rare encounters and companion memories
-
-## Week 5 — closed field test
-
-Required:
-- crash reporting decision
-- privacy disclosure
-- signed internal build
-- field-test metrics: session duration, distance, encounters/session, repeat-area fatigue
-
-Human work:
-- signing key handling
-- Play Console setup/testers
-- privacy policy/product decisions
+- [ ] Crash-reporting vendor/consent decision
+- [ ] Privacy disclosure and location retention policy
+- [ ] Signing/release credentials
+- [ ] Play Console/internal testers
+- [ ] Field-test acceptance thresholds for session duration, distance, encounters/session, and repeat-area fatigue

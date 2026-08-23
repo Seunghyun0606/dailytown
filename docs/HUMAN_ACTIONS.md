@@ -1,37 +1,54 @@
 # Human TODOs
 
-Naver Maps is the selected MVP provider. The application is intentionally functional in replay mode without credentials; the map area shows a placeholder until the following human-owned tasks are completed.
+Daily Town now continues development without blocking on credentials. The items below are deliberately left for a person because they involve account ownership, legal/content approval, real-device judgment, or release secrets.
 
-## TODO 1 — NAVER Cloud Maps credential
+## NAVER Maps account / credential
 
 - [ ] In NAVER Cloud Platform, create/select a Maps application and enable the Android dynamic map capability.
 - [ ] Register Android package `com.dailytown.app` and apply the provider's required app restrictions.
-- [ ] Copy only the NCP Key ID (not a secret) into your local Gradle user properties:
+- [ ] Put the NCP Key ID in local Gradle user properties, never in source control:
 
 ```properties
 NAVER_MAP_NCP_KEY_ID=<your-key-id>
 ```
 
-Recommended local location: `~/.gradle/gradle.properties`. Do not commit the value.
+Recommended location: `~/.gradle/gradle.properties`.
 
-For CI/release builds, inject `NAVER_MAP_NCP_KEY_ID` from the build environment or repository secret mechanism rather than source control.
+- [ ] Inject the same property securely for CI/release when credentialed map builds are required.
+- [ ] Confirm NAVER Maps pricing, quota, display/caching, and location-game use terms for the intended product behavior.
 
-## TODO 2 — real-device validation
+## POI / public data
 
+- [ ] Choose the production POI/public-data datasets after checking coverage in target neighborhoods.
+- [ ] Confirm redistribution, caching, attribution, and commercial-use terms for those datasets.
+
+The code uses a `PoiRepository` boundary and fixture data until these decisions are made.
+
+## Content approval
+
+- [ ] Approve narrative tone, age rating target, and prohibited themes.
+- [ ] Approve the first authored scenario/copy pack.
+
+Engineering does not need to wait: current templates define mechanics only and companion reactions return semantic keys rather than final authored dialogue.
+
+## Real-device validation
+
+- [ ] Select representative test neighborhoods and walking routes.
 - [ ] Run on a physical Android device outdoors.
 - [ ] Verify precise/approximate location permission behavior.
 - [ ] Verify location marker/camera updates and GPS rejection counters.
-- [ ] Walk the same route twice and confirm already discovered content is not awarded twice.
+- [ ] Walk the same route twice and verify repeat handling feels intentional rather than empty.
 
-## TODO 3 — release/privacy decisions
+## External beta / release
 
 Before any external beta or store submission:
 
-- [ ] Write and publish the location/privacy policy.
-- [ ] Decide whether background location is actually required. Current MVP deliberately does **not** request background location.
-- [ ] Create signing/release credentials and store them outside the repository.
-- [ ] Decide analytics/crash-reporting vendor and consent policy before adding any telemetry SDK.
+- [ ] Write/publish the location and privacy policy.
+- [ ] Decide whether background location is truly required. Current MVP deliberately does **not** request it.
+- [ ] Create signing/release credentials outside the repository.
+- [ ] Decide analytics/crash-reporting vendor and consent policy before adding telemetry SDKs.
+- [ ] Configure Play Console/internal testers.
 
-## Not blocked by these TODOs
+## Safe to continue without these TODOs
 
-The replay route, exploration engine, location quality policy, map-provider abstraction, Naver adapter, and tests can all be developed without a real map credential.
+Replay exploration, GPS filtering, derived progress persistence, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, and goal rotation can all be developed and tested without production credentials.
