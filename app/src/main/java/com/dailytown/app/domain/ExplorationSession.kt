@@ -46,6 +46,18 @@ class ExplorationSession(
         return snapshot
     }
 
+    /** Restart GPS tracking while preserving long-term visit/progress state. */
+    fun restartTracking() {
+        previousAccepted = null
+        snapshot = snapshot.copy(currentLocation = null, newlyDiscovered = emptyList())
+    }
+
+    /** Restore persisted derived progress. Raw location samples are never restored. */
+    fun restore(state: ExplorationState) {
+        previousAccepted = null
+        snapshot = ExplorationSnapshot(state)
+    }
+
     fun reset(initialState: ExplorationState = snapshot.state.copy(
         visitedSpotIds = emptySet(),
         distanceWalkedMeters = 0.0,
