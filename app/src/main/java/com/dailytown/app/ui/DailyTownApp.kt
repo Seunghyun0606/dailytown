@@ -62,11 +62,14 @@ fun DailyTownApp(
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
     var encounterSequence by remember { mutableIntStateOf(0) }
     var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
+    var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
     var persistenceReady by remember { mutableStateOf(false) }
 
-    val deviceSource = remember { FusedDeviceLocationSource(context.applicationContext) }
+    val deviceSource = remember(trackingPreset) {
+        FusedDeviceLocationSource(context.applicationContext, trackingPreset.config)
+    }
     val replaySource = remember { ReplayLocationSource() }
 
     val today = LocalDate.now()
@@ -117,6 +120,16 @@ fun DailyTownApp(
         }
     }
 
+    LaunchedEffect(trackingPreset) {
+        session.setLocationQualityPolicy(
+            LocationQualityPolicy(maxAccuracyMeters = trackingPreset.config.maxAcceptedAccuracyMeters),
+        )
+        if (trackingMode == TrackingMode.DEVICE) {
+            session.restartTracking()
+            snapshot = session.current()
+        }
+    }
+
     fun start(mode: TrackingMode) {
         session.restartTracking()
         snapshot = session.current()
@@ -142,7 +155,7 @@ fun DailyTownApp(
         else errorMessage = "위치 권한이 필요합니다. 리플레이 모드는 권한 없이 사용할 수 있습니다."
     }
 
-    DisposableEffect(trackingMode) {
+    DisposableEffect(trackingMode, deviceSource) {
         val source = when (trackingMode) {
             TrackingMode.DEVICE -> deviceSource
             TrackingMode.REPLAY -> replaySource
@@ -170,11 +183,15 @@ fun DailyTownApp(
                 recentTemplateIds = gameProgress.recentTemplateIds.toSet(),
                 recentPairKeys = gameProgress.recentPairKeys.toSet(),
             )
+            val encounterContext = EncounterContextFactory.create(
+                companionBond = snapshot.state.companion.bond,
+                memoryKeys = gameProgress.companionMemoryKeys,
+            )
             selection = encounterGenerator.choose(
                 encounterKey = "enc-${encounterSequence++}",
                 center = sample.point,
                 pois = pois,
-                companionBond = snapshot.state.companion.bond,
+                context = encounterContext,
                 visitedPoiIds = gameProgress.encounterVisitedPoiIds,
                 history = history,
             )
@@ -197,7 +214,9 @@ fun DailyTownApp(
             applyReaction(CompanionMoment.HINT_APPEARED)
         }
         if (previousPhase != EncounterPhase.DISCOVERED && advanced.phase == EncounterPhase.DISCOVERED) {
-            gameProgress = gameProgress.recordEncounterVisit(current.poi.id, current.template.id, LocalDate.now())
+            gameProgress = gameProgress
+                .recordEncounterVisit(current.poi.id, current.template.id, LocalDate.now())
+                .recordMemory("poi:${current.poi.id}")
             applyReaction(CompanionMoment.SPOT_DISCOVERED)
         }
     }
@@ -221,6 +240,10 @@ fun DailyTownApp(
 
     val currentDate = LocalDate.now()
     val normalizedProgress = gameProgress.normalizePeriods(currentDate)
+    val currentContext = EncounterContextFactory.create(
+        companionBond = snapshot.state.companion.bond,
+        memoryKeys = gameProgress.companionMemoryKeys,
+    )
     val neighborhood = NeighborhoodProgress(
         districtKey = activeEncounter?.poi?.districtKey ?: "jung-gu",
         visitedPoiIds = gameProgress.encounterVisitedPoiIds,
@@ -244,6 +267,7 @@ fun DailyTownApp(
                 Spacer(Modifier.height(4.dp))
                 Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall)
                 Text("지도: ${mapAdapter.providerId} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}")
+                Text("컨텍스트: ${timeBandLabel(currentContext.timeBand)} · 기억 ${gameProgress.companionMemoryKeys.size}개")
 
                 MapSurface(
                     mapAdapter = mapAdapter,
@@ -276,8 +300,12 @@ fun DailyTownApp(
                         }
                     },
                     onResolve = { resolved ->
-                        activeEncounter = activeEncounter?.copy(encounter = resolved)
+                        val selected = activeEncounter
+                        activeEncounter = selected?.copy(encounter = resolved)
                         gameProgress = gameProgress.recordResolution(resolved, LocalDate.now())
+                        selected?.let {
+                            gameProgress = gameProgress.recordMemory("mechanic:${it.template.mechanic.name}")
+                        }
                         applyReaction(CompanionMoment.MYSTERY_RESOLVED)
                     },
                     onContinue = {
@@ -297,6 +325,7 @@ fun DailyTownApp(
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                         Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
                         Text("${neighborhood.districtKey} · 탐험 ${neighborhood.discoveryCount}곳 · 해결 ${neighborhood.resolvedCount}건")
+                        Text("동행 기억 ${gameProgress.companionMemoryKeys.size}개")
                     }
                 }
 
@@ -308,6 +337,25 @@ fun DailyTownApp(
                             val prefix = if (goal.period == GoalPeriod.DAILY) "오늘" else "이번 주"
                             Text("${if (progress.isComplete) "✓" else "•"} $prefix ${goalLabel(goal)}: ${progress.current}/${progress.target}")
                         }
+                    }
+                }
+
+                ElevatedCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("위치 추적 모드", style = MaterialTheme.typography.titleMedium)
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            LocationTrackingPreset.entries.forEach { preset ->
+                                FilterChip(
+                                    selected = trackingPreset == preset,
+                                    onClick = { trackingPreset = preset },
+                                    label = { Text(trackingPresetLabel(preset)) },
+                                )
+                            }
+                        }
+                        Text(
+                            "간격 ${trackingPreset.config.intervalMillis / 1000}s · 최소 이동 ${trackingPreset.config.minUpdateDistanceMeters.roundToInt()}m",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
                     }
                 }
 
@@ -332,7 +380,7 @@ fun DailyTownApp(
                 errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 Text(
                     when (trackingMode) {
-                        TrackingMode.DEVICE -> "실기기 위치 추적 중"
+                        TrackingMode.DEVICE -> "실기기 위치 추적 중 · ${trackingPresetLabel(trackingPreset)}"
                         TrackingMode.REPLAY -> "서울시청 → 덕수궁 테스트 경로 재생 중"
                         TrackingMode.OFF -> if (persistenceReady) "탐험 대기 중 · 게임 진행도 저장 활성" else "진행도 불러오는 중"
                     },
@@ -362,7 +410,7 @@ private fun EncounterCard(
             }
 
             val encounter = selection.encounter
-            Text("${selection.poi.name} · ${mechanicLabel(selection.template.mechanic)}")
+            Text("${rarityLabel(selection.template.rarity)} · ${selection.poi.name} · ${mechanicLabel(selection.template.mechanic)}")
             distanceMeters?.let { Text("현재 위치에서 약 ${it}m") }
             Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}")
 
@@ -388,7 +436,7 @@ private fun EncounterCard(
                     }
                 }
                 EncounterPhase.RESOLVED -> {
-                    Text("해결 완료. 이 조합은 최근 기록에 남아 다음 선택에서 감점됩니다.")
+                    Text("해결 완료. 장소/메커닉 기억이 동행에게 남아 이후 후보 선택에 반영됩니다.")
                     OutlinedButton(onClick = onContinue) { Text("다음 탐험 찾기") }
                 }
             }
@@ -458,6 +506,25 @@ private fun mechanicLabel(mechanic: MysteryMechanic): String = when (mechanic) {
     MysteryMechanic.PHOTO_ANGLE -> "시점 비교"
     MysteryMechanic.LOCAL_MEMORY -> "동네 기억"
     MysteryMechanic.COMPANION_SENSE -> "동행 감각"
+}
+
+private fun rarityLabel(rarity: EncounterRarity): String = when (rarity) {
+    EncounterRarity.COMMON -> "일반"
+    EncounterRarity.UNCOMMON -> "특별"
+    EncounterRarity.RARE -> "희귀"
+}
+
+private fun timeBandLabel(timeBand: TimeBand): String = when (timeBand) {
+    TimeBand.DAWN -> "이른 아침"
+    TimeBand.DAY -> "낮"
+    TimeBand.EVENING -> "저녁"
+    TimeBand.NIGHT -> "밤"
+}
+
+private fun trackingPresetLabel(preset: LocationTrackingPreset): String = when (preset) {
+    LocationTrackingPreset.BATTERY_SAVER -> "절약"
+    LocationTrackingPreset.BALANCED -> "균형"
+    LocationTrackingPreset.PRECISE -> "정밀"
 }
 
 private fun goalLabel(goal: GoalDefinition): String = when (goal.metric) {
