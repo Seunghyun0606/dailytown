@@ -59,23 +59,25 @@ Human TODO:
 - [ ] Approve narrative tone and prohibited themes
 - [ ] Approve the first authored scenario/copy pack
 
-## Retention prototype — core implemented
+## Retention prototype — implemented
 
 - [x] Neighborhood progress / collection summary
 - [x] Deterministic daily/weekly goal catalog and rotation
 - [x] Daily/weekly derived counters with automatic period rollover
 - [x] Goal progress evaluation against the correct period rather than lifetime totals
+- [x] Persist current/recent goal IDs and avoid immediate repeats when alternatives exist
 - [x] Soft fallback instead of hard content exhaustion when all local POIs have been seen
 - [x] Revisit preference for local-memory/time-layer mechanics
 - [x] Time-of-day weighting for encounter mechanics
 - [x] Companion-memory weighting in encounter selection
 - [x] Low-frequency rare encounters with bond-sensitive eligibility
+- [x] In-app opt-in local exploration reminder with Android 13+ notification permission handling
+- [x] Battery-friendly inexact reminder scheduling and reboot/app-update restoration
+- [x] Privacy-safe field-test diagnostic sharing with derived metrics only
 
-Next engineering work that does not require production credentials:
-- [ ] Persist recent goal IDs so goal rotation avoids immediately repeating across periods
-- [ ] Add in-app notification opt-in UI and local reminder scheduler
-- [ ] Add a fixture/public-data cache adapter once a production POI source is selected
-- [ ] Add field-test diagnostic export for derived metrics only (no raw GPS trace)
+Blocked on a human/product/data decision rather than engineering:
+- [ ] Add a production POI/public-data cache adapter after the source/licensing choice is approved
+- [ ] Replace semantic companion/content copy with the approved authored scenario pack
 
 ## Closed field test — human-gated
 
