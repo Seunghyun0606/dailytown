@@ -12,16 +12,25 @@ import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.overlay.Marker
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * NAVER-specific rendering adapter. Nothing outside this class needs NAVER SDK types.
  * When credentials are missing, it renders a safe placeholder while replay/location/domain flows stay testable.
- * Authentication failures are translated into safe in-app diagnostics without exposing the NCP key ID.
+ * Authentication failures are translated into safe provider-neutral health diagnostics without exposing the NCP key ID.
  */
 class NaverMapAdapter(
     private val ncpKeyId: String,
 ) : MapViewAdapter {
     override val providerId = MapProviderId.NAVER
+
+    private val _health = MutableStateFlow(
+        MapHealth(
+            status = if (isConfiguredValue(ncpKeyId)) MapHealthStatus.INITIALIZING else MapHealthStatus.UNCONFIGURED,
+        ),
+    )
+    override val health: StateFlow<MapHealth> = _health
 
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
@@ -33,10 +42,14 @@ class NaverMapAdapter(
     private val renderedMarkers = mutableMapOf<String, Marker>()
 
     private val isConfigured: Boolean
-        get() = ncpKeyId.isNotBlank() && !ncpKeyId.startsWith("TODO_")
+        get() = isConfiguredValue(ncpKeyId)
 
     override fun createView(context: Context): View {
         if (!isConfigured) {
+            _health.value = MapHealth(
+                status = MapHealthStatus.UNCONFIGURED,
+                userMessage = "NAVER Maps credential is not configured.",
+            )
             return FrameLayout(context).apply {
                 addView(
                     TextView(context).apply {
@@ -51,6 +64,7 @@ class NaverMapAdapter(
             }
         }
 
+        _health.value = MapHealth(MapHealthStatus.INITIALIZING)
         val container = FrameLayout(context)
         val view = MapView(context)
         val errorView = TextView(context).apply {
@@ -74,22 +88,39 @@ class NaverMapAdapter(
             ),
         )
 
-        val sdk = NaverMapSdk.getInstance(context)
-        val listener = NaverMapSdk.OnAuthFailedListener { exception ->
-            errorView.text = authFailureMessage(exception)
-            errorView.visibility = View.VISIBLE
-        }
-        naverMapSdk = sdk
-        authFailedListener = listener
-        sdk.client = NaverMapSdk.NcpKeyClient(ncpKeyId)
-        sdk.onAuthFailedListener = listener
+        try {
+            val sdk = NaverMapSdk.getInstance(context)
+            val listener = NaverMapSdk.OnAuthFailedListener { exception ->
+                val message = authFailureMessage(exception)
+                _health.value = MapHealth(
+                    status = MapHealthStatus.AUTH_ERROR,
+                    errorCode = exception.errorCode,
+                    userMessage = message,
+                )
+                errorView.text = message
+                errorView.visibility = View.VISIBLE
+            }
+            naverMapSdk = sdk
+            authFailedListener = listener
+            sdk.client = NaverMapSdk.NcpKeyClient(ncpKeyId)
+            sdk.onAuthFailedListener = listener
 
-        mapView = view
-        view.onCreate(null)
-        view.getMapAsync { map ->
-            naverMap = map
-            errorView.visibility = View.GONE
-            flushState()
+            mapView = view
+            view.onCreate(null)
+            view.getMapAsync { map ->
+                naverMap = map
+                _health.value = MapHealth(MapHealthStatus.READY)
+                errorView.visibility = View.GONE
+                flushState()
+            }
+        } catch (error: Throwable) {
+            _health.value = MapHealth(
+                status = MapHealthStatus.ERROR,
+                errorCode = "initialization",
+                userMessage = "NAVER Maps 초기화에 실패했습니다.",
+            )
+            errorView.text = "NAVER Maps 초기화에 실패했습니다."
+            errorView.visibility = View.VISIBLE
         }
         return container
     }
@@ -128,6 +159,7 @@ class NaverMapAdapter(
         naverMap = null
         naverMapSdk = null
         authFailedListener = null
+        _health.value = MapHealth(MapHealthStatus.DESTROYED)
     }
 
     private fun flushState() {
@@ -169,4 +201,9 @@ class NaverMapAdapter(
     }
 
     private fun GeoPoint.toLatLng() = LatLng(latitude, longitude)
+
+    private companion object {
+        fun isConfiguredValue(value: String): Boolean =
+            value.isNotBlank() && !value.startsWith("TODO_")
+    }
 }
