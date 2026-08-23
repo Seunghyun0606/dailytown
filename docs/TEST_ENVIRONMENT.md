@@ -6,7 +6,7 @@ Daily Town does **not** require a physical-device APK for every development/test
 
 ### 1. JVM unit tests — default development loop
 
-Use for exploration math, GPS quality filtering, encounter selection, persistence rules, POI caching, goal rotation, reminder calculations, and privacy-safe diagnostics.
+Use for exploration math, GPS quality filtering, encounter selection, persistence rules, POI caching, goal rotation, reminder calculations, privacy-safe diagnostics, battery/distance derivation, gameplay-session counters/rates, and acceptance evaluation.
 
 ```bash
 gradle testDebugUnitTest
@@ -39,7 +39,7 @@ gradle pixel2Api30AtdDebugAndroidTest \
 
 GitHub Actions provides the **Emulator Replay Smoke Test** workflow. It is still manually triggerable, and it also runs automatically on pull requests that change the UI, location stack, Android instrumentation tests, managed-device Gradle configuration, or the emulator workflow itself.
 
-The current smoke test verifies that the app starts and that the Seoul City Hall → Deoksugung replay exploration can begin without location permission or a map credential.
+The current smoke test verifies that the app starts and that the Seoul City Hall → Deoksugung replay exploration can begin without location permission or a map credential. Replay can also exercise the session gameplay counters without generating raw telemetry logs.
 
 ### 4. Android Studio emulator — interactive development
 
@@ -48,6 +48,7 @@ For interactive UI/gameplay checks, install and run the debug app on an Android 
 - Compose layout and navigation/interaction
 - replay-route gameplay
 - encounter phase transitions
+- session encounter/discovery/resolution counters
 - local persistence across app restarts
 - notification/reminder UX
 - approximate UI behavior across API levels/screen sizes
@@ -66,7 +67,24 @@ A real device is required before a closed/external field test for behavior that 
 - real NAVER map credential + Android package restriction validation
 - map tile/network behavior under real mobile connectivity
 - notification behavior under OEM power-management policies
-- repeat-area fatigue and play-feel while actually walking
+- new-area vs repeat-area encounter density, resolution rate, fatigue proxy, and subjective play-feel while actually walking
+
+## Closed-test policy injection
+
+The credentialed `Internal Debug APK` workflow can receive non-secret acceptance criteria from GitHub Repository Variables. Unset values remain `NOT_EVALUATED`.
+
+```text
+FIELD_TEST_MIN_SESSION_SECONDS
+FIELD_TEST_MAX_GPS_REJECTION_PERCENT
+FIELD_TEST_REQUIRE_MAP_READY
+FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT
+FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR
+FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION
+FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT
+FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT
+```
+
+The generated artifact contains `field-test-policy.txt` so a tester can verify which criteria were compiled into that APK. These are policy values, not secrets. `NAVER_MAP_NCP_KEY_ID` remains an Actions Secret and is never written to that metadata file.
 
 ## NAVER Maps and emulator testing
 
