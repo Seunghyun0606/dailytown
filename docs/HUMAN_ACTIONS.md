@@ -10,13 +10,18 @@ Daily Town continues development without blocking on credentials. The items belo
 
 ## NAVER Maps account / credential
 
-Status: a NAVER Dynamic Map NCP Key ID has been issued. The key value stays outside source control and is consumed through `NAVER_MAP_NCP_KEY_ID`.
+Status: a standalone NAVER Cloud **Maps** Dynamic Map NCP Key ID has been issued. The key value stays outside source control and is consumed through `NAVER_MAP_NCP_KEY_ID`.
 
-- [x] Create/select a NAVER Cloud Platform Maps application and enable Android Dynamic Map.
+- [x] Create/select a NAVER Cloud Platform standalone **Maps** application and enable Android Dynamic Map. (Human-confirmed 2026-08-24.)
 - [x] Obtain a Dynamic Map NCP Key ID.
 - [x] Register Android app package **`com.dailytown.app`** in NAVER Console and replace the temporary/random package restriction. (Human-confirmed 2026-08-24.)
+- [x] Add repository Actions secret named `NAVER_MAP_NCP_KEY_ID` for credentialed GitHub-hosted internal APK builds. (Human-confirmed 2026-08-24.)
+- [x] Confirm NAVER Maps pricing/cost conditions for the intended MVP usage. (Human-confirmed 2026-08-24.)
+- [x] Confirm the credential is from the standalone **Maps** product, not legacy AI NAVER API Maps. No legacy Maps migration is required. (Human-confirmed 2026-08-24.)
 - [ ] Before a credentialed physical-device test, verify the package restriction still exactly matches the installed APK's actual `applicationId` (`com.dailytown.app`).
-- [ ] Put the issued NCP Key ID in local Gradle user properties or an environment variable when building locally; never commit it to source control:
+- [ ] Run the `Internal Debug APK` workflow and install the generated APK on a real Android device. The workflow verifies secret injection without logging the key and includes a SHA-256 checksum with the artifact.
+
+Optional local credentialed builds can use Gradle user properties or an environment variable; never commit the value to source control:
 
 ```properties
 NAVER_MAP_NCP_KEY_ID=<issued-key-id>
@@ -29,11 +34,6 @@ Alternative shell injection:
 ```bash
 export NAVER_MAP_NCP_KEY_ID=<issued-key-id>
 ```
-
-- [ ] For GitHub-hosted credentialed internal APK builds, add repository Actions secret named `NAVER_MAP_NCP_KEY_ID` with the issued key value. Chat delivery does **not** populate repository secrets, and the current GitHub connector cannot create Actions secrets.
-- [ ] Run the `Internal Debug APK` workflow once the GitHub secret is configured; download and install the generated APK on a real Android device.
-- [x] Confirm NAVER Maps pricing/cost conditions for the intended MVP usage. (Human-confirmed 2026-08-24.)
-- [ ] If this credential belongs to the legacy **AI NAVER API** Maps product, migrate it to the standalone **Maps** product before the legacy service shutdown. New development should target the standalone Maps product.
 
 ## POI / public data
 
@@ -75,4 +75,4 @@ Before any external beta or store submission:
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, derived progress persistence, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, opt-in local reminders, privacy-safe diagnostic export, and managed-emulator smoke testing can all be developed and tested without production POI data or release credentials.
+Replay exploration, GPS filtering, derived progress persistence, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
