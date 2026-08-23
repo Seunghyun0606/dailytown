@@ -23,7 +23,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.companion.CompanionMoment
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
+import com.dailytown.app.diagnostics.AndroidBatterySnapshotSource
 import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
+import com.dailytown.app.diagnostics.FieldTestSessionMonitor
 import com.dailytown.app.domain.*
 import com.dailytown.app.location.*
 import com.dailytown.app.map.MapHealthStatus
@@ -67,6 +69,9 @@ fun DailyTownApp(
     val goalEvaluator = remember { GoalProgressEvaluator() }
     val trackingCoordinator = remember { TrackingSessionCoordinator() }
     val progressCoordinator = remember(progressStore) { ProgressRuntimeCoordinator(progressStore) }
+    val fieldTestSessionMonitor = remember {
+        FieldTestSessionMonitor(AndroidBatterySnapshotSource(context.applicationContext))
+    }
 
     val trackingRuntime by trackingCoordinator.state.collectAsState()
     val progressRuntime by progressCoordinator.state.collectAsState()
@@ -81,6 +86,7 @@ fun DailyTownApp(
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
+    var referenceDistanceText by remember { mutableStateOf("") }
 
     val reminderPreference = remember { reminderManager.preference() }
     var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
@@ -135,6 +141,11 @@ fun DailyTownApp(
     fun start(mode: TrackingMode) {
         session.restartTracking()
         encounterCoordinator.reset()
+        if (mode == TrackingMode.DEVICE) {
+            fieldTestSessionMonitor.begin()
+        } else {
+            fieldTestSessionMonitor.reset()
+        }
         snapshot = session.current()
         activeEncounter = null
         lastCompanionMoment = null
@@ -284,7 +295,7 @@ fun DailyTownApp(
                         Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
                         if (snapshot.totalLocationSampleCount > 0) {
                             Text(
-                                "추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                                "세션 ${snapshot.sessionDistanceMeters.roundToInt()}m · 추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
                             )
                         }
                         snapshot.newlyDiscovered.firstOrNull()?.let {
@@ -356,7 +367,12 @@ fun DailyTownApp(
                             LocationTrackingPreset.entries.forEach { preset ->
                                 FilterChip(
                                     selected = trackingPreset == preset,
-                                    onClick = { trackingCoordinator.selectPreset(preset) },
+                                    onClick = {
+                                        if (trackingMode == TrackingMode.DEVICE) {
+                                            fieldTestSessionMonitor.end()
+                                        }
+                                        trackingCoordinator.selectPreset(preset)
+                                    },
                                     label = { Text(trackingPresetLabel(preset)) },
                                 )
                             }
@@ -420,12 +436,28 @@ fun DailyTownApp(
                             if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
                             style = MaterialTheme.typography.bodySmall,
                         )
+                        OutlinedTextField(
+                            value = referenceDistanceText,
+                            onValueChange = { value ->
+                                if (value.all(Char::isDigit)) referenceDistanceText = value
+                            },
+                            label = { Text("기준 경로 거리(m, 선택)") },
+                            supportingText = { Text("좌표 대신 미리 확인한 총 거리 숫자만 입력합니다.") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                         OutlinedButton(onClick = {
+                            val sessionMetrics = fieldTestSessionMonitor.metrics(
+                                sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                                sessionDurationSeconds = snapshot.trackingDurationSeconds,
+                                referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
+                            )
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
                                 acceptedLocationCount = snapshot.acceptedLocationCount,
                                 rejectedLocationCount = snapshot.rejectedLocationCount,
                                 trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                                sessionMetrics = sessionMetrics,
                                 appVersion = BuildConfig.VERSION_NAME,
                                 mapProvider = mapAdapter.providerId.name,
                                 mapHealth = mapHealth,
@@ -457,6 +489,9 @@ fun DailyTownApp(
                         modifier = Modifier.testTag("tracking-replay"),
                     ) { Text("경로 리플레이") }
                     TextButton(onClick = {
+                        if (trackingMode == TrackingMode.DEVICE) {
+                            fieldTestSessionMonitor.end()
+                        }
                         trackingCoordinator.stop()
                         mapAdapter.setUserLocation(null)
                     }) { Text("중지") }
