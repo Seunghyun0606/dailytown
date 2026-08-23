@@ -14,6 +14,7 @@ import com.google.android.gms.location.Priority
 
 class FusedDeviceLocationSource(
     private val context: Context,
+    private val config: LocationTrackingConfig = LocationTrackingPreset.BALANCED.config,
     private val client: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context),
 ) : LocationSource {
     override val name: String = "device"
@@ -27,9 +28,9 @@ class FusedDeviceLocationSource(
             return
         }
 
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3_000L)
-            .setMinUpdateDistanceMeters(5f)
-            .setMinUpdateIntervalMillis(1_500L)
+        val request = LocationRequest.Builder(priority(config.priorityMode), config.intervalMillis)
+            .setMinUpdateDistanceMeters(config.minUpdateDistanceMeters)
+            .setMinUpdateIntervalMillis(config.minUpdateIntervalMillis)
             .build()
 
         val newCallback = object : LocationCallback() {
@@ -60,6 +61,12 @@ class FusedDeviceLocationSource(
     override fun stop() {
         callback?.let(client::removeLocationUpdates)
         callback = null
+    }
+
+    private fun priority(mode: LocationPriorityMode): Int = when (mode) {
+        LocationPriorityMode.LOW_POWER -> Priority.PRIORITY_LOW_POWER
+        LocationPriorityMode.BALANCED -> Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        LocationPriorityMode.HIGH_ACCURACY -> Priority.PRIORITY_HIGH_ACCURACY
     }
 
     private fun hasLocationPermission(): Boolean =
