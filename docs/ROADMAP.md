@@ -32,7 +32,8 @@
 - [x] JVM coverage for tracking-mode and preset transitions
 - [x] Per-tracking-session accepted/rejected GPS sample counters and rejection-rate metric
 - [x] Per-tracking-session elapsed-duration metric derived from monotonic sample timestamps
-- [x] Reset short-lived GPS quality/duration counters on a new tracking session while preserving game progress
+- [x] Per-tracking-session accepted distance independent from lifetime progress
+- [x] Reset short-lived GPS quality/duration/distance counters on a new tracking session while preserving game progress
 
 Human TODO:
 - [ ] Select representative real test neighborhoods and acceptance walking routes
@@ -108,20 +109,28 @@ Human TODO:
 ## Field-test diagnostics + acceptance — engineering implemented
 
 - [x] Privacy-safe field-test diagnostic sharing with derived metrics only
-- [x] Diagnostic includes package/build/map-health, session duration, and GPS acceptance/rejection metrics but never raw coordinates, provider exception payloads, or credential values
+- [x] Diagnostic includes package/build/map-health, session duration/distance, GPS quality, route-distance error, and coarse battery metrics but never raw coordinates, provider exception payloads, or credential values
+- [x] Android battery snapshot adapter using coarse battery level and optional charge counter
+- [x] Charging sessions automatically excluded from battery-consumption acceptance
+- [x] Optional scalar reference-route distance input; no route geometry/raw trace required
 - [x] Configurable `FieldTestAcceptanceEvaluator` with PASS / FAIL / NOT_EVALUATED states
 - [x] No hard-coded product thresholds; unset criteria cannot silently pass
 - [x] Optional build/runtime criteria injection through `FIELD_TEST_MIN_SESSION_SECONDS`
 - [x] Optional build/runtime criteria injection through `FIELD_TEST_MAX_GPS_REJECTION_PERCENT`
 - [x] Optional build/runtime criteria injection through `FIELD_TEST_REQUIRE_MAP_READY`
+- [x] Optional build/runtime criteria injection through `FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT`
+- [x] Optional build/runtime criteria injection through `FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR`
 - [x] Invalid configured criteria fail Gradle configuration instead of being silently ignored
 - [x] Diagnostic exports whether criteria are configured, overall acceptance state, and failed metric keys
+- [x] Internal Debug artifact records the non-secret configured field-test policy
 
 Human TODO:
 - [ ] Approve minimum representative session duration
 - [ ] Approve maximum GPS rejection-rate threshold
-- [ ] Decide whether `MapHealth.READY` is a mandatory closed-test gate (recommended for credentialed physical-device validation, but not hard-coded)
-- [ ] Define later criteria for battery impact, route-distance error, encounters/session, completion rate, and repeat-area fatigue after measurement sources exist
+- [ ] Decide whether `MapHealth.READY` is a mandatory closed-test gate
+- [ ] Approve maximum route-distance error percentage
+- [ ] Approve maximum battery percentage-point drain per hour
+- [ ] Define later criteria for encounters/session, completion rate, and repeat-area fatigue after measurement sources exist
 
 Blocked on a human/product/data decision rather than engineering:
 - [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
@@ -135,10 +144,12 @@ Blocked on a human/product/data decision rather than engineering:
 - [ ] Run the hardened `Internal Debug APK` workflow and install the credentialed artifact
 - [ ] Validate that provider-neutral map health reaches `READY` on a physical device
 - [ ] Validate the real NAVER map tiles/markers/location/camera on a physical device
+- [ ] Enter the pre-verified total route distance before sharing each representative route diagnostic
+- [ ] Run tests unplugged; charging sessions intentionally cannot produce battery-consumption acceptance evidence
 - [ ] Configure approved field-test acceptance criteria through Gradle/Actions properties
 - [ ] Reserve/create `com.dailytown.app` in Google Play Console before external release
 - [ ] Crash-reporting vendor/consent decision
 - [ ] Privacy disclosure and location retention policy
 - [ ] Signing/release credentials
 - [ ] Play Console/internal testers
-- [ ] Approve remaining field-test acceptance thresholds for battery impact, distance accuracy, encounters/session, completion rate, and repeat-area fatigue
+- [ ] Approve remaining field-test acceptance thresholds for encounters/session, completion rate, and repeat-area fatigue
