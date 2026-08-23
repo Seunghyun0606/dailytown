@@ -25,6 +25,8 @@ jobs:
           gradle-version: "9.5.0"
       - name: Unit tests
         run: gradle testDebugUnitTest
+      - name: Compile instrumented tests
+        run: gradle assembleDebugAndroidTest
       - name: Android lint
         run: gradle lintDebug
       - name: Build debug APK
