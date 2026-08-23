@@ -3,6 +3,7 @@ package com.dailytown.app.diagnostics
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.location.LocationTrackingPreset
 import com.dailytown.app.map.MapHealth
+import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.persistence.ExplorationProgress
 import java.time.Instant
 
@@ -31,6 +32,9 @@ data class FieldTestDiagnostic(
     val weeklyDistanceMeters: Int,
     val weeklyDiscoveries: Int,
     val weeklyResolutions: Int,
+    val acceptanceConfigured: Boolean,
+    val acceptanceOverall: String,
+    val acceptanceFailedKeys: List<String>,
 ) {
     fun render(): String = buildString {
         appendLine("Daily Town field-test diagnostic")
@@ -58,11 +62,18 @@ data class FieldTestDiagnostic(
         appendLine("weeklyDistanceMeters=$weeklyDistanceMeters")
         appendLine("weeklyDiscoveries=$weeklyDiscoveries")
         appendLine("weeklyResolutions=$weeklyResolutions")
+        appendLine("acceptanceConfigured=$acceptanceConfigured")
+        appendLine("acceptanceOverall=$acceptanceOverall")
+        if (acceptanceFailedKeys.isNotEmpty()) {
+            appendLine("acceptanceFailedKeys=${acceptanceFailedKeys.joinToString(",")}")
+        }
         append("privacy=derived_metrics_only_no_raw_gps_no_credentials")
     }
 }
 
 object FieldTestDiagnosticBuilder {
+    private val acceptanceEvaluator = FieldTestAcceptanceEvaluator()
+
     fun build(
         progress: ExplorationProgress,
         rejectedLocationCount: Int,
@@ -74,12 +85,21 @@ object FieldTestDiagnosticBuilder {
         mapHealth: MapHealth? = null,
         packageId: String = BuildConfig.APPLICATION_ID,
         mapCredentialConfigured: Boolean = BuildConfig.NAVER_MAP_CONFIGURED,
+        acceptanceCriteria: FieldTestAcceptanceCriteria = buildConfigAcceptanceCriteria(),
         generatedAt: Instant = Instant.now(),
     ): FieldTestDiagnostic {
         val rejectedRate = acceptedLocationCount?.let { accepted ->
             val sampleCount = accepted + rejectedLocationCount
             if (sampleCount == 0) 0 else ((rejectedLocationCount * 100.0) / sampleCount).toInt()
         }
+        val acceptance = acceptanceEvaluator.evaluate(
+            criteria = acceptanceCriteria,
+            input = FieldTestAcceptanceInput(
+                sessionDurationSeconds = trackingDurationSeconds?.toLong(),
+                gpsRejectionRatePercent = rejectedRate,
+                mapHealth = mapHealth?.status,
+            ),
+        )
 
         return FieldTestDiagnostic(
             generatedAt = generatedAt.toString(),
@@ -106,6 +126,19 @@ object FieldTestDiagnosticBuilder {
             weeklyDistanceMeters = progress.weekly.distanceWalkedMeters.toInt(),
             weeklyDiscoveries = progress.weekly.discoveredPoiIds.size,
             weeklyResolutions = progress.weekly.resolvedEncounterIds.size,
+            acceptanceConfigured = acceptanceCriteria.isConfigured,
+            acceptanceOverall = acceptance.overall.name,
+            acceptanceFailedKeys = acceptance.failedKeys,
         )
     }
+
+    private fun buildConfigAcceptanceCriteria(): FieldTestAcceptanceCriteria =
+        FieldTestAcceptanceCriteria(
+            minimumSessionDurationSeconds = BuildConfig.FIELD_TEST_MIN_SESSION_SECONDS
+                .takeIf { it >= 0L },
+            maximumGpsRejectionRatePercent = BuildConfig.FIELD_TEST_MAX_GPS_REJECTION_PERCENT
+                .takeIf { it >= 0 },
+            requiredMapHealth = MapHealthStatus.READY
+                .takeIf { BuildConfig.FIELD_TEST_REQUIRE_MAP_READY },
+        )
 }
