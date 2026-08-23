@@ -13,6 +13,7 @@ data class ProgressRuntimeState(
     val dailyGoals: List<GoalDefinition> = emptyList(),
     val weeklyGoals: List<GoalDefinition> = emptyList(),
     val ready: Boolean = false,
+    val persistenceEnabled: Boolean = false,
 )
 
 /**
@@ -32,20 +33,34 @@ class ProgressRuntimeCoordinator(
 
     suspend fun restore(date: LocalDate): ProgressRuntimeState {
         val restored = store.load()
-        return replace(goalRotationCoordinator.ensure(restored, date), ready = true)
+        return replace(
+            result = goalRotationCoordinator.ensure(restored, date),
+            ready = true,
+            persistenceEnabled = true,
+        )
     }
 
     /**
      * Explicit fallback used only after a load failure. It keeps the app usable while preserving
      * the failure signal for UI/diagnostics instead of making restore() silently swallow errors.
+     * Persistence remains disabled for the fallback session so an empty/default state cannot
+     * overwrite previously stored progress after a transient read failure.
      */
     fun activateFallback(date: LocalDate): ProgressRuntimeState =
-        replace(goalRotationCoordinator.ensure(_state.value.progress, date), ready = true)
+        replace(
+            result = goalRotationCoordinator.ensure(_state.value.progress, date),
+            ready = true,
+            persistenceEnabled = false,
+        )
 
     fun ensureCurrentPeriod(date: LocalDate): ProgressRuntimeState {
         val current = _state.value
         if (!current.ready) return current
-        return replace(goalRotationCoordinator.ensure(current.progress, date), ready = true)
+        return replace(
+            result = goalRotationCoordinator.ensure(current.progress, date),
+            ready = true,
+            persistenceEnabled = current.persistenceEnabled,
+        )
     }
 
     fun syncExploration(explorationState: ExplorationState, date: LocalDate): ProgressRuntimeState =
@@ -58,20 +73,29 @@ class ProgressRuntimeCoordinator(
         val current = _state.value
         if (!current.ready) return current
         val transformed = transform(current.progress)
-        return replace(goalRotationCoordinator.ensure(transformed, date), ready = true)
+        return replace(
+            result = goalRotationCoordinator.ensure(transformed, date),
+            ready = true,
+            persistenceEnabled = current.persistenceEnabled,
+        )
     }
 
     suspend fun persist() {
         val current = _state.value
-        if (current.ready) store.save(current.progress)
+        if (current.ready && current.persistenceEnabled) store.save(current.progress)
     }
 
-    private fun replace(result: GoalRotationResult, ready: Boolean): ProgressRuntimeState {
+    private fun replace(
+        result: GoalRotationResult,
+        ready: Boolean,
+        persistenceEnabled: Boolean,
+    ): ProgressRuntimeState {
         val next = ProgressRuntimeState(
             progress = result.progress,
             dailyGoals = result.dailyGoals,
             weeklyGoals = result.weeklyGoals,
             ready = ready,
+            persistenceEnabled = persistenceEnabled,
         )
         if (_state.value != next) _state.value = next
         return _state.value
