@@ -13,18 +13,27 @@ Android native is the MVP default. This reduces uncertainty around location perm
 ```text
 Compose UI
    ↓
-Application orchestration
+Application runtime coordinators
    ↓
-Pure runtime/domain (ExplorationSession / EncounterCoordinator / TrackingSessionCoordinator / goals / companion)
+Pure runtime/domain
    ↓
 Ports: LocationSource / MapViewAdapter / PoiRepository / ProgressStore
    ↓
 Adapters: Android Location / NAVER Map / public-data APIs / DataStore
 ```
 
-Rules must not depend on a map SDK or Android framework. The Compose layer owns permission launchers and rendering, while `TrackingSessionCoordinator` owns deterministic OFF/DEVICE/REPLAY + preset transitions, `ExplorationSession` owns accepted movement/session-quality state, and `EncounterCoordinator` owns short-lived encounter selection/sequencing/proximity transitions. Derived progress remains behind `ProgressStore`.
+Current runtime coordinators are:
 
-This split allows replay/JVM tests, keeps map replacement feasible, and prevents encounter/content/tracking rules from accumulating inside the UI composable.
+- `TrackingSessionCoordinator`: deterministic OFF/DEVICE/REPLAY and location-preset transitions.
+- `ProgressRuntimeCoordinator`: persisted progress, period normalization, goal rotation, exploration synchronization, and persistence eligibility.
+- `EncounterCoordinator`: short-lived encounter selection/sequencing/proximity transitions.
+- `ExplorationSession`: accepted movement state plus privacy-safe session-quality counters.
+
+Rules must not depend on a map SDK or Android framework. Compose owns permission launchers, rendering, and user-facing errors, while runtime coordinators own state transitions. `ProgressStore`, `PoiRepository`, `LocationSource`, and `MapViewAdapter` remain ports around platform/provider-specific implementations.
+
+The progress runtime deliberately separates **ready** from **persistenceEnabled**. If DataStore restore fails, the app may enter an explicit in-memory fallback mode, but persistence stays disabled so default progress cannot overwrite previously stored data after a transient read failure.
+
+This split allows replay/JVM tests, keeps map replacement feasible, and prevents encounter/content/tracking/persistence rules from accumulating inside the UI composable.
 
 ## 4. Map strategy
 
@@ -46,7 +55,22 @@ Location collection is app-owned rather than map-provider-owned. `LocationSource
 
 The MVP is foreground-only and deliberately does not request background location. Raw high-frequency samples are not persisted.
 
-## 6. Content exhaustion mitigation
+## 6. Progress and goal strategy
+
+`ProgressRuntimeCoordinator` is the single application-level owner of:
+
+- loading persisted `ExplorationProgress`
+- daily/weekly period normalization
+- deterministic goal rotation
+- synchronization from `ExplorationState`
+- encounter/clue/memory progress mutations
+- deciding whether persistence is safe for the current session
+
+Compose observes one `ProgressRuntimeState` instead of maintaining separate mutable copies of progress, daily goals, weekly goals, and persistence-ready flags.
+
+A successful restore enables persistence. An explicit fallback after a read failure keeps the app usable but disables writes for that session. This avoids the common failure mode where a temporary DataStore read error causes an empty/default model to be saved over valid progress.
+
+## 7. Content exhaustion mitigation
 
 The content system separates a physical place from an encounter template. The same area can produce different experiences through:
 
@@ -60,19 +84,41 @@ The content system separates a physical place from an encounter template. The sa
 
 `EncounterGenerator` ranks POI × template candidates, while `EncounterCoordinator` owns the runtime transition from selection through hinted/discovered states. This keeps the ranking mechanics testable without Compose or Android dependencies.
 
-## 7. Test boundaries
+## 8. Field-test acceptance strategy
 
-- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, GPS-quality, and session-duration rules.
+`FieldTestAcceptanceEvaluator` evaluates recorded evidence against **human-approved** criteria. It intentionally ships with no hard-coded product thresholds.
+
+Supported criteria currently include:
+
+- minimum tracking-session duration
+- maximum GPS rejection rate
+- required provider-neutral map health (normally `READY` once approved)
+
+Closed-test builds can supply criteria without source changes through Gradle properties or environment variables:
+
+```text
+FIELD_TEST_MIN_SESSION_SECONDS
+FIELD_TEST_MAX_GPS_REJECTION_PERCENT
+FIELD_TEST_REQUIRE_MAP_READY
+```
+
+Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configured values fail the Gradle configuration rather than being ignored. Field-test diagnostics include whether acceptance criteria were configured, the overall result, and failed metric keys while retaining the no-raw-GPS/no-credential privacy boundary.
+
+Future battery, route-distance-error, encounter-rate, and repeat-fatigue criteria should be added only after their measurement sources and human-approved thresholds exist.
+
+## 9. Test boundaries
+
+- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration, and acceptance-evaluation rules.
 - Android UI/replay integration: AOSP ATD managed device, with the tested APK ABI explicitly pinned.
 - Normal pull-request CI: unit tests, instrumented-test compilation, lint, debug build, credential hard-code guard.
 - Credentialed internal APK: manual Actions workflow with value-blind credential verification and artifact SHA-256 metadata.
 - Real GPS accuracy, battery behavior, OEM differences, and final NAVER package/key/map-health validation: physical Android device.
 
-## 8. Privacy baseline
+## 10. Privacy baseline
 
 - Raw high-frequency location stays on device unless a future server feature explicitly requires upload.
 - Persist derived visit/progress events rather than continuous traces by default.
 - Session duration and GPS accept/reject rates are derived metrics and are not raw location traces.
 - Never commit or log production credentials.
-- Diagnostics contain package/build/map-health/derived counters but no raw coordinates, provider exception payloads, or credential values.
+- Diagnostics contain package/build/map-health/derived counters/acceptance results but no raw coordinates, provider exception payloads, or credential values.
 - Add explicit consent and retention policy before analytics/location backend integration.
