@@ -20,6 +20,11 @@ class EncounterGeneratorTest {
         districtKey = "test-district",
         category = PoiCategory.LANDMARK,
     )
+    private val context = EncounterContext(
+        dayKey = "2026-08-23",
+        timeBand = TimeBand.DAY,
+        companionBond = 20,
+    )
 
     @Test
     fun `generator creates deterministic selection from candidate pool`() {
@@ -27,7 +32,7 @@ class EncounterGeneratorTest {
             encounterKey = "session-1",
             center = GeoPoint(37.56660, 126.97800),
             pois = listOf(poi),
-            companionBond = 20,
+            context = context,
             visitedPoiIds = emptySet(),
             history = EncounterHistory(),
         )
@@ -36,6 +41,25 @@ class EncounterGeneratorTest {
         assertEquals("poi-1", selection?.poi?.id)
         assertEquals("trace", selection?.template?.id)
         assertEquals("session-1:poi-1:trace", selection?.encounter?.id)
+    }
+
+    @Test
+    fun `revisit prefers local memory mechanic over generic common mechanic`() {
+        val localMemory = MysteryTemplate(
+            id = "memory-common",
+            mechanic = MysteryMechanic.LOCAL_MEMORY,
+            requiredClues = 1,
+        )
+        val selection = EncounterGenerator(templates = listOf(template, localMemory)).choose(
+            encounterKey = "revisit",
+            center = poi.position,
+            pois = listOf(poi),
+            context = context.copy(memoryKeys = setOf("poi:${poi.id}")),
+            visitedPoiIds = setOf(poi.id),
+            history = EncounterHistory(),
+        )
+
+        assertEquals("memory-common", selection?.template?.id)
     }
 
     @Test
