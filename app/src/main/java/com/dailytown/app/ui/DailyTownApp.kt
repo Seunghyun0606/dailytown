@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -287,8 +288,10 @@ fun DailyTownApp(
                         Text("누적 탐험 거리 ${snapshot.state.distanceWalkedMeters.roundToInt()}m")
                         Text("미스터리 단서 ${gameProgress.inventoryClueIds.size}개 · 해결 ${gameProgress.resolvedEncounterIds.size}건")
                         Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
-                        if (snapshot.rejectedLocationCount > 0) {
-                            Text("GPS 품질 필터 제외 ${snapshot.rejectedLocationCount}회")
+                        if (snapshot.totalLocationSampleCount > 0) {
+                            Text(
+                                "GPS 샘플 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                            )
                         }
                         snapshot.newlyDiscovered.firstOrNull()?.let {
                             Text("주변 발견: ${it.title}", style = MaterialTheme.typography.titleMedium)
@@ -418,6 +421,7 @@ fun DailyTownApp(
                         OutlinedButton(onClick = {
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
+                                acceptedLocationCount = snapshot.acceptedLocationCount,
                                 rejectedLocationCount = snapshot.rejectedLocationCount,
                                 appVersion = BuildConfig.VERSION_NAME,
                                 mapProvider = mapAdapter.providerId.name,
@@ -444,7 +448,10 @@ fun DailyTownApp(
                         )
                     }) { Text("실제 위치") }
 
-                    OutlinedButton(onClick = { start(TrackingMode.REPLAY) }) { Text("경로 리플레이") }
+                    OutlinedButton(
+                        onClick = { start(TrackingMode.REPLAY) },
+                        modifier = Modifier.testTag("tracking-replay"),
+                    ) { Text("경로 리플레이") }
                     TextButton(onClick = {
                         trackingMode = TrackingMode.OFF
                         mapAdapter.setUserLocation(null)
@@ -458,6 +465,7 @@ fun DailyTownApp(
                         TrackingMode.REPLAY -> "서울시청 → 덕수궁 테스트 경로 재생 중"
                         TrackingMode.OFF -> if (persistenceReady) "탐험 대기 중 · 게임 진행도 저장 활성" else "진행도 불러오는 중"
                     },
+                    modifier = Modifier.testTag("tracking-status"),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(Modifier.height(16.dp))
