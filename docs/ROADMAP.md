@@ -13,6 +13,8 @@
 - [x] Real-device smoke-test documentation
 - [x] Emulator vs physical-device test strategy documented
 - [x] Replay/emulator path no longer eagerly initializes Google Play Services fused location
+- [x] Explicit x86 ABI for AOSP ATD so the lane remains stable across the AGP 10 default change
+- [x] Value-blind Gradle verification for credential injection and APK SHA-256 metadata
 
 ## Real movement loop — implemented
 
@@ -49,9 +51,9 @@ Human TODO:
 - [x] Obtain NAVER Dynamic Map NCP Key ID
 - [x] Decide Android `applicationId`: `com.dailytown.app`
 - [x] Update NAVER Console Android package restriction to `com.dailytown.app` (confirmed 2026-08-24)
-- [ ] Add GitHub Actions repository secret `NAVER_MAP_NCP_KEY_ID` for credentialed internal APK builds
+- [x] Add GitHub Actions repository secret `NAVER_MAP_NCP_KEY_ID` for credentialed internal APK builds (confirmed 2026-08-24)
 - [x] Confirm NAVER Maps pricing/cost conditions for intended MVP usage (confirmed 2026-08-24)
-- [ ] Confirm the issued credential is on the standalone NAVER Cloud **Maps** product, or migrate from legacy AI NAVER API Maps before shutdown if applicable
+- [x] Confirm the issued credential is on the standalone NAVER Cloud **Maps** product; legacy AI NAVER API migration is not required (confirmed 2026-08-24)
 - [ ] Choose production POI/public-data sources and validate licensing, attribution, and allowed cache duration/redistribution terms
 
 ## Mystery loop — mechanics and playable loop implemented
@@ -68,6 +70,8 @@ Human TODO:
 - [x] Context-aware selection by time band and revisit state
 - [x] Deterministic uncommon/rare encounter eligibility
 - [x] Semantic companion memories for visited POIs and resolved mechanics
+- [x] Extract short-lived encounter sequencing/proximity transitions from Compose into a pure `EncounterCoordinator`
+- [x] JVM coverage for encounter selection, hinted/discovered transitions, resolved stability, and runtime reset
 
 Human TODO:
 - [ ] Approve narrative tone and prohibited themes
@@ -97,7 +101,9 @@ Blocked on a human/product/data decision rather than engineering:
 ## Closed field test — human-gated
 
 - [x] Register `com.dailytown.app` in NAVER Console
-- [ ] Add `NAVER_MAP_NCP_KEY_ID` as a GitHub Actions repository secret and produce a credentialed internal APK
+- [x] Add `NAVER_MAP_NCP_KEY_ID` as a GitHub Actions repository secret
+- [x] Confirm the key belongs to standalone NAVER Cloud Maps
+- [ ] Run the hardened `Internal Debug APK` workflow and install the credentialed artifact
 - [ ] Validate the real NAVER map on a physical device
 - [ ] Reserve/create `com.dailytown.app` in Google Play Console before external release
 - [ ] Crash-reporting vendor/consent decision
