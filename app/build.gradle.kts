@@ -51,6 +51,9 @@ val fieldTestMaxGpsRejectionPercent = optionalPercent("FIELD_TEST_MAX_GPS_REJECT
 val fieldTestRequireMapReady = optionalBoolean("FIELD_TEST_REQUIRE_MAP_READY")
 val fieldTestMaxDistanceErrorPercent = optionalPercent("FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT")
 val fieldTestMaxBatteryDrainPercentPerHour = optionalNonNegativeInt("FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR")
+val fieldTestMinEncountersPerSession = optionalNonNegativeInt("FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION")
+val fieldTestMinEncounterResolutionPercent = optionalPercent("FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT")
+val fieldTestMaxRepeatAreaFatiguePercent = optionalPercent("FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT")
 
 android {
     namespace = "com.dailytown.app"
@@ -84,6 +87,17 @@ android {
             "int",
             "FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR",
             fieldTestMaxBatteryDrainPercentPerHour.toString(),
+        )
+        buildConfigField("int", "FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION", fieldTestMinEncountersPerSession.toString())
+        buildConfigField(
+            "int",
+            "FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT",
+            fieldTestMinEncounterResolutionPercent.toString(),
+        )
+        buildConfigField(
+            "int",
+            "FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT",
+            fieldTestMaxRepeatAreaFatiguePercent.toString(),
         )
     }
 
