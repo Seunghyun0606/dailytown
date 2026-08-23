@@ -14,6 +14,9 @@ data class FieldTestAcceptanceCriteria(
     val requiredMapHealth: MapHealthStatus? = null,
     val maximumDistanceErrorPercent: Int? = null,
     val maximumBatteryDrainPercentPerHour: Int? = null,
+    val minimumDiscoveredEncountersPerSession: Int? = null,
+    val minimumEncounterResolutionRatePercent: Int? = null,
+    val maximumRepeatAreaFatiguePercent: Int? = null,
 ) {
     init {
         require(minimumSessionDurationSeconds == null || minimumSessionDurationSeconds >= 0) {
@@ -28,6 +31,15 @@ data class FieldTestAcceptanceCriteria(
         require(maximumBatteryDrainPercentPerHour == null || maximumBatteryDrainPercentPerHour >= 0) {
             "maximumBatteryDrainPercentPerHour must be non-negative"
         }
+        require(minimumDiscoveredEncountersPerSession == null || minimumDiscoveredEncountersPerSession >= 0) {
+            "minimumDiscoveredEncountersPerSession must be non-negative"
+        }
+        require(minimumEncounterResolutionRatePercent == null || minimumEncounterResolutionRatePercent in 0..100) {
+            "minimumEncounterResolutionRatePercent must be between 0 and 100"
+        }
+        require(maximumRepeatAreaFatiguePercent == null || maximumRepeatAreaFatiguePercent in 0..100) {
+            "maximumRepeatAreaFatiguePercent must be between 0 and 100"
+        }
     }
 
     val isConfigured: Boolean
@@ -35,7 +47,10 @@ data class FieldTestAcceptanceCriteria(
             maximumGpsRejectionRatePercent != null ||
             requiredMapHealth != null ||
             maximumDistanceErrorPercent != null ||
-            maximumBatteryDrainPercentPerHour != null
+            maximumBatteryDrainPercentPerHour != null ||
+            minimumDiscoveredEncountersPerSession != null ||
+            minimumEncounterResolutionRatePercent != null ||
+            maximumRepeatAreaFatiguePercent != null
 }
 
 data class FieldTestAcceptanceInput(
@@ -44,6 +59,9 @@ data class FieldTestAcceptanceInput(
     val mapHealth: MapHealthStatus? = null,
     val distanceErrorPercent: Int? = null,
     val batteryDrainPercentPerHour: Int? = null,
+    val discoveredEncountersPerSession: Int? = null,
+    val encounterResolutionRatePercent: Int? = null,
+    val repeatAreaFatigueProxyPercent: Int? = null,
 )
 
 data class FieldTestAcceptanceCheck(
@@ -124,6 +142,36 @@ class FieldTestAcceptanceEvaluator {
                 add(maximumOrMinimumCheck(
                     key = "batteryDrainPercentPerHour",
                     measured = input.batteryDrainPercentPerHour,
+                    expected = maximum,
+                    passes = { measured, expected -> measured <= expected },
+                    expectedValue = "<=$maximum",
+                ))
+            }
+
+            criteria.minimumDiscoveredEncountersPerSession?.let { minimum ->
+                add(maximumOrMinimumCheck(
+                    key = "discoveredEncountersPerSession",
+                    measured = input.discoveredEncountersPerSession,
+                    expected = minimum,
+                    passes = { measured, expected -> measured >= expected },
+                    expectedValue = ">=$minimum",
+                ))
+            }
+
+            criteria.minimumEncounterResolutionRatePercent?.let { minimum ->
+                add(maximumOrMinimumCheck(
+                    key = "encounterResolutionRatePercent",
+                    measured = input.encounterResolutionRatePercent,
+                    expected = minimum,
+                    passes = { measured, expected -> measured >= expected },
+                    expectedValue = ">=$minimum",
+                ))
+            }
+
+            criteria.maximumRepeatAreaFatiguePercent?.let { maximum ->
+                add(maximumOrMinimumCheck(
+                    key = "repeatAreaFatigueProxyPercent",
+                    measured = input.repeatAreaFatigueProxyPercent,
                     expected = maximum,
                     passes = { measured, expected -> measured <= expected },
                     expectedValue = "<=$maximum",
