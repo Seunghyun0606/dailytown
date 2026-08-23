@@ -10,6 +10,7 @@ data class ExplorationSnapshot(
     val acceptedLocationCount: Int = 0,
     val rejectedLocationCount: Int = 0,
     val trackingDurationSeconds: Int = 0,
+    val sessionDistanceMeters: Double = 0.0,
 ) {
     val totalLocationSampleCount: Int
         get() = acceptedLocationCount + rejectedLocationCount
@@ -28,6 +29,7 @@ class ExplorationSession(
     private var snapshot = ExplorationSnapshot(initialState)
     private var previousAccepted: LocationSample? = null
     private var trackingStartedElapsedRealtimeMillis: Long? = null
+    private var trackingStartedDistanceMeters: Double = initialState.distanceWalkedMeters
     private var qualityPolicy: LocationQualityPolicy = qualityPolicy
 
     fun current(): ExplorationSnapshot = snapshot
@@ -62,6 +64,8 @@ class ExplorationSession(
             acceptedLocationCount = snapshot.acceptedLocationCount + 1,
             rejectedLocationCount = snapshot.rejectedLocationCount,
             trackingDurationSeconds = trackingDurationSeconds,
+            sessionDistanceMeters =
+                (update.state.distanceWalkedMeters - trackingStartedDistanceMeters).coerceAtLeast(0.0),
         )
         return snapshot
     }
@@ -85,12 +89,14 @@ class ExplorationSession(
     fun restartTracking() {
         previousAccepted = null
         trackingStartedElapsedRealtimeMillis = null
+        trackingStartedDistanceMeters = snapshot.state.distanceWalkedMeters
         snapshot = snapshot.copy(
             currentLocation = null,
             newlyDiscovered = emptyList(),
             acceptedLocationCount = 0,
             rejectedLocationCount = 0,
             trackingDurationSeconds = 0,
+            sessionDistanceMeters = 0.0,
         )
     }
 
@@ -98,6 +104,7 @@ class ExplorationSession(
     fun restore(state: ExplorationState) {
         previousAccepted = null
         trackingStartedElapsedRealtimeMillis = null
+        trackingStartedDistanceMeters = state.distanceWalkedMeters
         snapshot = ExplorationSnapshot(state)
     }
 
@@ -108,6 +115,7 @@ class ExplorationSession(
     )) {
         previousAccepted = null
         trackingStartedElapsedRealtimeMillis = null
+        trackingStartedDistanceMeters = initialState.distanceWalkedMeters
         snapshot = ExplorationSnapshot(initialState)
     }
 }
