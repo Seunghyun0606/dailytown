@@ -1,6 +1,5 @@
 package com.dailytown.app
 
-import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -16,7 +15,7 @@ class DailyTownReplaySmokeTest {
 
     @Test
     fun replayRouteStartsWithoutLocationPermissionOrMapCredential() {
-        composeRule.onNodeWithText("Daily Town").assertExists()
+        composeRule.onNodeWithText("Daily Town").fetchSemanticsNode()
         composeRule.onNodeWithText("경로 리플레이").performClick()
 
         // Compose test v2 uses a StandardTestDispatcher. Synchronize queued recomposition
@@ -24,6 +23,6 @@ class DailyTownReplaySmokeTest {
         composeRule.waitForIdle()
 
         composeRule.onNodeWithText("서울시청 → 덕수궁 테스트 경로 재생 중")
-            .assertExists()
+            .fetchSemanticsNode()
     }
 }
