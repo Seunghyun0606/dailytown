@@ -16,6 +16,8 @@ class FieldTestAcceptanceTest {
                 sessionDurationSeconds = 1_000,
                 gpsRejectionRatePercent = 0,
                 mapHealth = MapHealthStatus.READY,
+                distanceErrorPercent = 1,
+                batteryDrainPercentPerHour = 3,
             ),
         )
 
@@ -30,17 +32,41 @@ class FieldTestAcceptanceTest {
                 minimumSessionDurationSeconds = 600,
                 maximumGpsRejectionRatePercent = 15,
                 requiredMapHealth = MapHealthStatus.READY,
+                maximumDistanceErrorPercent = 10,
+                maximumBatteryDrainPercentPerHour = 8,
             ),
             input = FieldTestAcceptanceInput(
                 sessionDurationSeconds = 900,
                 gpsRejectionRatePercent = 8,
                 mapHealth = MapHealthStatus.READY,
+                distanceErrorPercent = 6,
+                batteryDrainPercentPerHour = 5,
             ),
         )
 
         assertEquals(AcceptanceCheckStatus.PASS, result.overall)
-        assertEquals(3, result.checks.size)
+        assertEquals(5, result.checks.size)
         assertTrue(result.failedKeys.isEmpty())
+    }
+
+    @Test
+    fun `failed distance and battery metrics report their keys`() {
+        val result = evaluator.evaluate(
+            criteria = FieldTestAcceptanceCriteria(
+                maximumDistanceErrorPercent = 10,
+                maximumBatteryDrainPercentPerHour = 6,
+            ),
+            input = FieldTestAcceptanceInput(
+                distanceErrorPercent = 18,
+                batteryDrainPercentPerHour = 9,
+            ),
+        )
+
+        assertEquals(AcceptanceCheckStatus.FAIL, result.overall)
+        assertEquals(
+            listOf("distanceErrorPercent", "batteryDrainPercentPerHour"),
+            result.failedKeys,
+        )
     }
 
     @Test
@@ -68,10 +94,14 @@ class FieldTestAcceptanceTest {
             criteria = FieldTestAcceptanceCriteria(
                 minimumSessionDurationSeconds = 600,
                 maximumGpsRejectionRatePercent = 10,
+                maximumDistanceErrorPercent = 10,
+                maximumBatteryDrainPercentPerHour = 8,
             ),
             input = FieldTestAcceptanceInput(
                 sessionDurationSeconds = 900,
                 gpsRejectionRatePercent = null,
+                distanceErrorPercent = null,
+                batteryDrainPercentPerHour = null,
             ),
         )
 
@@ -79,6 +109,14 @@ class FieldTestAcceptanceTest {
         assertEquals(
             AcceptanceCheckStatus.NOT_EVALUATED,
             result.checks.first { it.key == "gpsRejectionRatePercent" }.status,
+        )
+        assertEquals(
+            AcceptanceCheckStatus.NOT_EVALUATED,
+            result.checks.first { it.key == "distanceErrorPercent" }.status,
+        )
+        assertEquals(
+            AcceptanceCheckStatus.NOT_EVALUATED,
+            result.checks.first { it.key == "batteryDrainPercentPerHour" }.status,
         )
     }
 }
