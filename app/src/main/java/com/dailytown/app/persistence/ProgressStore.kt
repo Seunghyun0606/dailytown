@@ -35,6 +35,7 @@ data class ExplorationProgress(
     val recentPoiIds: List<String> = emptyList(),
     val recentTemplateIds: List<String> = emptyList(),
     val recentPairKeys: List<String> = emptyList(),
+    val companionMemoryKeys: Set<String> = emptySet(),
     val daily: PeriodProgress = PeriodProgress(),
     val weekly: PeriodProgress = PeriodProgress(),
 ) {
@@ -87,6 +88,9 @@ data class ExplorationProgress(
             weekly = normalized.weekly.recordResolution(encounter.id),
         )
     }
+
+    fun recordMemory(memoryKey: String): ExplorationProgress =
+        if (memoryKey.isBlank()) this else copy(companionMemoryKeys = companionMemoryKeys + memoryKey)
 
     private fun pushRecent(existing: List<String>, value: String, maxSize: Int = 12): List<String> =
         (listOf(value) + existing.filterNot { it == value }).take(maxSize)

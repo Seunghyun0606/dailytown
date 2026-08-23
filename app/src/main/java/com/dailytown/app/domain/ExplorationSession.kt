@@ -14,10 +14,11 @@ class ExplorationSession(
     initialState: ExplorationState,
     private val spots: List<MysterySpot>,
     private val engine: ExplorationEngine = ExplorationEngine(),
-    private val qualityPolicy: LocationQualityPolicy = LocationQualityPolicy(),
+    qualityPolicy: LocationQualityPolicy = LocationQualityPolicy(),
 ) {
     private var snapshot = ExplorationSnapshot(initialState)
     private var previousAccepted: LocationSample? = null
+    private var qualityPolicy: LocationQualityPolicy = qualityPolicy
 
     fun current(): ExplorationSnapshot = snapshot
 
@@ -54,6 +55,11 @@ class ExplorationSession(
                 companion = companion.copy(bond = (companion.bond + delta).coerceAtLeast(0)),
             ),
         )
+    }
+
+    fun setLocationQualityPolicy(policy: LocationQualityPolicy) {
+        qualityPolicy = policy
+        previousAccepted = null
     }
 
     /** Restart GPS tracking while preserving long-term visit/progress state. */
