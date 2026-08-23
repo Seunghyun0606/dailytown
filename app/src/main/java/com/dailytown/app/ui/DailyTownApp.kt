@@ -65,8 +65,7 @@ fun DailyTownApp(
 
     val templates = remember { MysteryTemplateCatalog.defaults() }
     val reducer = remember { MysteryReducer(templates.associateBy { it.id }) }
-    val encounterGenerator = remember { EncounterGenerator(templates = templates) }
-    val proximityController = remember { EncounterProximityController(reducer = reducer) }
+    val encounterCoordinator = remember { EncounterCoordinator(templates = templates) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
     val goalRotationCoordinator = remember { GoalRotationCoordinator() }
@@ -74,7 +73,6 @@ fun DailyTownApp(
     var snapshot by remember { mutableStateOf(session.current()) }
     var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
-    var encounterSequence by remember { mutableIntStateOf(0) }
     var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
     var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -145,6 +143,7 @@ fun DailyTownApp(
 
     fun start(mode: TrackingMode) {
         session.restartTracking()
+        encounterCoordinator.reset()
         snapshot = session.current()
         activeEncounter = null
         lastCompanionMoment = null
@@ -200,52 +199,39 @@ fun DailyTownApp(
         activeEncounter?.encounter?.phase,
     ) {
         val sample = snapshot.currentLocation ?: return@LaunchedEffect
-        var selection = activeEncounter
+        val nearbyPois = if (activeEncounter == null) {
+            poiRepository.nearby(sample.point, radiusMeters = 900.0)
+        } else {
+            emptyList()
+        }
 
-        if (selection == null) {
-            val pois = poiRepository.nearby(sample.point, radiusMeters = 900.0)
-            val history = EncounterHistory(
+        val step = encounterCoordinator.advance(
+            current = activeEncounter,
+            user = sample.point,
+            nearbyPois = nearbyPois,
+            runtime = EncounterRuntimeContext(
+                visitedPoiIds = gameProgress.encounterVisitedPoiIds,
                 recentPoiIds = gameProgress.recentPoiIds.toSet(),
                 recentTemplateIds = gameProgress.recentTemplateIds.toSet(),
                 recentPairKeys = gameProgress.recentPairKeys.toSet(),
-            )
-            val encounterContext = EncounterContextFactory.create(
-                date = LocalDate.now(),
-                time = LocalTime.now(),
                 companionBond = snapshot.state.companion.bond,
                 memoryKeys = gameProgress.companionMemoryKeys,
-            )
-            selection = encounterGenerator.choose(
-                encounterKey = "enc-${encounterSequence++}",
-                center = sample.point,
-                pois = pois,
-                context = encounterContext,
-                visitedPoiIds = gameProgress.encounterVisitedPoiIds,
-                history = history,
-            )
-            activeEncounter = selection
-        }
-
-        val current = selection ?: return@LaunchedEffect
-        if (current.encounter.phase == EncounterPhase.RESOLVED) return@LaunchedEffect
-
-        val advanced = proximityController.advance(
-            encounter = current.encounter,
-            user = sample.point,
-            poi = current.poi.position,
+            ),
+            date = LocalDate.now(),
+            time = LocalTime.now(),
         )
-        if (advanced == current.encounter) return@LaunchedEffect
+        activeEncounter = step.selection
 
-        val previousPhase = current.encounter.phase
-        activeEncounter = current.copy(encounter = advanced)
-        if (previousPhase == EncounterPhase.HIDDEN && advanced.phase == EncounterPhase.HINTED) {
-            applyReaction(CompanionMoment.HINT_APPEARED)
-        }
-        if (previousPhase != EncounterPhase.DISCOVERED && advanced.phase == EncounterPhase.DISCOVERED) {
-            gameProgress = gameProgress
-                .recordEncounterVisit(current.poi.id, current.template.id, LocalDate.now())
-                .recordMemory("poi:${current.poi.id}")
-            applyReaction(CompanionMoment.SPOT_DISCOVERED)
+        when (step.transition) {
+            EncounterTransition.HINTED -> applyReaction(CompanionMoment.HINT_APPEARED)
+            EncounterTransition.DISCOVERED -> {
+                val selection = step.selection ?: return@LaunchedEffect
+                gameProgress = gameProgress
+                    .recordEncounterVisit(selection.poi.id, selection.template.id, LocalDate.now())
+                    .recordMemory("poi:${selection.poi.id}")
+                applyReaction(CompanionMoment.SPOT_DISCOVERED)
+            }
+            EncounterTransition.NONE -> Unit
         }
     }
 
@@ -274,7 +260,7 @@ fun DailyTownApp(
         distanceWalkedMeters = snapshot.state.distanceWalkedMeters,
     )
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
-        activeEncounter?.let { proximityController.distanceTo(sample.point, it.poi.position).roundToInt() }
+        activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
 
     MaterialTheme {
@@ -411,7 +397,10 @@ fun DailyTownApp(
                             }
                         }
                         if (reminderEnabled && !reminderManager.canPostNotifications()) {
-                            Text("시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                "시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.",
+                                color = MaterialTheme.colorScheme.error,
+                            )
                         }
                     }
                 }
@@ -419,8 +408,13 @@ fun DailyTownApp(
                 ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
-                        Text("패키지/빌드/파생 통계만 공유하며 좌표와 지도 API 키는 제외합니다.", style = MaterialTheme.typography.bodySmall)
-                        Text("패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 주입 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "완료" else "없음"}")
+                        Text(
+                            "패키지/빌드/파생 통계만 공유하며 좌표와 지도 API 키는 제외합니다.",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 주입 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "완료" else "없음"}",
+                        )
                         OutlinedButton(onClick = {
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
