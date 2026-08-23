@@ -26,6 +26,7 @@ import com.dailytown.app.companion.DefaultCompanionReactionPolicy
 import com.dailytown.app.diagnostics.AndroidBatterySnapshotSource
 import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
 import com.dailytown.app.diagnostics.FieldTestSessionMonitor
+import com.dailytown.app.diagnostics.GameplaySessionMonitor
 import com.dailytown.app.domain.*
 import com.dailytown.app.location.*
 import com.dailytown.app.map.MapHealthStatus
@@ -72,6 +73,7 @@ fun DailyTownApp(
     val fieldTestSessionMonitor = remember {
         FieldTestSessionMonitor(AndroidBatterySnapshotSource(context.applicationContext))
     }
+    val gameplaySessionMonitor = remember { GameplaySessionMonitor() }
 
     val trackingRuntime by trackingCoordinator.state.collectAsState()
     val progressRuntime by progressCoordinator.state.collectAsState()
@@ -141,6 +143,7 @@ fun DailyTownApp(
     fun start(mode: TrackingMode) {
         session.restartTracking()
         encounterCoordinator.reset()
+        gameplaySessionMonitor.reset()
         if (mode == TrackingMode.DEVICE) {
             fieldTestSessionMonitor.begin()
         } else {
@@ -201,14 +204,15 @@ fun DailyTownApp(
         activeEncounter?.encounter?.phase,
     ) {
         val sample = snapshot.currentLocation ?: return@LaunchedEffect
-        val nearbyPois = if (activeEncounter == null) {
+        val previousEncounter = activeEncounter
+        val nearbyPois = if (previousEncounter == null) {
             poiRepository.nearby(sample.point, radiusMeters = 900.0)
         } else {
             emptyList()
         }
 
         val step = encounterCoordinator.advance(
-            current = activeEncounter,
+            current = previousEncounter,
             user = sample.point,
             nearbyPois = nearbyPois,
             runtime = EncounterRuntimeContext(
@@ -222,12 +226,19 @@ fun DailyTownApp(
             date = LocalDate.now(),
             time = LocalTime.now(),
         )
+        if (previousEncounter == null) {
+            step.selection?.let { gameplaySessionMonitor.recordEncounterOffered(it.isRevisit) }
+        }
         activeEncounter = step.selection
 
         when (step.transition) {
-            EncounterTransition.HINTED -> applyReaction(CompanionMoment.HINT_APPEARED)
+            EncounterTransition.HINTED -> {
+                gameplaySessionMonitor.recordHinted()
+                applyReaction(CompanionMoment.HINT_APPEARED)
+            }
             EncounterTransition.DISCOVERED -> {
                 val selection = step.selection ?: return@LaunchedEffect
+                gameplaySessionMonitor.recordDiscovered(selection.isRevisit)
                 progressCoordinator.mutate(LocalDate.now()) { progress ->
                     progress
                         .recordEncounterVisit(selection.poi.id, selection.template.id, LocalDate.now())
@@ -266,6 +277,7 @@ fun DailyTownApp(
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
         activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
+    val gameplayMetrics = gameplaySessionMonitor.snapshot()
 
     MaterialTheme {
         Scaffold(topBar = { TopAppBar(title = { Text("Daily Town") }) }) { padding ->
@@ -298,6 +310,18 @@ fun DailyTownApp(
                                 "세션 ${snapshot.sessionDistanceMeters.roundToInt()}m · 추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
                             )
                         }
+                        if (gameplayMetrics.encounterOfferedCount > 0) {
+                            val resolutionRate = gameplayMetrics.encounterResolutionRatePercent?.let { "$it%" } ?: "-"
+                            Text(
+                                "세션 미스터리 발견 ${gameplayMetrics.discoveredEncounterCount} · 해결 ${gameplayMetrics.resolvedEncounterCount} · 해결률 $resolutionRate · 단서 ${gameplayMetrics.cluesCollectedCount}",
+                            )
+                            gameplayMetrics.repeatAreaFatigueProxyPercent?.let { fatigue ->
+                                Text(
+                                    "재방문 ${gameplayMetrics.revisitOfferedCount}건 · 반복 피로 proxy ${fatigue}%",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
                         snapshot.newlyDiscovered.firstOrNull()?.let {
                             Text("주변 발견: ${it.title}", style = MaterialTheme.typography.titleMedium)
                         }
@@ -311,6 +335,7 @@ fun DailyTownApp(
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
+                            gameplaySessionMonitor.recordClueCollected()
                             progressCoordinator.mutate(LocalDate.now()) { progress ->
                                 progress.recordClue(clueId, LocalDate.now())
                             }
@@ -318,8 +343,10 @@ fun DailyTownApp(
                         }
                     },
                     onResolve = { resolved ->
-                        activeEncounter = activeEncounter?.copy(encounter = resolved)
-                        val mechanic = activeEncounter?.template?.mechanic
+                        val resolvingSelection = activeEncounter
+                        activeEncounter = resolvingSelection?.copy(encounter = resolved)
+                        resolvingSelection?.let { gameplaySessionMonitor.recordResolved(it.isRevisit) }
+                        val mechanic = resolvingSelection?.template?.mechanic
                         progressCoordinator.mutate(LocalDate.now()) { progress ->
                             var updated = progress.recordResolution(resolved, LocalDate.now())
                             if (mechanic != null) {
@@ -426,7 +453,7 @@ fun DailyTownApp(
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "패키지/빌드/파생 통계만 공유하며 좌표와 지도 API 키는 제외합니다.",
+                            "패키지/빌드/파생 통계만 공유하며 좌표·이벤트 ID·지도 API 키는 제외합니다.",
                             style = MaterialTheme.typography.bodySmall,
                         )
                         Text(
@@ -458,6 +485,7 @@ fun DailyTownApp(
                                 rejectedLocationCount = snapshot.rejectedLocationCount,
                                 trackingDurationSeconds = snapshot.trackingDurationSeconds,
                                 sessionMetrics = sessionMetrics,
+                                gameplayMetrics = gameplayMetrics,
                                 appVersion = BuildConfig.VERSION_NAME,
                                 mapProvider = mapAdapter.providerId.name,
                                 mapHealth = mapHealth,
