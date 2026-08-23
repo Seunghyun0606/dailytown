@@ -1,7 +1,9 @@
 package com.dailytown.app.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -17,8 +19,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.dailytown.app.BuildConfig
 import com.dailytown.app.companion.CompanionMoment
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
+import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
 import com.dailytown.app.domain.*
 import com.dailytown.app.location.*
 import com.dailytown.app.map.MapMarkerSpec
@@ -32,6 +36,7 @@ import com.dailytown.app.persistence.toState
 import com.dailytown.app.persistence.weeklyPeriodKey
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
+import com.dailytown.app.reminder.LocalReminderManager
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -43,6 +48,7 @@ fun DailyTownApp(
     mapAdapter: MapViewAdapter,
     progressStore: ProgressStore,
     poiRepository: PoiRepository,
+    reminderManager: LocalReminderManager,
 ) {
     val context = LocalContext.current
     val spots = remember { demoMysterySpots() }
@@ -56,6 +62,7 @@ fun DailyTownApp(
     val proximityController = remember { EncounterProximityController(reducer = reducer) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
+    val goalRotationCoordinator = remember { GoalRotationCoordinator() }
 
     var snapshot by remember { mutableStateOf(session.current()) }
     var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
@@ -63,9 +70,15 @@ fun DailyTownApp(
     var encounterSequence by remember { mutableIntStateOf(0) }
     var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
     var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
+    var dailyGoals by remember { mutableStateOf(emptyList<GoalDefinition>()) }
+    var weeklyGoals by remember { mutableStateOf(emptyList<GoalDefinition>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
     var persistenceReady by remember { mutableStateOf(false) }
+
+    val reminderPreference = remember { reminderManager.preference() }
+    var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
+    var reminderHour by remember { mutableIntStateOf(reminderPreference.hour) }
 
     val deviceSource = remember(trackingPreset) {
         FusedDeviceLocationSource(context.applicationContext, trackingPreset.config)
@@ -75,34 +88,30 @@ fun DailyTownApp(
     val today = LocalDate.now()
     val dayKey = dailyPeriodKey(today)
     val weekKey = weeklyPeriodKey(today)
-    val dailyGoals = remember(dayKey) {
-        GoalPlanner().plan(
-            periodKey = dayKey,
-            catalog = GoalCatalog.defaults().filter { it.period == GoalPeriod.DAILY },
-            recentlyUsedIds = emptySet(),
-            count = 2,
-        )
-    }
-    val weeklyGoals = remember(weekKey) {
-        GoalPlanner().plan(
-            periodKey = weekKey,
-            catalog = GoalCatalog.defaults().filter { it.period == GoalPeriod.WEEKLY },
-            recentlyUsedIds = emptySet(),
-            count = 1,
-        )
-    }
 
     LaunchedEffect(progressStore) {
         try {
-            val restored = progressStore.load().normalizePeriods(LocalDate.now())
-            gameProgress = restored
-            session.restore(restored.toState(defaultCompanion))
+            val date = LocalDate.now()
+            val restored = progressStore.load().normalizePeriods(date)
+            val rotation = goalRotationCoordinator.ensure(restored, date)
+            gameProgress = rotation.progress
+            dailyGoals = rotation.dailyGoals
+            weeklyGoals = rotation.weeklyGoals
+            session.restore(rotation.progress.toState(defaultCompanion))
             snapshot = session.current()
         } catch (error: Throwable) {
             errorMessage = "진행도 불러오기 실패: ${error.message ?: "unknown"}"
         } finally {
             persistenceReady = true
         }
+    }
+
+    LaunchedEffect(dayKey, weekKey, persistenceReady) {
+        if (!persistenceReady) return@LaunchedEffect
+        val rotation = goalRotationCoordinator.ensure(gameProgress, LocalDate.now())
+        if (rotation.progress != gameProgress) gameProgress = rotation.progress
+        dailyGoals = rotation.dailyGoals
+        weeklyGoals = rotation.weeklyGoals
     }
 
     LaunchedEffect(snapshot.state, persistenceReady) {
@@ -146,13 +155,26 @@ fun DailyTownApp(
         snapshot = session.current()
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { result ->
         val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) start(TrackingMode.DEVICE)
         else errorMessage = "위치 권한이 필요합니다. 리플레이 모드는 권한 없이 사용할 수 있습니다."
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            reminderManager.enable(reminderHour, 0)
+            reminderEnabled = true
+            errorMessage = null
+        } else {
+            reminderEnabled = false
+            errorMessage = "탐험 리마인더를 켜려면 알림 권한이 필요합니다."
+        }
     }
 
     DisposableEffect(trackingMode, deviceSource) {
@@ -359,10 +381,78 @@ fun DailyTownApp(
                     }
                 }
 
+                ElevatedCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column {
+                                Text("탐험 리마인더", style = MaterialTheme.typography.titleMedium)
+                                Text("위치 사용 없이 매일 ${reminderHour}시 전후", style = MaterialTheme.typography.bodySmall)
+                            }
+                            Switch(
+                                checked = reminderEnabled,
+                                onCheckedChange = { enabled ->
+                                    if (!enabled) {
+                                        reminderManager.disable()
+                                        reminderEnabled = false
+                                    } else if (
+                                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                        !hasNotificationPermission(context)
+                                    ) {
+                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    } else {
+                                        reminderManager.enable(reminderHour, 0)
+                                        reminderEnabled = true
+                                    }
+                                },
+                            )
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            listOf(18, 19, 20).forEach { hour ->
+                                FilterChip(
+                                    selected = reminderHour == hour,
+                                    onClick = {
+                                        reminderHour = hour
+                                        if (reminderEnabled) reminderManager.enable(hour, 0)
+                                    },
+                                    label = { Text("${hour}시") },
+                                )
+                            }
+                        }
+                        if (reminderEnabled && !reminderManager.canPostNotifications()) {
+                            Text("시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.", color = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                }
+
+                ElevatedCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
+                        Text("좌표와 지도 API 키를 제외한 파생 통계만 공유합니다.", style = MaterialTheme.typography.bodySmall)
+                        OutlinedButton(onClick = {
+                            val report = FieldTestDiagnosticBuilder.build(
+                                progress = normalizedProgress,
+                                rejectedLocationCount = snapshot.rejectedLocationCount,
+                                appVersion = BuildConfig.VERSION_NAME,
+                                mapProvider = mapAdapter.providerId,
+                                trackingPreset = trackingPreset,
+                            ).render()
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test diagnostic")
+                                putExtra(Intent.EXTRA_TEXT, report)
+                            }
+                            context.startActivity(Intent.createChooser(shareIntent, "진단 리포트 공유"))
+                        }) { Text("진단 리포트 공유") }
+                    }
+                }
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = {
                         if (hasLocationPermission(context)) start(TrackingMode.DEVICE)
-                        else permissionLauncher.launch(
+                        else locationPermissionLauncher.launch(
                             arrayOf(
                                 Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -482,6 +572,10 @@ private fun MapSurface(mapAdapter: MapViewAdapter, modifier: Modifier = Modifier
 private fun hasLocationPermission(context: android.content.Context): Boolean =
     ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+private fun hasNotificationPermission(context: android.content.Context): Boolean =
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
 private fun encounterMarkerTitle(selection: EncounterSelection): String = when (selection.encounter.phase) {
     EncounterPhase.HIDDEN -> "탐험 후보 · ${selection.poi.name}"
