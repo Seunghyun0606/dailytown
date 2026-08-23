@@ -9,8 +9,8 @@ class FieldTestSessionMetricsTest {
     fun `distance error and battery drain are derived without raw locations`() {
         val readings = ArrayDeque(
             listOf(
-                BatterySnapshot(levelPercent = 80, chargeCounterMicroAh = 3_000_000, charging = false),
-                BatterySnapshot(levelPercent = 78, chargeCounterMicroAh = 2_940_000, charging = false),
+                BatterySnapshot(levelPercent = 80, chargeCounterMicroAh = 3_000_000, externallyPowered = false),
+                BatterySnapshot(levelPercent = 78, chargeCounterMicroAh = 2_940_000, externallyPowered = false),
             ),
         )
         val monitor = FieldTestSessionMonitor { readings.removeFirst() }
@@ -33,11 +33,11 @@ class FieldTestSessionMetricsTest {
     }
 
     @Test
-    fun `charging invalidates battery drain but keeps distance evidence`() {
+    fun `external power invalidates battery drain but keeps distance evidence`() {
         val readings = ArrayDeque(
             listOf(
-                BatterySnapshot(levelPercent = 50, chargeCounterMicroAh = 2_000_000, charging = true),
-                BatterySnapshot(levelPercent = 52, chargeCounterMicroAh = 2_050_000, charging = true),
+                BatterySnapshot(levelPercent = 50, chargeCounterMicroAh = 2_000_000, externallyPowered = true),
+                BatterySnapshot(levelPercent = 52, chargeCounterMicroAh = 2_050_000, externallyPowered = true),
             ),
         )
         val monitor = FieldTestSessionMonitor { readings.removeFirst() }
@@ -51,7 +51,7 @@ class FieldTestSessionMetricsTest {
         )
 
         assertEquals(2, metrics.distanceErrorPercent)
-        assertEquals(BatteryMeasurementStatus.CHARGING, metrics.batteryMeasurementStatus)
+        assertEquals(BatteryMeasurementStatus.EXTERNALLY_POWERED, metrics.batteryMeasurementStatus)
         assertNull(metrics.batteryDrainPercentPoints)
         assertNull(metrics.batteryDrainPercentPerHour)
         assertNull(metrics.batteryChargeConsumedMah)
@@ -60,7 +60,7 @@ class FieldTestSessionMetricsTest {
     @Test
     fun `unsupported battery properties stay unavailable instead of inventing consumption`() {
         val monitor = FieldTestSessionMonitor {
-            BatterySnapshot(levelPercent = null, chargeCounterMicroAh = null, charging = false)
+            BatterySnapshot(levelPercent = null, chargeCounterMicroAh = null, externallyPowered = false)
         }
 
         monitor.begin()
