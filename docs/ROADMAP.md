@@ -5,6 +5,7 @@
 - [x] Android native Kotlin + Jetpack Compose project
 - [x] Pure exploration engine and distance calculation
 - [x] Provider-neutral map contract
+- [x] Provider-neutral map health model (`UNCONFIGURED` / `INITIALIZING` / `READY` / `AUTH_ERROR` / `ERROR` / `DESTROYED`)
 - [x] Android CI: unit tests + lint + debug APK
 - [x] Instrumented-test APK compilation in normal CI
 - [x] Gradle Managed Device + credential-free replay UI smoke-test lane
@@ -23,13 +24,15 @@
 - [x] Foreground exploration session
 - [x] Accuracy/impossible-jump filtering
 - [x] Replay route for credential-free testing
-- [x] Replay route smoke-tested on a managed virtual-device path
 - [x] Local persistence of derived exploration progress with DataStore
 - [x] Do not persist raw high-frequency GPS traces
 - [x] Battery saver / balanced / precise location request presets
 - [x] Match GPS acceptance tolerance to the active tracking preset
+- [x] Extract OFF / DEVICE / REPLAY + preset transitions into framework-free `TrackingSessionCoordinator`
+- [x] JVM coverage for tracking-mode and preset transitions
 - [x] Per-tracking-session accepted/rejected GPS sample counters and rejection-rate metric
-- [x] Reset short-lived GPS quality counters on a new tracking session while preserving game progress
+- [x] Per-tracking-session elapsed-duration metric derived from monotonic sample timestamps
+- [x] Reset short-lived GPS quality/duration counters on a new tracking session while preserving game progress
 
 Human TODO:
 - [ ] Select representative real test neighborhoods and acceptance walking routes
@@ -40,6 +43,8 @@ Human TODO:
 - [x] NAVER Maps selected for MVP
 - [x] `NaverMapAdapter` behind `MapViewAdapter`
 - [x] Keyless placeholder so development/CI are not blocked by credentials
+- [x] Provider-neutral `MapHealth` state flow for readiness/auth/runtime diagnostics
+- [x] NAVER 401/429/800 failures translated into safe health/error-code state without exposing credentials or SDK exceptions
 - [x] Player and encounter marker rendering
 - [x] Provider-neutral `PoiRepository`
 - [x] Fixture POIs and radius query
@@ -94,7 +99,7 @@ Human TODO:
 - [x] In-app opt-in local exploration reminder with Android 13+ notification permission handling
 - [x] Battery-friendly inexact reminder scheduling and reboot/app-update restoration
 - [x] Privacy-safe field-test diagnostic sharing with derived metrics only
-- [x] Diagnostic includes package/build/map-config and GPS acceptance/rejection metrics but never raw coordinates or credential values
+- [x] Diagnostic includes package/build/map-health, session duration, and GPS acceptance/rejection metrics but never raw coordinates, provider exception payloads, or credential values
 
 Blocked on a human/product/data decision rather than engineering:
 - [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
@@ -106,7 +111,8 @@ Blocked on a human/product/data decision rather than engineering:
 - [x] Add `NAVER_MAP_NCP_KEY_ID` as a GitHub Actions repository secret
 - [x] Confirm the key belongs to standalone NAVER Cloud Maps
 - [ ] Run the hardened `Internal Debug APK` workflow and install the credentialed artifact
-- [ ] Validate the real NAVER map on a physical device
+- [ ] Validate that provider-neutral map health reaches `READY` on a physical device
+- [ ] Validate the real NAVER map tiles/markers/location/camera on a physical device
 - [ ] Reserve/create `com.dailytown.app` in Google Play Console before external release
 - [ ] Crash-reporting vendor/consent decision
 - [ ] Privacy disclosure and location retention policy
