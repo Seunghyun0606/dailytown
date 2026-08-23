@@ -26,6 +26,7 @@ import com.dailytown.app.companion.DefaultCompanionReactionPolicy
 import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
 import com.dailytown.app.domain.*
 import com.dailytown.app.location.*
+import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
@@ -42,8 +43,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
 
-private enum class TrackingMode { OFF, DEVICE, REPLAY }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTownApp(
@@ -53,6 +52,7 @@ fun DailyTownApp(
     reminderManager: LocalReminderManager,
 ) {
     val context = LocalContext.current
+    val mapHealth by mapAdapter.health.collectAsState()
     val spots = remember { demoMysterySpots() }
     val defaultCompanion = remember { Companion("moru", "모루", 12) }
     val initialState = remember { ExplorationState(companion = defaultCompanion) }
@@ -70,12 +70,14 @@ fun DailyTownApp(
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
     val goalRotationCoordinator = remember { GoalRotationCoordinator() }
+    val trackingCoordinator = remember { TrackingSessionCoordinator() }
+    val trackingRuntime by trackingCoordinator.state.collectAsState()
+    val trackingMode = trackingRuntime.mode
+    val trackingPreset = trackingRuntime.preset
 
     var snapshot by remember { mutableStateOf(session.current()) }
     var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
-    var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
-    var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
     var persistenceReady by remember { mutableStateOf(false) }
@@ -149,7 +151,7 @@ fun DailyTownApp(
         activeEncounter = null
         lastCompanionMoment = null
         errorMessage = null
-        trackingMode = mode
+        trackingCoordinator.start(mode)
     }
 
     fun applyReaction(moment: CompanionMoment) {
@@ -276,7 +278,9 @@ fun DailyTownApp(
             ) {
                 Spacer(Modifier.height(4.dp))
                 Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall)
-                Text("지도: ${mapAdapter.providerId} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}")
+                Text(
+                    "지도: ${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}",
+                )
 
                 MapSurface(
                     mapAdapter = mapAdapter,
@@ -290,7 +294,7 @@ fun DailyTownApp(
                         Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
                         if (snapshot.totalLocationSampleCount > 0) {
                             Text(
-                                "GPS 샘플 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                                "추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
                             )
                         }
                         snapshot.newlyDiscovered.firstOrNull()?.let {
@@ -355,10 +359,7 @@ fun DailyTownApp(
                             LocationTrackingPreset.entries.forEach { preset ->
                                 FilterChip(
                                     selected = trackingPreset == preset,
-                                    onClick = {
-                                        if (trackingMode == TrackingMode.DEVICE) trackingMode = TrackingMode.OFF
-                                        trackingPreset = preset
-                                    },
+                                    onClick = { trackingCoordinator.selectPreset(preset) },
                                     label = { Text(trackingPresetLabel(preset)) },
                                 )
                             }
@@ -416,15 +417,17 @@ fun DailyTownApp(
                             style = MaterialTheme.typography.bodySmall,
                         )
                         Text(
-                            "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 주입 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "완료" else "없음"}",
+                            "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "주입" else "없음"} · 지도 ${mapHealthLabel(mapHealth.status)}",
                         )
                         OutlinedButton(onClick = {
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
                                 acceptedLocationCount = snapshot.acceptedLocationCount,
                                 rejectedLocationCount = snapshot.rejectedLocationCount,
+                                trackingDurationSeconds = snapshot.trackingDurationSeconds,
                                 appVersion = BuildConfig.VERSION_NAME,
                                 mapProvider = mapAdapter.providerId.name,
+                                mapHealth = mapHealth,
                                 trackingPreset = trackingPreset,
                             ).render()
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -453,7 +456,7 @@ fun DailyTownApp(
                         modifier = Modifier.testTag("tracking-replay"),
                     ) { Text("경로 리플레이") }
                     TextButton(onClick = {
-                        trackingMode = TrackingMode.OFF
+                        trackingCoordinator.stop()
                         mapAdapter.setUserLocation(null)
                     }) { Text("중지") }
                 }
@@ -551,6 +554,15 @@ private fun trackingPresetLabel(preset: LocationTrackingPreset) = when (preset) 
     LocationTrackingPreset.BATTERY_SAVER -> "절약"
     LocationTrackingPreset.BALANCED -> "균형"
     LocationTrackingPreset.PRECISE -> "정밀"
+}
+
+private fun mapHealthLabel(status: MapHealthStatus) = when (status) {
+    MapHealthStatus.UNCONFIGURED -> "지도 키 없음"
+    MapHealthStatus.INITIALIZING -> "지도 준비 중"
+    MapHealthStatus.READY -> "지도 정상"
+    MapHealthStatus.AUTH_ERROR -> "지도 인증 오류"
+    MapHealthStatus.ERROR -> "지도 오류"
+    MapHealthStatus.DESTROYED -> "지도 종료"
 }
 
 private fun phaseLabel(phase: EncounterPhase) = when (phase) {
