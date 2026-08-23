@@ -2,6 +2,7 @@ package com.dailytown.app.diagnostics
 
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.map.MapHealth
 import com.dailytown.app.persistence.ExplorationProgress
 import java.time.Instant
 
@@ -11,7 +12,10 @@ data class FieldTestDiagnostic(
     val packageId: String,
     val mapProvider: String,
     val mapCredentialConfigured: Boolean,
+    val mapHealthStatus: String?,
+    val mapHealthErrorCode: String?,
     val trackingPreset: String,
+    val trackingDurationSeconds: Int?,
     val totalDistanceMeters: Int,
     val exploredPoiCount: Int,
     val resolvedEncounterCount: Int,
@@ -35,7 +39,10 @@ data class FieldTestDiagnostic(
         appendLine("packageId=$packageId")
         appendLine("mapProvider=$mapProvider")
         appendLine("mapCredentialConfigured=$mapCredentialConfigured")
+        mapHealthStatus?.let { appendLine("mapHealthStatus=$it") }
+        mapHealthErrorCode?.let { appendLine("mapHealthErrorCode=$it") }
         appendLine("trackingPreset=$trackingPreset")
+        trackingDurationSeconds?.let { appendLine("trackingDurationSeconds=$it") }
         appendLine("totalDistanceMeters=$totalDistanceMeters")
         appendLine("exploredPoiCount=$exploredPoiCount")
         appendLine("resolvedEncounterCount=$resolvedEncounterCount")
@@ -63,6 +70,8 @@ object FieldTestDiagnosticBuilder {
         mapProvider: String,
         trackingPreset: LocationTrackingPreset,
         acceptedLocationCount: Int? = null,
+        trackingDurationSeconds: Int? = null,
+        mapHealth: MapHealth? = null,
         packageId: String = BuildConfig.APPLICATION_ID,
         mapCredentialConfigured: Boolean = BuildConfig.NAVER_MAP_CONFIGURED,
         generatedAt: Instant = Instant.now(),
@@ -78,7 +87,10 @@ object FieldTestDiagnosticBuilder {
             packageId = packageId,
             mapProvider = mapProvider,
             mapCredentialConfigured = mapCredentialConfigured,
+            mapHealthStatus = mapHealth?.status?.name,
+            mapHealthErrorCode = mapHealth?.errorCode,
             trackingPreset = trackingPreset.name,
+            trackingDurationSeconds = trackingDurationSeconds,
             totalDistanceMeters = progress.distanceWalkedMeters.toInt(),
             exploredPoiCount = progress.encounterVisitedPoiIds.size,
             resolvedEncounterCount = progress.resolvedEncounterIds.size,
