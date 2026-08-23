@@ -1,29 +1,37 @@
-# Human-required actions
+# Human TODOs
 
-Automation can proceed safely until external identity, legal/product approval, or physical field testing is required.
+Naver Maps is the selected MVP provider. The application is intentionally functional in replay mode without credentials; the map area shows a placeholder until the following human-owned tasks are completed.
 
-## First blocking decision: map provider
+## TODO 1 — NAVER Cloud Maps credential
 
-Before a real map adapter is committed, a human should select **Naver Maps, Kakao Maps, or Google Maps** and create the corresponding developer application/key.
+- [ ] In NAVER Cloud Platform, create/select a Maps application and enable the Android dynamic map capability.
+- [ ] Register Android package `com.dailytown.app` and apply the provider's required app restrictions.
+- [ ] Copy only the NCP Key ID (not a secret) into your local Gradle user properties:
 
-Decision checklist:
+```properties
+NAVER_MAP_NCP_KEY_ID=<your-key-id>
+```
 
-- intended launch territory: Korea-only MVP vs near-term global expansion
-- current pricing/quota confirmed in provider console/terms
-- allowed use for location-based game overlays and POI display
-- whether routing/geocoding is actually needed for MVP
-- key restriction scheme and package/signing fingerprint
+Recommended local location: `~/.gradle/gradle.properties`. Do not commit the value.
 
-Do not paste production secrets into GitHub. Store local credentials in an ignored file or CI secret.
+For CI/release builds, inject `NAVER_MAP_NCP_KEY_ID` from the build environment or repository secret mechanism rather than source control.
 
-## Other later human actions
+## TODO 2 — real-device validation
 
-1. Pick 2–3 field-test neighborhoods and physically test routes.
-2. Approve initial mystery themes/content safety boundaries.
-3. Create/hold Android signing key.
-4. Configure Play Console internal testing and tester accounts.
-5. Approve location/privacy disclosure and retention policy before collecting remote telemetry.
+- [ ] Run on a physical Android device outdoors.
+- [ ] Verify precise/approximate location permission behavior.
+- [ ] Verify location marker/camera updates and GPS rejection counters.
+- [ ] Walk the same route twice and confirm already discovered content is not awarded twice.
 
-## Recommended next implementation after map choice
+## TODO 3 — release/privacy decisions
 
-Add `LocationSource`, Android Fused Location adapter, permission flow, route playback fixtures, then the selected map adapter. The domain layer should remain unchanged.
+Before any external beta or store submission:
+
+- [ ] Write and publish the location/privacy policy.
+- [ ] Decide whether background location is actually required. Current MVP deliberately does **not** request background location.
+- [ ] Create signing/release credentials and store them outside the repository.
+- [ ] Decide analytics/crash-reporting vendor and consent policy before adding any telemetry SDK.
+
+## Not blocked by these TODOs
+
+The replay route, exploration engine, location quality policy, map-provider abstraction, Naver adapter, and tests can all be developed without a real map credential.
