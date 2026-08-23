@@ -8,6 +8,7 @@ on:
       - "app/src/androidTest/**"
       - "app/src/main/java/com/dailytown/app/ui/**"
       - "app/src/main/java/com/dailytown/app/location/**"
+      - "app/src/main/java/com/dailytown/app/map/**"
       - ".github/workflows/emulator-smoke.yml"
 
 concurrency:
