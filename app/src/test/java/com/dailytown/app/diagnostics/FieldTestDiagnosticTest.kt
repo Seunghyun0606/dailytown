@@ -12,7 +12,7 @@ import org.junit.Test
 
 class FieldTestDiagnosticTest {
     @Test
-    fun `render contains derived metrics but no coordinate or credential fields`() {
+    fun `render contains derived metrics but no coordinate credential or event id fields`() {
         val progress = ExplorationProgress(
             distanceWalkedMeters = 1234.0,
             companionBond = 24,
@@ -34,12 +34,23 @@ class FieldTestDiagnosticTest {
             batteryDrainPercentPerHour = 4,
             batteryChargeConsumedMah = 60,
         )
+        val gameplayMetrics = GameplaySessionMetrics(
+            encounterOfferedCount = 3,
+            hintedEncounterCount = 3,
+            discoveredEncounterCount = 2,
+            resolvedEncounterCount = 1,
+            cluesCollectedCount = 2,
+            revisitOfferedCount = 1,
+            revisitDiscoveredCount = 1,
+            revisitResolvedCount = 0,
+        )
         val text = FieldTestDiagnosticBuilder.build(
             progress = progress,
             acceptedLocationCount = 9,
             rejectedLocationCount = 1,
             trackingDurationSeconds = 420,
             sessionMetrics = sessionMetrics,
+            gameplayMetrics = gameplayMetrics,
             appVersion = "test",
             mapProvider = "naver",
             mapHealth = MapHealth(MapHealthStatus.READY),
@@ -56,6 +67,13 @@ class FieldTestDiagnosticTest {
         assertTrue(text.contains("batteryMeasurementStatus=VALID"))
         assertTrue(text.contains("batteryDrainPercentPerHour=4"))
         assertTrue(text.contains("batteryChargeConsumedMah=60"))
+        assertTrue(text.contains("sessionEncounterOfferedCount=3"))
+        assertTrue(text.contains("sessionEncounterDiscoveredCount=2"))
+        assertTrue(text.contains("sessionEncounterResolvedCount=1"))
+        assertTrue(text.contains("sessionEncounterDiscoveryRatePercent=67"))
+        assertTrue(text.contains("sessionEncounterResolutionRatePercent=50"))
+        assertTrue(text.contains("sessionRevisitSharePercent=33"))
+        assertTrue(text.contains("repeatAreaFatigueProxyPercent=100"))
         assertTrue(text.contains("totalDistanceMeters=1234"))
         assertTrue(text.contains("exploredPoiCount=3"))
         assertTrue(text.contains("acceptedLocationCount=9"))
@@ -63,11 +81,14 @@ class FieldTestDiagnosticTest {
         assertTrue(text.contains("rejectedLocationRatePercent=10"))
         assertTrue(text.contains("acceptanceConfigured=false"))
         assertTrue(text.contains("acceptanceOverall=NOT_EVALUATED"))
-        assertTrue(text.contains("privacy=derived_metrics_only_no_raw_gps"))
+        assertTrue(text.contains("privacy=derived_metrics_only_no_raw_gps_no_event_ids_no_credentials"))
         assertFalse(text.contains("latitude", ignoreCase = true))
         assertFalse(text.contains("longitude", ignoreCase = true))
         assertFalse(text.contains("NAVER_MAP_NCP_KEY_ID"))
         assertFalse(text.contains("apiKey", ignoreCase = true))
+        assertFalse(text.contains("poiId", ignoreCase = true))
+        assertFalse(text.contains("encounterId", ignoreCase = true))
+        assertFalse(text.contains("templateId", ignoreCase = true))
     }
 
     @Test
@@ -105,6 +126,42 @@ class FieldTestDiagnosticTest {
         assertTrue(text.contains("acceptanceConfigured=true"))
         assertTrue(text.contains("acceptanceOverall=FAIL"))
         assertTrue(text.contains("acceptanceFailedKeys=distanceErrorPercent,batteryDrainPercentPerHour"))
+    }
+
+    @Test
+    fun `configured gameplay acceptance uses only derived counters and rates`() {
+        val text = FieldTestDiagnosticBuilder.build(
+            progress = ExplorationProgress(),
+            acceptedLocationCount = 10,
+            rejectedLocationCount = 0,
+            trackingDurationSeconds = 900,
+            gameplayMetrics = GameplaySessionMetrics(
+                encounterOfferedCount = 3,
+                hintedEncounterCount = 2,
+                discoveredEncounterCount = 2,
+                resolvedEncounterCount = 1,
+                cluesCollectedCount = 2,
+                revisitOfferedCount = 1,
+                revisitDiscoveredCount = 1,
+                revisitResolvedCount = 0,
+            ),
+            appVersion = "test",
+            mapProvider = "naver",
+            trackingPreset = LocationTrackingPreset.BALANCED,
+            acceptanceCriteria = FieldTestAcceptanceCriteria(
+                minimumDiscoveredEncountersPerSession = 2,
+                minimumEncounterResolutionRatePercent = 75,
+                maximumRepeatAreaFatiguePercent = 50,
+            ),
+            generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
+        ).render()
+
+        assertTrue(text.contains("acceptanceOverall=FAIL"))
+        assertTrue(
+            text.contains(
+                "acceptanceFailedKeys=encounterResolutionRatePercent,repeatAreaFatigueProxyPercent",
+            ),
+        )
     }
 
     @Test
@@ -149,6 +206,8 @@ class FieldTestDiagnosticTest {
         assertFalse(text.contains("trackingDurationSeconds="))
         assertFalse(text.contains("sessionDistanceMeters="))
         assertFalse(text.contains("batteryMeasurementStatus="))
+        assertFalse(text.contains("sessionEncounterOfferedCount="))
+        assertFalse(text.contains("repeatAreaFatigueProxyPercent="))
         assertTrue(text.contains("acceptanceOverall=NOT_EVALUATED"))
     }
 }
