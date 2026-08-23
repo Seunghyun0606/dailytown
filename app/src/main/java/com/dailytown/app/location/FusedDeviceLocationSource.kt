@@ -1,6 +1,7 @@
 package com.dailytown.app.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
@@ -56,11 +57,10 @@ class FusedDeviceLocationSource(
         callback = newCallback
 
         try {
-            client.requestLocationUpdates(request, newCallback, context.mainLooper)
-                .addOnFailureListener(onError)
-        } catch (error: Exception) {
+            requestUpdates(request, newCallback, onError)
+        } catch (security: SecurityException) {
             callback = null
-            onError(error)
+            onError(security)
         }
     }
 
@@ -68,6 +68,18 @@ class FusedDeviceLocationSource(
         val activeCallback = callback ?: return
         callback = null
         client.removeLocationUpdates(activeCallback)
+    }
+
+    // start() performs the runtime fine/coarse permission check immediately before
+    // entering this helper. Keep the lint suppression scoped only to the privileged call.
+    @SuppressLint("MissingPermission")
+    private fun requestUpdates(
+        request: LocationRequest,
+        callback: LocationCallback,
+        onError: (Throwable) -> Unit,
+    ) {
+        client.requestLocationUpdates(request, callback, context.mainLooper)
+            .addOnFailureListener(onError)
     }
 
     private fun priority(mode: LocationPriorityMode): Int = when (mode) {
