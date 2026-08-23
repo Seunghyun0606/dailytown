@@ -38,6 +38,27 @@ Human TODO:
 - [ ] Select representative real test neighborhoods and acceptance walking routes
 - [ ] Perform outdoor physical-device validation
 
+## Progress runtime + retention — implemented
+
+- [x] Neighborhood progress / collection summary
+- [x] Deterministic daily/weekly goal catalog and rotation
+- [x] Daily/weekly derived counters with automatic period rollover
+- [x] Goal progress evaluation against the correct period rather than lifetime totals
+- [x] Persist current/recent goal IDs and avoid immediate repeats when alternatives exist
+- [x] Extract persisted progress + daily/weekly goals + readiness into `ProgressRuntimeCoordinator`
+- [x] Route exploration/encounter/clue/memory mutations through the progress runtime boundary
+- [x] Ignore mutations before restore completes so unloaded progress cannot be overwritten
+- [x] Explicit in-memory fallback after load failure
+- [x] Disable persistence during fallback sessions so default progress cannot overwrite valid stored data
+- [x] JVM coverage for restore, period normalization, mutation, persistence, and fallback safety
+- [x] Soft fallback instead of hard content exhaustion when all local POIs have been seen
+- [x] Revisit preference for local-memory/time-layer mechanics
+- [x] Time-of-day weighting for encounter mechanics
+- [x] Companion-memory weighting in encounter selection
+- [x] Low-frequency rare encounters with bond-sensitive eligibility
+- [x] In-app opt-in local exploration reminder with Android 13+ notification permission handling
+- [x] Battery-friendly inexact reminder scheduling and reboot/app-update restoration
+
 ## Map + POI — provider boundary implemented
 
 - [x] NAVER Maps selected for MVP
@@ -84,22 +105,23 @@ Human TODO:
 - [ ] Approve narrative tone and prohibited themes
 - [ ] Approve the first authored scenario/copy pack
 
-## Retention prototype — implemented
+## Field-test diagnostics + acceptance — engineering implemented
 
-- [x] Neighborhood progress / collection summary
-- [x] Deterministic daily/weekly goal catalog and rotation
-- [x] Daily/weekly derived counters with automatic period rollover
-- [x] Goal progress evaluation against the correct period rather than lifetime totals
-- [x] Persist current/recent goal IDs and avoid immediate repeats when alternatives exist
-- [x] Soft fallback instead of hard content exhaustion when all local POIs have been seen
-- [x] Revisit preference for local-memory/time-layer mechanics
-- [x] Time-of-day weighting for encounter mechanics
-- [x] Companion-memory weighting in encounter selection
-- [x] Low-frequency rare encounters with bond-sensitive eligibility
-- [x] In-app opt-in local exploration reminder with Android 13+ notification permission handling
-- [x] Battery-friendly inexact reminder scheduling and reboot/app-update restoration
 - [x] Privacy-safe field-test diagnostic sharing with derived metrics only
 - [x] Diagnostic includes package/build/map-health, session duration, and GPS acceptance/rejection metrics but never raw coordinates, provider exception payloads, or credential values
+- [x] Configurable `FieldTestAcceptanceEvaluator` with PASS / FAIL / NOT_EVALUATED states
+- [x] No hard-coded product thresholds; unset criteria cannot silently pass
+- [x] Optional build/runtime criteria injection through `FIELD_TEST_MIN_SESSION_SECONDS`
+- [x] Optional build/runtime criteria injection through `FIELD_TEST_MAX_GPS_REJECTION_PERCENT`
+- [x] Optional build/runtime criteria injection through `FIELD_TEST_REQUIRE_MAP_READY`
+- [x] Invalid configured criteria fail Gradle configuration instead of being silently ignored
+- [x] Diagnostic exports whether criteria are configured, overall acceptance state, and failed metric keys
+
+Human TODO:
+- [ ] Approve minimum representative session duration
+- [ ] Approve maximum GPS rejection-rate threshold
+- [ ] Decide whether `MapHealth.READY` is a mandatory closed-test gate (recommended for credentialed physical-device validation, but not hard-coded)
+- [ ] Define later criteria for battery impact, route-distance error, encounters/session, completion rate, and repeat-area fatigue after measurement sources exist
 
 Blocked on a human/product/data decision rather than engineering:
 - [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
@@ -113,9 +135,10 @@ Blocked on a human/product/data decision rather than engineering:
 - [ ] Run the hardened `Internal Debug APK` workflow and install the credentialed artifact
 - [ ] Validate that provider-neutral map health reaches `READY` on a physical device
 - [ ] Validate the real NAVER map tiles/markers/location/camera on a physical device
+- [ ] Configure approved field-test acceptance criteria through Gradle/Actions properties
 - [ ] Reserve/create `com.dailytown.app` in Google Play Console before external release
 - [ ] Crash-reporting vendor/consent decision
 - [ ] Privacy disclosure and location retention policy
 - [ ] Signing/release credentials
 - [ ] Play Console/internal testers
-- [ ] Field-test acceptance thresholds for session duration, battery impact, distance accuracy, GPS rejection rate, encounters/session, completion rate, and repeat-area fatigue
+- [ ] Approve remaining field-test acceptance thresholds for battery impact, distance accuracy, encounters/session, completion rate, and repeat-area fatigue
