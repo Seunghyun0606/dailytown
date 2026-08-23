@@ -58,7 +58,7 @@ class FusedDeviceLocationSource(
         try {
             client.requestLocationUpdates(request, newCallback, context.mainLooper)
                 .addOnFailureListener(onError)
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             callback = null
             onError(error)
         }
