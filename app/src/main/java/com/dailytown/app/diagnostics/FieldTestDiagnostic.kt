@@ -1,13 +1,16 @@
 package com.dailytown.app.diagnostics
 
-import com.dailytown.app.persistence.ExplorationProgress
+import com.dailytown.app.BuildConfig
 import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.persistence.ExplorationProgress
 import java.time.Instant
 
 data class FieldTestDiagnostic(
     val generatedAt: String,
     val appVersion: String,
+    val packageId: String,
     val mapProvider: String,
+    val mapCredentialConfigured: Boolean,
     val trackingPreset: String,
     val totalDistanceMeters: Int,
     val exploredPoiCount: Int,
@@ -27,7 +30,9 @@ data class FieldTestDiagnostic(
         appendLine("Daily Town field-test diagnostic")
         appendLine("generatedAt=$generatedAt")
         appendLine("appVersion=$appVersion")
+        appendLine("packageId=$packageId")
         appendLine("mapProvider=$mapProvider")
+        appendLine("mapCredentialConfigured=$mapCredentialConfigured")
         appendLine("trackingPreset=$trackingPreset")
         appendLine("totalDistanceMeters=$totalDistanceMeters")
         appendLine("exploredPoiCount=$exploredPoiCount")
@@ -42,7 +47,7 @@ data class FieldTestDiagnostic(
         appendLine("weeklyDistanceMeters=$weeklyDistanceMeters")
         appendLine("weeklyDiscoveries=$weeklyDiscoveries")
         appendLine("weeklyResolutions=$weeklyResolutions")
-        append("privacy=derived_metrics_only_no_raw_gps")
+        append("privacy=derived_metrics_only_no_raw_gps_no_credentials")
     }
 }
 
@@ -53,11 +58,15 @@ object FieldTestDiagnosticBuilder {
         appVersion: String,
         mapProvider: String,
         trackingPreset: LocationTrackingPreset,
+        packageId: String = BuildConfig.APPLICATION_ID,
+        mapCredentialConfigured: Boolean = BuildConfig.NAVER_MAP_CONFIGURED,
         generatedAt: Instant = Instant.now(),
     ): FieldTestDiagnostic = FieldTestDiagnostic(
         generatedAt = generatedAt.toString(),
         appVersion = appVersion,
+        packageId = packageId,
         mapProvider = mapProvider,
+        mapCredentialConfigured = mapCredentialConfigured,
         trackingPreset = trackingPreset.name,
         totalDistanceMeters = progress.distanceWalkedMeters.toInt(),
         exploredPoiCount = progress.encounterVisitedPoiIds.size,
