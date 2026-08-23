@@ -1,0 +1,159 @@
+package com.dailytown.app.ui
+
+import android.content.Intent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.dailytown.app.diagnostics.FieldTestAreaProfile
+import com.dailytown.app.diagnostics.FieldTestCohortSummary
+import com.dailytown.app.diagnostics.FieldTestComparisonRecorder
+import com.dailytown.app.diagnostics.FieldTestDiagnostic
+import com.dailytown.app.diagnostics.FieldTestMetricAverage
+
+@Composable
+internal fun FieldTestComparisonCard(
+    sessionToken: Int,
+    canRecordCurrentSession: Boolean,
+    buildDiagnostic: () -> FieldTestDiagnostic,
+) {
+    val context = LocalContext.current
+    val recorder = remember { FieldTestComparisonRecorder() }
+    var revision by remember { mutableIntStateOf(0) }
+    var selectedProfile by remember { mutableStateOf(FieldTestAreaProfile.NEW_AREA) }
+    var lastRecordedSessionToken by remember { mutableIntStateOf(-1) }
+    val report = remember(revision) { recorder.report() }
+    val alreadyRecorded = lastRecordedSessionToken == sessionToken
+
+    ElevatedCard(Modifier.fillMaxWidth()) {
+        Column(
+            Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text("필드테스트 세션 비교", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "신규/반복 지역의 파생 지표만 앱 메모리에서 비교합니다. 장소명·좌표·이벤트 ID는 저장하지 않습니다.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                FilterChip(
+                    selected = selectedProfile == FieldTestAreaProfile.NEW_AREA,
+                    onClick = { selectedProfile = FieldTestAreaProfile.NEW_AREA },
+                    label = { Text("신규 지역") },
+                )
+                FilterChip(
+                    selected = selectedProfile == FieldTestAreaProfile.REPEAT_AREA,
+                    onClick = { selectedProfile = FieldTestAreaProfile.REPEAT_AREA },
+                    label = { Text("반복 지역") },
+                )
+            }
+
+            OutlinedButton(
+                enabled = canRecordCurrentSession && !alreadyRecorded,
+                onClick = {
+                    recorder.record(selectedProfile, buildDiagnostic())
+                    lastRecordedSessionToken = sessionToken
+                    revision += 1
+                },
+            ) {
+                Text(if (alreadyRecorded) "현재 세션 기록됨" else "현재 세션 비교에 기록")
+            }
+            if (!canRecordCurrentSession) {
+                Text("추적을 중지한 뒤 위치 샘플이 있는 세션을 기록할 수 있습니다.", style = MaterialTheme.typography.bodySmall)
+            }
+
+            Text("신규 ${report.newArea.sessionCount}회 · 반복 ${report.repeatArea.sessionCount}회")
+            if (report.newArea.sessionCount > 0) {
+                CohortSummary(prefix = "신규", cohort = report.newArea)
+            }
+            if (report.repeatArea.sessionCount > 0) {
+                CohortSummary(prefix = "반복", cohort = report.repeatArea)
+            }
+
+            val discoveredDelta = report.deltas
+                .first { it.key == "discoveredEncountersPerSession" }
+                .repeatMinusNew
+            val resolutionDelta = report.deltas
+                .first { it.key == "encounterResolutionRatePercent" }
+                .repeatMinusNew
+            val fatigueDelta = report.deltas
+                .first { it.key == "repeatAreaFatigueProxyPercent" }
+                .repeatMinusNew
+            if (discoveredDelta != null || resolutionDelta != null || fatigueDelta != null) {
+                Text("반복 - 신규 차이", style = MaterialTheme.typography.labelLarge)
+                discoveredDelta?.let { Text("발견 encounter/세션 ${signed(it)}") }
+                resolutionDelta?.let { Text("해결률 ${signed(it)}%p") }
+                fatigueDelta?.let { Text("반복 피로 proxy ${signed(it)}%p") }
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    enabled = recorder.sessionCount() > 0,
+                    onClick = {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test comparison")
+                            putExtra(Intent.EXTRA_TEXT, recorder.report().render())
+                        }
+                        context.startActivity(Intent.createChooser(shareIntent, "세션 비교 리포트 공유"))
+                    },
+                ) { Text("비교 리포트 공유") }
+                TextButton(
+                    enabled = recorder.sessionCount() > 0,
+                    onClick = {
+                        recorder.reset()
+                        lastRecordedSessionToken = -1
+                        revision += 1
+                    },
+                ) { Text("비교 초기화") }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CohortSummary(
+    prefix: String,
+    cohort: FieldTestCohortSummary,
+) {
+    Text("$prefix 평균", style = MaterialTheme.typography.labelLarge)
+    MetricText("발견 encounter/세션", cohort.discoveredEncountersPerSession)
+    MetricText("해결률 (%)", cohort.encounterResolutionRatePercent)
+    MetricText("GPS 제외율 (%)", cohort.gpsRejectionRatePercent)
+    MetricText("거리 오차 (%)", cohort.distanceErrorPercent)
+    MetricText("배터리 소모/시간", cohort.batteryDrainPercentPerHour)
+    MetricText("재방문 비율 (%)", cohort.revisitSharePercent)
+    MetricText("반복 피로 proxy (%)", cohort.repeatAreaFatigueProxyPercent)
+    Text(
+        "acceptance PASS ${cohort.acceptancePassCount} · FAIL ${cohort.acceptanceFailCount} · 미평가 ${cohort.acceptanceNotEvaluatedCount}",
+        style = MaterialTheme.typography.bodySmall,
+    )
+}
+
+@Composable
+private fun MetricText(
+    label: String,
+    metric: FieldTestMetricAverage,
+) {
+    val value = metric.average?.toString() ?: "-"
+    Text("$label $value · 유효 ${metric.evidenceCount}/${metric.sessionCount}", style = MaterialTheme.typography.bodySmall)
+}
+
+private fun signed(value: Int): String = if (value > 0) "+$value" else value.toString()
