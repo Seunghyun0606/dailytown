@@ -61,6 +61,7 @@ Engineering support is implemented, but the product thresholds must be chosen by
 - [ ] Approve the minimum number of encounters that must reach **`DISCOVERED`** during a representative session. Generated-but-never-reached candidates are intentionally not counted.
 - [ ] Approve the minimum encounter resolution-rate percentage (`resolved / discovered`).
 - [ ] Approve the maximum repeat-area-fatigue proxy percentage. The proxy is the unresolved share of **discovered revisit encounters** and should be used for comparative route testing, not treated as direct user sentiment.
+- [ ] Decide the minimum number of valid `NEW_AREA` and `REPEAT_AREA` sessions required before using cohort averages/deltas for a product decision. The app exposes per-metric evidence counts but deliberately does not invent this sample-size policy.
 
 Once approved, configure the supported criteria as Gradle properties or environment variables. They are normal configuration values, **not secrets**:
 
@@ -98,7 +99,13 @@ Invalid configured values intentionally fail Gradle configuration rather than be
 - [ ] Verify `batteryDrainPercentPerHour` is absent/unevaluated for external-power sessions or zero-duration evidence rather than being fabricated.
 - [ ] During a representative route, verify the in-app session summary increments offered/discovered/resolved encounters and collected clues only when those transitions actually happen.
 - [ ] Verify the diagnostic exports gameplay **counts/rates only** and contains no `poiId`, `encounterId`, `templateId`, or equivalent event identifiers.
-- [ ] Compare new-area vs repeat-area diagnostics. If there are no discovered revisit encounters, confirm `repeatAreaFatigueProxyPercent` is omitted/unevaluated rather than shown as 0%.
+- [ ] After each representative route, tap **중지**, select `신규 지역` or `반복 지역` in **필드테스트 세션 비교**, then record the current session once.
+- [ ] Verify the same stopped session cannot be added repeatedly by tapping the record button multiple times. Starting a new DEVICE/REPLAY session should create a new comparison-eligible session token.
+- [ ] Record multiple sessions in each cohort and verify every average shows `유효 evidence / 전체 session` counts. Missing battery/reference/revisit evidence must not be treated as zero.
+- [ ] Verify `반복 - 신규 차이` is shown only for metrics where both cohorts have evaluable averages and is presented as a raw delta rather than an automatic good/bad verdict.
+- [ ] Share **세션 비교 리포트** and confirm it contains aggregate derived metrics only: no place label, coordinates, route geometry, `poiId`, `encounterId`, `templateId`, session token, provider exception payload, or credential.
+- [ ] Use **비교 초기화** and confirm all in-memory comparison summaries are cleared. Relaunching the process should likewise start with an empty comparison set.
+- [ ] If there are no discovered revisit encounters, confirm `repeatAreaFatigueProxyPercent` is omitted/unevaluated rather than shown as 0%.
 - [ ] Walk the same route multiple times and judge whether the measured revisit resolution/fatigue proxy matches the subjective feeling of repetition closely enough to use as a product signal.
 - [ ] Verify daily/weekly counters reset only when the corresponding period changes.
 - [ ] Force/observe a progress-load failure in a debug test if practical and confirm the app shows the temporary progress mode while persistence remains disabled; this protects existing stored progress from being overwritten by a fallback state.
@@ -118,4 +125,4 @@ Before any external beta or store submission:
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
+Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, bounded in-memory new-vs-repeat session comparison, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
