@@ -5,7 +5,7 @@
 - [x] Android native Kotlin + Jetpack Compose project
 - [x] Pure exploration engine and distance calculation
 - [x] Provider-neutral map contract
-- [x] Android CI: unit tests + debug APK
+- [x] Android CI: unit tests + lint + debug APK
 - [x] Android application identity finalized as `com.dailytown.app`
 - [x] Credentialed `Internal Debug APK` GitHub Actions workflow
 - [x] Real-device smoke-test documentation
@@ -34,6 +34,8 @@ Human TODO:
 - [x] Player and encounter marker rendering
 - [x] Provider-neutral `PoiRepository`
 - [x] Fixture POIs and radius query
+- [x] Provider-neutral padded POI cache with TTL, deduplication, radius filtering, and limited stale fallback
+- [x] Cache is wired around the current fixture repository and can wrap a future production repository unchanged
 - [x] Google Maps replacement contract documented
 - [x] Dynamic Map key injection path via Gradle property or environment variable
 - [x] Safe build diagnostic flag showing whether a NAVER credential was injected without exposing the key
@@ -44,7 +46,7 @@ Human TODO:
 - [ ] Update NAVER Console's temporary/random Android package restriction to `com.dailytown.app`
 - [ ] Add GitHub Actions repository secret `NAVER_MAP_NCP_KEY_ID` for credentialed internal APK builds
 - [ ] Confirm NAVER Maps terms/pricing for intended location-game usage
-- [ ] Choose production POI/public-data sources and validate licensing/caching terms
+- [ ] Choose production POI/public-data sources and validate licensing, attribution, and allowed cache duration/redistribution terms
 
 ## Mystery loop — mechanics and playable loop implemented
 
@@ -83,7 +85,7 @@ Human TODO:
 - [x] Diagnostic includes package/build/map-config status but never raw coordinates or credential values
 
 Blocked on a human/product/data decision rather than engineering:
-- [ ] Add a production POI/public-data cache adapter after the source/licensing choice is approved
+- [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
 - [ ] Replace semantic companion/content copy with the approved authored scenario pack
 
 ## Closed field test — human-gated
