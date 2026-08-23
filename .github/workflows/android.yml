@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against committed NAVER credentials
+        shell: bash
+        run: |
+          if git grep -nE "NAVER_MAP_NCP_KEY_ID[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"; then
+            echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file. Use Gradle user properties, an environment variable, or a GitHub Actions secret instead."
+            exit 1
+          fi
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
