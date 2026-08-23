@@ -20,11 +20,11 @@ No emulator, device, NAVER credential, or GPS is required.
 gradle assembleDebugAndroidTest lintDebug assembleDebug
 ```
 
-This catches Android/Compose/instrumented-test compilation problems without booting a virtual device.
+This catches Android/Compose/instrumented-test compilation problems without booting a virtual device. CI also rejects credential-shaped values hard-coded next to `NAVER_MAP_NCP_KEY_ID` in tracked files.
 
 ### 3. Managed Android emulator — UI/integration smoke tests
 
-The app configures a Gradle Managed Device named `pixel2Api30Atd` using a Google ATD image. Google services remain available for the fused-location dependency, while Daily Town's smoke tests use the deterministic replay route and therefore do not require real GPS or a NAVER Maps credential.
+The app configures a Gradle Managed Device named `pixel2Api30Atd` using the lightweight AOSP ATD image. Daily Town defers Google Play Services fused-location initialization until real device tracking starts, so the replay smoke lane is independent from Google Play Services, real GPS, and NAVER credentials.
 
 ```bash
 gradle pixel2Api30AtdDebugAndroidTest
@@ -37,7 +37,7 @@ gradle pixel2Api30AtdDebugAndroidTest \
   -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
 ```
 
-GitHub Actions also provides the manually triggered **Emulator Replay Smoke Test** workflow.
+GitHub Actions provides the **Emulator Replay Smoke Test** workflow. It is still manually triggerable, and it also runs automatically on pull requests that change the UI, location stack, Android instrumentation tests, managed-device Gradle configuration, or the emulator workflow itself.
 
 The current smoke test verifies that the app starts and that the Seoul City Hall → Deoksugung replay exploration can begin without location permission or a map credential.
 
@@ -53,7 +53,7 @@ For interactive UI/gameplay checks, install and run the debug app on an Android 
 - approximate UI behavior across API levels/screen sizes
 - simulated device GPS using Android Emulator location controls when testing the `DEVICE` path
 
-A real phone is still preferable for motion/battery judgments.
+Use an emulator image with Google Play Services when explicitly testing the real fused-location path. A real phone is still preferable for motion/battery judgments.
 
 ### 5. Physical Android device — field validation only
 
@@ -70,10 +70,12 @@ A real device is required before a closed/external field test for behavior that 
 
 ## NAVER Maps and emulator testing
 
-Credential-free replay testing deliberately renders the safe NAVER placeholder, so most gameplay remains testable before account setup is complete.
+Credential-free replay testing deliberately renders the safe NAVER placeholder, so most gameplay remains testable independently from account credentials.
 
-After the NAVER Console package restriction is changed to `com.dailytown.app`, a credential can be injected locally or through the internal APK workflow. A credentialed emulator may be useful as an extra map-rendering smoke test, but it does **not** replace the final physical-device outdoor validation.
+The NAVER Console Android package restriction has been human-confirmed as updated to `com.dailytown.app`. A credential can be injected locally through Gradle user properties/environment variables, or in GitHub-hosted internal builds through the repository Actions secret `NAVER_MAP_NCP_KEY_ID`. Supplying a value in chat does not create that repository secret.
+
+A credentialed emulator is useful as an extra map-rendering smoke test, but it does **not** replace final physical-device outdoor validation.
 
 ## Suggested routine
 
-Use JVM tests continuously, run normal CI for every branch/PR, run the emulator smoke workflow before merging a meaningful UI/location-loop change, and use a real device at field-test milestones rather than for every code iteration.
+Use JVM tests continuously, run normal CI for every branch/PR, let the emulator smoke workflow automatically cover meaningful UI/location-loop changes, and use a real device at field-test milestones rather than for every code iteration.
