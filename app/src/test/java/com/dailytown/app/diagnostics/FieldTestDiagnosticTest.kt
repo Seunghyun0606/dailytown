@@ -1,6 +1,8 @@
 package com.dailytown.app.diagnostics
 
 import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.map.MapHealth
+import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.persistence.PeriodProgress
 import java.time.Instant
@@ -25,12 +27,16 @@ class FieldTestDiagnosticTest {
             progress = progress,
             acceptedLocationCount = 9,
             rejectedLocationCount = 1,
+            trackingDurationSeconds = 420,
             appVersion = "test",
             mapProvider = "naver",
+            mapHealth = MapHealth(MapHealthStatus.READY),
             trackingPreset = LocationTrackingPreset.BALANCED,
             generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
         ).render()
 
+        assertTrue(text.contains("mapHealthStatus=READY"))
+        assertTrue(text.contains("trackingDurationSeconds=420"))
         assertTrue(text.contains("totalDistanceMeters=1234"))
         assertTrue(text.contains("exploredPoiCount=3"))
         assertTrue(text.contains("acceptedLocationCount=9"))
@@ -41,6 +47,28 @@ class FieldTestDiagnosticTest {
         assertFalse(text.contains("longitude", ignoreCase = true))
         assertFalse(text.contains("NAVER_MAP_NCP_KEY_ID"))
         assertFalse(text.contains("apiKey", ignoreCase = true))
+    }
+
+    @Test
+    fun `provider error code can be shared without provider exception or credential`() {
+        val text = FieldTestDiagnosticBuilder.build(
+            progress = ExplorationProgress(),
+            acceptedLocationCount = 2,
+            rejectedLocationCount = 0,
+            appVersion = "test",
+            mapProvider = "naver",
+            mapHealth = MapHealth(
+                status = MapHealthStatus.AUTH_ERROR,
+                errorCode = "401",
+                userMessage = "safe user message",
+            ),
+            trackingPreset = LocationTrackingPreset.BALANCED,
+            generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
+        ).render()
+
+        assertTrue(text.contains("mapHealthStatus=AUTH_ERROR"))
+        assertTrue(text.contains("mapHealthErrorCode=401"))
+        assertFalse(text.contains("safe user message"))
     }
 
     @Test
@@ -57,5 +85,7 @@ class FieldTestDiagnosticTest {
         assertTrue(text.contains("rejectedLocationCount=2"))
         assertFalse(text.contains("acceptedLocationCount="))
         assertFalse(text.contains("rejectedLocationRatePercent="))
+        assertFalse(text.contains("mapHealthStatus="))
+        assertFalse(text.contains("trackingDurationSeconds="))
     }
 }
