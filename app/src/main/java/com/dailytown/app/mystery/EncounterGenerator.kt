@@ -13,29 +13,35 @@ data class EncounterSelection(
 class EncounterGenerator(
     private val templates: List<MysteryTemplate> = MysteryTemplateCatalog.defaults(),
     private val planner: EncounterPlanner = EncounterPlanner(),
+    private val rarePolicy: RareEncounterPolicy = RareEncounterPolicy(),
     private val distance: ExplorationEngine = ExplorationEngine(),
 ) {
     fun choose(
         encounterKey: String,
         center: GeoPoint,
         pois: List<Poi>,
-        companionBond: Int,
+        context: EncounterContext,
         visitedPoiIds: Set<String>,
         history: EncounterHistory,
     ): EncounterSelection? {
         if (pois.isEmpty() || templates.isEmpty()) return null
 
         val candidates = pois.flatMap { poi ->
-            templates.map { template ->
-                EncounterCandidate(
-                    poiId = poi.id,
-                    templateId = template.id,
-                    districtKey = poi.districtKey,
-                    novelty = if (poi.id in visitedPoiIds) 0.35 else 1.0,
-                    companionAffinity = affinity(template, companionBond),
-                    distanceMeters = distance.distanceMeters(center, poi.position),
-                )
-            }
+            val isRevisit = poi.id in visitedPoiIds
+            templates
+                .asSequence()
+                .filter { template -> rarePolicy.isEligible(template, poi.id, context) }
+                .map { template ->
+                    EncounterCandidate(
+                        poiId = poi.id,
+                        templateId = template.id,
+                        districtKey = poi.districtKey,
+                        novelty = novelty(template, isRevisit),
+                        companionAffinity = affinity(template, poi.id, isRevisit, context),
+                        distanceMeters = distance.distanceMeters(center, poi.position),
+                    )
+                }
+                .toList()
         }
         val selected = planner.rank(candidates, history).firstOrNull() ?: return null
         val poi = pois.first { it.id == selected.poiId }
@@ -51,12 +57,47 @@ class EncounterGenerator(
         )
     }
 
-    private fun affinity(template: MysteryTemplate, bond: Int): Double {
-        val normalizedBond = (bond / 100.0).coerceIn(0.0, 1.0)
+    private fun novelty(template: MysteryTemplate, isRevisit: Boolean): Double {
+        if (!isRevisit) return 1.0
         return when (template.mechanic) {
+            MysteryMechanic.LOCAL_MEMORY -> 0.82
+            MysteryMechanic.TIME_LAYER -> 0.68
+            MysteryMechanic.COMPANION_SENSE -> 0.58
+            else -> 0.35
+        }
+    }
+
+    private fun affinity(
+        template: MysteryTemplate,
+        poiId: String,
+        isRevisit: Boolean,
+        context: EncounterContext,
+    ): Double {
+        val normalizedBond = (context.companionBond / 100.0).coerceIn(0.0, 1.0)
+        var score = when (template.mechanic) {
             MysteryMechanic.COMPANION_SENSE -> 0.65 + normalizedBond * 0.35
             else -> 0.55 + normalizedBond * 0.15
         }
+
+        if (isRevisit) {
+            score += when (template.mechanic) {
+                MysteryMechanic.LOCAL_MEMORY -> 0.25
+                MysteryMechanic.TIME_LAYER -> 0.12
+                MysteryMechanic.COMPANION_SENSE -> 0.08
+                else -> 0.0
+            }
+        }
+
+        score += when (context.timeBand) {
+            TimeBand.DAWN -> if (template.mechanic == MysteryMechanic.TRACE_CHAIN) 0.10 else 0.0
+            TimeBand.DAY -> if (template.mechanic == MysteryMechanic.PHOTO_ANGLE) 0.12 else 0.0
+            TimeBand.EVENING -> if (template.mechanic in setOf(MysteryMechanic.SOUND_PATTERN, MysteryMechanic.TIME_LAYER)) 0.12 else 0.0
+            TimeBand.NIGHT -> if (template.mechanic in setOf(MysteryMechanic.SOUND_PATTERN, MysteryMechanic.COMPANION_SENSE)) 0.18 else 0.0
+        }
+
+        if ("poi:$poiId" in context.memoryKeys) score += 0.08
+        if ("mechanic:${template.mechanic.name}" in context.memoryKeys) score += 0.08
+        return score.coerceIn(0.0, 1.0)
     }
 }
 
