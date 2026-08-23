@@ -26,7 +26,6 @@ class NaverMapAdapter(
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
     private var naverMapSdk: NaverMapSdk? = null
-    private var authErrorView: TextView? = null
     private var authFailedListener: NaverMapSdk.OnAuthFailedListener? = null
     private var pendingCamera: Pair<GeoPoint, Double>? = null
     private var pendingMarkers: List<MapMarkerSpec> = emptyList()
@@ -81,7 +80,6 @@ class NaverMapAdapter(
             errorView.visibility = View.VISIBLE
         }
         naverMapSdk = sdk
-        authErrorView = errorView
         authFailedListener = listener
         sdk.client = NaverMapSdk.NcpKeyClient(ncpKeyId)
         sdk.onAuthFailedListener = listener
@@ -129,7 +127,6 @@ class NaverMapAdapter(
         mapView = null
         naverMap = null
         naverMapSdk = null
-        authErrorView = null
         authFailedListener = null
     }
 
@@ -165,9 +162,9 @@ class NaverMapAdapter(
     }
 
     private fun authFailureMessage(exception: NaverMapSdk.AuthFailedException): String = when (exception.errorCode) {
-        401 -> "NAVER Maps 인증 실패 (401)\nNCP Key ID와 Android 패키지 등록을 확인하세요."
-        429 -> "NAVER Maps 사용 불가 (429)\nDynamic Map 선택 여부와 사용량 한도를 확인하세요."
-        800 -> "NAVER Maps 인증 정보 없음 (800)\nNAVER_MAP_NCP_KEY_ID 주입 상태를 확인하세요."
+        "401" -> "NAVER Maps 인증 실패 (401)\nNCP Key ID와 Android 패키지 등록을 확인하세요."
+        "429" -> "NAVER Maps 사용 불가 (429)\nDynamic Map 선택 여부와 사용량 한도를 확인하세요."
+        "800" -> "NAVER Maps 인증 정보 없음 (800)\nNAVER_MAP_NCP_KEY_ID 주입 상태를 확인하세요."
         else -> "NAVER Maps 인증 오류 (${exception.errorCode})\nNAVER Cloud Maps 설정을 확인하세요."
     }
 
