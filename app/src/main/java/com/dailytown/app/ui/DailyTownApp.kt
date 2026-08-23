@@ -31,11 +31,7 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.mystery.*
-import com.dailytown.app.persistence.ExplorationProgress
-import com.dailytown.app.persistence.ProgressStore
-import com.dailytown.app.persistence.dailyPeriodKey
 import com.dailytown.app.persistence.toState
-import com.dailytown.app.persistence.weeklyPeriodKey
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
 import com.dailytown.app.reminder.LocalReminderManager
@@ -47,7 +43,7 @@ import kotlin.math.roundToInt
 @Composable
 fun DailyTownApp(
     mapAdapter: MapViewAdapter,
-    progressStore: ProgressStore,
+    progressStore: com.dailytown.app.persistence.ProgressStore,
     poiRepository: PoiRepository,
     reminderManager: LocalReminderManager,
 ) {
@@ -69,20 +65,22 @@ fun DailyTownApp(
     val encounterCoordinator = remember { EncounterCoordinator(templates = templates) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
-    val goalRotationCoordinator = remember { GoalRotationCoordinator() }
     val trackingCoordinator = remember { TrackingSessionCoordinator() }
+    val progressCoordinator = remember(progressStore) { ProgressRuntimeCoordinator(progressStore) }
+
     val trackingRuntime by trackingCoordinator.state.collectAsState()
+    val progressRuntime by progressCoordinator.state.collectAsState()
     val trackingMode = trackingRuntime.mode
     val trackingPreset = trackingRuntime.preset
+    val gameProgress = progressRuntime.progress
+    val dailyGoals = progressRuntime.dailyGoals
+    val weeklyGoals = progressRuntime.weeklyGoals
+    val persistenceReady = progressRuntime.ready
 
     var snapshot by remember { mutableStateOf(session.current()) }
-    var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
-    var persistenceReady by remember { mutableStateOf(false) }
-    var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
-    var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
 
     val reminderPreference = remember { reminderManager.preference() }
     var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
@@ -95,45 +93,35 @@ fun DailyTownApp(
         )
     }
     val replaySource = remember { ReplayLocationSource() }
-
     val currentDate = LocalDate.now()
-    val dayKey = dailyPeriodKey(currentDate)
-    val weekKey = weeklyPeriodKey(currentDate)
 
-    LaunchedEffect(progressStore) {
+    LaunchedEffect(progressCoordinator) {
         try {
-            val restored = progressStore.load()
-            val rotation = goalRotationCoordinator.ensure(restored, LocalDate.now())
-            gameProgress = rotation.progress
-            dailyGoals = rotation.dailyGoals
-            weeklyGoals = rotation.weeklyGoals
-            session.restore(rotation.progress.toState(defaultCompanion))
+            val restored = progressCoordinator.restore(LocalDate.now())
+            session.restore(restored.progress.toState(defaultCompanion))
             snapshot = session.current()
         } catch (error: Throwable) {
             errorMessage = "진행도 불러오기 실패: ${error.message ?: "unknown"}"
-        } finally {
-            persistenceReady = true
+            val fallback = progressCoordinator.activateFallback(LocalDate.now())
+            session.restore(fallback.progress.toState(defaultCompanion))
+            snapshot = session.current()
         }
     }
 
-    LaunchedEffect(dayKey, weekKey, persistenceReady) {
+    LaunchedEffect(currentDate, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        val rotation = goalRotationCoordinator.ensure(gameProgress, LocalDate.now())
-        if (rotation.progress != gameProgress) gameProgress = rotation.progress
-        dailyGoals = rotation.dailyGoals
-        weeklyGoals = rotation.weeklyGoals
+        progressCoordinator.ensureCurrentPeriod(LocalDate.now())
     }
 
     LaunchedEffect(snapshot.state, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        val synced = gameProgress.syncExploration(snapshot.state, LocalDate.now())
-        if (synced != gameProgress) gameProgress = synced
+        progressCoordinator.syncExploration(snapshot.state, LocalDate.now())
     }
 
-    LaunchedEffect(gameProgress, persistenceReady) {
-        if (!persistenceReady) return@LaunchedEffect
+    LaunchedEffect(gameProgress, persistenceReady, progressRuntime.persistenceEnabled) {
+        if (!persistenceReady || !progressRuntime.persistenceEnabled) return@LaunchedEffect
         try {
-            progressStore.save(gameProgress)
+            progressCoordinator.persist()
         } catch (error: Throwable) {
             errorMessage = "진행도 저장 실패: ${error.message ?: "unknown"}"
         }
@@ -229,9 +217,11 @@ fun DailyTownApp(
             EncounterTransition.HINTED -> applyReaction(CompanionMoment.HINT_APPEARED)
             EncounterTransition.DISCOVERED -> {
                 val selection = step.selection ?: return@LaunchedEffect
-                gameProgress = gameProgress
-                    .recordEncounterVisit(selection.poi.id, selection.template.id, LocalDate.now())
-                    .recordMemory("poi:${selection.poi.id}")
+                progressCoordinator.mutate(LocalDate.now()) { progress ->
+                    progress
+                        .recordEncounterVisit(selection.poi.id, selection.template.id, LocalDate.now())
+                        .recordMemory("poi:${selection.poi.id}")
+                }
                 applyReaction(CompanionMoment.SPOT_DISCOVERED)
             }
             EncounterTransition.NONE -> Unit
@@ -310,15 +300,22 @@ fun DailyTownApp(
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
-                            gameProgress = gameProgress.recordClue(clueId, LocalDate.now())
+                            progressCoordinator.mutate(LocalDate.now()) { progress ->
+                                progress.recordClue(clueId, LocalDate.now())
+                            }
                             applyReaction(CompanionMoment.CLUE_FOUND)
                         }
                     },
                     onResolve = { resolved ->
                         activeEncounter = activeEncounter?.copy(encounter = resolved)
                         val mechanic = activeEncounter?.template?.mechanic
-                        gameProgress = gameProgress.recordResolution(resolved, LocalDate.now())
-                        if (mechanic != null) gameProgress = gameProgress.recordMemory("mechanic:${mechanic.name}")
+                        progressCoordinator.mutate(LocalDate.now()) { progress ->
+                            var updated = progress.recordResolution(resolved, LocalDate.now())
+                            if (mechanic != null) {
+                                updated = updated.recordMemory("mechanic:${mechanic.name}")
+                            }
+                            updated
+                        }
                         applyReaction(CompanionMoment.MYSTERY_RESOLVED)
                     },
                     onContinue = {
@@ -419,6 +416,10 @@ fun DailyTownApp(
                         Text(
                             "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "주입" else "없음"} · 지도 ${mapHealthLabel(mapHealth.status)}",
                         )
+                        Text(
+                            if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
                         OutlinedButton(onClick = {
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
@@ -466,7 +467,11 @@ fun DailyTownApp(
                     when (trackingMode) {
                         TrackingMode.DEVICE -> "실기기 위치 추적 중 · ${trackingPresetLabel(trackingPreset)}"
                         TrackingMode.REPLAY -> "서울시청 → 덕수궁 테스트 경로 재생 중"
-                        TrackingMode.OFF -> if (persistenceReady) "탐험 대기 중 · 게임 진행도 저장 활성" else "진행도 불러오는 중"
+                        TrackingMode.OFF -> when {
+                            !persistenceReady -> "진행도 불러오는 중"
+                            progressRuntime.persistenceEnabled -> "탐험 대기 중 · 게임 진행도 저장 활성"
+                            else -> "탐험 대기 중 · 진행도 임시 모드"
+                        }
                     },
                     modifier = Modifier.testTag("tracking-status"),
                     style = MaterialTheme.typography.bodySmall,
