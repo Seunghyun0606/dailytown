@@ -8,6 +8,7 @@ import java.time.LocalDate
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -22,6 +23,7 @@ class ProgressRuntimeCoordinatorTest {
         val state = coordinator.restore(LocalDate.of(2026, 8, 24))
 
         assertTrue(state.ready)
+        assertTrue(state.persistenceEnabled)
         assertEquals("2026-08-24", state.progress.daily.periodKey)
         assertTrue(state.dailyGoals.isNotEmpty())
         assertTrue(state.weeklyGoals.isNotEmpty())
@@ -56,18 +58,25 @@ class ProgressRuntimeCoordinatorTest {
         }
 
         assertFalse(state.ready)
+        assertFalse(state.persistenceEnabled)
         assertEquals(0, state.progress.companionBond)
     }
 
     @Test
-    fun `explicit fallback makes runtime usable after caller handles restore failure`() {
-        val coordinator = ProgressRuntimeCoordinator(FakeProgressStore())
+    fun `fallback keeps runtime usable but disables persistence`() = runBlocking {
+        val store = FakeProgressStore()
+        val coordinator = ProgressRuntimeCoordinator(store)
+        val date = LocalDate.of(2026, 8, 24)
 
-        val state = coordinator.activateFallback(LocalDate.of(2026, 8, 24))
+        val state = coordinator.activateFallback(date)
+        coordinator.mutate(date) { it.copy(companionBond = 55) }
+        coordinator.persist()
 
         assertTrue(state.ready)
+        assertFalse(state.persistenceEnabled)
         assertEquals("2026-08-24", state.progress.daily.periodKey)
         assertTrue(state.dailyGoals.isNotEmpty())
+        assertNull(store.saved)
     }
 
     @Test
