@@ -60,6 +60,17 @@ class ProgressRuntimeCoordinatorTest {
     }
 
     @Test
+    fun `explicit fallback makes runtime usable after caller handles restore failure`() {
+        val coordinator = ProgressRuntimeCoordinator(FakeProgressStore())
+
+        val state = coordinator.activateFallback(LocalDate.of(2026, 8, 24))
+
+        assertTrue(state.ready)
+        assertEquals("2026-08-24", state.progress.daily.periodKey)
+        assertTrue(state.dailyGoals.isNotEmpty())
+    }
+
+    @Test
     fun `persist writes the current runtime progress`() = runBlocking {
         val store = FakeProgressStore()
         val coordinator = ProgressRuntimeCoordinator(store)
