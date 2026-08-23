@@ -17,6 +17,15 @@ data class FieldTestDiagnostic(
     val mapHealthErrorCode: String?,
     val trackingPreset: String,
     val trackingDurationSeconds: Int?,
+    val sessionDistanceMeters: Int?,
+    val referenceDistanceMeters: Int?,
+    val distanceErrorPercent: Int?,
+    val batteryMeasurementStatus: String?,
+    val batteryStartPercent: Int?,
+    val batteryEndPercent: Int?,
+    val batteryDrainPercentPoints: Int?,
+    val batteryDrainPercentPerHour: Int?,
+    val batteryChargeConsumedMah: Int?,
     val totalDistanceMeters: Int,
     val exploredPoiCount: Int,
     val resolvedEncounterCount: Int,
@@ -47,6 +56,15 @@ data class FieldTestDiagnostic(
         mapHealthErrorCode?.let { appendLine("mapHealthErrorCode=$it") }
         appendLine("trackingPreset=$trackingPreset")
         trackingDurationSeconds?.let { appendLine("trackingDurationSeconds=$it") }
+        sessionDistanceMeters?.let { appendLine("sessionDistanceMeters=$it") }
+        referenceDistanceMeters?.let { appendLine("referenceDistanceMeters=$it") }
+        distanceErrorPercent?.let { appendLine("distanceErrorPercent=$it") }
+        batteryMeasurementStatus?.let { appendLine("batteryMeasurementStatus=$it") }
+        batteryStartPercent?.let { appendLine("batteryStartPercent=$it") }
+        batteryEndPercent?.let { appendLine("batteryEndPercent=$it") }
+        batteryDrainPercentPoints?.let { appendLine("batteryDrainPercentPoints=$it") }
+        batteryDrainPercentPerHour?.let { appendLine("batteryDrainPercentPerHour=$it") }
+        batteryChargeConsumedMah?.let { appendLine("batteryChargeConsumedMah=$it") }
         appendLine("totalDistanceMeters=$totalDistanceMeters")
         appendLine("exploredPoiCount=$exploredPoiCount")
         appendLine("resolvedEncounterCount=$resolvedEncounterCount")
@@ -82,6 +100,7 @@ object FieldTestDiagnosticBuilder {
         trackingPreset: LocationTrackingPreset,
         acceptedLocationCount: Int? = null,
         trackingDurationSeconds: Int? = null,
+        sessionMetrics: FieldTestSessionMetrics? = null,
         mapHealth: MapHealth? = null,
         packageId: String = BuildConfig.APPLICATION_ID,
         mapCredentialConfigured: Boolean = BuildConfig.NAVER_MAP_CONFIGURED,
@@ -98,6 +117,8 @@ object FieldTestDiagnosticBuilder {
                 sessionDurationSeconds = trackingDurationSeconds?.toLong(),
                 gpsRejectionRatePercent = rejectedRate,
                 mapHealth = mapHealth?.status,
+                distanceErrorPercent = sessionMetrics?.distanceErrorPercent,
+                batteryDrainPercentPerHour = sessionMetrics?.batteryDrainPercentPerHour,
             ),
         )
 
@@ -111,6 +132,15 @@ object FieldTestDiagnosticBuilder {
             mapHealthErrorCode = mapHealth?.errorCode,
             trackingPreset = trackingPreset.name,
             trackingDurationSeconds = trackingDurationSeconds,
+            sessionDistanceMeters = sessionMetrics?.sessionDistanceMeters,
+            referenceDistanceMeters = sessionMetrics?.referenceDistanceMeters,
+            distanceErrorPercent = sessionMetrics?.distanceErrorPercent,
+            batteryMeasurementStatus = sessionMetrics?.batteryMeasurementStatus?.name,
+            batteryStartPercent = sessionMetrics?.batteryStartPercent,
+            batteryEndPercent = sessionMetrics?.batteryEndPercent,
+            batteryDrainPercentPoints = sessionMetrics?.batteryDrainPercentPoints,
+            batteryDrainPercentPerHour = sessionMetrics?.batteryDrainPercentPerHour,
+            batteryChargeConsumedMah = sessionMetrics?.batteryChargeConsumedMah,
             totalDistanceMeters = progress.distanceWalkedMeters.toInt(),
             exploredPoiCount = progress.encounterVisitedPoiIds.size,
             resolvedEncounterCount = progress.resolvedEncounterIds.size,
@@ -140,5 +170,9 @@ object FieldTestDiagnosticBuilder {
                 .takeIf { it >= 0 },
             requiredMapHealth = MapHealthStatus.READY
                 .takeIf { BuildConfig.FIELD_TEST_REQUIRE_MAP_READY },
+            maximumDistanceErrorPercent = BuildConfig.FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT
+                .takeIf { it >= 0 },
+            maximumBatteryDrainPercentPerHour = BuildConfig.FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR
+                .takeIf { it >= 0 },
         )
 }
