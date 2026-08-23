@@ -29,7 +29,11 @@ class AndroidBatterySnapshotSource(
             BatteryManager.EXTRA_STATUS,
             BatteryManager.BATTERY_STATUS_UNKNOWN,
         ) ?: BatteryManager.BATTERY_STATUS_UNKNOWN
-        val charging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+        val plugged = batteryIntent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) ?: 0
+        // Treat any external power as non-comparable field evidence, even when Android reports
+        // NOT_CHARGING, because external power can still mask the app's real battery drain.
+        val chargingOrExternallyPowered = plugged != 0 ||
+            status == BatteryManager.BATTERY_STATUS_CHARGING ||
             status == BatteryManager.BATTERY_STATUS_FULL
 
         val chargeCounter = batteryManager
@@ -39,7 +43,7 @@ class AndroidBatterySnapshotSource(
         return BatterySnapshot(
             levelPercent = percentage,
             chargeCounterMicroAh = chargeCounter,
-            charging = charging,
+            charging = chargingOrExternallyPowered,
         )
     }
 }
