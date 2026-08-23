@@ -22,6 +22,13 @@ fun optionalNonNegativeLong(name: String): Long {
         ?: error("$name must be a non-negative integer when configured.")
 }
 
+fun optionalNonNegativeInt(name: String): Int {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return -1
+    return raw.toIntOrNull()?.takeIf { it >= 0 }
+        ?: error("$name must be a non-negative integer when configured.")
+}
+
 fun optionalPercent(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
@@ -42,6 +49,8 @@ fun optionalBoolean(name: String): Boolean {
 val fieldTestMinSessionSeconds = optionalNonNegativeLong("FIELD_TEST_MIN_SESSION_SECONDS")
 val fieldTestMaxGpsRejectionPercent = optionalPercent("FIELD_TEST_MAX_GPS_REJECTION_PERCENT")
 val fieldTestRequireMapReady = optionalBoolean("FIELD_TEST_REQUIRE_MAP_READY")
+val fieldTestMaxDistanceErrorPercent = optionalPercent("FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT")
+val fieldTestMaxBatteryDrainPercentPerHour = optionalNonNegativeInt("FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR")
 
 android {
     namespace = "com.dailytown.app"
@@ -70,6 +79,12 @@ android {
         buildConfigField("long", "FIELD_TEST_MIN_SESSION_SECONDS", "${fieldTestMinSessionSeconds}L")
         buildConfigField("int", "FIELD_TEST_MAX_GPS_REJECTION_PERCENT", fieldTestMaxGpsRejectionPercent.toString())
         buildConfigField("boolean", "FIELD_TEST_REQUIRE_MAP_READY", fieldTestRequireMapReady.toString())
+        buildConfigField("int", "FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT", fieldTestMaxDistanceErrorPercent.toString())
+        buildConfigField(
+            "int",
+            "FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR",
+            fieldTestMaxBatteryDrainPercentPerHour.toString(),
+        )
     }
 
     buildFeatures {
