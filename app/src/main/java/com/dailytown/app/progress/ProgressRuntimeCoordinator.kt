@@ -35,6 +35,13 @@ class ProgressRuntimeCoordinator(
         return replace(goalRotationCoordinator.ensure(restored, date), ready = true)
     }
 
+    /**
+     * Explicit fallback used only after a load failure. It keeps the app usable while preserving
+     * the failure signal for UI/diagnostics instead of making restore() silently swallow errors.
+     */
+    fun activateFallback(date: LocalDate): ProgressRuntimeState =
+        replace(goalRotationCoordinator.ensure(_state.value.progress, date), ready = true)
+
     fun ensureCurrentPeriod(date: LocalDate): ProgressRuntimeState {
         val current = _state.value
         if (!current.ready) return current
