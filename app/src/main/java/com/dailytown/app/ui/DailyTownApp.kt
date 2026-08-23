@@ -29,7 +29,6 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.mystery.*
-import com.dailytown.app.notifications.LocalReminderManager
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.persistence.ProgressStore
 import com.dailytown.app.persistence.dailyPeriodKey
@@ -37,6 +36,7 @@ import com.dailytown.app.persistence.toState
 import com.dailytown.app.persistence.weeklyPeriodKey
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
+import com.dailytown.app.reminder.LocalReminderManager
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
@@ -49,17 +49,17 @@ fun DailyTownApp(
     mapAdapter: MapViewAdapter,
     progressStore: ProgressStore,
     poiRepository: PoiRepository,
+    reminderManager: LocalReminderManager,
 ) {
     val context = LocalContext.current
     val spots = remember { demoMysterySpots() }
     val defaultCompanion = remember { Companion("moru", "모루", 12) }
     val initialState = remember { ExplorationState(companion = defaultCompanion) }
-    var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
-    val session = remember(trackingPreset) {
+    val session = remember {
         ExplorationSession(
             initialState = initialState,
             spots = spots,
-            qualityPolicy = LocationQualityPolicy.forPreset(trackingPreset),
+            qualityPolicy = LocationQualityPolicy.forPreset(LocationTrackingPreset.BALANCED),
         )
     }
 
@@ -69,53 +69,44 @@ fun DailyTownApp(
     val proximityController = remember { EncounterProximityController(reducer = reducer) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
-    val reminderManager = remember { LocalReminderManager(context.applicationContext) }
+    val goalRotationCoordinator = remember { GoalRotationCoordinator() }
 
-    var snapshot by remember(session) { mutableStateOf(session.current()) }
+    var snapshot by remember { mutableStateOf(session.current()) }
     var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
     var encounterSequence by remember { mutableIntStateOf(0) }
     var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
+    var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
     var persistenceReady by remember { mutableStateOf(false) }
-    var reminderEnabled by remember { mutableStateOf(reminderManager.isEnabled()) }
-    var reminderHour by remember { mutableIntStateOf(reminderManager.hour()) }
+    var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
+    var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
+
+    val reminderPreference = remember { reminderManager.preference() }
+    var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
+    var reminderHour by remember { mutableIntStateOf(reminderPreference.hour) }
 
     val deviceSource = remember(trackingPreset) {
-        FusedDeviceLocationSource(context.applicationContext, preset = trackingPreset)
+        FusedDeviceLocationSource(
+            context = context.applicationContext,
+            config = trackingPreset.config,
+        )
     }
     val replaySource = remember { ReplayLocationSource() }
 
     val currentDate = LocalDate.now()
     val dayKey = dailyPeriodKey(currentDate)
     val weekKey = weeklyPeriodKey(currentDate)
-    val dailyCatalog = remember { GoalCatalog.defaults().filter { it.period == GoalPeriod.DAILY } }
-    val weeklyCatalog = remember { GoalCatalog.defaults().filter { it.period == GoalPeriod.WEEKLY } }
-    val dailyGoals = remember(gameProgress.currentDailyGoalIds, dayKey) {
-        GoalRotationResolver.resolve(
-            periodKey = dayKey,
-            catalog = dailyCatalog,
-            persistedCurrentIds = gameProgress.currentDailyGoalIds,
-            recentIds = gameProgress.recentDailyGoalIds,
-            count = 2,
-        )
-    }
-    val weeklyGoals = remember(gameProgress.currentWeeklyGoalIds, weekKey) {
-        GoalRotationResolver.resolve(
-            periodKey = weekKey,
-            catalog = weeklyCatalog,
-            persistedCurrentIds = gameProgress.currentWeeklyGoalIds,
-            recentIds = gameProgress.recentWeeklyGoalIds,
-            count = 1,
-        )
-    }
 
     LaunchedEffect(progressStore) {
         try {
-            val restored = progressStore.load().normalizePeriods(LocalDate.now())
-            gameProgress = restored
-            session.restore(restored.toState(defaultCompanion))
+            val restored = progressStore.load()
+            val rotation = goalRotationCoordinator.ensure(restored, LocalDate.now())
+            gameProgress = rotation.progress
+            dailyGoals = rotation.dailyGoals
+            weeklyGoals = rotation.weeklyGoals
+            session.restore(rotation.progress.toState(defaultCompanion))
             snapshot = session.current()
         } catch (error: Throwable) {
             errorMessage = "진행도 불러오기 실패: ${error.message ?: "unknown"}"
@@ -126,16 +117,10 @@ fun DailyTownApp(
 
     LaunchedEffect(dayKey, weekKey, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        var updated = gameProgress
-        if (updated.daily.periodKey != dayKey || updated.currentDailyGoalPeriodKey != dayKey) {
-            val selected = GoalPlanner().plan(dayKey, dailyCatalog, updated.recentDailyGoalIds.toSet(), 2)
-            updated = updated.recordGoalSelection(GoalPeriod.DAILY, dayKey, selected.map { it.id })
-        }
-        if (updated.weekly.periodKey != weekKey || updated.currentWeeklyGoalPeriodKey != weekKey) {
-            val selected = GoalPlanner().plan(weekKey, weeklyCatalog, updated.recentWeeklyGoalIds.toSet(), 1)
-            updated = updated.recordGoalSelection(GoalPeriod.WEEKLY, weekKey, selected.map { it.id })
-        }
-        gameProgress = updated.normalizePeriods(LocalDate.now())
+        val rotation = goalRotationCoordinator.ensure(gameProgress, LocalDate.now())
+        if (rotation.progress != gameProgress) gameProgress = rotation.progress
+        dailyGoals = rotation.dailyGoals
+        weeklyGoals = rotation.weeklyGoals
     }
 
     LaunchedEffect(snapshot.state, persistenceReady) {
@@ -151,6 +136,11 @@ fun DailyTownApp(
         } catch (error: Throwable) {
             errorMessage = "진행도 저장 실패: ${error.message ?: "unknown"}"
         }
+    }
+
+    LaunchedEffect(trackingPreset) {
+        session.setLocationQualityPolicy(LocationQualityPolicy.forPreset(trackingPreset))
+        snapshot = session.current()
     }
 
     fun start(mode: TrackingMode) {
@@ -219,15 +209,19 @@ fun DailyTownApp(
                 recentTemplateIds = gameProgress.recentTemplateIds.toSet(),
                 recentPairKeys = gameProgress.recentPairKeys.toSet(),
             )
+            val encounterContext = EncounterContextFactory.create(
+                date = LocalDate.now(),
+                time = LocalTime.now(),
+                companionBond = snapshot.state.companion.bond,
+                memoryKeys = gameProgress.companionMemoryKeys,
+            )
             selection = encounterGenerator.choose(
                 encounterKey = "enc-${encounterSequence++}",
                 center = sample.point,
                 pois = pois,
-                companionBond = snapshot.state.companion.bond,
+                context = encounterContext,
                 visitedPoiIds = gameProgress.encounterVisitedPoiIds,
                 history = history,
-                context = EncounterContext.from(LocalTime.now(), LocalDate.now()),
-                companionMemoryKeys = gameProgress.companionMemoryKeys,
             )
             activeEncounter = selection
         }
@@ -425,7 +419,8 @@ fun DailyTownApp(
                 ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
-                        Text("좌표와 지도 API 키를 제외한 파생 통계만 공유합니다.", style = MaterialTheme.typography.bodySmall)
+                        Text("패키지/빌드/파생 통계만 공유하며 좌표와 지도 API 키는 제외합니다.", style = MaterialTheme.typography.bodySmall)
+                        Text("패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 주입 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "완료" else "없음"}")
                         OutlinedButton(onClick = {
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
@@ -496,7 +491,7 @@ private fun EncounterCard(
 
             val encounter = selection.encounter
             Text("${rarityLabel(selection.rarity)} · ${selection.poi.name} · ${mechanicLabel(selection.template.mechanic)}")
-            Text("컨텍스트 ${timeBandLabel(selection.context.timeBand)}${if (selection.context.isRevisit) " · 재방문" else ""}")
+            Text("컨텍스트 ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}")
             distanceMeters?.let { Text("현재 위치에서 약 ${it}m") }
             Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}")
 
@@ -544,7 +539,7 @@ private fun rarityLabel(rarity: EncounterRarity) = when (rarity) {
 }
 
 private fun timeBandLabel(timeBand: TimeBand) = when (timeBand) {
-    TimeBand.MORNING -> "아침"
+    TimeBand.DAWN -> "새벽/아침"
     TimeBand.DAY -> "낮"
     TimeBand.EVENING -> "저녁"
     TimeBand.NIGHT -> "밤"
