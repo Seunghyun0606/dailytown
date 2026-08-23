@@ -10,6 +10,10 @@ on:
       - "app/src/main/java/com/dailytown/app/location/**"
       - ".github/workflows/emulator-smoke.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   replay-smoke:
     runs-on: ubuntu-latest
