@@ -6,6 +6,9 @@
 - [x] Pure exploration engine and distance calculation
 - [x] Provider-neutral map contract
 - [x] Android CI: unit tests + debug APK
+- [x] Android application identity finalized as `com.dailytown.app`
+- [x] Credentialed `Internal Debug APK` GitHub Actions workflow
+- [x] Real-device smoke-test documentation
 
 ## Real movement loop — implemented
 
@@ -33,10 +36,13 @@ Human TODO:
 - [x] Fixture POIs and radius query
 - [x] Google Maps replacement contract documented
 - [x] Dynamic Map key injection path via Gradle property or environment variable
+- [x] Safe build diagnostic flag showing whether a NAVER credential was injected without exposing the key
 
 Human TODO:
 - [x] Obtain NAVER Dynamic Map NCP Key ID
-- [ ] Decide final Android `applicationId` and update the temporary/random NAVER Console package restriction to match it
+- [x] Decide Android `applicationId`: `com.dailytown.app`
+- [ ] Update NAVER Console's temporary/random Android package restriction to `com.dailytown.app`
+- [ ] Add GitHub Actions repository secret `NAVER_MAP_NCP_KEY_ID` for credentialed internal APK builds
 - [ ] Confirm NAVER Maps terms/pricing for intended location-game usage
 - [ ] Choose production POI/public-data sources and validate licensing/caching terms
 
@@ -74,6 +80,7 @@ Human TODO:
 - [x] In-app opt-in local exploration reminder with Android 13+ notification permission handling
 - [x] Battery-friendly inexact reminder scheduling and reboot/app-update restoration
 - [x] Privacy-safe field-test diagnostic sharing with derived metrics only
+- [x] Diagnostic includes package/build/map-config status but never raw coordinates or credential values
 
 Blocked on a human/product/data decision rather than engineering:
 - [ ] Add a production POI/public-data cache adapter after the source/licensing choice is approved
@@ -81,8 +88,10 @@ Blocked on a human/product/data decision rather than engineering:
 
 ## Closed field test — human-gated
 
+- [ ] Register `com.dailytown.app` in NAVER Console and validate the real map on a physical device
+- [ ] Reserve/create `com.dailytown.app` in Google Play Console before external release
 - [ ] Crash-reporting vendor/consent decision
 - [ ] Privacy disclosure and location retention policy
 - [ ] Signing/release credentials
 - [ ] Play Console/internal testers
-- [ ] Field-test acceptance thresholds for session duration, distance, encounters/session, and repeat-area fatigue
+- [ ] Field-test acceptance thresholds for session duration, battery impact, distance accuracy, encounters/session, completion rate, and repeat-area fatigue
