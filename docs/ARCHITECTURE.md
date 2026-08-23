@@ -27,7 +27,7 @@ Current runtime coordinators are:
 - `TrackingSessionCoordinator`: deterministic OFF/DEVICE/REPLAY and location-preset transitions.
 - `ProgressRuntimeCoordinator`: persisted progress, period normalization, goal rotation, exploration synchronization, and persistence eligibility.
 - `EncounterCoordinator`: short-lived encounter selection/sequencing/proximity transitions.
-- `ExplorationSession`: accepted movement state plus privacy-safe session-quality counters.
+- `ExplorationSession`: accepted movement state plus privacy-safe session-quality counters and per-session derived distance.
 
 Rules must not depend on a map SDK or Android framework. Compose owns permission launchers, rendering, and user-facing errors, while runtime coordinators own state transitions. `ProgressStore`, `PoiRepository`, `LocationSource`, and `MapViewAdapter` remain ports around platform/provider-specific implementations.
 
@@ -51,7 +51,7 @@ Location collection is app-owned rather than map-provider-owned. `LocationSource
 
 `TrackingSessionCoordinator` is framework-free and owns mode/preset transitions. Selecting a new precision preset pauses active DEVICE tracking so a new Android location request can be created; REPLAY can continue across preset changes.
 
-`ExplorationSession` tracks only privacy-safe session metrics: accepted sample count, rejected sample count/rate, and elapsed tracking duration derived from monotonic sample timestamps. These short-lived metrics reset on a new tracking session and are not restored from persistence.
+`ExplorationSession` tracks only privacy-safe session metrics: accepted sample count, rejected sample count/rate, elapsed tracking duration derived from monotonic sample timestamps, and distance walked during the current tracking session. These short-lived metrics reset on a new tracking session and are not restored from persistence.
 
 The MVP is foreground-only and deliberately does not request background location. Raw high-frequency samples are not persisted.
 
@@ -84,15 +84,23 @@ The content system separates a physical place from an encounter template. The sa
 
 `EncounterGenerator` ranks POI × template candidates, while `EncounterCoordinator` owns the runtime transition from selection through hinted/discovered states. This keeps the ranking mechanics testable without Compose or Android dependencies.
 
-## 8. Field-test acceptance strategy
+## 8. Field-test telemetry and acceptance strategy
 
-`FieldTestAcceptanceEvaluator` evaluates recorded evidence against **human-approved** criteria. It intentionally ships with no hard-coded product thresholds.
+`FieldTestSessionMonitor` records only coarse battery start/end snapshots and derived session metrics. It does not receive or store GPS coordinates.
+
+Battery evidence uses Android's battery level/scale and, where supported by the device, the remaining charge counter. If the device is charging during the measurement window or the required battery properties are unavailable, battery-consumption acceptance remains `NOT_EVALUATED` rather than inventing a result.
+
+For route accuracy, the tester may enter only a pre-verified total route distance in meters. The app compares that scalar reference with `ExplorationSession.sessionDistanceMeters` and calculates percentage error. No reference-route geometry or raw trace is required.
+
+`FieldTestAcceptanceEvaluator` evaluates recorded evidence against **human-approved** criteria and intentionally ships with no hard-coded product thresholds.
 
 Supported criteria currently include:
 
 - minimum tracking-session duration
 - maximum GPS rejection rate
-- required provider-neutral map health (normally `READY` once approved)
+- required provider-neutral map health
+- maximum route-distance error percentage
+- maximum battery percentage-point drain per hour
 
 Closed-test builds can supply criteria without source changes through Gradle properties or environment variables:
 
@@ -100,25 +108,25 @@ Closed-test builds can supply criteria without source changes through Gradle pro
 FIELD_TEST_MIN_SESSION_SECONDS
 FIELD_TEST_MAX_GPS_REJECTION_PERCENT
 FIELD_TEST_REQUIRE_MAP_READY
+FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT
+FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR
 ```
 
-Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configured values fail the Gradle configuration rather than being ignored. Field-test diagnostics include whether acceptance criteria were configured, the overall result, and failed metric keys while retaining the no-raw-GPS/no-credential privacy boundary.
-
-Future battery, route-distance-error, encounter-rate, and repeat-fatigue criteria should be added only after their measurement sources and human-approved thresholds exist.
+Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configured values fail Gradle configuration rather than being ignored. Field-test diagnostics include configured acceptance state, failed metric keys, session/reference distance, distance error, and coarse battery consumption metrics while retaining the no-raw-GPS/no-credential privacy boundary.
 
 ## 9. Test boundaries
 
-- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration, and acceptance-evaluation rules.
+- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration, session-distance, battery/distance telemetry, and acceptance-evaluation rules.
 - Android UI/replay integration: AOSP ATD managed device, with the tested APK ABI explicitly pinned.
 - Normal pull-request CI: unit tests, instrumented-test compilation, lint, debug build, credential hard-code guard.
-- Credentialed internal APK: manual Actions workflow with value-blind credential verification and artifact SHA-256 metadata.
+- Credentialed internal APK: manual Actions workflow with value-blind credential verification, optional acceptance-policy injection, and artifact SHA-256 metadata.
 - Real GPS accuracy, battery behavior, OEM differences, and final NAVER package/key/map-health validation: physical Android device.
 
 ## 10. Privacy baseline
 
 - Raw high-frequency location stays on device unless a future server feature explicitly requires upload.
 - Persist derived visit/progress events rather than continuous traces by default.
-- Session duration and GPS accept/reject rates are derived metrics and are not raw location traces.
+- Session duration, session distance, GPS accept/reject rates, route-distance error, and coarse battery consumption are derived metrics and are not raw location traces.
 - Never commit or log production credentials.
 - Diagnostics contain package/build/map-health/derived counters/acceptance results but no raw coordinates, provider exception payloads, or credential values.
 - Add explicit consent and retention policy before analytics/location backend integration.
