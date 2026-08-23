@@ -1,12 +1,10 @@
-name: Android CI
+name: Internal Debug APK
 
 on:
-  push:
-    branches: [main, "feat/**"]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,17 +21,24 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
+      - name: Verify NAVER credential secret
+        env:
+          NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
+        run: |
+          if [ -z "$NAVER_MAP_NCP_KEY_ID" ]; then
+            echo "::error::Repository secret NAVER_MAP_NCP_KEY_ID is required for a credentialed internal APK."
+            exit 1
+          fi
       - name: Unit tests
         run: gradle testDebugUnitTest
-      - name: Android lint
-        run: gradle lintDebug
-      - name: Build debug APK
+      - name: Build credentialed debug APK
+        env:
+          NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
         run: gradle assembleDebug
-      - name: Upload main replay APK
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: dailytown-main-replay-debug-apk
+          name: dailytown-internal-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7

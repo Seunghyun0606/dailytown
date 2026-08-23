@@ -38,6 +38,12 @@ data class ExplorationProgress(
     val companionMemoryKeys: Set<String> = emptySet(),
     val daily: PeriodProgress = PeriodProgress(),
     val weekly: PeriodProgress = PeriodProgress(),
+    val dailyGoalPeriodKey: String = "",
+    val dailyGoalIds: List<String> = emptyList(),
+    val recentDailyGoalIds: List<String> = emptyList(),
+    val weeklyGoalPeriodKey: String = "",
+    val weeklyGoalIds: List<String> = emptyList(),
+    val recentWeeklyGoalIds: List<String> = emptyList(),
 ) {
     fun normalizePeriods(date: LocalDate): ExplorationProgress = copy(
         daily = daily.resetIfNeeded(dailyPeriodKey(date)),
@@ -71,9 +77,9 @@ data class ExplorationProgress(
         val normalized = normalizePeriods(date)
         return normalized.copy(
             encounterVisitedPoiIds = normalized.encounterVisitedPoiIds + poiId,
-            recentPoiIds = pushRecent(normalized.recentPoiIds, poiId),
-            recentTemplateIds = pushRecent(normalized.recentTemplateIds, templateId),
-            recentPairKeys = pushRecent(normalized.recentPairKeys, "$poiId:$templateId"),
+            recentPoiIds = pushRecentUnique(normalized.recentPoiIds, listOf(poiId), maxSize = 12),
+            recentTemplateIds = pushRecentUnique(normalized.recentTemplateIds, listOf(templateId), maxSize = 12),
+            recentPairKeys = pushRecentUnique(normalized.recentPairKeys, listOf("$poiId:$templateId"), maxSize = 12),
             daily = normalized.daily.recordDiscovery(poiId),
             weekly = normalized.weekly.recordDiscovery(poiId),
         )
@@ -91,10 +97,10 @@ data class ExplorationProgress(
 
     fun recordMemory(memoryKey: String): ExplorationProgress =
         if (memoryKey.isBlank()) this else copy(companionMemoryKeys = companionMemoryKeys + memoryKey)
-
-    private fun pushRecent(existing: List<String>, value: String, maxSize: Int = 12): List<String> =
-        (listOf(value) + existing.filterNot { it == value }).take(maxSize)
 }
+
+internal fun pushRecentUnique(existing: List<String>, values: List<String>, maxSize: Int): List<String> =
+    (values + existing).distinct().take(maxSize)
 
 interface ProgressStore {
     suspend fun load(): ExplorationProgress

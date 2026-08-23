@@ -17,4 +17,9 @@ class LocationQualityPolicy(
         val meters = distance.distanceMeters(previous.point, next.point)
         return meters / elapsedSeconds <= maxWalkingSpeedMetersPerSecond
     }
+
+    companion object {
+        fun forPreset(preset: LocationTrackingPreset): LocationQualityPolicy =
+            LocationQualityPolicy(maxAccuracyMeters = preset.config.maxAcceptedAccuracyMeters)
+    }
 }

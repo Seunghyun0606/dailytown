@@ -43,6 +43,12 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
                 clueIds = prefs[Keys.weeklyClueIds].orEmpty(),
                 resolvedEncounterIds = prefs[Keys.weeklyResolvedEncounterIds].orEmpty(),
             ),
+            dailyGoalPeriodKey = prefs[Keys.dailyGoalPeriodKey].orEmpty(),
+            dailyGoalIds = decodeList(prefs[Keys.dailyGoalIds]),
+            recentDailyGoalIds = decodeList(prefs[Keys.recentDailyGoalIds]),
+            weeklyGoalPeriodKey = prefs[Keys.weeklyGoalPeriodKey].orEmpty(),
+            weeklyGoalIds = decodeList(prefs[Keys.weeklyGoalIds]),
+            recentWeeklyGoalIds = decodeList(prefs[Keys.recentWeeklyGoalIds]),
         )
     }
 
@@ -61,6 +67,12 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
             prefs[Keys.companionMemoryKeys] = progress.companionMemoryKeys
             writePeriod(prefs, progress.daily, daily = true)
             writePeriod(prefs, progress.weekly, daily = false)
+            prefs[Keys.dailyGoalPeriodKey] = progress.dailyGoalPeriodKey
+            prefs[Keys.dailyGoalIds] = encodeList(progress.dailyGoalIds)
+            prefs[Keys.recentDailyGoalIds] = encodeList(progress.recentDailyGoalIds)
+            prefs[Keys.weeklyGoalPeriodKey] = progress.weeklyGoalPeriodKey
+            prefs[Keys.weeklyGoalIds] = encodeList(progress.weeklyGoalIds)
+            prefs[Keys.recentWeeklyGoalIds] = encodeList(progress.recentWeeklyGoalIds)
         }
     }
 
@@ -112,5 +124,12 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
         val weeklyDiscoveredPoiIds = stringSetPreferencesKey("weekly_discovered_poi_ids")
         val weeklyClueIds = stringSetPreferencesKey("weekly_clue_ids")
         val weeklyResolvedEncounterIds = stringSetPreferencesKey("weekly_resolved_encounter_ids")
+
+        val dailyGoalPeriodKey = stringPreferencesKey("daily_goal_period_key")
+        val dailyGoalIds = stringPreferencesKey("daily_goal_ids")
+        val recentDailyGoalIds = stringPreferencesKey("recent_daily_goal_ids")
+        val weeklyGoalPeriodKey = stringPreferencesKey("weekly_goal_period_key")
+        val weeklyGoalIds = stringPreferencesKey("weekly_goal_ids")
+        val recentWeeklyGoalIds = stringPreferencesKey("recent_weekly_goal_ids")
     }
 }
