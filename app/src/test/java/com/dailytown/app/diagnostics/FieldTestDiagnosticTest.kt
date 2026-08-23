@@ -23,7 +23,8 @@ class FieldTestDiagnosticTest {
         )
         val text = FieldTestDiagnosticBuilder.build(
             progress = progress,
-            rejectedLocationCount = 3,
+            acceptedLocationCount = 9,
+            rejectedLocationCount = 1,
             appVersion = "test",
             mapProvider = "naver",
             trackingPreset = LocationTrackingPreset.BALANCED,
@@ -32,10 +33,29 @@ class FieldTestDiagnosticTest {
 
         assertTrue(text.contains("totalDistanceMeters=1234"))
         assertTrue(text.contains("exploredPoiCount=3"))
+        assertTrue(text.contains("acceptedLocationCount=9"))
+        assertTrue(text.contains("rejectedLocationCount=1"))
+        assertTrue(text.contains("rejectedLocationRatePercent=10"))
         assertTrue(text.contains("privacy=derived_metrics_only_no_raw_gps"))
         assertFalse(text.contains("latitude", ignoreCase = true))
         assertFalse(text.contains("longitude", ignoreCase = true))
         assertFalse(text.contains("NAVER_MAP_NCP_KEY_ID"))
         assertFalse(text.contains("apiKey", ignoreCase = true))
+    }
+
+    @Test
+    fun `older callers can omit accepted sample count without inventing a rate`() {
+        val text = FieldTestDiagnosticBuilder.build(
+            progress = ExplorationProgress(),
+            rejectedLocationCount = 2,
+            appVersion = "test",
+            mapProvider = "naver",
+            trackingPreset = LocationTrackingPreset.BALANCED,
+            generatedAt = Instant.parse("2026-08-23T14:00:00Z"),
+        ).render()
+
+        assertTrue(text.contains("rejectedLocationCount=2"))
+        assertFalse(text.contains("acceptedLocationCount="))
+        assertFalse(text.contains("rejectedLocationRatePercent="))
     }
 }
