@@ -49,6 +49,27 @@ The code uses a `PoiRepository` boundary and fixture data until these decisions 
 
 Engineering does not need to wait: current templates define mechanics only and companion reactions return semantic keys rather than final authored dialogue.
 
+## Closed field-test acceptance criteria
+
+Engineering support is implemented, but the product thresholds must be chosen by a person. Until a value is configured, the diagnostic reports `NOT_EVALUATED` instead of assuming the route passed.
+
+- [ ] Approve the minimum representative tracking-session duration.
+- [ ] Approve the maximum acceptable GPS rejection rate.
+- [ ] Decide whether provider-neutral map health **`READY`** is a mandatory closed-test gate. It is recommended for the credentialed NAVER physical-device validation, but the code does not hard-code that decision.
+- [ ] Later, approve battery-impact, route-distance-error, encounters/session, completion-rate, and repeat-area-fatigue thresholds after those measurements exist.
+
+Once approved, configure the current supported criteria as Gradle properties or environment variables. They are normal configuration values, **not secrets**:
+
+```properties
+FIELD_TEST_MIN_SESSION_SECONDS=<non-negative integer>
+FIELD_TEST_MAX_GPS_REJECTION_PERCENT=<0..100>
+FIELD_TEST_REQUIRE_MAP_READY=true
+```
+
+For GitHub-hosted builds, the same names can be supplied through repository/environment variables and exposed to the Gradle step. Do not put the NAVER credential into these variables; `NAVER_MAP_NCP_KEY_ID` remains a Secret.
+
+Invalid configured values intentionally fail Gradle configuration rather than being silently ignored.
+
 ## Real-device validation
 
 - [ ] Select representative test neighborhoods and walking routes.
@@ -63,8 +84,10 @@ Engineering does not need to wait: current templates define mechanics only and c
 - [ ] Record derived session duration and GPS rejection rate for each representative walking route; raw GPS traces are not required for the MVP acceptance report.
 - [ ] Walk the same route twice and verify repeat handling feels intentional rather than empty.
 - [ ] Verify daily/weekly counters reset only when the corresponding period changes.
+- [ ] Force/observe a progress-load failure in a debug test if practical and confirm the app shows the temporary progress mode while persistence remains disabled; this protects existing stored progress from being overwritten by a fallback state.
 - [ ] Enable/disable the optional local reminder and verify Android 13+ notification permission flow.
-- [ ] Share a field-test diagnostic and verify it contains package/build/map-health/session/game counters but no coordinates, provider exception payloads, or credential values.
+- [ ] Share a field-test diagnostic and verify it contains package/build/map-health/session/game/acceptance counters but no coordinates, provider exception payloads, or credential values.
+- [ ] After acceptance criteria are configured, verify the diagnostic reports `PASS`, `FAIL`, or `NOT_EVALUATED` as expected and lists only failed metric keys, not sensitive raw data.
 
 ## External beta / release
 
@@ -75,8 +98,8 @@ Before any external beta or store submission:
 - [ ] Create signing/release credentials outside the repository.
 - [ ] Decide analytics/crash-reporting vendor and consent policy before adding telemetry SDKs.
 - [ ] Configure Play Console internal testers.
-- [ ] Define field-test acceptance thresholds for session duration, battery impact, distance accuracy, GPS rejection rate, encounters/session, completion rate, and repeat-area fatigue.
+- [ ] Define the remaining field-test acceptance thresholds for battery impact, distance accuracy, encounters/session, completion rate, and repeat-area fatigue.
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, derived progress persistence, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
+Replay exploration, GPS filtering, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
