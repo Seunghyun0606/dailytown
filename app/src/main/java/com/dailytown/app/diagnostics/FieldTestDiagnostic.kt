@@ -26,6 +26,17 @@ data class FieldTestDiagnostic(
     val batteryDrainPercentPoints: Int?,
     val batteryDrainPercentPerHour: Int?,
     val batteryChargeConsumedMah: Int?,
+    val sessionEncounterOfferedCount: Int?,
+    val sessionEncounterHintedCount: Int?,
+    val sessionEncounterDiscoveredCount: Int?,
+    val sessionEncounterResolvedCount: Int?,
+    val sessionCluesCollectedCount: Int?,
+    val sessionRevisitEncounterCount: Int?,
+    val sessionEncounterDiscoveryRatePercent: Int?,
+    val sessionEncounterResolutionRatePercent: Int?,
+    val sessionRevisitSharePercent: Int?,
+    val sessionRevisitResolutionRatePercent: Int?,
+    val repeatAreaFatigueProxyPercent: Int?,
     val totalDistanceMeters: Int,
     val exploredPoiCount: Int,
     val resolvedEncounterCount: Int,
@@ -65,6 +76,17 @@ data class FieldTestDiagnostic(
         batteryDrainPercentPoints?.let { appendLine("batteryDrainPercentPoints=$it") }
         batteryDrainPercentPerHour?.let { appendLine("batteryDrainPercentPerHour=$it") }
         batteryChargeConsumedMah?.let { appendLine("batteryChargeConsumedMah=$it") }
+        sessionEncounterOfferedCount?.let { appendLine("sessionEncounterOfferedCount=$it") }
+        sessionEncounterHintedCount?.let { appendLine("sessionEncounterHintedCount=$it") }
+        sessionEncounterDiscoveredCount?.let { appendLine("sessionEncounterDiscoveredCount=$it") }
+        sessionEncounterResolvedCount?.let { appendLine("sessionEncounterResolvedCount=$it") }
+        sessionCluesCollectedCount?.let { appendLine("sessionCluesCollectedCount=$it") }
+        sessionRevisitEncounterCount?.let { appendLine("sessionRevisitEncounterCount=$it") }
+        sessionEncounterDiscoveryRatePercent?.let { appendLine("sessionEncounterDiscoveryRatePercent=$it") }
+        sessionEncounterResolutionRatePercent?.let { appendLine("sessionEncounterResolutionRatePercent=$it") }
+        sessionRevisitSharePercent?.let { appendLine("sessionRevisitSharePercent=$it") }
+        sessionRevisitResolutionRatePercent?.let { appendLine("sessionRevisitResolutionRatePercent=$it") }
+        repeatAreaFatigueProxyPercent?.let { appendLine("repeatAreaFatigueProxyPercent=$it") }
         appendLine("totalDistanceMeters=$totalDistanceMeters")
         appendLine("exploredPoiCount=$exploredPoiCount")
         appendLine("resolvedEncounterCount=$resolvedEncounterCount")
@@ -85,7 +107,7 @@ data class FieldTestDiagnostic(
         if (acceptanceFailedKeys.isNotEmpty()) {
             appendLine("acceptanceFailedKeys=${acceptanceFailedKeys.joinToString(",")}")
         }
-        append("privacy=derived_metrics_only_no_raw_gps_no_credentials")
+        append("privacy=derived_metrics_only_no_raw_gps_no_event_ids_no_credentials")
     }
 }
 
@@ -101,6 +123,7 @@ object FieldTestDiagnosticBuilder {
         acceptedLocationCount: Int? = null,
         trackingDurationSeconds: Int? = null,
         sessionMetrics: FieldTestSessionMetrics? = null,
+        gameplayMetrics: GameplaySessionMetrics? = null,
         mapHealth: MapHealth? = null,
         packageId: String = BuildConfig.APPLICATION_ID,
         mapCredentialConfigured: Boolean = BuildConfig.NAVER_MAP_CONFIGURED,
@@ -119,6 +142,9 @@ object FieldTestDiagnosticBuilder {
                 mapHealth = mapHealth?.status,
                 distanceErrorPercent = sessionMetrics?.distanceErrorPercent,
                 batteryDrainPercentPerHour = sessionMetrics?.batteryDrainPercentPerHour,
+                discoveredEncountersPerSession = gameplayMetrics?.discoveredEncounterCount,
+                encounterResolutionRatePercent = gameplayMetrics?.encounterResolutionRatePercent,
+                repeatAreaFatigueProxyPercent = gameplayMetrics?.repeatAreaFatigueProxyPercent,
             ),
         )
 
@@ -141,6 +167,17 @@ object FieldTestDiagnosticBuilder {
             batteryDrainPercentPoints = sessionMetrics?.batteryDrainPercentPoints,
             batteryDrainPercentPerHour = sessionMetrics?.batteryDrainPercentPerHour,
             batteryChargeConsumedMah = sessionMetrics?.batteryChargeConsumedMah,
+            sessionEncounterOfferedCount = gameplayMetrics?.encounterOfferedCount,
+            sessionEncounterHintedCount = gameplayMetrics?.hintedEncounterCount,
+            sessionEncounterDiscoveredCount = gameplayMetrics?.discoveredEncounterCount,
+            sessionEncounterResolvedCount = gameplayMetrics?.resolvedEncounterCount,
+            sessionCluesCollectedCount = gameplayMetrics?.cluesCollectedCount,
+            sessionRevisitEncounterCount = gameplayMetrics?.revisitOfferedCount,
+            sessionEncounterDiscoveryRatePercent = gameplayMetrics?.encounterDiscoveryRatePercent,
+            sessionEncounterResolutionRatePercent = gameplayMetrics?.encounterResolutionRatePercent,
+            sessionRevisitSharePercent = gameplayMetrics?.revisitSharePercent,
+            sessionRevisitResolutionRatePercent = gameplayMetrics?.revisitResolutionRatePercent,
+            repeatAreaFatigueProxyPercent = gameplayMetrics?.repeatAreaFatigueProxyPercent,
             totalDistanceMeters = progress.distanceWalkedMeters.toInt(),
             exploredPoiCount = progress.encounterVisitedPoiIds.size,
             resolvedEncounterCount = progress.resolvedEncounterIds.size,
@@ -173,6 +210,12 @@ object FieldTestDiagnosticBuilder {
             maximumDistanceErrorPercent = BuildConfig.FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT
                 .takeIf { it >= 0 },
             maximumBatteryDrainPercentPerHour = BuildConfig.FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR
+                .takeIf { it >= 0 },
+            minimumDiscoveredEncountersPerSession = BuildConfig.FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION
+                .takeIf { it >= 0 },
+            minimumEncounterResolutionRatePercent = BuildConfig.FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT
+                .takeIf { it >= 0 },
+            maximumRepeatAreaFatiguePercent = BuildConfig.FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT
                 .takeIf { it >= 0 },
         )
 }
