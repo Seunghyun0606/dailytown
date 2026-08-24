@@ -84,7 +84,7 @@ The content system separates a physical place from an encounter template. The sa
 
 `EncounterGenerator` ranks POI × template candidates, while `EncounterCoordinator` owns the runtime transition from selection through hinted/discovered states. This keeps the ranking mechanics testable without Compose or Android dependencies.
 
-## 8. Field-test telemetry, comparison, and acceptance strategy
+## 8. Field-test telemetry, comparison, protocol, and acceptance strategy
 
 `FieldTestSessionMonitor` records only coarse battery start/end snapshots and derived movement metrics. `GameplaySessionMonitor` records only session-local counters for offered/hinted/discovered/resolved encounters, clue collections, and revisit counts. Neither monitor stores GPS coordinates, POI IDs, encounter IDs, template IDs, or event payloads.
 
@@ -107,9 +107,27 @@ Comparison cohorts report both the rounded average and `evidenceCount/sessionCou
 
 The in-app comparison recorder uses a short-lived session token only to block duplicate taps for the same completed session. The token is not exported, persisted, or included in the comparison model/report. Comparison data disappears when the app process ends or the tester explicitly resets it.
 
-`FieldTestAcceptanceEvaluator` evaluates recorded evidence against **human-approved** criteria and intentionally ships with no hard-coded product thresholds.
+`FieldTestProtocolEvaluator` sits above the comparison report and answers a narrower question: **is there enough consistently collected evidence to begin product review?** It never decides whether a delta is good or bad. Its states are:
 
-Supported criteria currently include:
+- `DATA_INSUFFICIENT`: a cohort is empty or there is no shared evaluable comparison evidence.
+- `COMPARABLE`: cohort comparison can be inspected, but product-review policy is unset or not fully satisfied.
+- `PRODUCT_REVIEW_READY`: every human-configured protocol gate is satisfied.
+
+Protocol gates are policy-free in source and can require a minimum number of sessions per cohort, one matching tracking preset across both cohorts, and selected evidence types. Required evidence must be present in at least the configured cohort minimum; if no minimum is configured, one valid sample is sufficient for that evidence gate. `REPEAT_AREA_FATIGUE` is intentionally repeat-cohort-only because NEW_AREA sessions commonly have no revisit-fatigue value.
+
+Closed-test builds can configure the protocol through:
+
+```text
+FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT
+FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET
+FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE
+```
+
+Supported evidence keys and field-test usage are documented in `docs/FIELD_TEST_PROTOCOL.md`. Invalid comparison-policy values fail Gradle configuration. Internal Debug artifact metadata records the non-secret protocol values alongside single-session acceptance policy.
+
+`FieldTestAcceptanceEvaluator` separately evaluates each recorded session against **human-approved** thresholds and intentionally ships with no hard-coded product thresholds.
+
+Supported single-session criteria currently include:
 
 - minimum tracking-session duration
 - maximum GPS rejection rate
@@ -120,7 +138,7 @@ Supported criteria currently include:
 - minimum encounter resolution rate
 - maximum repeat-area fatigue proxy
 
-Closed-test builds can supply criteria without source changes through Gradle properties or environment variables:
+Closed-test builds can supply single-session criteria without source changes through Gradle properties or environment variables:
 
 ```text
 FIELD_TEST_MIN_SESSION_SECONDS
@@ -133,14 +151,14 @@ FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT
 FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT
 ```
 
-Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configured values fail Gradle configuration rather than being ignored. Field-test diagnostics include only derived counters/rates, configured acceptance state, and failed metric keys while retaining the no-raw-GPS/no-event-ID/no-credential privacy boundary.
+Unset acceptance criteria remain `NOT_EVALUATED`; they never silently pass. Unset comparison protocol stays at `COMPARABLE` once both cohorts have evidence rather than inventing readiness policy.
 
 ## 9. Test boundaries
 
-- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration/distance, battery/distance telemetry, gameplay telemetry, multi-session cohort comparison, missing-evidence handling, and acceptance-evaluation rules.
+- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration/distance, battery/distance telemetry, gameplay telemetry, multi-session cohort comparison, missing-evidence handling, protocol readiness, and acceptance-evaluation rules.
 - Android UI/replay integration: AOSP ATD managed device, with the tested APK ABI explicitly pinned.
 - Normal pull-request CI: unit tests, instrumented-test compilation, lint, debug build, credential hard-code guard.
-- Credentialed internal APK: manual Actions workflow with value-blind credential verification, optional acceptance-policy injection, and artifact SHA-256 metadata.
+- Credentialed internal APK: manual Actions workflow with value-blind credential verification, optional acceptance/comparison-policy injection, and artifact SHA-256 metadata.
 - Real GPS accuracy, battery behavior, OEM differences, gameplay feel, and final NAVER package/key/map-health validation: physical Android device.
 
 ## 10. Privacy baseline
@@ -149,6 +167,7 @@ Unset criteria remain `NOT_EVALUATED`; they never silently pass. Invalid configu
 - Persist derived visit/progress events rather than continuous traces by default.
 - Session duration/distance, GPS rates, route-distance error, coarse battery consumption, encounter counts/rates, and repeat-area fatigue proxy are derived metrics.
 - Per-session comparison summaries are process-memory-only, bounded, and contain no free-form place labels or raw event/location identifiers.
+- Protocol evaluation consumes aggregate comparison summaries only and exports safe status/issue metadata.
 - Session diagnostics and comparison reports never export POI IDs, encounter IDs, template IDs, route geometry, or event payloads.
 - Never commit or log production credentials.
 - Diagnostics contain package/build/map-health/derived counters/acceptance results but no raw coordinates, provider exception payloads, or credential values.
