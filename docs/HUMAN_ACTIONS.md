@@ -51,7 +51,7 @@ Engineering does not need to wait: current templates define mechanics only and c
 
 ## Closed field-test acceptance criteria
 
-Engineering support is implemented, but the product thresholds must be chosen by a person. Until a value is configured, the diagnostic reports `NOT_EVALUATED` instead of assuming the route passed.
+Engineering support is implemented, but product thresholds and comparison protocol gates must be chosen by a person. Until values are configured, single-session diagnostics remain `NOT_EVALUATED` and multi-session comparison can be `COMPARABLE` but cannot become `PRODUCT_REVIEW_READY` from invented defaults.
 
 - [ ] Approve the minimum representative tracking-session duration.
 - [ ] Approve the maximum acceptable GPS rejection rate.
@@ -61,7 +61,9 @@ Engineering support is implemented, but the product thresholds must be chosen by
 - [ ] Approve the minimum number of encounters that must reach **`DISCOVERED`** during a representative session. Generated-but-never-reached candidates are intentionally not counted.
 - [ ] Approve the minimum encounter resolution-rate percentage (`resolved / discovered`).
 - [ ] Approve the maximum repeat-area-fatigue proxy percentage. The proxy is the unresolved share of **discovered revisit encounters** and should be used for comparative route testing, not treated as direct user sentiment.
-- [ ] Decide the minimum number of valid `NEW_AREA` and `REPEAT_AREA` sessions required before using cohort averages/deltas for a product decision. The app exposes per-metric evidence counts but deliberately does not invent this sample-size policy.
+- [ ] Decide the minimum number of valid `NEW_AREA` and `REPEAT_AREA` sessions required before using cohort averages/deltas for a product decision.
+- [ ] Decide whether all comparison sessions must use one matching tracking preset.
+- [ ] Decide which comparison evidence types are mandatory. `REPEAT_AREA_FATIGUE` is repeat-cohort-only; NEW_AREA sessions are not required to fabricate this value.
 
 Once approved, configure the supported criteria as Gradle properties or environment variables. They are normal configuration values, **not secrets**:
 
@@ -74,11 +76,14 @@ FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR=<non-negative integer>
 FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION=<non-negative integer>
 FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT=<0..100>
 FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT=<0..100>
+FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT=<positive integer>
+FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET=true|false
+FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE=<comma-separated evidence keys>
 ```
 
-For GitHub-hosted `Internal Debug APK` builds, use repository Variables with the same names. The generated `field-test-policy.txt` records these non-secret policy values next to the APK. Do not put the NAVER credential into these variables; `NAVER_MAP_NCP_KEY_ID` remains a Secret.
+Allowed comparison evidence keys are documented in `docs/FIELD_TEST_PROTOCOL.md`. Invalid numbers, booleans, or evidence keys intentionally fail Gradle configuration instead of being silently ignored.
 
-Invalid configured values intentionally fail Gradle configuration rather than being silently ignored.
+For GitHub-hosted `Internal Debug APK` builds, use repository Variables with the same names. The generated `field-test-policy.txt` records these non-secret policy values next to the APK. Do not put the NAVER credential into these variables; `NAVER_MAP_NCP_KEY_ID` remains a Secret.
 
 ## Real-device validation
 
@@ -103,7 +108,10 @@ Invalid configured values intentionally fail Gradle configuration rather than be
 - [ ] Verify the same stopped session cannot be added repeatedly by tapping the record button multiple times. Starting a new DEVICE/REPLAY session should create a new comparison-eligible session token.
 - [ ] Record multiple sessions in each cohort and verify every average shows `유효 evidence / 전체 session` counts. Missing battery/reference/revisit evidence must not be treated as zero.
 - [ ] Verify `반복 - 신규 차이` is shown only for metrics where both cohorts have evaluable averages and is presented as a raw delta rather than an automatic good/bad verdict.
-- [ ] Share **세션 비교 리포트** and confirm it contains aggregate derived metrics only: no place label, coordinates, route geometry, `poiId`, `encounterId`, `templateId`, session token, provider exception payload, or credential.
+- [ ] With comparison protocol variables unset, confirm both populated cohorts become **비교 가능** but not **제품 검토 가능**.
+- [ ] After approved protocol variables are configured, confirm the card shows missing sample/preset/evidence issues until every configured gate is satisfied, then transitions to **제품 검토 가능**.
+- [ ] If `REPEAT_AREA_FATIGUE` is required, confirm only repeat-area valid evidence counts are gated; NEW_AREA sessions are not required to produce fatigue evidence.
+- [ ] Share **세션 비교 리포트** and confirm it contains aggregate derived metrics plus protocol status/issues only: no place label, coordinates, route geometry, `poiId`, `encounterId`, `templateId`, session token, provider exception payload, or credential.
 - [ ] Use **비교 초기화** and confirm all in-memory comparison summaries are cleared. Relaunching the process should likewise start with an empty comparison set.
 - [ ] If there are no discovered revisit encounters, confirm `repeatAreaFatigueProxyPercent` is omitted/unevaluated rather than shown as 0%.
 - [ ] Walk the same route multiple times and judge whether the measured revisit resolution/fatigue proxy matches the subjective feeling of repetition closely enough to use as a product signal.
@@ -125,4 +133,4 @@ Before any external beta or store submission:
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, bounded in-memory new-vs-repeat session comparison, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
+Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, bounded in-memory new-vs-repeat session comparison, configurable comparison-protocol readiness, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
