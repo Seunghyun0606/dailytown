@@ -188,6 +188,7 @@ def aggregate_documents(documents: list[dict[str, Any]], confirm_non_overlapping
         "sessionCount": len(sessions),
         "appVersions": sorted(versions),
         "sourceProtocolStatus": dict(sorted(source_protocol.items())),
+        "comparisonPolicy": policy["comparison"],
         "protocolAssessment": protocol_assessment,
         "overlap": {
             "exactDuplicatesRejected": True,
