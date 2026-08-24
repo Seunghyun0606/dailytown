@@ -51,6 +51,35 @@ class FieldTestReviewReportTest(unittest.TestCase):
         verdict = next(row for row in rows if row["rowType"] == "SUMMARY" and row["key"] == "productVerdict")
         self.assertEqual("NOT_COMPUTED", verdict["newArea"])
 
+    def test_markdown_includes_collection_lower_bound_from_approved_policy(self):
+        document = valid_document()
+        document["policies"]["comparison"] = {
+            "minimumSessionsPerCohort": 3,
+            "requireMatchingTrackingPreset": None,
+            "requiredEvidence": ["SESSION_DISTANCE"],
+        }
+        rendered = render_markdown(aggregate_documents([document]))
+        self.assertIn("| Collection plan | ADDITIONAL_PROTOCOL_EVIDENCE_REQUIRED |", rendered)
+        self.assertIn("| Minimum additional sessions (lower bound) | 2 | 2 |", rendered)
+        self.assertIn("`SESSION_DISTANCE`", rendered)
+
+    def test_csv_includes_collection_evidence_deficit_rows(self):
+        sessions = [session(1, "NEW_AREA", battery=10), session(2, "REPEAT_AREA", battery=None)]
+        document = valid_document(sessions)
+        document["policies"]["comparison"] = {
+            "minimumSessionsPerCohort": 1,
+            "requireMatchingTrackingPreset": None,
+            "requiredEvidence": ["BATTERY_DRAIN"],
+        }
+        rows = list(csv.DictReader(io.StringIO(render_csv(aggregate_documents([document])))))
+        plan_status = next(row for row in rows if row["rowType"] == "SUMMARY" and row["key"] == "collectionPlanStatus")
+        evidence = next(row for row in rows if row["rowType"] == "COLLECTION_EVIDENCE" and row["key"] == "BATTERY_DRAIN")
+        self.assertEqual("ADDITIONAL_PROTOCOL_EVIDENCE_REQUIRED", plan_status["newArea"])
+        self.assertEqual("1/1", evidence["newArea"])
+        self.assertEqual("0/1", evidence["repeatArea"])
+        self.assertEqual("0", evidence["newEvidence"])
+        self.assertEqual("1", evidence["repeatEvidence"])
+
 
 if __name__ == "__main__":
     unittest.main()
