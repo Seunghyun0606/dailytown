@@ -120,6 +120,12 @@ Human TODO:
 - [x] Comparison averages expose per-metric valid evidence counts instead of treating missing evidence as zero
 - [x] Comparison report emits `repeat - new` deltas only when both cohorts have evidence and never stores free-form place labels
 - [x] Prevent duplicate recording of the same completed session through a process-local session token that is not exported or persisted
+- [x] Pure `FieldTestProtocolEvaluator` with `DATA_INSUFFICIENT` / `COMPARABLE` / `PRODUCT_REVIEW_READY` states
+- [x] Configurable minimum sessions per cohort, matching tracking-preset gate, and required comparison evidence set
+- [x] Scope `REPEAT_AREA_FATIGUE` protocol evidence to the repeat cohort only
+- [x] Show protocol status and unmet sample/preset/evidence issues in the in-app comparison card
+- [x] Include protocol status/issues in privacy-safe comparison sharing
+- [x] Validate comparison policy values during Gradle configuration and record them in Internal Debug artifact metadata
 - [x] Configurable `FieldTestAcceptanceEvaluator` with PASS / FAIL / NOT_EVALUATED states
 - [x] No hard-coded product thresholds; unset criteria cannot silently pass
 - [x] Optional criteria injection through `FIELD_TEST_MIN_SESSION_SECONDS`
@@ -143,7 +149,9 @@ Human TODO:
 - [ ] Approve minimum **discovered** encounters per representative session
 - [ ] Approve minimum encounter resolution-rate percentage
 - [ ] Approve maximum repeat-area-fatigue proxy percentage; interpret this as a comparative proxy, not direct user sentiment
-- [ ] Decide the minimum number of valid NEW_AREA and REPEAT_AREA sessions required before using cohort deltas for a product decision
+- [ ] Decide the minimum valid NEW_AREA/REPEAT_AREA cohort size for product review
+- [ ] Decide whether comparison sessions must use a matching tracking preset
+- [ ] Decide which comparison evidence keys are mandatory
 
 Blocked on a human/product/data decision rather than engineering:
 - [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
@@ -161,6 +169,7 @@ Blocked on a human/product/data decision rather than engineering:
 - [ ] Run battery-comparison tests unplugged; external-power sessions intentionally cannot produce battery-consumption acceptance evidence
 - [ ] Walk representative new-area and repeat-area routes, stop each session, classify it in the in-app comparison card, and record it once
 - [ ] Compare valid-evidence counts as well as averages; do not treat a cohort average based on one battery/revisit sample as equivalent to a fully measured cohort
+- [ ] Configure approved comparison protocol variables and verify the state transitions from `DATA_INSUFFICIENT` → `COMPARABLE` → `PRODUCT_REVIEW_READY` as evidence accumulates
 - [ ] Share the comparison report and evaluate discovered encounters/session, resolution rate, GPS/distance/battery behavior, revisit share, and repeat-area fatigue proxy together
 - [ ] Configure approved field-test acceptance criteria through Gradle/Actions properties
 - [ ] Reserve/create `com.dailytown.app` in Google Play Console before external release
