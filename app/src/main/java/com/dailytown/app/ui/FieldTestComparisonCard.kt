@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.diagnostics.FieldTestAreaProfile
@@ -53,7 +54,7 @@ internal fun FieldTestComparisonCard(
     }
     val alreadyRecorded = lastRecordedSessionToken == sessionToken
 
-    ElevatedCard(Modifier.fillMaxWidth()) {
+    ElevatedCard(Modifier.fillMaxWidth().testTag("field-test-comparison-card")) {
         Column(
             Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -71,11 +72,13 @@ internal fun FieldTestComparisonCard(
                     selected = selectedProfile == FieldTestAreaProfile.NEW_AREA,
                     onClick = { selectedProfile = FieldTestAreaProfile.NEW_AREA },
                     label = { Text("신규 지역") },
+                    modifier = Modifier.testTag("field-test-profile-new"),
                 )
                 FilterChip(
                     selected = selectedProfile == FieldTestAreaProfile.REPEAT_AREA,
                     onClick = { selectedProfile = FieldTestAreaProfile.REPEAT_AREA },
                     label = { Text("반복 지역") },
+                    modifier = Modifier.testTag("field-test-profile-repeat"),
                 )
             }
 
@@ -86,6 +89,7 @@ internal fun FieldTestComparisonCard(
                     lastRecordedSessionToken = sessionToken
                     revision += 1
                 },
+                modifier = Modifier.testTag("field-test-record"),
             ) {
                 Text(if (alreadyRecorded) "현재 세션 기록됨" else "현재 세션 비교에 기록")
             }
@@ -93,7 +97,10 @@ internal fun FieldTestComparisonCard(
                 Text("추적을 중지한 뒤 위치 샘플이 있는 세션을 기록할 수 있습니다.", style = MaterialTheme.typography.bodySmall)
             }
 
-            Text("신규 ${report.newArea.sessionCount}회 · 반복 ${report.repeatArea.sessionCount}회")
+            Text(
+                "신규 ${report.newArea.sessionCount}회 · 반복 ${report.repeatArea.sessionCount}회",
+                modifier = Modifier.testTag("field-test-cohort-counts"),
+            )
             if (report.newArea.sessionCount > 0) {
                 CohortSummary(prefix = "신규", cohort = report.newArea)
             }
@@ -132,6 +139,7 @@ internal fun FieldTestComparisonCard(
                         }
                         context.startActivity(Intent.createChooser(shareIntent, "세션 비교 리포트 공유"))
                     },
+                    modifier = Modifier.testTag("field-test-share"),
                 ) { Text("비교 리포트 공유") }
                 TextButton(
                     enabled = recorder.sessionCount() > 0,
@@ -140,6 +148,7 @@ internal fun FieldTestComparisonCard(
                         lastRecordedSessionToken = -1
                         revision += 1
                     },
+                    modifier = Modifier.testTag("field-test-reset"),
                 ) { Text("비교 초기화") }
             }
         }
@@ -154,6 +163,7 @@ private fun ProtocolSummary(
     Text(
         "프로토콜: ${protocolStatusLabel(protocol.status)}",
         style = MaterialTheme.typography.labelLarge,
+        modifier = Modifier.testTag("field-test-protocol-status"),
     )
     if (!criteria.isConfigured) {
         Text(
