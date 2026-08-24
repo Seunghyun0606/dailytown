@@ -88,8 +88,11 @@ For GitHub-hosted `Internal Debug APK` builds, use repository Variables with the
 ## Real-device validation
 
 - [ ] Select representative test neighborhoods and walking routes, including at least one mostly-new area and one repeat-area route.
-- [ ] For each route, record a trusted **total route distance in meters** from the chosen reference source. Do not copy route geometry into the app; only enter the scalar meter value in `기준 경로 거리` before sharing the diagnostic.
-- [ ] Run battery-comparison routes with the phone **unplugged**. A session that starts or ends while externally powered intentionally reports battery measurement as non-comparable instead of producing a PASS/FAIL.
+- [ ] For each route, record a trusted **total route distance in meters** from the chosen reference source. Do not copy route geometry into the app; only enter the scalar meter value in `기준 경로 거리` before starting the representative session.
+- [ ] Before each route, choose `신규 지역` or `반복 지역` in **필드테스트 세션 준비** and confirm the displayed next-session profile, tracking preset, and optional scalar reference distance are correct.
+- [ ] Start tracking and verify the session plan becomes fixed for that run. The setup profile controls should be disabled while tracking is active.
+- [ ] If the current comparison protocol requires `DISTANCE_ERROR`, verify the setup warns when no scalar reference distance is available before start.
+- [ ] If the protocol requires `BATTERY_DRAIN`, run the route with the phone **unplugged**. A session that starts or ends while externally powered intentionally reports battery measurement as non-comparable instead of producing a PASS/FAIL.
 - [ ] Keep screen brightness, tracking preset, device, and route conditions reasonably consistent across battery-comparison runs.
 - [ ] Run on a physical Android device outdoors after NAVER package restriction matches `com.dailytown.app`.
 - [ ] Confirm the in-app provider-neutral map health reaches **`READY` / 지도 정상** after the NAVER map initializes.
@@ -97,22 +100,25 @@ For GitHub-hosted `Internal Debug APK` builds, use repository Variables with the
 - [ ] Verify NAVER map tiles, user-location overlay, encounter markers, and camera movement.
 - [ ] Verify precise/approximate location permission behavior.
 - [ ] Verify battery saver / balanced / precise tracking presets.
-- [ ] Verify changing the preset while DEVICE tracking is active pauses the session before a new location request is started and freezes that battery measurement window.
+- [ ] Verify changing the preset while DEVICE tracking is active pauses the session before a new location request is started and freezes that battery measurement window. The completed comparison summary for that stopped session must retain the preset latched at its start, not the newly selected preset.
 - [ ] Verify GPS accepted/rejected counters, rejection rate, impossible-jump filtering, and per-session distance.
 - [ ] Verify the diagnostic shows `sessionDistanceMeters`, optional `referenceDistanceMeters`, and `distanceErrorPercent` without latitude/longitude fields.
 - [ ] Verify supported devices report coarse battery start/end percentage and, where available, charge consumed in mAh. OEMs that do not expose a charge counter are allowed to omit the mAh field.
 - [ ] Verify `batteryDrainPercentPerHour` is absent/unevaluated for external-power sessions or zero-duration evidence rather than being fabricated.
 - [ ] During a representative route, verify the in-app session summary increments offered/discovered/resolved encounters and collected clues only when those transitions actually happen.
 - [ ] Verify the diagnostic exports gameplay **counts/rates only** and contains no `poiId`, `encounterId`, `templateId`, or equivalent event identifiers.
-- [ ] After each representative route, tap **중지**, select `신규 지역` or `반복 지역` in **필드테스트 세션 비교**, then record the current session once.
-- [ ] Verify the same stopped session cannot be added repeatedly by tapping the record button multiple times. Starting a new DEVICE/REPLAY session should create a new comparison-eligible session token.
+- [ ] After each representative route, tap **중지** and verify **종료 세션 계획** shows the profile/preset/reference values that were fixed at session start.
+- [ ] Verify the comparison card automatically suggests the start-time `신규 지역`/`반복 지역` classification. If the preparation choice was wrong, correct only the profile before recording.
+- [ ] Change the next-session reference input after stopping and confirm the completed session still records the reference distance and distance-error evidence latched at its own start.
+- [ ] If configured required evidence is missing after stop, verify the comparison card names the missing evidence. Recording must remain possible and the missing value must stay missing rather than being replaced with 0.
+- [ ] Record the completed session once and verify the same stopped session cannot be added repeatedly. Starting a new DEVICE/REPLAY session should create a new comparison-eligible session token and a new latched plan.
 - [ ] Record multiple sessions in each cohort and verify every average shows `유효 evidence / 전체 session` counts. Missing battery/reference/revisit evidence must not be treated as zero.
 - [ ] Verify `반복 - 신규 차이` is shown only for metrics where both cohorts have evaluable averages and is presented as a raw delta rather than an automatic good/bad verdict.
 - [ ] With comparison protocol variables unset, confirm both populated cohorts become **비교 가능** but not **제품 검토 가능**.
 - [ ] After approved protocol variables are configured, confirm the card shows missing sample/preset/evidence issues until every configured gate is satisfied, then transitions to **제품 검토 가능**.
 - [ ] If `REPEAT_AREA_FATIGUE` is required, confirm only repeat-area valid evidence counts are gated; NEW_AREA sessions are not required to produce fatigue evidence.
 - [ ] Share **세션 비교 리포트** and confirm it contains aggregate derived metrics plus protocol status/issues only: no place label, coordinates, route geometry, `poiId`, `encounterId`, `templateId`, session token, provider exception payload, or credential.
-- [ ] Use **비교 초기화** and confirm all in-memory comparison summaries are cleared. Relaunching the process should likewise start with an empty comparison set.
+- [ ] Use **비교 초기화** and confirm all in-memory comparison summaries are cleared. Relaunching the process should likewise start with an empty comparison/session-plan state.
 - [ ] If there are no discovered revisit encounters, confirm `repeatAreaFatigueProxyPercent` is omitted/unevaluated rather than shown as 0%.
 - [ ] Walk the same route multiple times and judge whether the measured revisit resolution/fatigue proxy matches the subjective feeling of repetition closely enough to use as a product signal.
 - [ ] Verify daily/weekly counters reset only when the corresponding period changes.
@@ -133,4 +139,4 @@ Before any external beta or store submission:
 
 ## Safe to continue without these TODOs
 
-Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, bounded in-memory new-vs-repeat session comparison, configurable comparison-protocol readiness, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
+Replay exploration, GPS filtering, per-session distance, derived progress persistence, persistence-safe fallback, provider-neutral map health, POI abstraction, encounter generation rules, mystery state machine, clue mechanics, companion reaction hooks, anti-repeat ranking, neighborhood progress, contextual/rare encounters, companion semantic memory, daily/weekly goal rotation, coarse battery field telemetry, route-distance-error calculation, privacy-safe gameplay telemetry, bounded in-memory new-vs-repeat session comparison, pre-session privacy-safe field-test planning/latching, required-evidence guidance, configurable comparison-protocol readiness, configurable field-test acceptance evaluation, opt-in local reminders, privacy-safe diagnostic export, managed-emulator smoke testing, and credentialed internal APK generation can all continue without production POI data or release credentials.
