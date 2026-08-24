@@ -6,13 +6,15 @@ Daily Town does **not** require a physical-device APK for every development/test
 
 ### 1. JVM unit tests — default development loop
 
-Use for exploration math, GPS quality filtering, encounter selection, persistence rules, POI caching, goal rotation, reminder calculations, privacy-safe diagnostics, battery/distance derivation, gameplay-session counters/rates, multi-session comparison, comparison-protocol readiness, and acceptance evaluation.
+Use for exploration math, GPS quality filtering, encounter selection, persistence rules, POI caching, goal rotation, reminder calculations, privacy-safe diagnostics, battery/distance derivation, gameplay-session counters/rates, multi-session comparison, field-test session-plan latching/evidence inspection, comparison-protocol readiness, and acceptance evaluation.
 
 ```bash
 gradle testDebugUnitTest
 ```
 
 No emulator, device, NAVER credential, or GPS is required.
+
+The field-test preparation JVM tests specifically verify that only profile/preset/optional scalar reference distance are latched, invalid reference values are rejected, later setup edits cannot rewrite completed-session preset/reference evidence, distance error is recalculated from the latched scalar reference, and configured missing evidence remains explicit.
 
 ### 2. Build/compile verification — every CI change
 
@@ -39,7 +41,12 @@ gradle pixel2Api30AtdDebugAndroidTest \
 
 GitHub Actions provides the **Emulator Replay Smoke Test** workflow. It is still manually triggerable, and it also runs automatically on pull requests that change the UI, location stack, Android instrumentation tests, managed-device Gradle configuration, or the emulator workflow itself.
 
-The current smoke test verifies that the app starts and that the Seoul City Hall → Deoksugung replay exploration can begin without location permission or a map credential. Replay can also exercise the session gameplay counters and the longer field-test comparison/protocol UI without generating raw telemetry logs.
+The managed-device coverage now has two layers:
+
+- basic replay smoke: the Seoul City Hall → Deoksugung replay can start without location permission or a map credential
+- field-test flow E2E: empty comparison → preselect session area → replay start with setup controls locked → stop with completed plan → record once → select the next area before the second replay → record second cohort → reach `COMPARABLE` with policy unset → reset to `DATA_INSUFFICIENT`
+
+This verifies the preparation/latching UI through real Compose semantics without generating raw GPS or gameplay telemetry logs. `PRODUCT_REVIEW_READY` remains a JVM-policy test because normal PR builds intentionally do not fabricate human-approved Repository Variables.
 
 ### 4. Android Studio emulator — interactive development
 
@@ -49,6 +56,9 @@ For interactive UI/gameplay checks, install and run the debug app on an Android 
 - replay-route gameplay
 - encounter phase transitions
 - session encounter/discovery/resolution counters
+- pre-session NEW_AREA / REPEAT_AREA setup and active-plan locking
+- optional scalar reference distance latching from the diagnostic input
+- completed-session suggestion and missing-required-evidence guidance
 - NEW_AREA / REPEAT_AREA comparison recording and reset
 - comparison protocol status/issue rendering
 - local persistence across app restarts
@@ -69,6 +79,8 @@ A real device is required before a closed/external field test for behavior that 
 - real NAVER map credential + Android package restriction validation
 - map tile/network behavior under real mobile connectivity
 - notification behavior under OEM power-management policies
+- whether start-latched preset/reference values remain meaningful under real route interruptions and preset changes
+- whether configured battery/reference/revisit evidence guidance matches what the device can actually measure
 - new-area vs repeat-area encounter density, resolution rate, fatigue proxy, and subjective play-feel while actually walking
 - whether the approved cohort-size/evidence protocol is sufficient for a real product decision
 
@@ -90,7 +102,7 @@ FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET
 FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE
 ```
 
-Allowed comparison evidence keys and the three protocol statuses are documented in `docs/FIELD_TEST_PROTOCOL.md`.
+Allowed comparison evidence keys, the three protocol statuses, and session-plan latching semantics are documented in `docs/FIELD_TEST_PROTOCOL.md`.
 
 The generated artifact contains `field-test-policy.txt` so a tester can verify which criteria/protocol gates were compiled into that APK. These are policy values, not secrets. `NAVER_MAP_NCP_KEY_ID` remains an Actions Secret and is never written to that metadata file.
 
