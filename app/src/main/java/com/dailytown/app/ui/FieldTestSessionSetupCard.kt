@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.dailytown.app.diagnostics.FieldTestAreaProfile
 import com.dailytown.app.diagnostics.FieldTestProtocolEvidence
 import com.dailytown.app.diagnostics.FieldTestSessionPlan
-import com.dailytown.app.diagnostics.parseReferenceDistanceMeters
 import com.dailytown.app.location.LocationTrackingPreset
 
 @Composable
@@ -25,15 +23,12 @@ internal fun FieldTestSessionSetupCard(
     trackingActive: Boolean,
     trackingPreset: LocationTrackingPreset,
     draftProfile: FieldTestAreaProfile,
-    referenceDistanceText: String,
+    referenceDistanceMeters: Int?,
     activePlan: FieldTestSessionPlan?,
     completedPlan: FieldTestSessionPlan?,
     requiredEvidence: Set<FieldTestProtocolEvidence>,
     onProfileChange: (FieldTestAreaProfile) -> Unit,
-    onReferenceDistanceChange: (String) -> Unit,
 ) {
-    val parsedReferenceDistance = parseReferenceDistanceMeters(referenceDistanceText)
-    val invalidReferenceDistance = referenceDistanceText.isNotBlank() && parsedReferenceDistance == null
     val distanceEvidenceRequired = FieldTestProtocolEvidence.DISTANCE_ERROR in requiredEvidence
 
     ElevatedCard(Modifier.fillMaxWidth().testTag("field-test-session-setup")) {
@@ -64,35 +59,27 @@ internal fun FieldTestSessionSetupCard(
                 )
             }
 
-            OutlinedTextField(
-                value = referenceDistanceText,
-                onValueChange = { value ->
-                    if (value.all(Char::isDigit)) onReferenceDistanceChange(value)
-                },
-                enabled = !trackingActive,
-                isError = invalidReferenceDistance,
-                label = { Text("기준 경로 거리(m, 선택)") },
-                supportingText = {
-                    Text(
-                        when {
-                            invalidReferenceDistance -> "1m 이상의 정수만 사용할 수 있습니다."
-                            distanceEvidenceRequired && parsedReferenceDistance == null ->
-                                "현재 protocol은 거리 오차 evidence를 요구합니다. 시작 전에 기준거리 입력을 권장합니다."
-                            else -> "미리 확인한 총 거리 숫자만 사용하며 경로 geometry는 저장하지 않습니다."
-                        },
-                    )
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("field-test-reference-distance"),
-            )
-
             Text(
-                "다음 세션: ${profileLabel(draftProfile)} · ${presetLabel(trackingPreset)} · 기준거리 ${parsedReferenceDistance?.let { "${it}m" } ?: "없음"}",
+                "다음 세션: ${profileLabel(draftProfile)} · ${presetLabel(trackingPreset)} · 기준거리 ${referenceDistanceMeters?.let { "${it}m" } ?: "없음"}",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.testTag("field-test-draft-plan"),
             )
+            Text(
+                if (referenceDistanceMeters == null) {
+                    "기준거리는 위 ‘필드테스트 진단’ 카드에서 입력한 값이 시작 순간에 고정됩니다."
+                } else {
+                    "위 진단 카드의 기준거리 ${referenceDistanceMeters}m가 다음 세션 시작 순간에 고정됩니다."
+                },
+                style = MaterialTheme.typography.bodySmall,
+            )
+            if (distanceEvidenceRequired && referenceDistanceMeters == null && !trackingActive) {
+                Text(
+                    "• 현재 protocol은 거리 오차 evidence를 요구합니다. 시작 전에 기준거리 입력을 권장합니다.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.testTag("field-test-setup-distance-warning"),
+                )
+            }
 
             activePlan?.let { plan ->
                 Text(
@@ -104,7 +91,7 @@ internal fun FieldTestSessionSetupCard(
             if (!trackingActive) {
                 completedPlan?.let { plan ->
                     Text(
-                        "종료 세션 계획: ${planLabel(plan)} · 아래 비교 카드에서 확인 후 기록하세요.",
+                        "종료 세션 계획: ${planLabel(plan)} · 아래에서 확인 후 비교에 기록하세요.",
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.testTag("field-test-completed-plan"),
                     )
