@@ -98,6 +98,7 @@ The batch tool:
 - preserves missing evidence as `null` with an explicit evidence count
 - reports tracking presets, acceptance/run-review counts, app versions, and repeat-minus-new deltas
 - recomputes the comparison protocol using the same semantics as the Android `FieldTestProtocolEvaluator`
+- exposes the non-secret comparison policy to downstream offline review/planning tools
 - always emits `productVerdict=NOT_COMPUTED`
 
 ### Batch protocol readiness vs product verdict
@@ -128,6 +129,48 @@ For more than one export, `--confirm-non-overlapping` is mandatory. The recommen
 
 Exact duplicate files are rejected automatically, but partial overlap between distinct snapshots is not detectable. Do not aggregate overlapping snapshots for product decisions.
 
+## Next evidence collection planner
+
+Once at least one validated export exists, calculate what the approved protocol still needs:
+
+```bash
+python3 tools/field_test/collection_plan.py \
+  --confirm-non-overlapping \
+  export-a.json export-b.json
+```
+
+Use `--json` for machine-readable stdout.
+
+The planner deliberately does **not** invent product thresholds. It only uses:
+
+- structural requirements already defined by the app protocol evaluator
+- the human-approved `minimumSessionsPerCohort`
+- the human-approved matching-tracking-preset requirement
+- the human-approved required evidence list
+- current NEW_AREA / REPEAT_AREA session and evidence counts
+
+The plan reports:
+
+- current session count per cohort
+- configured minimum session target, when one exists
+- session-count deficit
+- each required evidence item's current count, target count, and deficit
+- a **minimum additional session lower bound** per cohort
+- structural actions when a cohort or shared evidence is missing
+- a blocker when matching tracking preset is required but the current aggregate already contains multiple presets
+- a human-decision action when comparison policy is not configured
+- a human-product-review action when the approved evidence protocol is already satisfied
+
+### Lower-bound semantics
+
+The planner never adds all evidence deficits together. One additional session can satisfy multiple required evidence items at the same time, so the planner uses the maximum relevant deficit as a **lower bound**.
+
+A lower bound is not a guarantee. A new session may fail to produce battery, distance-error, or other evidence, so more real sessions may still be needed.
+
+Tracking-preset mismatch is different: if the current aggregate already mixes presets while matching is required, adding sessions cannot remove those existing preset values. The planner therefore reports a blocker and recommends reviewing separate same-preset data or collecting a clean same-preset batch instead of presenting a fake numeric fix.
+
+If no comparison policy is configured, the planner does not invent a target. It reports `POLICY_NOT_CONFIGURED`; only structural missing-cohort/shared-evidence requirements can still produce a minimal collection lower bound.
+
 ## Human-review report
 
 For a compact review document, render Markdown to stdout:
@@ -151,6 +194,10 @@ The Markdown report contains:
 
 - source/session/app-version summary
 - recomputed batch protocol status and issue list
+- collection-plan status
+- current sessions, approved target, deficits, and minimum additional-session lower bounds
+- required-evidence current/target counts and deficits
+- collection blockers and next actions
 - NEW_AREA / REPEAT_AREA metric averages
 - evidence count beside every average
 - repeat-minus-new delta
@@ -158,7 +205,7 @@ The Markdown report contains:
 - acceptance distribution
 - an explicit interpretation boundary separating protocol readiness from product quality
 
-The CSV report contains summary, protocol-issue, metric, run-review, and acceptance rows. Missing numeric evidence is emitted as an empty CSV cell while evidence counts remain explicit.
+The CSV report contains summary, protocol-issue, collection-plan, collection-evidence, collection-blocker/action, metric, run-review, and acceptance rows. Missing numeric evidence is emitted as an empty CSV cell while evidence counts remain explicit.
 
 Both report formats are stdout-only. If a human chooses to redirect them into a file, that destination must follow the approved export retention/access policy.
 
@@ -172,7 +219,7 @@ Engineering must not invent:
 - mandatory comparison evidence keys
 - representative mostly-new/repeat-area routes and trusted scalar reference distances
 - whether repeat-area-fatigue proxy correlates sufficiently with subjective repetition/fatigue
-- approved external export destination and authorized access
+- approved external export/report destination and authorized access
 - retention duration and deletion procedure
 - whether future app-side import/persistence is allowed
 - production POI/public-data licensing and authored content approval
@@ -184,10 +231,11 @@ Until export retention/access decisions are approved, do not automatically uploa
 
 Android/JVM coverage continues to verify the app-side export schema, privacy boundary, missing-as-null behavior, bounded recorder, and managed-device export enable/reset flow.
 
-Repository-local Python coverage now contains 30 tests:
+Repository-local Python coverage now contains 41 tests:
 
 - 13 strict validator tests
 - 12 batch-aggregation/protocol tests covering non-overlap confirmation, duplicate/policy mismatch rejection, cross-file recomputation, missing evidence, invalid-source rejection, protocol readiness, structural insufficiency, and repeat-only fatigue evidence
-- 5 review-report tests covering Markdown/CSV output, protocol issues, evidence counts, missing-value rendering, and the permanent `NOT_COMPUTED` product verdict boundary
+- 9 collection-planner tests covering unconfigured policy, structural missing cohorts/shared evidence, minimum session deficits, required evidence deficits, repeat-only fatigue, tracking-preset blockers, lower-bound semantics, and evidence-ready human review handoff
+- 7 review-report tests covering Markdown/CSV output, protocol issues, evidence counts, missing-value rendering, collection-plan lower bounds/evidence deficits, and the permanent `NOT_COMPUTED` product verdict boundary
 
 Both normal Android CI and the manually triggered Internal Debug APK workflow run the full `tools/field_test/test_*.py` suite before Android build steps.
