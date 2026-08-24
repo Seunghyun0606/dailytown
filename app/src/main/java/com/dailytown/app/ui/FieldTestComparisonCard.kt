@@ -36,12 +36,14 @@ import com.dailytown.app.diagnostics.FieldTestProtocolEvidence
 import com.dailytown.app.diagnostics.FieldTestProtocolIssue
 import com.dailytown.app.diagnostics.FieldTestProtocolStatus
 import com.dailytown.app.diagnostics.FieldTestSessionEvidenceInspector
+import com.dailytown.app.diagnostics.FieldTestSessionPlan
+import com.dailytown.app.diagnostics.withSessionPlan
+import com.dailytown.app.location.LocationTrackingPreset
 
 @Composable
 internal fun FieldTestComparisonCard(
     sessionToken: Int,
     canRecordCurrentSession: Boolean,
-    suggestedProfile: FieldTestAreaProfile? = null,
     buildDiagnostic: () -> FieldTestDiagnostic,
 ) {
     val context = LocalContext.current
@@ -50,24 +52,35 @@ internal fun FieldTestComparisonCard(
     val evidenceInspector = remember { FieldTestSessionEvidenceInspector() }
     val protocolCriteria = remember { buildConfigProtocolCriteria() }
     var revision by remember { mutableIntStateOf(0) }
+    var draftProfile by remember { mutableStateOf(FieldTestAreaProfile.NEW_AREA) }
     var selectedProfile by remember { mutableStateOf(FieldTestAreaProfile.NEW_AREA) }
+    var activePlan by remember { mutableStateOf<FieldTestSessionPlan?>(null) }
+    var completedPlan by remember { mutableStateOf<FieldTestSessionPlan?>(null) }
+    var observedSessionToken by remember { mutableIntStateOf(sessionToken) }
     var lastRecordedSessionToken by remember { mutableIntStateOf(-1) }
+
+    val setupDiagnostic = buildDiagnostic()
+    val setupTrackingPreset = trackingPresetFromDiagnostic(setupDiagnostic)
+    val trackingActive = activePlan != null && !canRecordCurrentSession
     val report = remember(revision) { recorder.report() }
     val protocol = remember(revision, protocolCriteria) {
         protocolEvaluator.evaluate(report, protocolCriteria)
     }
     val alreadyRecorded = lastRecordedSessionToken == sessionToken
+    val recordReady = canRecordCurrentSession && completedPlan != null
     val currentEvidenceAssessment = remember(
         revision,
         sessionToken,
-        canRecordCurrentSession,
+        recordReady,
         alreadyRecorded,
         selectedProfile,
+        completedPlan,
         protocolCriteria,
     ) {
-        if (canRecordCurrentSession && !alreadyRecorded) {
+        val plan = completedPlan
+        if (recordReady && !alreadyRecorded && plan != null) {
             evidenceInspector.evaluate(
-                diagnostic = buildDiagnostic(),
+                diagnostic = buildDiagnostic().withSessionPlan(plan),
                 areaProfile = selectedProfile,
                 requiredEvidence = protocolCriteria.requiredEvidence,
             )
@@ -76,9 +89,44 @@ internal fun FieldTestComparisonCard(
         }
     }
 
-    LaunchedEffect(sessionToken, suggestedProfile) {
-        suggestedProfile?.let { selectedProfile = it }
+    LaunchedEffect(sessionToken) {
+        if (sessionToken != observedSessionToken) {
+            val startDiagnostic = buildDiagnostic()
+            val plan = FieldTestSessionPlan(
+                areaProfile = draftProfile,
+                trackingPreset = trackingPresetFromDiagnostic(startDiagnostic),
+                referenceDistanceMeters = startDiagnostic.referenceDistanceMeters,
+            )
+            activePlan = plan
+            completedPlan = null
+            selectedProfile = plan.areaProfile
+            observedSessionToken = sessionToken
+        }
     }
+
+    LaunchedEffect(canRecordCurrentSession, activePlan) {
+        val plan = activePlan
+        if (canRecordCurrentSession && plan != null) {
+            completedPlan = plan
+            activePlan = null
+            selectedProfile = plan.areaProfile
+        }
+    }
+
+    FieldTestSessionSetupCard(
+        trackingActive = trackingActive,
+        trackingPreset = activePlan?.trackingPreset ?: setupTrackingPreset,
+        draftProfile = draftProfile,
+        referenceDistanceMeters = if (trackingActive) {
+            activePlan?.referenceDistanceMeters
+        } else {
+            setupDiagnostic.referenceDistanceMeters
+        },
+        activePlan = activePlan,
+        completedPlan = completedPlan,
+        requiredEvidence = protocolCriteria.requiredEvidence,
+        onProfileChange = { draftProfile = it },
+    )
 
     ElevatedCard(Modifier.fillMaxWidth().testTag("field-test-comparison-card")) {
         Column(
@@ -93,11 +141,10 @@ internal fun FieldTestComparisonCard(
 
             ProtocolSummary(protocol = protocol, criteria = protocolCriteria)
 
-            if (canRecordCurrentSession && !alreadyRecorded) {
+            if (recordReady && !alreadyRecorded) {
+                val plan = completedPlan
                 Text(
-                    suggestedProfile?.let {
-                        "종료된 세션이 준비되었습니다. 시작 계획은 ${profileLabel(it)}이며, 필요하면 아래에서 수정 후 기록할 수 있습니다."
-                    } ?: "종료된 세션이 준비되었습니다. 지역 분류를 확인한 뒤 기록하세요.",
+                    "종료된 세션이 준비되었습니다. 시작 계획은 ${profileLabel(plan?.areaProfile ?: selectedProfile)}이며, 필요하면 아래에서 수정 후 기록할 수 있습니다.",
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.testTag("field-test-record-suggestion"),
                 )
@@ -138,17 +185,22 @@ internal fun FieldTestComparisonCard(
             }
 
             OutlinedButton(
-                enabled = canRecordCurrentSession && !alreadyRecorded,
+                enabled = recordReady && !alreadyRecorded,
                 onClick = {
-                    recorder.record(selectedProfile, buildDiagnostic())
-                    lastRecordedSessionToken = sessionToken
-                    revision += 1
+                    completedPlan?.let { plan ->
+                        recorder.record(
+                            selectedProfile,
+                            buildDiagnostic().withSessionPlan(plan),
+                        )
+                        lastRecordedSessionToken = sessionToken
+                        revision += 1
+                    }
                 },
                 modifier = Modifier.testTag("field-test-record"),
             ) {
                 Text(if (alreadyRecorded) "현재 세션 기록됨" else "현재 세션 비교에 기록")
             }
-            if (!canRecordCurrentSession) {
+            if (!recordReady) {
                 Text("추적을 중지한 뒤 위치 샘플이 있는 세션을 기록할 수 있습니다.", style = MaterialTheme.typography.bodySmall)
             }
 
@@ -289,6 +341,10 @@ internal fun buildConfigProtocolCriteria(): FieldTestProtocolCriteria = FieldTes
     },
     requiredEvidence = FieldTestProtocolEvidence.parseCsv(BuildConfig.FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE),
 )
+
+private fun trackingPresetFromDiagnostic(diagnostic: FieldTestDiagnostic): LocationTrackingPreset =
+    runCatching { LocationTrackingPreset.valueOf(diagnostic.trackingPreset) }
+        .getOrDefault(LocationTrackingPreset.BALANCED)
 
 private fun protocolStatusLabel(status: FieldTestProtocolStatus): String = when (status) {
     FieldTestProtocolStatus.DATA_INSUFFICIENT -> "데이터 부족"
