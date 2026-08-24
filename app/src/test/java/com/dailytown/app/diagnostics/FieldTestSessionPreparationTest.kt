@@ -41,6 +41,35 @@ class FieldTestSessionPreparationTest {
     }
 
     @Test
+    fun completedDiagnosticUsesLatchedPresetAndReferenceDistance() {
+        val completed = diagnostic().withSessionPlan(
+            FieldTestSessionPlan(
+                areaProfile = FieldTestAreaProfile.NEW_AREA,
+                trackingPreset = LocationTrackingPreset.PRECISE,
+                referenceDistanceMeters = 1000,
+            ),
+        )
+
+        assertEquals("PRECISE", completed.trackingPreset)
+        assertEquals(1000, completed.referenceDistanceMeters)
+        assertEquals(50, completed.distanceErrorPercent)
+    }
+
+    @Test
+    fun completedDiagnosticClearsLaterReferenceWhenSessionStartedWithoutOne() {
+        val completed = diagnostic().withSessionPlan(
+            FieldTestSessionPlan(
+                areaProfile = FieldTestAreaProfile.NEW_AREA,
+                trackingPreset = LocationTrackingPreset.BALANCED,
+                referenceDistanceMeters = null,
+            ),
+        )
+
+        assertNull(completed.referenceDistanceMeters)
+        assertNull(completed.distanceErrorPercent)
+    }
+
+    @Test
     fun inspectorReportsOnlyConfiguredMissingEvidence() {
         val diagnostic = diagnostic(
             distanceErrorPercent = null,
