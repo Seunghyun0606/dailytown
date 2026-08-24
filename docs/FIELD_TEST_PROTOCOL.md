@@ -54,6 +54,21 @@ Missing evidence is never converted to zero. Each cohort keeps `evidenceCount/se
 
 This prevents a partially measured cohort from appearing stronger simply because unavailable measurements were treated as good zeros.
 
+## Automated UI coverage
+
+The credential-free AOSP ATD lane exercises the comparison protocol through the real Compose UI rather than only testing the pure evaluator. Stable semantics tags are attached to the comparison controls and status text without changing production behavior.
+
+The managed-device scenario verifies:
+
+1. an empty recorder shows `DATA_INSUFFICIENT` and `0/0` cohorts
+2. a replay session can be stopped and recorded as `NEW_AREA`
+3. the same stopped session cannot be recorded twice
+4. a second replay session can be stopped and recorded as `REPEAT_AREA`
+5. with protocol policy intentionally unset in the normal PR build, the two cohorts advance to `COMPARABLE`
+6. resetting the comparison returns the recorder to `DATA_INSUFFICIENT` and `0/0`
+
+`PRODUCT_REVIEW_READY` remains covered by pure JVM protocol tests because that state depends on human-approved Repository Variables and must not be fabricated in the normal credential-free PR build.
+
 ## Privacy boundary
 
 The comparison protocol operates on bounded, process-memory-only `FieldTestSessionSummary` values. It does not receive or retain:
