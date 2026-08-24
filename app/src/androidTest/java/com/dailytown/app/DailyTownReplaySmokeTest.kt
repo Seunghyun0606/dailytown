@@ -47,11 +47,15 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("field-test-setup-profile-new")
             .assertIsSelected()
 
-        startReplayAndStop()
+        startReplayAndStop(expectedProfile = "신규 지역")
 
         composeRule.onNodeWithTag("field-test-record-suggestion")
             .performScrollTo()
-            .assert(hasText("시작 계획은 신규 지역"))
+            .assert(
+                hasText(
+                    "종료된 세션이 준비되었습니다. 시작 계획은 신규 지역이며, 필요하면 아래에서 수정 후 기록할 수 있습니다.",
+                ),
+            )
         composeRule.onNodeWithTag("field-test-record")
             .performScrollTo()
             .assertIsEnabled()
@@ -72,13 +76,17 @@ class DailyTownReplaySmokeTest {
             .assertIsEnabled()
             .performClick()
         composeRule.onNodeWithTag("field-test-draft-plan")
-            .assert(hasText("다음 세션: 반복 지역"))
+            .assert(hasText("다음 세션: 반복 지역 · 균형 · 기준거리 없음"))
 
-        startReplayAndStop()
+        startReplayAndStop(expectedProfile = "반복 지역")
 
         composeRule.onNodeWithTag("field-test-record-suggestion")
             .performScrollTo()
-            .assert(hasText("시작 계획은 반복 지역"))
+            .assert(
+                hasText(
+                    "종료된 세션이 준비되었습니다. 시작 계획은 반복 지역이며, 필요하면 아래에서 수정 후 기록할 수 있습니다.",
+                ),
+            )
         composeRule.onNodeWithTag("field-test-profile-repeat")
             .assertIsSelected()
         composeRule.onNodeWithTag("field-test-record")
@@ -104,7 +112,7 @@ class DailyTownReplaySmokeTest {
             .assert(hasText("프로토콜: 데이터 부족"))
     }
 
-    private fun startReplayAndStop() {
+    private fun startReplayAndStop(expectedProfile: String) {
         composeRule.onNodeWithTag("tracking-replay")
             .performScrollTo()
             .performClick()
@@ -115,7 +123,7 @@ class DailyTownReplaySmokeTest {
             .assert(hasText("서울시청 → 덕수궁 테스트 경로 재생 중"))
         composeRule.onNodeWithTag("field-test-active-plan")
             .performScrollTo()
-            .assert(hasText("진행 중 계획"))
+            .assert(hasText("진행 중 계획: $expectedProfile · 균형 · 기준거리 없음"))
         composeRule.onNodeWithTag("field-test-setup-profile-new")
             .assertIsNotEnabled()
         composeRule.onNodeWithTag("field-test-setup-profile-repeat")
@@ -128,6 +136,10 @@ class DailyTownReplaySmokeTest {
 
         composeRule.onNodeWithTag("field-test-completed-plan")
             .performScrollTo()
-            .assert(hasText("종료 세션 계획"))
+            .assert(
+                hasText(
+                    "종료 세션 계획: $expectedProfile · 균형 · 기준거리 없음 · 아래에서 확인 후 비교에 기록하세요.",
+                ),
+            )
     }
 }
