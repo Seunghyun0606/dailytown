@@ -62,7 +62,7 @@ python3 tools/field_test/validate_export.py path/to/field-test-export.json
 
 The validator is offline and uses only the Python standard library. It does not upload, rewrite, or persist the export.
 
-In addition to schema/privacy checks, v1 validation now recomputes the exported comparison from session rows and requires the following to match exactly:
+In addition to schema/privacy checks, v1 validation recomputes the exported comparison from session rows and requires the following to match exactly:
 
 - schema/package/privacy boundary and exact v1 field shapes
 - 1..20 sessions and contiguous ordinals
@@ -75,9 +75,7 @@ In addition to schema/privacy checks, v1 validation now recomputes the exported 
 - missing evidence staying `null`
 - absence of known location/route/event/session/device/timestamp/credential-shaped fields
 
-This closes a consistency gap where a syntactically valid export could otherwise contain comparison numbers that no longer matched its session rows.
-
-The validator remains a structural/privacy validator, not a product-quality gate. A valid file may still contain `REFERENCE_ONLY`, `NEEDS_ATTENTION`, `DATA_INSUFFICIENT`, or missing evidence.
+The validator is a structural/privacy validator, not a product-quality gate. A valid file may still contain `REFERENCE_ONLY`, `NEEDS_ATTENTION`, `DATA_INSUFFICIENT`, or missing evidence.
 
 ## Offline multi-export batch review
 
@@ -99,8 +97,23 @@ The batch tool:
 - recomputes NEW_AREA / REPEAT_AREA averages directly from session rows rather than averaging already-rounded cohort averages
 - preserves missing evidence as `null` with an explicit evidence count
 - reports tracking presets, acceptance/run-review counts, app versions, and repeat-minus-new deltas
+- recomputes the comparison protocol using the same semantics as the Android `FieldTestProtocolEvaluator`
 - always emits `productVerdict=NOT_COMPUTED`
-- does **not** reinterpret `PRODUCT_REVIEW_READY` or invent a cross-file product verdict
+
+### Batch protocol readiness vs product verdict
+
+Batch protocol readiness is allowed to be recomputed because it only evaluates the **human-approved comparison protocol** already embedded in the exports.
+
+The offline evaluator mirrors the app rules:
+
+- missing NEW_AREA or REPEAT_AREA cohort => `DATA_INSUFFICIENT`
+- both cohorts but no common evaluable metric => `DATA_INSUFFICIENT`
+- structurally comparable with no configured comparison policy => `COMPARABLE`
+- configured minimum cohort size, matching-preset requirement, and required evidence are applied
+- `REPEAT_AREA_FATIGUE` evidence is required only for the REPEAT_AREA cohort
+- all configured gates satisfied => `PRODUCT_REVIEW_READY`
+
+`PRODUCT_REVIEW_READY` means **evidence is ready for a human product review**. It does not mean the product is good, the metric deltas are acceptable, or the app is ready for release. The aggregate always keeps `productVerdict=NOT_COMPUTED`.
 
 ### Non-overlap limitation
 
@@ -113,7 +126,41 @@ For more than one export, `--confirm-non-overlapping` is mandatory. The recommen
 3. reset the in-app comparison buffer
 4. only then collect the next batch
 
-Exact duplicate files are still rejected automatically, but partial overlap between distinct snapshots is not detectable. Do not aggregate overlapping snapshots for product decisions.
+Exact duplicate files are rejected automatically, but partial overlap between distinct snapshots is not detectable. Do not aggregate overlapping snapshots for product decisions.
+
+## Human-review report
+
+For a compact review document, render Markdown to stdout:
+
+```bash
+python3 tools/field_test/review_report.py \
+  --confirm-non-overlapping \
+  export-a.json export-b.json
+```
+
+For spreadsheet-friendly output, render CSV to stdout:
+
+```bash
+python3 tools/field_test/review_report.py \
+  --format csv \
+  --confirm-non-overlapping \
+  export-a.json export-b.json
+```
+
+The Markdown report contains:
+
+- source/session/app-version summary
+- recomputed batch protocol status and issue list
+- NEW_AREA / REPEAT_AREA metric averages
+- evidence count beside every average
+- repeat-minus-new delta
+- run-review distribution
+- acceptance distribution
+- an explicit interpretation boundary separating protocol readiness from product quality
+
+The CSV report contains summary, protocol-issue, metric, run-review, and acceptance rows. Missing numeric evidence is emitted as an empty CSV cell while evidence counts remain explicit.
+
+Both report formats are stdout-only. If a human chooses to redirect them into a file, that destination must follow the approved export retention/access policy.
 
 ## Human decisions still required
 
@@ -131,15 +178,16 @@ Engineering must not invent:
 - production POI/public-data licensing and authored content approval
 - Play Console, release signing, privacy, analytics/crash collection, and external tester decisions
 
-Until export retention/access decisions are approved, do not automatically upload these JSON documents to analytics, cloud storage, a backend, or source control.
+Until export retention/access decisions are approved, do not automatically upload these JSON documents or derived reports to analytics, cloud storage, a backend, or source control.
 
 ## Automated coverage
 
 Android/JVM coverage continues to verify the app-side export schema, privacy boundary, missing-as-null behavior, bounded recorder, and managed-device export enable/reset flow.
 
-Repository-local Python coverage now contains 21 tests:
+Repository-local Python coverage now contains 30 tests:
 
-- 13 strict validator tests, including recomputed cohort averages, preset sets, acceptance counts, and delta consistency
-- 8 batch-aggregation tests covering required non-overlap confirmation, exact duplicate rejection, policy mismatch rejection, cross-file recomputation, mixed app-version reporting, missing evidence, invalid-source rejection, and explicit partial-overlap limitation
+- 13 strict validator tests
+- 12 batch-aggregation/protocol tests covering non-overlap confirmation, duplicate/policy mismatch rejection, cross-file recomputation, missing evidence, invalid-source rejection, protocol readiness, structural insufficiency, and repeat-only fatigue evidence
+- 5 review-report tests covering Markdown/CSV output, protocol issues, evidence counts, missing-value rendering, and the permanent `NOT_COMPUTED` product verdict boundary
 
 Both normal Android CI and the manually triggered Internal Debug APK workflow run the full `tools/field_test/test_*.py` suite before Android build steps.
