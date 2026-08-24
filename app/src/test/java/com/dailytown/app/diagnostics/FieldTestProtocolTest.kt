@@ -46,6 +46,7 @@ class FieldTestProtocolTest {
                 FieldTestProtocolEvidence.BATTERY_DRAIN,
                 FieldTestProtocolEvidence.DISCOVERED_ENCOUNTERS,
                 FieldTestProtocolEvidence.ENCOUNTER_RESOLUTION,
+                FieldTestProtocolEvidence.REPEAT_AREA_FATIGUE,
             ),
         )
 
@@ -54,6 +55,26 @@ class FieldTestProtocolTest {
         assertEquals(FieldTestProtocolStatus.PRODUCT_REVIEW_READY, assessment.status)
         assertTrue(assessment.configured)
         assertTrue(assessment.issues.isEmpty())
+    }
+
+    @Test
+    fun `repeat area fatigue evidence is required only from repeat cohort`() {
+        val recorder = FieldTestComparisonRecorder()
+        repeat(2) {
+            recorder.record(summary(FieldTestAreaProfile.NEW_AREA, fatigue = null))
+            recorder.record(summary(FieldTestAreaProfile.REPEAT_AREA, fatigue = 50))
+        }
+
+        val assessment = evaluator.evaluate(
+            recorder.report(),
+            FieldTestProtocolCriteria(
+                minimumSessionsPerCohort = 2,
+                requiredEvidence = setOf(FieldTestProtocolEvidence.REPEAT_AREA_FATIGUE),
+            ),
+        )
+
+        assertEquals(FieldTestProtocolStatus.PRODUCT_REVIEW_READY, assessment.status)
+        assertFalse(assessment.issues.any { it.key.startsWith("newAreaEvidence.REPEAT_AREA_FATIGUE") })
     }
 
     @Test
