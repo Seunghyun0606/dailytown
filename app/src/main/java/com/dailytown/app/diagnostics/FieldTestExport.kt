@@ -37,7 +37,7 @@ data class FieldTestExportBundle(
         append('}')
         append(",\"privacy\":{")
         append("\"rawGps\":false,\"routeGeometry\":false,\"placeLabels\":false,")
-        append("\"eventIdentifiers\":false,\"sessionTokens\":false,\"deviceIdentifiers\":false,")
+        append("\"eventIdentifiers\":false,\"sessionLinkage\":false,\"deviceLinkage\":false,")
         append("\"credentials\":false,\"appPersistence\":false")
         append('}')
         append(",\"policies\":{")
