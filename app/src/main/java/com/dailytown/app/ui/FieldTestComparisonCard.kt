@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,16 +35,19 @@ import com.dailytown.app.diagnostics.FieldTestProtocolEvaluator
 import com.dailytown.app.diagnostics.FieldTestProtocolEvidence
 import com.dailytown.app.diagnostics.FieldTestProtocolIssue
 import com.dailytown.app.diagnostics.FieldTestProtocolStatus
+import com.dailytown.app.diagnostics.FieldTestSessionEvidenceInspector
 
 @Composable
 internal fun FieldTestComparisonCard(
     sessionToken: Int,
     canRecordCurrentSession: Boolean,
+    suggestedProfile: FieldTestAreaProfile? = null,
     buildDiagnostic: () -> FieldTestDiagnostic,
 ) {
     val context = LocalContext.current
     val recorder = remember { FieldTestComparisonRecorder() }
     val protocolEvaluator = remember { FieldTestProtocolEvaluator() }
+    val evidenceInspector = remember { FieldTestSessionEvidenceInspector() }
     val protocolCriteria = remember { buildConfigProtocolCriteria() }
     var revision by remember { mutableIntStateOf(0) }
     var selectedProfile by remember { mutableStateOf(FieldTestAreaProfile.NEW_AREA) }
@@ -53,6 +57,28 @@ internal fun FieldTestComparisonCard(
         protocolEvaluator.evaluate(report, protocolCriteria)
     }
     val alreadyRecorded = lastRecordedSessionToken == sessionToken
+    val currentEvidenceAssessment = remember(
+        revision,
+        sessionToken,
+        canRecordCurrentSession,
+        alreadyRecorded,
+        selectedProfile,
+        protocolCriteria,
+    ) {
+        if (canRecordCurrentSession && !alreadyRecorded) {
+            evidenceInspector.evaluate(
+                diagnostic = buildDiagnostic(),
+                areaProfile = selectedProfile,
+                requiredEvidence = protocolCriteria.requiredEvidence,
+            )
+        } else {
+            null
+        }
+    }
+
+    LaunchedEffect(sessionToken, suggestedProfile) {
+        suggestedProfile?.let { selectedProfile = it }
+    }
 
     ElevatedCard(Modifier.fillMaxWidth().testTag("field-test-comparison-card")) {
         Column(
@@ -66,6 +92,35 @@ internal fun FieldTestComparisonCard(
             )
 
             ProtocolSummary(protocol = protocol, criteria = protocolCriteria)
+
+            if (canRecordCurrentSession && !alreadyRecorded) {
+                Text(
+                    suggestedProfile?.let {
+                        "종료된 세션이 준비되었습니다. 시작 계획은 ${profileLabel(it)}이며, 필요하면 아래에서 수정 후 기록할 수 있습니다."
+                    } ?: "종료된 세션이 준비되었습니다. 지역 분류를 확인한 뒤 기록하세요.",
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.testTag("field-test-record-suggestion"),
+                )
+                val missingEvidence = currentEvidenceAssessment?.missingRequiredEvidence.orEmpty()
+                if (missingEvidence.isNotEmpty()) {
+                    Text(
+                        "필수 evidence 누락: ${missingEvidence.sortedBy { it.name }.joinToString(", ") { evidenceLabel(it) }}",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.testTag("field-test-missing-evidence"),
+                    )
+                    Text(
+                        "누락값은 0으로 대체하지 않습니다. 기록은 가능하지만 protocol readiness에서는 evidence 부족으로 남습니다.",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                } else if (protocolCriteria.requiredEvidence.isNotEmpty()) {
+                    Text(
+                        "현재 세션의 필수 evidence가 모두 확인되었습니다.",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.testTag("field-test-evidence-complete"),
+                    )
+                }
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 FilterChip(
@@ -224,7 +279,7 @@ private fun MetricText(
     Text("$label $value · 유효 ${metric.evidenceCount}/${metric.sessionCount}", style = MaterialTheme.typography.bodySmall)
 }
 
-private fun buildConfigProtocolCriteria(): FieldTestProtocolCriteria = FieldTestProtocolCriteria(
+internal fun buildConfigProtocolCriteria(): FieldTestProtocolCriteria = FieldTestProtocolCriteria(
     minimumSessionsPerCohort = BuildConfig.FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT
         .takeIf { it > 0 },
     requireMatchingTrackingPreset = when (BuildConfig.FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET) {
@@ -253,6 +308,23 @@ private fun protocolIssueLabel(issue: FieldTestProtocolIssue): String = when {
     issue.key.startsWith("repeatAreaEvidence.") ->
         "반복 지역 ${issue.key.substringAfter('.')} evidence 부족 ${issue.detail}"
     else -> "${issue.key}: ${issue.detail}"
+}
+
+private fun profileLabel(profile: FieldTestAreaProfile): String = when (profile) {
+    FieldTestAreaProfile.NEW_AREA -> "신규 지역"
+    FieldTestAreaProfile.REPEAT_AREA -> "반복 지역"
+}
+
+private fun evidenceLabel(evidence: FieldTestProtocolEvidence): String = when (evidence) {
+    FieldTestProtocolEvidence.SESSION_DURATION -> "세션 시간"
+    FieldTestProtocolEvidence.SESSION_DISTANCE -> "세션 거리"
+    FieldTestProtocolEvidence.GPS_REJECTION_RATE -> "GPS 제외율"
+    FieldTestProtocolEvidence.DISTANCE_ERROR -> "거리 오차"
+    FieldTestProtocolEvidence.BATTERY_DRAIN -> "배터리 소모"
+    FieldTestProtocolEvidence.DISCOVERED_ENCOUNTERS -> "발견 encounter"
+    FieldTestProtocolEvidence.ENCOUNTER_RESOLUTION -> "해결률"
+    FieldTestProtocolEvidence.REVISIT_SHARE -> "재방문 비율"
+    FieldTestProtocolEvidence.REPEAT_AREA_FATIGUE -> "반복 피로 proxy"
 }
 
 private fun signed(value: Int): String = if (value > 0) "+$value" else value.toString()
