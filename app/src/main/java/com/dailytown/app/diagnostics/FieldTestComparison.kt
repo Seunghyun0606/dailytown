@@ -60,6 +60,7 @@ data class FieldTestMetricAverage(
 data class FieldTestCohortSummary(
     val areaProfile: FieldTestAreaProfile,
     val sessionCount: Int,
+    val trackingPresets: Set<String>,
     val sessionDurationSeconds: FieldTestMetricAverage,
     val sessionDistanceMeters: FieldTestMetricAverage,
     val gpsRejectionRatePercent: FieldTestMetricAverage,
@@ -97,6 +98,9 @@ data class FieldTestComparisonReport(
 
     private fun StringBuilder.appendCohort(prefix: String, cohort: FieldTestCohortSummary) {
         appendLine("$prefix.sessionCount=${cohort.sessionCount}")
+        if (cohort.trackingPresets.isNotEmpty()) {
+            appendLine("$prefix.trackingPresets=${cohort.trackingPresets.sorted().joinToString(",")}")
+        }
         appendMetric(prefix, "sessionDurationSeconds", cohort.sessionDurationSeconds)
         appendMetric(prefix, "sessionDistanceMeters", cohort.sessionDistanceMeters)
         appendMetric(prefix, "gpsRejectionRatePercent", cohort.gpsRejectionRatePercent)
@@ -181,6 +185,7 @@ class FieldTestComparisonRecorder(
         return FieldTestCohortSummary(
             areaProfile = areaProfile,
             sessionCount = cohort.size,
+            trackingPresets = cohort.map { it.trackingPreset }.filter { it.isNotBlank() }.toSet(),
             sessionDurationSeconds = average(cohort.map { it.sessionDurationSeconds }, cohort.size),
             sessionDistanceMeters = average(cohort.map { it.sessionDistanceMeters }, cohort.size),
             gpsRejectionRatePercent = average(cohort.map { it.gpsRejectionRatePercent }, cohort.size),
