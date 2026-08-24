@@ -21,6 +21,8 @@ jobs:
             echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file. Use Gradle user properties, an environment variable, or a GitHub Actions secret instead."
             exit 1
           fi
+      - name: Field-test export validator tests
+        run: python3 tools/field_test/test_validate_export.py
       - uses: actions/setup-java@v5
         with:
           distribution: temurin

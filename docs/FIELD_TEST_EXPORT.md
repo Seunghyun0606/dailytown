@@ -69,6 +69,29 @@ Until those decisions are made:
 12. Tap **구조화 JSON 공유** and send/save the JSON only to the human-approved test destination. The app does not retain a copy after process reset/relaunch.
 13. Before using the export for a product decision, confirm the JSON has the expected `schemaVersion`, policy values, session counts, evidence counts, and no unexpected location/place/identifier fields.
 
+## Local export validation
+
+Run the repository-local validator before using a shared export for review:
+
+```bash
+python3 tools/field_test/validate_export.py path/to/field-test-export.json
+```
+
+The validator is offline and uses only the Python standard library. It does not upload, rewrite, or persist the export. A valid file prints a one-line summary containing schema version, total/NEW_AREA/REPEAT_AREA counts, protocol status, and run-review counts.
+
+It rejects:
+
+- unsupported schema/version/package ID
+- privacy flags that do not exactly match the v1 safe boundary
+- more than 20 sessions or empty exports
+- non-contiguous export-local ordinals
+- cohort/session count mismatches
+- impossible evidence counts or non-null averages when evidence count is zero
+- known location, route, event, persistent-session, device, timestamp, and credential-shaped fields outside the explicit privacy declaration
+- NAVER credential marker strings
+
+This is a structural/privacy validator, not a product-quality gate. A file can be structurally valid while still containing `REFERENCE_ONLY`, `NEEDS_ATTENTION`, `DATA_INSUFFICIENT`, or missing evidence.
+
 ## Human decisions still required
 
 The following cannot be safely invented by engineering:
@@ -95,5 +118,7 @@ JVM tests verify:
 - missing evidence remains `null`
 - bounded detached recorder snapshots
 - exclusion of coordinates, event IDs, session tokens, device IDs, timestamps, and credential names/values
+
+The repository also runs 10 standard-library Python validator tests covering a valid v1 export, version/privacy violations, forbidden location/credential content, ordinal/count mismatches, evidence-count invariants, missing-as-null behavior, and the 20-session bound.
 
 The AOSP managed-device flow verifies that structured export is disabled with an empty recorder, becomes enabled after a completed session is recorded, remains enabled across NEW_AREA/REPEAT_AREA comparison, and is disabled again after comparison reset. The emulator does not click the Android share sheet and does not claim to validate external retention behavior.
