@@ -28,11 +28,13 @@ data class FieldTestSessionSummary(
     val revisitSharePercent: Int?,
     val repeatAreaFatigueProxyPercent: Int?,
     val acceptanceOverall: String,
+    val runReviewStatus: FieldTestRunReviewStatus? = null,
 ) {
     companion object {
         fun fromDiagnostic(
             areaProfile: FieldTestAreaProfile,
             diagnostic: FieldTestDiagnostic,
+            runReviewStatus: FieldTestRunReviewStatus? = null,
         ): FieldTestSessionSummary = FieldTestSessionSummary(
             areaProfile = areaProfile,
             trackingPreset = diagnostic.trackingPreset,
@@ -47,6 +49,7 @@ data class FieldTestSessionSummary(
             revisitSharePercent = diagnostic.sessionRevisitSharePercent,
             repeatAreaFatigueProxyPercent = diagnostic.repeatAreaFatigueProxyPercent,
             acceptanceOverall = diagnostic.acceptanceOverall,
+            runReviewStatus = runReviewStatus,
         )
     }
 }
@@ -146,8 +149,9 @@ class FieldTestComparisonRecorder(
     fun record(
         areaProfile: FieldTestAreaProfile,
         diagnostic: FieldTestDiagnostic,
+        runReviewStatus: FieldTestRunReviewStatus? = null,
     ) {
-        record(FieldTestSessionSummary.fromDiagnostic(areaProfile, diagnostic))
+        record(FieldTestSessionSummary.fromDiagnostic(areaProfile, diagnostic, runReviewStatus))
     }
 
     fun reset() {
@@ -155,6 +159,9 @@ class FieldTestComparisonRecorder(
     }
 
     fun sessionCount(): Int = sessions.size
+
+    /** Returns a detached, derived-only snapshot for explicit tester-initiated export. */
+    fun snapshot(): List<FieldTestSessionSummary> = sessions.toList()
 
     fun report(): FieldTestComparisonReport {
         val snapshot = sessions.toList()

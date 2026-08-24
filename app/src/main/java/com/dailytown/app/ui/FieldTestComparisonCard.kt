@@ -29,6 +29,7 @@ import com.dailytown.app.diagnostics.FieldTestAreaProfile
 import com.dailytown.app.diagnostics.FieldTestCohortSummary
 import com.dailytown.app.diagnostics.FieldTestComparisonRecorder
 import com.dailytown.app.diagnostics.FieldTestDiagnostic
+import com.dailytown.app.diagnostics.FieldTestExportBundle
 import com.dailytown.app.diagnostics.FieldTestMetricAverage
 import com.dailytown.app.diagnostics.FieldTestProtocolAssessment
 import com.dailytown.app.diagnostics.FieldTestProtocolCriteria
@@ -242,7 +243,11 @@ internal fun FieldTestComparisonCard(
                 enabled = recordReady && !alreadyRecorded,
                 onClick = {
                     currentRunDiagnostic?.let { diagnostic ->
-                        recorder.record(selectedProfile, diagnostic)
+                        recorder.record(
+                            areaProfile = selectedProfile,
+                            diagnostic = diagnostic,
+                            runReviewStatus = currentRunChecklist?.status,
+                        )
                         lastRecordedSessionToken = sessionToken
                         revision += 1
                     }
@@ -281,6 +286,39 @@ internal fun FieldTestComparisonCard(
                 resolutionDelta?.let { Text("해결률 ${signed(it)}%p") }
                 fatigueDelta?.let { Text("반복 피로 proxy ${signed(it)}%p") }
             }
+
+            OutlinedButton(
+                enabled = recorder.sessionCount() > 0,
+                onClick = {
+                    val currentReport = recorder.report()
+                    val currentProtocol = protocolEvaluator.evaluate(currentReport, protocolCriteria)
+                    val exportJson = FieldTestExportBundle(
+                        appVersion = BuildConfig.VERSION_NAME,
+                        packageId = BuildConfig.APPLICATION_ID,
+                        sessions = recorder.snapshot(),
+                        comparison = currentReport,
+                        acceptanceCriteria = acceptanceCriteria,
+                        protocolCriteria = protocolCriteria,
+                        protocolAssessment = currentProtocol,
+                    ).renderJson()
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test structured export v1")
+                        putExtra(Intent.EXTRA_TEXT, exportJson)
+                    }
+                    context.startActivity(Intent.createChooser(shareIntent, "필드테스트 JSON 공유"))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("field-test-export-json"),
+            ) {
+                Text("구조화 JSON 공유")
+            }
+            Text(
+                "공유 시점에만 최대 20개 파생 세션을 JSON으로 만듭니다. 앱에는 파일이나 세션 이력을 영구 저장하지 않습니다.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.testTag("field-test-export-privacy-note"),
+            )
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(

@@ -34,11 +34,13 @@ class DailyTownReplaySmokeTest {
     }
 
     @Test
-    fun replaySessionsLatchSetupBeforeStartThenDriveComparisonProtocol() {
+    fun replaySessionsLatchSetupThenEnablePrivacySafeStructuredExport() {
         composeRule.onNodeWithTag("field-test-cohort-counts")
             .assert(hasText("신규 0회 · 반복 0회"))
         composeRule.onNodeWithTag("field-test-protocol-status")
             .assert(hasText("프로토콜: 데이터 부족"))
+        composeRule.onNodeWithTag("field-test-export-json")
+            .assertIsNotEnabled()
         composeRule.onNodeWithTag("field-test-setup-profile-new")
             .assertIsSelected()
 
@@ -65,6 +67,11 @@ class DailyTownReplaySmokeTest {
             .assert(hasText("프로토콜: 데이터 부족"))
         composeRule.onNodeWithTag("field-test-record")
             .assertIsNotEnabled()
+        composeRule.onNodeWithTag("field-test-export-json")
+            .performScrollTo()
+            .assertIsEnabled()
+        composeRule.onNodeWithTag("field-test-export-privacy-note")
+            .assert(hasText("공유 시점에만 최대 20개 파생 세션을 JSON으로 만듭니다. 앱에는 파일이나 세션 이력을 영구 저장하지 않습니다."))
 
         composeRule.onNodeWithTag("field-test-setup-profile-repeat")
             .performScrollTo()
@@ -96,6 +103,8 @@ class DailyTownReplaySmokeTest {
             .assert(hasText("신규 1회 · 반복 1회"))
         composeRule.onNodeWithTag("field-test-protocol-status")
             .assert(hasText("프로토콜: 비교 가능"))
+        composeRule.onNodeWithTag("field-test-export-json")
+            .assertIsEnabled()
 
         composeRule.onNodeWithTag("field-test-reset")
             .performScrollTo()
@@ -107,6 +116,8 @@ class DailyTownReplaySmokeTest {
             .assert(hasText("신규 0회 · 반복 0회"))
         composeRule.onNodeWithTag("field-test-protocol-status")
             .assert(hasText("프로토콜: 데이터 부족"))
+        composeRule.onNodeWithTag("field-test-export-json")
+            .assertIsNotEnabled()
     }
 
     private fun startReplayAndStop(
