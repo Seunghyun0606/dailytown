@@ -1,20 +1,24 @@
 # Remaining engineering after the current MVP harness
 
-This document separates **engineering work that is still required** from work that is already implemented but waiting on human/product/legal/physical-device decisions.
+This document separates **engineering work that is still required** from work that is already implemented but waiting on human/product/legal/physical-device/design decisions.
 
 ## Current conclusion
 
-The current branch is engineering-complete enough to begin a credentialed closed field test. There is **no additional unconditional code blocker before the first physical-device field-test run**.
+The current branch is engineering-complete enough to begin a **technical physical-device verification** of NAVER authentication, map rendering, GPS behavior, and battery behavior. There is no additional unconditional code blocker for that engineering verification.
 
-The next required actions before more product-facing implementation are human-owned:
+However, Daily Town is a visual exploration product. A **product-experience / gameplay field test must not be treated as representative until the minimum visual system is approved and integrated**. The current text/default-marker prototype can validate mechanics and instrumentation, but it cannot validate emotional engagement, discovery reward, companion appeal, or time-of-day atmosphere.
 
-1. run the credentialed Internal Debug APK on a physical Android device and validate NAVER/GPS/battery behavior
-2. approve the eight single-session acceptance criteria and the comparison protocol
-3. collect representative NEW_AREA / REPEAT_AREA sessions
-4. choose production POI/public-data sources and licensing terms
-5. approve the first authored content/copy pack
+The next required actions before a representative product-experience field test are:
 
-Engineering must not invent those results or policy values.
+1. perform the technical Internal Debug APK verification on a physical Android device when convenient
+2. approve the time-of-day visual direction, Moru character sheet, and DAY/DARK marker families defined in `docs/visual/TIME_OF_DAY_VISUAL_SYSTEM.md`
+3. integrate the approved minimum visual asset set behind semantic asset keys and a provider-neutral map theme contract
+4. approve the eight single-session acceptance criteria and comparison protocol
+5. collect representative NEW_AREA / REPEAT_AREA sessions with the visually representative build
+6. choose production POI/public-data sources and licensing terms
+7. approve the first authored content/copy pack
+
+Engineering must not invent physical-test results, design approval, product thresholds, or policy values.
 
 ## Newly completed: one-command offline field-test review
 
@@ -48,7 +52,27 @@ After comparison policy is human-approved, an operator may use `--require-eviden
 
 The command is stdout-only and inherits the existing structured-export retention/access/deletion boundary. It does not persist or upload files automatically.
 
-## P0 — required engineering after human decisions
+## P0 — required engineering after human/design decisions
+
+### 0. Time-of-day visual asset integration
+
+**Status:** design architecture is documented; production art is intentionally deferred to a dedicated design-art session.
+
+Concept boards are archived separately from Android runtime resources and indexed in `docs/visual/CONCEPT_ART_ARCHIVE.md`. The implementation target is defined in `docs/visual/TIME_OF_DAY_VISUAL_SYSTEM.md`.
+
+After the visual package is approved, required engineering is:
+
+- semantic `DayPhase` resolver with forced-phase debug/replay support
+- phase-aware Compose design tokens
+- semantic companion/marker asset registry with missing-asset fallback
+- provider-neutral `MapThemeSpec`
+- NAVER mapping for supported light/dark/night behavior without leaking NAVER types upward
+- approved DAY/DARK semantic marker assets instead of default SDK markers
+- Moru assets in HUD/encounter/result surfaces
+- screenshot/instrumented coverage for forced day phases
+- physical-device readability checks in bright midday and night conditions
+
+Do not bind draft concept-board images directly into `R.drawable`.
 
 ### 1. Production POI upstream adapter
 
@@ -128,7 +152,7 @@ If approved later, require:
 - no raw coordinates or durable device linkage
 - corrupted/oversized input handling
 
-This is **not required for the current closed field test**.
+This is not required for the current technical closed verification.
 
 ## P2 — optional / scope-expansion engineering
 
@@ -171,10 +195,12 @@ The following are already implemented and should not be rebuilt before field-tes
 
 ## Recommended execution order
 
-1. **Physical-device field test now** — no new code blocker.
-2. Approve criteria/protocol and collect evidence; use `review_packet.py` to determine evidence readiness and next collection needs.
-3. In parallel, make the POI source/licensing and authored-content decisions.
-4. Implement production POI adapter + authored content-pack loader.
-5. Run another closed test with production-like content/data.
-6. Only then add release signing/AAB/Play internal delivery and any approved analytics/crash integration.
-7. Defer Google Maps, AI dialogue, background location, backend/social, and app-side field-test persistence until evidence or product scope requires them.
+1. **Technical device verification** — validate NAVER/GPS/battery; art is not required to prove those engineering boundaries.
+2. **Dedicated design-art session** — approve dawn/morning/midday/sunset/night boards, Moru character package, DAY/DARK marker sheets, and UI token matrix.
+3. Implement the minimum time-of-day visual system and semantic asset bindings.
+4. Run a visually representative closed product-experience field test and collect NEW_AREA / REPEAT_AREA evidence.
+5. Use `review_packet.py` to determine evidence readiness and next collection needs.
+6. In parallel, decide POI source/licensing and authored-content/copy; then implement production POI adapter + content-pack loader.
+7. Run another closed test with production-like visual/content/data quality.
+8. Only then add release signing/AAB/Play internal delivery and any approved analytics/crash integration.
+9. Defer Google Maps, AI dialogue, background location, backend/social, and app-side field-test persistence until evidence or product scope requires them.
