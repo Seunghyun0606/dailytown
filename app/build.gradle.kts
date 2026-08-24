@@ -29,6 +29,13 @@ fun optionalNonNegativeInt(name: String): Int {
         ?: error("$name must be a non-negative integer when configured.")
 }
 
+fun optionalPositiveInt(name: String): Int {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return -1
+    return raw.toIntOrNull()?.takeIf { it > 0 }
+        ?: error("$name must be a positive integer when configured.")
+}
+
 fun optionalPercent(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
@@ -46,6 +53,42 @@ fun optionalBoolean(name: String): Boolean {
     }
 }
 
+fun optionalTriStateBoolean(name: String): Int {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return -1
+    return when (raw.lowercase()) {
+        "true" -> 1
+        "false" -> 0
+        else -> error("$name must be true or false when configured.")
+    }
+}
+
+fun optionalComparisonEvidence(name: String): String {
+    val raw = optionalConfig(name)
+    if (raw.isBlank()) return ""
+    val allowed = setOf(
+        "SESSION_DURATION",
+        "SESSION_DISTANCE",
+        "GPS_REJECTION_RATE",
+        "DISTANCE_ERROR",
+        "BATTERY_DRAIN",
+        "DISCOVERED_ENCOUNTERS",
+        "ENCOUNTER_RESOLUTION",
+        "REVISIT_SHARE",
+        "REPEAT_AREA_FATIGUE",
+    )
+    val values = raw.split(',')
+        .map { it.trim().uppercase() }
+        .filter { it.isNotEmpty() }
+        .distinct()
+        .sorted()
+    val invalid = values.filterNot { it in allowed }
+    check(invalid.isEmpty()) {
+        "$name contains unsupported evidence keys: ${invalid.joinToString(",")}"
+    }
+    return values.joinToString(",")
+}
+
 val fieldTestMinSessionSeconds = optionalNonNegativeLong("FIELD_TEST_MIN_SESSION_SECONDS")
 val fieldTestMaxGpsRejectionPercent = optionalPercent("FIELD_TEST_MAX_GPS_REJECTION_PERCENT")
 val fieldTestRequireMapReady = optionalBoolean("FIELD_TEST_REQUIRE_MAP_READY")
@@ -54,6 +97,9 @@ val fieldTestMaxBatteryDrainPercentPerHour = optionalNonNegativeInt("FIELD_TEST_
 val fieldTestMinEncountersPerSession = optionalNonNegativeInt("FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION")
 val fieldTestMinEncounterResolutionPercent = optionalPercent("FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT")
 val fieldTestMaxRepeatAreaFatiguePercent = optionalPercent("FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT")
+val fieldTestComparisonMinSessionsPerCohort = optionalPositiveInt("FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT")
+val fieldTestComparisonRequireMatchingPreset = optionalTriStateBoolean("FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET")
+val fieldTestComparisonRequiredEvidence = optionalComparisonEvidence("FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE")
 
 android {
     namespace = "com.dailytown.app"
@@ -98,6 +144,24 @@ android {
             "int",
             "FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT",
             fieldTestMaxRepeatAreaFatiguePercent.toString(),
+        )
+
+        // Optional multi-session comparison protocol. Matching-preset uses -1/0/1 so an unset
+        // value stays distinguishable from an explicit human decision not to require matching.
+        buildConfigField(
+            "int",
+            "FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT",
+            fieldTestComparisonMinSessionsPerCohort.toString(),
+        )
+        buildConfigField(
+            "int",
+            "FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET",
+            fieldTestComparisonRequireMatchingPreset.toString(),
+        )
+        buildConfigField(
+            "String",
+            "FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE",
+            "\"$fieldTestComparisonRequiredEvidence\"",
         )
     }
 
