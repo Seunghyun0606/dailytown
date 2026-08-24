@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.diagnostics.FieldTestDiagnostic
+import com.dailytown.app.diagnostics.FieldTestProtocolEvidence
 import com.dailytown.app.diagnostics.FieldTestRunCheck
 import com.dailytown.app.diagnostics.FieldTestRunCheckStatus
 import com.dailytown.app.diagnostics.FieldTestRunChecklist
@@ -143,4 +144,16 @@ private fun runCheckMarker(check: FieldTestRunCheck): String = when {
     check.required -> "⚠ 필수"
     check.status == FieldTestRunCheckStatus.COMPLETE -> "✓ 수집"
     else -> "· 선택"
+}
+
+private fun evidenceLabel(evidence: FieldTestProtocolEvidence): String = when (evidence) {
+    FieldTestProtocolEvidence.SESSION_DURATION -> "세션 시간"
+    FieldTestProtocolEvidence.SESSION_DISTANCE -> "세션 거리"
+    FieldTestProtocolEvidence.GPS_REJECTION_RATE -> "GPS 제외율"
+    FieldTestProtocolEvidence.DISTANCE_ERROR -> "거리 오차"
+    FieldTestProtocolEvidence.BATTERY_DRAIN -> "배터리 소모"
+    FieldTestProtocolEvidence.DISCOVERED_ENCOUNTERS -> "발견 encounter"
+    FieldTestProtocolEvidence.ENCOUNTER_RESOLUTION -> "해결률"
+    FieldTestProtocolEvidence.REVISIT_SHARE -> "재방문 비율"
+    FieldTestProtocolEvidence.REPEAT_AREA_FATIGUE -> "반복 피로 proxy"
 }
