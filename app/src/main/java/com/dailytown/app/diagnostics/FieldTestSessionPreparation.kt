@@ -1,6 +1,7 @@
 package com.dailytown.app.diagnostics
 
 import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.map.MapHealthStatus
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -52,22 +53,58 @@ class FieldTestSessionEvidenceInspector {
 fun parseReferenceDistanceMeters(raw: String): Int? =
     raw.trim().toIntOrNull()?.takeIf { it > 0 }
 
+internal fun FieldTestAcceptanceCriteria.forAreaProfile(
+    areaProfile: FieldTestAreaProfile,
+): FieldTestAcceptanceCriteria =
+    if (areaProfile == FieldTestAreaProfile.NEW_AREA && maximumRepeatAreaFatiguePercent != null) {
+        copy(maximumRepeatAreaFatiguePercent = null)
+    } else {
+        this
+    }
+
 /**
  * Re-applies the values latched at session start to a completed derived diagnostic. This prevents
  * later edits to the setup UI from changing the profile-independent distance/preset evidence of an
- * already completed session.
+ * already completed session. When acceptance criteria are supplied, acceptance is recalculated
+ * against the adjusted evidence so the displayed distance error and pass/fail state cannot diverge.
  */
-fun FieldTestDiagnostic.withSessionPlan(plan: FieldTestSessionPlan): FieldTestDiagnostic {
+fun FieldTestDiagnostic.withSessionPlan(
+    plan: FieldTestSessionPlan,
+    acceptanceCriteria: FieldTestAcceptanceCriteria? = null,
+    areaProfileForAcceptance: FieldTestAreaProfile = plan.areaProfile,
+): FieldTestDiagnostic {
     val reference = plan.referenceDistanceMeters
     val distanceError = if (reference != null && sessionDistanceMeters != null) {
         ((abs(sessionDistanceMeters - reference).toDouble() / reference) * 100.0).roundToInt()
     } else {
         null
     }
-    return copy(
+    val adjusted = copy(
         trackingPreset = plan.trackingPreset.name,
         referenceDistanceMeters = reference,
         distanceErrorPercent = distanceError,
+    )
+    val criteria = acceptanceCriteria?.forAreaProfile(areaProfileForAcceptance) ?: return adjusted
+    val mapHealth = adjusted.mapHealthStatus?.let { status ->
+        runCatching { MapHealthStatus.valueOf(status) }.getOrNull()
+    }
+    val acceptance = FieldTestAcceptanceEvaluator().evaluate(
+        criteria = criteria,
+        input = FieldTestAcceptanceInput(
+            sessionDurationSeconds = adjusted.trackingDurationSeconds?.toLong(),
+            gpsRejectionRatePercent = adjusted.rejectedLocationRatePercent,
+            mapHealth = mapHealth,
+            distanceErrorPercent = adjusted.distanceErrorPercent,
+            batteryDrainPercentPerHour = adjusted.batteryDrainPercentPerHour,
+            discoveredEncountersPerSession = adjusted.sessionEncounterDiscoveredCount,
+            encounterResolutionRatePercent = adjusted.sessionEncounterResolutionRatePercent,
+            repeatAreaFatigueProxyPercent = adjusted.repeatAreaFatigueProxyPercent,
+        ),
+    )
+    return adjusted.copy(
+        acceptanceConfigured = criteria.isConfigured,
+        acceptanceOverall = acceptance.overall.name,
+        acceptanceFailedKeys = acceptance.failedKeys,
     )
 }
 

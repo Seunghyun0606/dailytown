@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.BuildConfig
+import com.dailytown.app.diagnostics.FieldTestAcceptanceCriteria
 import com.dailytown.app.diagnostics.FieldTestAreaProfile
 import com.dailytown.app.diagnostics.FieldTestCohortSummary
 import com.dailytown.app.diagnostics.FieldTestComparisonRecorder
@@ -35,10 +36,13 @@ import com.dailytown.app.diagnostics.FieldTestProtocolEvaluator
 import com.dailytown.app.diagnostics.FieldTestProtocolEvidence
 import com.dailytown.app.diagnostics.FieldTestProtocolIssue
 import com.dailytown.app.diagnostics.FieldTestProtocolStatus
+import com.dailytown.app.diagnostics.FieldTestRunChecklistEvaluator
 import com.dailytown.app.diagnostics.FieldTestSessionEvidenceInspector
 import com.dailytown.app.diagnostics.FieldTestSessionPlan
+import com.dailytown.app.diagnostics.requiredFieldTestRunEvidence
 import com.dailytown.app.diagnostics.withSessionPlan
 import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.map.MapHealthStatus
 
 @Composable
 internal fun FieldTestComparisonCard(
@@ -50,7 +54,9 @@ internal fun FieldTestComparisonCard(
     val recorder = remember { FieldTestComparisonRecorder() }
     val protocolEvaluator = remember { FieldTestProtocolEvaluator() }
     val evidenceInspector = remember { FieldTestSessionEvidenceInspector() }
+    val runChecklistEvaluator = remember { FieldTestRunChecklistEvaluator() }
     val protocolCriteria = remember { buildConfigProtocolCriteria() }
+    val acceptanceCriteria = remember { buildConfigAcceptanceCriteria() }
     var revision by remember { mutableIntStateOf(0) }
     var draftProfile by remember { mutableStateOf(FieldTestAreaProfile.NEW_AREA) }
     var selectedProfile by remember { mutableStateOf(FieldTestAreaProfile.NEW_AREA) }
@@ -68,19 +74,58 @@ internal fun FieldTestComparisonCard(
     }
     val alreadyRecorded = lastRecordedSessionToken == sessionToken
     val recordReady = canRecordCurrentSession && completedPlan != null
-    val currentEvidenceAssessment = remember(
+    val setupAreaProfile = activePlan?.areaProfile ?: draftProfile
+    val setupRequiredEvidence = remember(acceptanceCriteria, protocolCriteria, setupAreaProfile) {
+        requiredFieldTestRunEvidence(
+            acceptanceCriteria = acceptanceCriteria,
+            protocolCriteria = protocolCriteria,
+            areaProfile = setupAreaProfile,
+        )
+    }
+    val currentRunDiagnostic = remember(
         revision,
         sessionToken,
         recordReady,
-        alreadyRecorded,
         selectedProfile,
         completedPlan,
-        protocolCriteria,
+        acceptanceCriteria,
     ) {
         val plan = completedPlan
-        if (recordReady && !alreadyRecorded && plan != null) {
+        if (recordReady && plan != null) {
+            buildDiagnostic().withSessionPlan(
+                plan = plan,
+                acceptanceCriteria = acceptanceCriteria,
+                areaProfileForAcceptance = selectedProfile,
+            )
+        } else {
+            null
+        }
+    }
+    val currentRunChecklist = remember(
+        currentRunDiagnostic,
+        selectedProfile,
+        acceptanceCriteria,
+        protocolCriteria,
+    ) {
+        currentRunDiagnostic?.let { diagnostic ->
+            runChecklistEvaluator.evaluate(
+                diagnostic = diagnostic,
+                areaProfile = selectedProfile,
+                acceptanceCriteria = acceptanceCriteria,
+                protocolCriteria = protocolCriteria,
+            )
+        }
+    }
+    val currentEvidenceAssessment = remember(
+        currentRunDiagnostic,
+        alreadyRecorded,
+        selectedProfile,
+        protocolCriteria,
+    ) {
+        val diagnostic = currentRunDiagnostic
+        if (!alreadyRecorded && diagnostic != null) {
             evidenceInspector.evaluate(
-                diagnostic = buildDiagnostic().withSessionPlan(plan),
+                diagnostic = diagnostic,
                 areaProfile = selectedProfile,
                 requiredEvidence = protocolCriteria.requiredEvidence,
             )
@@ -124,7 +169,7 @@ internal fun FieldTestComparisonCard(
         },
         activePlan = activePlan,
         completedPlan = completedPlan,
-        requiredEvidence = protocolCriteria.requiredEvidence,
+        requiredEvidence = setupRequiredEvidence,
         onProfileChange = { draftProfile = it },
     )
 
@@ -141,6 +186,13 @@ internal fun FieldTestComparisonCard(
 
             ProtocolSummary(protocol = protocol, criteria = protocolCriteria)
 
+            if (currentRunChecklist != null && currentRunDiagnostic != null) {
+                FieldTestRunSummary(
+                    checklist = currentRunChecklist,
+                    diagnostic = currentRunDiagnostic,
+                )
+            }
+
             if (recordReady && !alreadyRecorded) {
                 val plan = completedPlan
                 Text(
@@ -151,7 +203,7 @@ internal fun FieldTestComparisonCard(
                 val missingEvidence = currentEvidenceAssessment?.missingRequiredEvidence.orEmpty()
                 if (missingEvidence.isNotEmpty()) {
                     Text(
-                        "필수 evidence 누락: ${missingEvidence.sortedBy { it.name }.joinToString(", ") { evidenceLabel(it) }}",
+                        "protocol 필수 evidence 누락: ${missingEvidence.sortedBy { it.name }.joinToString(", ") { evidenceLabel(it) }}",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.testTag("field-test-missing-evidence"),
@@ -162,7 +214,7 @@ internal fun FieldTestComparisonCard(
                     )
                 } else if (protocolCriteria.requiredEvidence.isNotEmpty()) {
                     Text(
-                        "현재 세션의 필수 evidence가 모두 확인되었습니다.",
+                        "현재 세션의 protocol 필수 evidence가 모두 확인되었습니다.",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.testTag("field-test-evidence-complete"),
                     )
@@ -172,12 +224,14 @@ internal fun FieldTestComparisonCard(
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 FilterChip(
                     selected = selectedProfile == FieldTestAreaProfile.NEW_AREA,
+                    enabled = recordReady && !alreadyRecorded,
                     onClick = { selectedProfile = FieldTestAreaProfile.NEW_AREA },
                     label = { Text("신규 지역") },
                     modifier = Modifier.testTag("field-test-profile-new"),
                 )
                 FilterChip(
                     selected = selectedProfile == FieldTestAreaProfile.REPEAT_AREA,
+                    enabled = recordReady && !alreadyRecorded,
                     onClick = { selectedProfile = FieldTestAreaProfile.REPEAT_AREA },
                     label = { Text("반복 지역") },
                     modifier = Modifier.testTag("field-test-profile-repeat"),
@@ -187,11 +241,8 @@ internal fun FieldTestComparisonCard(
             OutlinedButton(
                 enabled = recordReady && !alreadyRecorded,
                 onClick = {
-                    completedPlan?.let { plan ->
-                        recorder.record(
-                            selectedProfile,
-                            buildDiagnostic().withSessionPlan(plan),
-                        )
+                    currentRunDiagnostic?.let { diagnostic ->
+                        recorder.record(selectedProfile, diagnostic)
                         lastRecordedSessionToken = sessionToken
                         revision += 1
                     }
@@ -340,6 +391,17 @@ internal fun buildConfigProtocolCriteria(): FieldTestProtocolCriteria = FieldTes
         else -> null
     },
     requiredEvidence = FieldTestProtocolEvidence.parseCsv(BuildConfig.FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE),
+)
+
+internal fun buildConfigAcceptanceCriteria(): FieldTestAcceptanceCriteria = FieldTestAcceptanceCriteria(
+    minimumSessionDurationSeconds = BuildConfig.FIELD_TEST_MIN_SESSION_SECONDS.takeIf { it >= 0L },
+    maximumGpsRejectionRatePercent = BuildConfig.FIELD_TEST_MAX_GPS_REJECTION_PERCENT.takeIf { it >= 0 },
+    requiredMapHealth = MapHealthStatus.READY.takeIf { BuildConfig.FIELD_TEST_REQUIRE_MAP_READY },
+    maximumDistanceErrorPercent = BuildConfig.FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT.takeIf { it >= 0 },
+    maximumBatteryDrainPercentPerHour = BuildConfig.FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR.takeIf { it >= 0 },
+    minimumDiscoveredEncountersPerSession = BuildConfig.FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION.takeIf { it >= 0 },
+    minimumEncounterResolutionRatePercent = BuildConfig.FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT.takeIf { it >= 0 },
+    maximumRepeatAreaFatiguePercent = BuildConfig.FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT.takeIf { it >= 0 },
 )
 
 private fun trackingPresetFromDiagnostic(diagnostic: FieldTestDiagnostic): LocationTrackingPreset =
