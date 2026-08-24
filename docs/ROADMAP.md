@@ -126,6 +126,12 @@ Human TODO:
 - [x] Show protocol status and unmet sample/preset/evidence issues in the in-app comparison card
 - [x] Include protocol status/issues in privacy-safe comparison sharing
 - [x] Validate comparison policy values during Gradle configuration and record them in Internal Debug artifact metadata
+- [x] Pre-session `NEW_AREA` / `REPEAT_AREA` field-test intent selection
+- [x] Latch field-test area profile, tracking preset, and optional scalar reference distance at tracking-session start
+- [x] Reapply the latched preset/reference to completed diagnostics so later setup edits cannot rewrite completed-session comparison evidence
+- [x] Show configured required-evidence guidance before a session and explicit missing-evidence notice after stop without replacing missing values with zero
+- [x] Keep incomplete completed sessions recordable so evidence coverage remains visible in cohort evidence counts
+- [x] Managed-device E2E coverage for pre-session planning, active-plan locking, completed-plan suggestion, cohort recording, protocol transition, and reset
 - [x] Configurable `FieldTestAcceptanceEvaluator` with PASS / FAIL / NOT_EVALUATED states
 - [x] No hard-coded product thresholds; unset criteria cannot silently pass
 - [x] Optional criteria injection through `FIELD_TEST_MIN_SESSION_SECONDS`
@@ -165,9 +171,10 @@ Blocked on a human/product/data decision rather than engineering:
 - [ ] Run the hardened `Internal Debug APK` workflow and install the credentialed artifact
 - [ ] Validate that provider-neutral map health reaches `READY` on a physical device
 - [ ] Validate the real NAVER map tiles/markers/location/camera on a physical device
-- [ ] Enter the pre-verified total route distance before sharing each representative route diagnostic
+- [ ] Before each representative route, select NEW_AREA/REPEAT_AREA in the setup card and enter the pre-verified scalar route distance when available
+- [ ] Verify the displayed profile/preset/reference plan is locked for the active session and reappears as the completed-session plan after stop
 - [ ] Run battery-comparison tests unplugged; external-power sessions intentionally cannot produce battery-consumption acceptance evidence
-- [ ] Walk representative new-area and repeat-area routes, stop each session, classify it in the in-app comparison card, and record it once
+- [ ] Review any configured missing-evidence warning after each route, then record the completed session once; missing evidence must stay missing rather than become zero
 - [ ] Compare valid-evidence counts as well as averages; do not treat a cohort average based on one battery/revisit sample as equivalent to a fully measured cohort
 - [ ] Configure approved comparison protocol variables and verify the state transitions from `DATA_INSUFFICIENT` → `COMPARABLE` → `PRODUCT_REVIEW_READY` as evidence accumulates
 - [ ] Share the comparison report and evaluate discovered encounters/session, resolution rate, GPS/distance/battery behavior, revisit share, and repeat-area fatigue proxy together
