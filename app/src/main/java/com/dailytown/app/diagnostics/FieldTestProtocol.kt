@@ -136,15 +136,17 @@ class FieldTestProtocolEvaluator {
 
             val requiredCount = criteria.minimumSessionsPerCohort ?: 1
             criteria.requiredEvidence.sortedBy { it.name }.forEach { evidence ->
-                val newMetric = report.newArea.metric(evidence)
                 val repeatMetric = report.repeatArea.metric(evidence)
-                if (newMetric.evidenceCount < requiredCount) {
-                    add(
-                        FieldTestProtocolIssue(
-                            "newAreaEvidence.${evidence.name}",
-                            "${newMetric.evidenceCount}/$requiredCount",
-                        ),
-                    )
+                if (evidence != FieldTestProtocolEvidence.REPEAT_AREA_FATIGUE) {
+                    val newMetric = report.newArea.metric(evidence)
+                    if (newMetric.evidenceCount < requiredCount) {
+                        add(
+                            FieldTestProtocolIssue(
+                                "newAreaEvidence.${evidence.name}",
+                                "${newMetric.evidenceCount}/$requiredCount",
+                            ),
+                        )
+                    }
                 }
                 if (repeatMetric.evidenceCount < requiredCount) {
                     add(
