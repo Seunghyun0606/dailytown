@@ -14,6 +14,19 @@ from typing import Any
 from validate_export import METRIC_KEYS, ExportValidationError, _kotlin_round_average, load_document, validate_export
 
 
+EVIDENCE_TO_METRIC = {
+    "SESSION_DURATION": "sessionDurationSeconds",
+    "SESSION_DISTANCE": "sessionDistanceMeters",
+    "GPS_REJECTION_RATE": "gpsRejectionRatePercent",
+    "DISTANCE_ERROR": "distanceErrorPercent",
+    "BATTERY_DRAIN": "batteryDrainPercentPerHour",
+    "DISCOVERED_ENCOUNTERS": "discoveredEncountersPerSession",
+    "ENCOUNTER_RESOLUTION": "encounterResolutionRatePercent",
+    "REVISIT_SHARE": "revisitSharePercent",
+    "REPEAT_AREA_FATIGUE": "repeatAreaFatigueProxyPercent",
+}
+
+
 class BatchAggregationError(ValueError):
     """Raised when exports cannot be safely combined for one local review batch."""
 
@@ -39,6 +52,87 @@ def _aggregate_cohort(sessions: list[dict[str, Any]], profile: str) -> dict[str,
         "metrics": metrics,
         "acceptance": dict(sorted(Counter(session["acceptanceOverall"] for session in selected).items())),
         "runReview": dict(sorted(Counter((session["runReviewStatus"] or "UNSET") for session in selected).items())),
+    }
+
+
+def _protocol_is_configured(criteria: dict[str, Any]) -> bool:
+    return (
+        criteria["minimumSessionsPerCohort"] is not None
+        or criteria["requireMatchingTrackingPreset"] is True
+        or bool(criteria["requiredEvidence"])
+    )
+
+
+def _protocol_issue(key: str, detail: str) -> dict[str, str]:
+    return {"key": key, "detail": detail}
+
+
+def recompute_protocol_assessment(
+    policy: dict[str, Any],
+    new_area: dict[str, Any],
+    repeat_area: dict[str, Any],
+    deltas: dict[str, int | None],
+) -> dict[str, Any]:
+    """Mirror FieldTestProtocolEvaluator for one operator-confirmed offline batch."""
+    criteria = policy["comparison"]
+    configured = _protocol_is_configured(criteria)
+
+    structural_issues = []
+    if new_area["sessionCount"] == 0:
+        structural_issues.append(_protocol_issue("newAreaSessions", "missing"))
+    if repeat_area["sessionCount"] == 0:
+        structural_issues.append(_protocol_issue("repeatAreaSessions", "missing"))
+    if (
+        new_area["sessionCount"] > 0
+        and repeat_area["sessionCount"] > 0
+        and all(value is None for value in deltas.values())
+    ):
+        structural_issues.append(_protocol_issue("sharedEvidence", "missing"))
+
+    if structural_issues:
+        return {
+            "configured": configured,
+            "status": "DATA_INSUFFICIENT",
+            "issues": structural_issues,
+        }
+
+    if not configured:
+        return {
+            "configured": False,
+            "status": "COMPARABLE",
+            "issues": [],
+        }
+
+    issues = []
+    minimum = criteria["minimumSessionsPerCohort"]
+    if minimum is not None:
+        if new_area["sessionCount"] < minimum:
+            issues.append(_protocol_issue("newAreaMinimumSessions", f"{new_area['sessionCount']}/{minimum}"))
+        if repeat_area["sessionCount"] < minimum:
+            issues.append(_protocol_issue("repeatAreaMinimumSessions", f"{repeat_area['sessionCount']}/{minimum}"))
+
+    if criteria["requireMatchingTrackingPreset"] is True:
+        presets = sorted(set(new_area["trackingPresets"]) | set(repeat_area["trackingPresets"]))
+        if len(presets) != 1:
+            issues.append(_protocol_issue("trackingPresetConsistency", f"mismatch:{'+'.join(presets)}"))
+
+    required_count = minimum if minimum is not None else 1
+    for evidence in sorted(criteria["requiredEvidence"]):
+        metric_key = EVIDENCE_TO_METRIC.get(evidence)
+        if metric_key is None:
+            raise BatchAggregationError(f"unsupported comparison evidence in export policy: {evidence}")
+        if evidence != "REPEAT_AREA_FATIGUE":
+            new_count = new_area["metrics"][metric_key]["evidenceCount"]
+            if new_count < required_count:
+                issues.append(_protocol_issue(f"newAreaEvidence.{evidence}", f"{new_count}/{required_count}"))
+        repeat_count = repeat_area["metrics"][metric_key]["evidenceCount"]
+        if repeat_count < required_count:
+            issues.append(_protocol_issue(f"repeatAreaEvidence.{evidence}", f"{repeat_count}/{required_count}"))
+
+    return {
+        "configured": True,
+        "status": "PRODUCT_REVIEW_READY" if not issues else "COMPARABLE",
+        "issues": issues,
     }
 
 
@@ -84,6 +178,8 @@ def aggregate_documents(documents: list[dict[str, Any]], confirm_non_overlapping
         repeat_average = repeat_area["metrics"][key]["average"]
         deltas[key] = repeat_average - new_average if new_average is not None and repeat_average is not None else None
 
+    protocol_assessment = recompute_protocol_assessment(policy, new_area, repeat_area, deltas)
+
     return {
         "reviewType": "OFFLINE_DERIVED_BATCH_SUMMARY",
         "productVerdict": "NOT_COMPUTED",
@@ -92,6 +188,7 @@ def aggregate_documents(documents: list[dict[str, Any]], confirm_non_overlapping
         "sessionCount": len(sessions),
         "appVersions": sorted(versions),
         "sourceProtocolStatus": dict(sorted(source_protocol.items())),
+        "protocolAssessment": protocol_assessment,
         "overlap": {
             "exactDuplicatesRejected": True,
             "partialOverlapDetectable": False,
@@ -104,6 +201,7 @@ def aggregate_documents(documents: list[dict[str, Any]], confirm_non_overlapping
 
 
 def render_text(result: dict[str, Any]) -> str:
+    protocol = result["protocolAssessment"]
     lines = [
         "Daily Town offline field-test batch review",
         "productVerdict=NOT_COMPUTED",
@@ -111,7 +209,11 @@ def render_text(result: dict[str, Any]) -> str:
         f"sessions={result['sessionCount']}",
         f"appVersions={','.join(result['appVersions'])}",
         "partialOverlapDetectable=false",
+        f"batchProtocolConfigured={str(protocol['configured']).lower()}",
+        f"batchProtocolStatus={protocol['status']}",
     ]
+    for issue in protocol["issues"]:
+        lines.append(f"batchProtocolIssue.{issue['key']}={issue['detail']}")
     for label, key in (("newArea", "newArea"), ("repeatArea", "repeatArea")):
         cohort = result[key]
         lines.append(f"{label}.sessions={cohort['sessionCount']}")
@@ -120,7 +222,7 @@ def render_text(result: dict[str, Any]) -> str:
             metric = cohort["metrics"][metric_key]
             average = "null" if metric["average"] is None else str(metric["average"])
             lines.append(f"{label}.{metric_key}.average={average} evidence={metric['evidenceCount']}/{metric['sessionCount']}")
-    lines.append("note=structural aggregate only; protocol/product readiness is not recomputed")
+    lines.append("note=protocol readiness mirrors approved comparison policy; product quality verdict is never computed")
     return "\n".join(lines)
 
 
