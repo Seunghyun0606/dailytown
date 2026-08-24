@@ -1,6 +1,8 @@
 package com.dailytown.app.diagnostics
 
 import com.dailytown.app.location.LocationTrackingPreset
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /**
  * Privacy-safe plan latched when a field-test tracking session starts.
@@ -49,6 +51,25 @@ class FieldTestSessionEvidenceInspector {
 
 fun parseReferenceDistanceMeters(raw: String): Int? =
     raw.trim().toIntOrNull()?.takeIf { it > 0 }
+
+/**
+ * Re-applies the values latched at session start to a completed derived diagnostic. This prevents
+ * later edits to the setup UI from changing the profile-independent distance/preset evidence of an
+ * already completed session.
+ */
+fun FieldTestDiagnostic.withSessionPlan(plan: FieldTestSessionPlan): FieldTestDiagnostic {
+    val reference = plan.referenceDistanceMeters
+    val distanceError = if (reference != null && sessionDistanceMeters != null) {
+        ((abs(sessionDistanceMeters - reference).toDouble() / reference) * 100.0).roundToInt()
+    } else {
+        null
+    }
+    return copy(
+        trackingPreset = plan.trackingPreset.name,
+        referenceDistanceMeters = reference,
+        distanceErrorPercent = distanceError,
+    )
+}
 
 private fun FieldTestDiagnostic.hasEvidence(evidence: FieldTestProtocolEvidence): Boolean =
     when (evidence) {
