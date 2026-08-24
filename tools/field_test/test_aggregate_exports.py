@@ -69,5 +69,52 @@ class FieldTestBatchAggregatorTest(unittest.TestCase):
         self.assertFalse(result["overlap"]["partialOverlapDetectable"])
         self.assertIn("partialOverlapDetectable=false", render_text(result))
 
+    def test_unconfigured_protocol_recomputes_as_comparable(self):
+        result = aggregate_documents([valid_document()])
+        self.assertEqual(
+            {"configured": False, "status": "COMPARABLE", "issues": []},
+            result["protocolAssessment"],
+        )
 
-if __name__ == "__main__": unittest.main()
+    def test_missing_cohort_recomputes_as_data_insufficient(self):
+        document = valid_document([session(1, "NEW_AREA")])
+        result = aggregate_documents([document])
+        self.assertEqual("DATA_INSUFFICIENT", result["protocolAssessment"]["status"])
+        self.assertIn(
+            {"key": "repeatAreaSessions", "detail": "missing"},
+            result["protocolAssessment"]["issues"],
+        )
+
+    def test_configured_protocol_can_be_product_review_ready_without_product_verdict(self):
+        document = valid_document()
+        document["policies"]["comparison"] = {
+            "minimumSessionsPerCohort": 1,
+            "requireMatchingTrackingPreset": True,
+            "requiredEvidence": ["SESSION_DISTANCE"],
+        }
+        result = aggregate_documents([document])
+        self.assertEqual("PRODUCT_REVIEW_READY", result["protocolAssessment"]["status"])
+        self.assertEqual("NOT_COMPUTED", result["productVerdict"])
+
+    def test_required_repeat_fatigue_is_repeat_only_and_can_block_readiness(self):
+        sessions = [session(1, "NEW_AREA"), session(2, "REPEAT_AREA")]
+        document = valid_document(sessions)
+        document["policies"]["comparison"] = {
+            "minimumSessionsPerCohort": 1,
+            "requireMatchingTrackingPreset": None,
+            "requiredEvidence": ["REPEAT_AREA_FATIGUE"],
+        }
+        result = aggregate_documents([document])
+        self.assertEqual("COMPARABLE", result["protocolAssessment"]["status"])
+        self.assertIn(
+            {"key": "repeatAreaEvidence.REPEAT_AREA_FATIGUE", "detail": "0/1"},
+            result["protocolAssessment"]["issues"],
+        )
+        self.assertFalse(
+            any(issue["key"].startswith("newAreaEvidence.REPEAT_AREA_FATIGUE")
+                for issue in result["protocolAssessment"]["issues"])
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
