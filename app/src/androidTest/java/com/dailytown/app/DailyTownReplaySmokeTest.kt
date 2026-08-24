@@ -3,6 +3,7 @@ package com.dailytown.app
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -38,14 +39,19 @@ class DailyTownReplaySmokeTest {
     }
 
     @Test
-    fun replaySessionsDriveComparisonProtocolFromInsufficientToComparableAndReset() {
+    fun replaySessionsLatchSetupBeforeStartThenDriveComparisonProtocol() {
         composeRule.onNodeWithTag("field-test-cohort-counts")
             .assert(hasText("신규 0회 · 반복 0회"))
         composeRule.onNodeWithTag("field-test-protocol-status")
             .assert(hasText("프로토콜: 데이터 부족"))
+        composeRule.onNodeWithTag("field-test-setup-profile-new")
+            .assertIsSelected()
 
         startReplayAndStop()
 
+        composeRule.onNodeWithTag("field-test-record-suggestion")
+            .performScrollTo()
+            .assert(hasText("시작 계획은 신규 지역"))
         composeRule.onNodeWithTag("field-test-record")
             .performScrollTo()
             .assertIsEnabled()
@@ -59,11 +65,22 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("field-test-record")
             .assertIsNotEnabled()
 
+        // Select the next session's intended area before tracking starts. The completed-session
+        // correction chips below are deliberately separate from this draft setup selection.
+        composeRule.onNodeWithTag("field-test-setup-profile-repeat")
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        composeRule.onNodeWithTag("field-test-draft-plan")
+            .assert(hasText("다음 세션: 반복 지역"))
+
         startReplayAndStop()
 
-        composeRule.onNodeWithTag("field-test-profile-repeat")
+        composeRule.onNodeWithTag("field-test-record-suggestion")
             .performScrollTo()
-            .performClick()
+            .assert(hasText("시작 계획은 반복 지역"))
+        composeRule.onNodeWithTag("field-test-profile-repeat")
+            .assertIsSelected()
         composeRule.onNodeWithTag("field-test-record")
             .performScrollTo()
             .assertIsEnabled()
@@ -96,10 +113,21 @@ class DailyTownReplaySmokeTest {
 
         composeRule.onNodeWithTag("tracking-status")
             .assert(hasText("서울시청 → 덕수궁 테스트 경로 재생 중"))
+        composeRule.onNodeWithTag("field-test-active-plan")
+            .performScrollTo()
+            .assert(hasText("진행 중 계획"))
+        composeRule.onNodeWithTag("field-test-setup-profile-new")
+            .assertIsNotEnabled()
+        composeRule.onNodeWithTag("field-test-setup-profile-repeat")
+            .assertIsNotEnabled()
 
         composeRule.onNodeWithText("중지")
             .performScrollTo()
             .performClick()
         composeRule.waitForIdle()
+
+        composeRule.onNodeWithTag("field-test-completed-plan")
+            .performScrollTo()
+            .assert(hasText("종료 세션 계획"))
     }
 }
