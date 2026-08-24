@@ -89,45 +89,17 @@ python3 tools/field_test/aggregate_exports.py \
 
 Use `--json` to print the derived batch summary as JSON to stdout instead of text. The tool does not create a file unless the operator explicitly redirects stdout.
 
-The batch tool:
-
-- validates every source export first
-- rejects exact duplicate JSON documents using a local SHA-256 digest
-- rejects exports whose acceptance/comparison policies differ
-- recomputes NEW_AREA / REPEAT_AREA averages directly from session rows rather than averaging already-rounded cohort averages
-- preserves missing evidence as `null` with an explicit evidence count
-- reports tracking presets, acceptance/run-review counts, app versions, and repeat-minus-new deltas
-- recomputes the comparison protocol using the same semantics as the Android `FieldTestProtocolEvaluator`
-- exposes the non-secret comparison policy to downstream offline review/planning tools
-- always emits `productVerdict=NOT_COMPUTED`
+The batch tool validates every source export first, rejects exact duplicates and policy mismatches, recomputes NEW_AREA / REPEAT_AREA metrics from session rows, preserves missing evidence as `null`, recomputes protocol readiness with the Android evaluator semantics, exposes the non-secret comparison policy for downstream planning, and always emits `productVerdict=NOT_COMPUTED`.
 
 ### Batch protocol readiness vs product verdict
 
-Batch protocol readiness is allowed to be recomputed because it only evaluates the **human-approved comparison protocol** already embedded in the exports.
+Batch protocol readiness only evaluates the human-approved comparison protocol embedded in the exports. Missing cohorts/shared evidence can produce `DATA_INSUFFICIENT`; structurally comparable unconfigured data produces `COMPARABLE`; configured minimum cohort size, matching-preset requirement, and required evidence are applied; `REPEAT_AREA_FATIGUE` is REPEAT_AREA-only; all configured evidence gates satisfied produces `PRODUCT_REVIEW_READY`.
 
-The offline evaluator mirrors the app rules:
-
-- missing NEW_AREA or REPEAT_AREA cohort => `DATA_INSUFFICIENT`
-- both cohorts but no common evaluable metric => `DATA_INSUFFICIENT`
-- structurally comparable with no configured comparison policy => `COMPARABLE`
-- configured minimum cohort size, matching-preset requirement, and required evidence are applied
-- `REPEAT_AREA_FATIGUE` evidence is required only for the REPEAT_AREA cohort
-- all configured gates satisfied => `PRODUCT_REVIEW_READY`
-
-`PRODUCT_REVIEW_READY` means **evidence is ready for a human product review**. It does not mean the product is good, the metric deltas are acceptable, or the app is ready for release. The aggregate always keeps `productVerdict=NOT_COMPUTED`.
+`PRODUCT_REVIEW_READY` means evidence is ready for a human product review. It does not mean the product is good, deltas are acceptable, or the app is ready for release. Product verdict remains `NOT_COMPUTED`.
 
 ### Non-overlap limitation
 
-The privacy design deliberately exports no durable session IDs or timestamps. Therefore two different JSON snapshots can partially contain the same sessions and software cannot prove that they are disjoint.
-
-For more than one export, `--confirm-non-overlapping` is mandatory. The recommended collection procedure is:
-
-1. collect one batch
-2. share and validate its export
-3. reset the in-app comparison buffer
-4. only then collect the next batch
-
-Exact duplicate files are rejected automatically, but partial overlap between distinct snapshots is not detectable. Do not aggregate overlapping snapshots for product decisions.
+The privacy design deliberately exports no durable session IDs or timestamps. Distinct JSON snapshots can therefore partially overlap without being detectable. For more than one export, `--confirm-non-overlapping` is mandatory. Collect one batch, share and validate it, reset the in-app comparison buffer, then collect the next batch. Exact duplicate files are rejected automatically.
 
 ## Next evidence collection planner
 
@@ -141,39 +113,21 @@ python3 tools/field_test/collection_plan.py \
 
 Use `--json` for machine-readable stdout.
 
-The planner deliberately does **not** invent product thresholds. It only uses:
+The planner deliberately does not invent product thresholds. It only uses structural protocol requirements plus the human-approved `minimumSessionsPerCohort`, matching-preset requirement, required evidence list, and current cohort evidence counts.
 
-- structural requirements already defined by the app protocol evaluator
-- the human-approved `minimumSessionsPerCohort`
-- the human-approved matching-tracking-preset requirement
-- the human-approved required evidence list
-- current NEW_AREA / REPEAT_AREA session and evidence counts
-
-The plan reports:
-
-- current session count per cohort
-- configured minimum session target, when one exists
-- session-count deficit
-- each required evidence item's current count, target count, and deficit
-- a **minimum additional session lower bound** per cohort
-- structural actions when a cohort or shared evidence is missing
-- a blocker when matching tracking preset is required but the current aggregate already contains multiple presets
-- a human-decision action when comparison policy is not configured
-- a human-product-review action when the approved evidence protocol is already satisfied
+The plan reports current sessions, configured session target, session deficit, required evidence current/target/deficit, a minimum additional-session lower bound, structural actions, matching-preset blockers, human policy-decision actions for unconfigured policy, and a human product-review handoff when evidence protocol is already satisfied.
 
 ### Lower-bound semantics
 
-The planner never adds all evidence deficits together. One additional session can satisfy multiple required evidence items at the same time, so the planner uses the maximum relevant deficit as a **lower bound**.
+One additional session can satisfy multiple evidence deficits simultaneously, so deficits are not summed. The planner uses the maximum relevant deficit as a **lower bound**. It is not a guarantee because a real session may fail to produce battery, distance-error, or another evidence item.
 
-A lower bound is not a guarantee. A new session may fail to produce battery, distance-error, or other evidence, so more real sessions may still be needed.
+If the current aggregate already mixes tracking presets while matching is required, adding sessions cannot remove the existing mismatch. The planner reports this as a blocker and calls for a clean same-preset batch or separate same-preset review rather than presenting a fake numeric fix.
 
-Tracking-preset mismatch is different: if the current aggregate already mixes presets while matching is required, adding sessions cannot remove those existing preset values. The planner therefore reports a blocker and recommends reviewing separate same-preset data or collecting a clean same-preset batch instead of presenting a fake numeric fix.
-
-If no comparison policy is configured, the planner does not invent a target. It reports `POLICY_NOT_CONFIGURED`; only structural missing-cohort/shared-evidence requirements can still produce a minimal collection lower bound.
+If no comparison policy is configured, the planner reports `POLICY_NOT_CONFIGURED` and does not invent a product-readiness target. Structural missing-cohort/shared-evidence requirements can still produce a minimal lower bound.
 
 ## Human-review report
 
-For a compact review document, render Markdown to stdout:
+Render Markdown to stdout:
 
 ```bash
 python3 tools/field_test/review_report.py \
@@ -181,7 +135,7 @@ python3 tools/field_test/review_report.py \
   export-a.json export-b.json
 ```
 
-For spreadsheet-friendly output, render CSV to stdout:
+Render spreadsheet-friendly CSV:
 
 ```bash
 python3 tools/field_test/review_report.py \
@@ -190,24 +144,7 @@ python3 tools/field_test/review_report.py \
   export-a.json export-b.json
 ```
 
-The Markdown report contains:
-
-- source/session/app-version summary
-- recomputed batch protocol status and issue list
-- collection-plan status
-- current sessions, approved target, deficits, and minimum additional-session lower bounds
-- required-evidence current/target counts and deficits
-- collection blockers and next actions
-- NEW_AREA / REPEAT_AREA metric averages
-- evidence count beside every average
-- repeat-minus-new delta
-- run-review distribution
-- acceptance distribution
-- an explicit interpretation boundary separating protocol readiness from product quality
-
-The CSV report contains summary, protocol-issue, collection-plan, collection-evidence, collection-blocker/action, metric, run-review, and acceptance rows. Missing numeric evidence is emitted as an empty CSV cell while evidence counts remain explicit.
-
-Both report formats are stdout-only. If a human chooses to redirect them into a file, that destination must follow the approved export retention/access policy.
+Markdown and CSV include the batch protocol and collection plan, current/target/deficit evidence, collection blockers/actions, metrics with evidence counts/deltas, run-review and acceptance distributions, and an explicit interpretation boundary. Both formats are stdout-only. If redirected to a file, the destination must follow the approved export/report retention policy.
 
 ## Human decisions still required
 
@@ -229,18 +166,13 @@ Until export retention/access decisions are approved, do not automatically uploa
 
 ## Automated coverage
 
-Android/JVM coverage continues to verify the app-side export schema, privacy boundary, missing-as-null behavior, bounded recorder, and managed-device export enable/reset flow.
-
 Repository-local Python coverage contains 41 tests:
 
 - 13 strict validator tests
-- 12 batch-aggregation/protocol tests covering non-overlap confirmation, duplicate/policy mismatch rejection, cross-file recomputation, missing evidence, invalid-source rejection, protocol readiness, structural insufficiency, and repeat-only fatigue evidence
-- 9 collection-planner tests covering unconfigured policy, structural missing cohorts/shared evidence, minimum session deficits, required evidence deficits, repeat-only fatigue, tracking-preset blockers, lower-bound semantics, and evidence-ready human review handoff
-- 7 review-report tests covering Markdown/CSV output, protocol issues, evidence counts, missing-value rendering, collection-plan lower bounds/evidence deficits, and the permanent `NOT_COMPUTED` product verdict boundary
+- 12 batch-aggregation/protocol tests
+- 9 collection-planner tests
+- 7 review-report tests
 
-Latest PR validation for this planner revision:
+Latest planner code revision `37cbc681b84a01df25b6e31dad0574d3f2bc22d9` passed Android CI `32720405273` and AOSP managed-device `32720405176`. The subsequent documentation-only head `40ee26d5971415a0de84f6eaddcda5d2faca9faf` also passed Android CI `32720861004` and AOSP managed-device `32720860804`.
 
-- Android CI `32720405273`: credential hard-code guard, all 41 Python tests, 103 JVM tests, instrumented-test compilation, Android lint, and debug APK build passed
-- AOSP managed-device `32720405176`: replay/field-test/export E2E and report upload passed
-
-Both normal Android CI and the manually triggered Internal Debug APK workflow run the full `tools/field_test/test_*.py` suite before Android build steps.
+Both normal Android CI and the manually triggered Internal Debug APK workflow run the complete `tools/field_test/test_*.py` suite before Android build steps. Android CI also continues to run 103 JVM tests, instrumented-test compilation, lint, and debug APK build.
