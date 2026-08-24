@@ -231,11 +231,16 @@ Until export retention/access decisions are approved, do not automatically uploa
 
 Android/JVM coverage continues to verify the app-side export schema, privacy boundary, missing-as-null behavior, bounded recorder, and managed-device export enable/reset flow.
 
-Repository-local Python coverage now contains 41 tests:
+Repository-local Python coverage contains 41 tests:
 
 - 13 strict validator tests
 - 12 batch-aggregation/protocol tests covering non-overlap confirmation, duplicate/policy mismatch rejection, cross-file recomputation, missing evidence, invalid-source rejection, protocol readiness, structural insufficiency, and repeat-only fatigue evidence
 - 9 collection-planner tests covering unconfigured policy, structural missing cohorts/shared evidence, minimum session deficits, required evidence deficits, repeat-only fatigue, tracking-preset blockers, lower-bound semantics, and evidence-ready human review handoff
 - 7 review-report tests covering Markdown/CSV output, protocol issues, evidence counts, missing-value rendering, collection-plan lower bounds/evidence deficits, and the permanent `NOT_COMPUTED` product verdict boundary
+
+Latest PR validation for this planner revision:
+
+- Android CI `32720405273`: credential hard-code guard, all 41 Python tests, 103 JVM tests, instrumented-test compilation, Android lint, and debug APK build passed
+- AOSP managed-device `32720405176`: replay/field-test/export E2E and report upload passed
 
 Both normal Android CI and the manually triggered Internal Debug APK workflow run the full `tools/field_test/test_*.py` suite before Android build steps.
