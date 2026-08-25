@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_id": "daily-town-visual-pack-v1",
-  "pack_version": "1.0.0",
+  "pack_version": "1.1.0",
   "status": "approved_source_package",
   "direction": "Option A - Soft Botanical Explorer",
   "canonical_companion": "moru-a2",
@@ -15,7 +15,11 @@
     "map-overlay-qa-matrix.v1.json",
     "sprite-gen-moru-pilot.v1.json",
     "source-promotion-qa.v1.json",
-    "production-export-jobs.v1.json"
+    "production-export-jobs.v1.json",
+    "p1-design-decisions.v1.json",
+    "affinity-moru-manifest.v1.json",
+    "evening-interpolation-tokens.v1.json",
+    "a3-five-screen-component-fit.v1.json"
   ],
   "source_masters": [
     "../source/companion/moru/moru-a2-vector-source-master-v1.svg",
@@ -28,6 +32,7 @@
     "appearance.*",
     "animation.companion.*",
     "lighting.*",
+    "phase.evening.*",
     "marker.*",
     "effect.route.*",
     "effect.halo.*",
@@ -46,21 +51,23 @@
     "concept_board_as_runtime_asset_forbidden": true,
     "sha256_required_for_production_export": true,
     "fallback_relationship_required": true,
-    "source_master_direct_runtime_use_forbidden": true
+    "source_master_direct_runtime_use_forbidden": true,
+    "evening_new_marker_family_forbidden": true,
+    "evening_new_companion_lighting_family_forbidden": true
   },
   "remaining_production_gates": [
     "isolated_moru_transparent_exports_and_visual_qa",
     "marker_split_export_and_map_qa",
     "a3_split_export_and_five_screen_fit_qa",
     "sprite_gen_pilot_generation_and_human_motion_qa",
+    "EV1_E2_real_map_readability_qa",
     "physical_outdoor_readability_approval"
   ],
   "human_gates": [
     "luca_pino_beri_shipping_approval",
-    "affinity_best_friend_change_ceiling",
+    "affinity_best_friend_maximum_change_ceiling",
     "final_motion_timing_easing_intensity",
     "physical_outdoor_readability_approval",
-    "evening_dedicated_board_decision",
     "app_icon_logo_final_lock"
   ]
 }
