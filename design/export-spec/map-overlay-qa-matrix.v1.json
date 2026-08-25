@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "dimensions": {
+    "time_anchor": ["MORNING", "SUNSET", "NIGHT"],
+    "map_complexity": ["simple_residential", "dense_urban", "mixed_poi"],
+    "motion_mode": ["normal", "reduced_motion"]
+  },
+  "expected_capture_count": 18,
+  "required_stack": [
+    "provider_map",
+    "companion_map_avatar",
+    "encounter_marker",
+    "poi_marker",
+    "route_following",
+    "active_halo",
+    "discovery_effect_or_static_fallback",
+    "hud"
+  ],
+  "checks": [
+    "marker_state_readable_without_hue_only",
+    "route_does_not_hide_road_or_label_comprehension",
+    "halo_center_remains_geographically_precise",
+    "companion_avatar_readable_at_compact_size",
+    "night_glow_is_local_and_restrained",
+    "provider_legal_logo_ui_unobstructed",
+    "normal_and_reduced_motion_communicate_same_semantics"
+  ],
+  "approval": {
+    "design_capture_review": "required",
+    "physical_outdoor_device_review": "human_gate"
+  }
+}
