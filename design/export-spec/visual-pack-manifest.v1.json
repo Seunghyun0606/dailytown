@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "pack_id": "daily-town-visual-pack-v1",
+  "pack_version": "1.0.0",
+  "status": "approved_source",
+  "direction": "Option A - Soft Botanical Explorer",
+  "canonical_companion": "moru-a2",
+  "source_manifests": [
+    "companion-manifest.example.json",
+    "moru-production-manifest.v1.json",
+    "visual-tokens.v1.json",
+    "marker-manifest.v1.json",
+    "effect-manifest.v1.json",
+    "a3-ui-asset-manifest.v1.json",
+    "map-overlay-qa-matrix.v1.json"
+  ],
+  "runtime_asset_groups": [
+    "companion.*",
+    "appearance.*",
+    "animation.companion.*",
+    "lighting.*",
+    "marker.*",
+    "effect.route.*",
+    "effect.halo.*",
+    "effect.discovery.*",
+    "surface.journal.*",
+    "surface.collection.*",
+    "surface.memory.*",
+    "stamp.companion.*",
+    "sticker.discovery.*",
+    "card.clue.*"
+  ],
+  "approval_states": ["concept", "candidate", "approved_source", "production_export", "deprecated"],
+  "runtime_policy": {
+    "only_production_export_may_enter_runtime_resources": true,
+    "raw_design_filename_as_domain_identifier_forbidden": true,
+    "concept_board_as_runtime_asset_forbidden": true,
+    "sha256_required_for_production_export": true,
+    "fallback_relationship_required": true
+  },
+  "human_gates": [
+    "luca_pino_beri_shipping_approval",
+    "affinity_best_friend_change_ceiling",
+    "final_motion_timing_easing_intensity",
+    "physical_outdoor_readability_approval",
+    "evening_dedicated_board_decision",
+    "app_icon_logo_final_lock"
+  ]
+}
