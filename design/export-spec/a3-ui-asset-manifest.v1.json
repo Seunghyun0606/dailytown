@@ -28,5 +28,13 @@
     "avoid": ["ambient_particles", "perpetual_paper_wobble", "aggressive_parallax"],
     "reduced_motion_required": true
   },
-  "export_state": "pending_art_export"
+  "source_master": {
+    "path": "design/source/a3/a3-ui-source-master-v1.svg",
+    "approval_state": "approved_source",
+    "editable": true,
+    "runtime_direct_use": false,
+    "split_export_required": true
+  },
+  "export_state": "source_master_created",
+  "next_gate": "five_screen_component_fit_and_split_export_qa"
 }
