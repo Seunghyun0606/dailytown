@@ -1,71 +1,112 @@
 # Daily Town P1 Design Execution Status
 
-Status date: 2026-08-25
+Status date: 2026-08-26
 
-## Completed without new human decisions
+## Approved P1 directions
 
-- A-3 five-screen component-fit specification completed.
-- Affinity visual direction candidates prepared inside the approved safe matrix.
-- EVENING bridge strategy candidates prepared without creating a new marker/lighting family.
-- Luca/Pino/Beri shipping-review package prepared against the common companion contract.
-- Machine-readable P1 candidate decision manifest added.
+- Affinity: **AF-1 Memory Keepsakes + restrained AF-3 Explorer Patina**
+- EVENING: **EV-1 Interpolation-first**
+- A-3: five-screen component-fit contract using the approved reusable source kit
 
-## Files
+## Completed in this pass
 
-- `docs/visual/P1_A3_COMPONENT_FIT_SPEC_V1.md`
-- `docs/visual/P1_AFFINITY_VISUAL_DIRECTIONS_V1.md`
-- `docs/visual/P1_EVENING_BRIDGE_STUDY_V1.md`
-- `docs/visual/P1_SUBCOMPANION_SHIPPING_REVIEW_V1.md`
+### Affinity manifest — COMPLETE AT APPROVED_SOURCE LEVEL
+
+Added:
+
+- `design/export-spec/affinity-moru-manifest.v1.json`
+
+The manifest defines:
+
+- `appearance.moru.base`
+- `appearance.moru.familiar`
+- `appearance.moru.trusted`
+- `appearance.moru.best_friend`
+- modular keepsake/patina slots
+- compact map-avatar profiles
+- historical-memory fallback
+- animation/combinatorial-risk policy
+
+`best_friend` is a safe default profile, not authorization for unlimited transformation. The final maximum transformation ceiling remains a human gate.
+
+### EV-1 interpolation token spec — COMPLETE AT APPROVED_SOURCE LEVEL
+
+Added:
+
+- `design/export-spec/evening-interpolation-tokens.v1.json`
+
+Checkpoints:
+
+`E0 / E1 / E2 / E3 / E4`
+
+Rules:
+
+- no EVENING marker family
+- no EVENING companion-lighting family
+- route interpolates from SUNSET to NIGHT
+- E2 is the mandatory evening-core QA state
+- marker DAY/DARK selection may use real map background luminance at E2
+- HUD text role switches by contrast evaluation rather than hard-coded clock time
+
+### A-3 five-screen component-fit — COMPLETE AT APPROVED_SOURCE CONTRACT LEVEL
+
+Added:
+
+- `design/export-spec/a3-five-screen-component-fit.v1.json`
+
+Validated screen contracts:
+
+1. Journal Home
+2. Discovery Detail
+3. Clue Note
+4. Collection Grid
+5. Memory Detail
+
+Baseline review width: 360 dp. Additional review widths: 412 dp / 600 dp.
+
+No screen-specific one-off art is required by the contract. The same A-3 source kit composes all five screens.
+
+### Integrated P1 package — COMPLETE
+
+Added:
+
+- `docs/visual/P1_APPROVED_AFFINITY_EVENING_A3_PACKAGE_V1.md`
+
+Updated:
+
 - `design/export-spec/p1-design-decisions.v1.json`
+- `design/export-spec/visual-pack-manifest.v1.json` -> pack version `1.1.0`
 
-## Human choices now blocking new visual image boards
+## Development-session handoff now unblocked
 
-### Affinity imagery
+The development session can proceed with:
 
-Choose one direction before image production:
+1. affinity appearance-profile resolver
+2. compact map-avatar profile handling
+3. historical affinity fallback for A-3 records
+4. EV-1 continuous interpolation plus forced E0..E4 debug checkpoints
+5. E2 real-map readability capture
+6. A-3 five-screen screenshot QA at narrow Android widths
 
-- AF-1 Memory Keepsakes
-- AF-2 Botanical Growth
-- AF-3 Explorer Patina
-- recommended hybrid: AF-1 + restrained AF-3
+No Android/Kotlin code was modified by this design session.
 
-### EVENING imagery
+## Remaining production / QA work
 
-Choose one direction before a new board is produced:
+- isolated Moru/affinity slot art exports and checksum promotion
+- real marker export + real-map QA
+- actual A-3 five-screen screenshot fit validation after integration
+- sprite-gen Moru pilot output + human motion QA
+- E2 + existing map-overlay matrix real Android capture
+- physical outdoor readability approval
 
-- EV-1 Interpolation-first
-- EV-2 Soft Blue-Hour Accent
-- EV-3 Dedicated EVENING Board
+## Remaining human product/design gates
 
-Recommended: EV-1 first.
-
-### Companion shipping
-
-Luca/Pino/Beri all pass the common contract with constraints, but final shipping selection remains human-owned.
-
-## Next executable work after approval
-
-If affinity direction is approved:
-
-1. Moru `base / familiar / trusted / best_friend` comparison board
-2. 48 dp silhouette/readability strip
-3. A-3 memory stamp application example
-4. modular slot source masters + appearance manifest candidates
-
-If EVENING direction is approved:
-
-1. SUNSET→EVENING→NIGHT comparison board
-2. E0/E1/E2/E3/E4 interpolation checkpoints
-3. marker/route/HUD/companion lighting readability check
-
-If subcompanions are approved for shipping:
-
-1. final canonical production masters
-2. 6-expression consistency pass
-3. lighting pass
-4. affinity-slot compatibility pass
-5. A-3 stamp and map-avatar QA
+- Luca/Pino/Beri shipping selection
+- maximum Best Friend transformation ceiling beyond the current safe default
+- final motion timing/easing/intensity
+- physical outdoor readability approval
+- app icon / Daily Town logo final lock
 
 ## P1 conclusion
 
-All P1 work that does not require a human visual-direction choice has been completed. The next design production step is visual candidate generation after the user selects the affinity and EVENING directions.
+The requested **Affinity manifest + EV-1 interpolation token spec + A-3 five-screen component-fit** package is complete at the design-contract / approved-source level. The next highest-value work is production export/QA plus P1 follow-up art for affinity modular slots and final A-3 integrated-screen validation.
