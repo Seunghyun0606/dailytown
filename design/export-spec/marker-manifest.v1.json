@@ -30,5 +30,14 @@
     "missing_selected_variant": "base_plus_semantic_halo",
     "missing_poi_specific": "marker.poi.other"
   },
-  "export_state": "pending_art_export"
+  "source_master": {
+    "path": "design/source/markers/marker-family-v1.svg",
+    "approval_state": "approved_source",
+    "editable": true,
+    "contains_day_and_dark": true,
+    "runtime_direct_use": false,
+    "split_export_required": true
+  },
+  "export_state": "source_master_created",
+  "next_gate": "map_readability_and_split_export_qa"
 }
