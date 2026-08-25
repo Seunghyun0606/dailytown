@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1160" viewBox="0 0 1900 1160">
+  <title>Daily Town A-3 five-screen component-fit board v1</title>
+  <defs>
+    <pattern id="locked" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#EEF3F5"/><rect width="4" height="10" fill="#D8D3C3"/></pattern>
+    <style>
+      .canvas{fill:#EEF3F5}.screen{fill:#F4F0E6;stroke:#D8D3C3;stroke-width:3}.paper{fill:#FFFDF7;stroke:#D8D3C3;stroke-width:2}.ink{fill:#1A1F1C}.muted{fill:#66756D}.green{fill:#6B8F7A}.green2{fill:#A7C7A5}.butter{fill:#FFD36B}.peach{fill:#FFB184}.success{fill:#48836C}.line{stroke:#D8D3C3;stroke-width:2}.strong{stroke:#214F3B;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}.txt{font-family:sans-serif;font-size:18px;fill:#1A1F1C}.small{font-family:sans-serif;font-size:13px;fill:#66756D}.title{font-family:sans-serif;font-size:25px;font-weight:700;fill:#214F3B}
+    </style>
+  </defs>
+  <rect width="1900" height="1160" rx="32" class="canvas"/>
+  <text x="42" y="52" class="title">A-3 five-screen component-fit board v1</text>
+  <text x="42" y="82" class="small">Reference width: 360dp. Stable paper surface; event-time atmosphere only inside contained hero art. Shared components only.</text>
+
+  <!-- 1 Journal Home -->
+  <g id="journal_home" transform="translate(45 125)">
+    <rect width="330" height="690" rx="28" class="screen"/>
+    <text x="22" y="40" class="title" font-size="21">Journal</text><text x="22" y="66" class="small">Today · neighborhood walk</text>
+    <g transform="translate(18 92)"><rect width="294" height="148" rx="18" class="paper"/><circle cx="45" cy="42" r="24" class="green2"/><text x="81" y="35" class="txt">Morning discovery</text><text x="81" y="60" class="small">Little garden by the alley</text><circle cx="258" cy="42" r="22" fill="#FFF" stroke="#214F3B" stroke-width="2"/><path d="M248 46C248 34 259 26 270 29C268 40 261 48 250 50Z" class="green"/><rect x="22" y="91" width="75" height="22" rx="11" class="green2"/><text x="110" y="108" class="small">08:12 · found</text></g>
+    <g transform="translate(18 254)"><rect width="294" height="148" rx="18" class="paper"/><circle cx="45" cy="42" r="24" class="butter"/><text x="81" y="35" class="txt">Clue found</text><text x="81" y="60" class="small">A paper bird under the bench</text><circle cx="258" cy="42" r="22" fill="#FFF" stroke="#214F3B" stroke-width="2"/><text x="252" y="50" class="txt">?</text><rect x="22" y="91" width="75" height="22" rx="11" fill="#EEF3F5"/><text x="110" y="108" class="small">11:46 · unresolved</text></g>
+    <g transform="translate(18 416)"><rect width="294" height="148" rx="18" class="paper"/><circle cx="45" cy="42" r="24" class="success"/><text x="81" y="35" class="txt">Mystery resolved</text><text x="81" y="60" class="small">The owner of the old key</text><circle cx="258" cy="42" r="22" fill="#FFF" stroke="#214F3B" stroke-width="2"/><path d="M248 43L255 50L269 35" fill="none" stroke="#48836C" stroke-width="4"/><rect x="22" y="91" width="75" height="22" rx="11" class="green2"/><text x="110" y="108" class="small">17:08 · resolved</text></g>
+    <text x="18" y="652" class="small">Fit target: 3 consecutive entries, fixed 48dp stamp slot.</text>
+  </g>
+
+  <!-- 2 Discovery Detail -->
+  <g id="discovery_detail" transform="translate(410 125)">
+    <rect width="330" height="690" rx="28" class="screen"/>
+    <text x="22" y="40" class="title" font-size="21">Discovery</text>
+    <rect x="18" y="72" width="294" height="220" rx="20" fill="#E8F2E5" stroke="#D8D3C3" stroke-width="2"/>
+    <circle cx="92" cy="173" r="48" class="green2"/><path d="M90 194C84 150 116 123 153 129C149 170 126 195 90 200Z" fill="#6B8F7A" stroke="#214F3B" stroke-width="3"/>
+    <rect x="34" y="308" width="118" height="30" rx="15" class="butter"/><text x="43" y="329" class="small">DISCOVERED</text>
+    <text x="20" y="375" class="txt">The garden that keeps</text><text x="20" y="401" class="txt">a tiny secret</text>
+    <line x1="20" y1="430" x2="290" y2="430" class="line"/><line x1="20" y1="454" x2="278" y2="454" class="line"/><line x1="20" y1="478" x2="248" y2="478" class="line"/>
+    <circle cx="54" cy="536" r="28" fill="#FFF" stroke="#214F3B" stroke-width="2"/><path d="M42 542C42 526 56 517 70 521C68 536 59 545 45 547Z" class="green"/>
+    <text x="96" y="529" class="small">Moru noticed something</text><text x="96" y="551" class="small">near the stone wall.</text>
+    <rect x="20" y="592" width="290" height="52" rx="16" fill="#FFFDF7" stroke="#D8D3C3" stroke-width="2"/><text x="38" y="624" class="small">Follow-up clue · inspect the old tag</text>
+  </g>
+
+  <!-- 3 Clue Note -->
+  <g id="clue_note" transform="translate(775 125)">
+    <rect width="330" height="690" rx="28" class="screen"/>
+    <text x="22" y="40" class="title" font-size="21">Clue Note</text><text x="22" y="66" class="small">Evidence 2 of 4</text>
+    <rect x="18" y="95" width="294" height="232" rx="20" class="paper"/>
+    <rect x="34" y="116" width="118" height="28" rx="14" fill="#EEF3F5"/><text x="49" y="136" class="small">UNRESOLVED</text>
+    <circle cx="82" cy="208" r="38" fill="#F4F0E6" stroke="#D8D3C3" stroke-width="2"/><text x="71" y="221" class="txt" font-size="34">?</text>
+    <line x1="138" y1="188" x2="276" y2="188" class="line"/><line x1="138" y1="216" x2="260" y2="216" class="line"/><line x1="138" y1="244" x2="236" y2="244" class="line"/>
+    <rect x="18" y="354" width="294" height="232" rx="20" class="paper"/>
+    <rect x="34" y="375" width="104" height="28" rx="14" class="green2"/><text x="49" y="395" class="small">RESOLVED</text>
+    <circle cx="82" cy="468" r="38" fill="#F7F3E8" stroke="#48836C" stroke-width="3"/><path d="M66 469L77 480L99 454" fill="none" stroke="#48836C" stroke-width="5"/>
+    <line x1="138" y1="448" x2="276" y2="448" class="line"/><line x1="138" y1="476" x2="260" y2="476" class="line"/><text x="138" y="518" class="small">Resolved Aug 26</text>
+    <text x="20" y="630" class="small">Grayscale distinction: structure + seal, not hue alone.</text>
+  </g>
+
+  <!-- 4 Collection -->
+  <g id="collection_grid" transform="translate(1140 125)">
+    <rect width="330" height="690" rx="28" class="screen"/>
+    <text x="22" y="40" class="title" font-size="21">Collection</text><text x="22" y="66" class="small">Neighborhood traces · 6 / 12</text>
+    <rect x="18" y="91" width="139" height="166" rx="18" class="paper"/><circle cx="87" cy="151" r="32" class="green2"/><path d="M67 170C69 143 89 127 112 130C110 156 94 171 69 176Z" class="green"/><text x="36" y="227" class="small">Botanical</text>
+    <rect x="173" y="91" width="139" height="166" rx="18" fill="url(#locked)" stroke="#D8D3C3" stroke-width="2"/><rect x="221" y="142" width="44" height="35" rx="7" fill="#F7F3E8" stroke="#66756D" stroke-width="3"/><path d="M231 142V131C231 116 255 116 255 131V142" fill="none" stroke="#66756D" stroke-width="3"/><text x="211" y="227" class="small">Locked</text>
+    <rect x="18" y="273" width="139" height="166" rx="18" class="paper"/><circle cx="87" cy="333" r="30" class="butter"/><path d="M72 333L83 344L103 320" fill="none" stroke="#214F3B" stroke-width="5"/><text x="40" y="409" class="small">Completed</text>
+    <rect x="173" y="273" width="139" height="166" rx="18" class="paper"/><circle cx="242" cy="333" r="30" class="peach"/><path d="M226 346Q242 314 258 346" class="strong"/><text x="208" y="409" class="small">Story</text>
+    <rect x="18" y="455" width="139" height="166" rx="18" class="paper"/><circle cx="87" cy="515" r="30" class="green2"/><text x="43" y="591" class="small">Daily life</text>
+    <rect x="173" y="455" width="139" height="166" rx="18" fill="url(#locked)" stroke="#D8D3C3" stroke-width="2"/><text x="211" y="591" class="small">Locked</text>
+  </g>
+
+  <!-- 5 Memory -->
+  <g id="memory_detail" transform="translate(1505 125)">
+    <rect width="330" height="690" rx="28" class="screen"/>
+    <text x="22" y="40" class="title" font-size="21">Memory</text><text x="22" y="66" class="small">Best Friend · Aug 26</text>
+    <rect x="18" y="88" width="294" height="222" rx="20" fill="#E8F2E5" stroke="#D8D3C3" stroke-width="2"/>
+    <rect x="31" y="101" width="268" height="196" rx="15" fill="#FFDEC6"/>
+    <circle cx="228" cy="157" r="48" fill="#FFB184"/><path d="M31 260Q90 205 148 249Q205 205 299 256V297H31Z" class="green2"/>
+    <circle cx="70" cy="348" r="30" fill="#FFF" stroke="#214F3B" stroke-width="2"/><path d="M58 354C58 338 72 329 86 333C84 348 75 357 61 359Z" class="green"/>
+    <circle cx="262" cy="348" r="28" fill="#FFFDF7" stroke="#E8794F" stroke-width="3"/><path d="M249 349L258 358L276 337" fill="none" stroke="#E8794F" stroke-width="4"/>
+    <text x="22" y="405" class="txt">We watched the sunset</text><text x="22" y="431" class="txt">and found the last clue.</text>
+    <line x1="22" y1="466" x2="290" y2="466" class="line"/><line x1="22" y1="492" x2="276" y2="492" class="line"/><line x1="22" y1="518" x2="246" y2="518" class="line"/>
+    <rect x="22" y="558" width="286" height="54" rx="16" class="paper"/><text x="38" y="582" class="small">Event appearance preferred</text><text x="38" y="602" class="small">fallback → appearance.moru.base</text>
+    <text x="22" y="651" class="small">Hero preserves original time-of-day; paper stays A-3.</text>
+  </g>
+
+  <text x="45" y="865" class="title" font-size="20">Cross-screen acceptance</text>
+  <text x="45" y="900" class="small">• 360dp baseline with no horizontal core clipping  • 48dp companion stamp slot  • locked/resolved state survives grayscale  • no one-off screen-specific art required</text>
+  <text x="45" y="930" class="small">• event-time lighting appears only in contained hero/vignette  • paper hierarchy remains stable in light/dark surrounding device context  • reduced-motion does not change information hierarchy</text>
+  <text x="45" y="1010" class="title" font-size="20">Integration targets</text>
+  <text x="45" y="1044" class="small">Journal Home: 3 entries visible · Discovery: 4:3 hero · Clue: structural state grammar · Collection: 2 columns at 360/412dp, 3 at 600dp · Memory: historical affinity profile preferred</text>
+  <text x="45" y="1108" class="small">Approved-source fit board. Runtime implementation must use semantic components/assets, not this flattened board.</text>
+</svg>
