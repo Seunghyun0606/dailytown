@@ -2,164 +2,165 @@
 
 Status: design/tooling evaluation only. No Android runtime dependency is selected here.
 
-## Name clarification
+## Naming
 
-The library/tooling found for this requirement is `sprite-gen` (`aldegad/sprite-gen`). The requested name `stripe-gen` appears to refer to this project.
+The reviewed tooling is **`sprite-gen`** (`aldegad/sprite-gen`). All Daily Town design documentation should use `sprite-gen` consistently.
 
 ## What sprite-gen is
 
-`stripe-gen` is not treated as an Android animation runtime library. `sprite-gen` is an asset-generation/curation pipeline that takes a base character image and action definitions, generates state rows, extracts transparent frames, curates them, and composes a runtime sprite atlas plus a machine-readable manifest.
+`Sprite-gen` is an offline asset-generation/curation pipeline for character motion. It can take a base character drawing plus action definitions, generate candidate state rows, extract transparent frames, support curation/alignment correction, and compose a sprite atlas with machine-readable frame metadata.
 
-Relevant characteristics at the time of review:
+Relevant production characteristics from the review:
+
 - transparent sprite atlas output
-- `manifest.json.frame_layout` with frame rectangles, fps, and loop metadata
-- curation webview with live playback and per-frame alignment correction
-- per-state GIF/contact-sheet QA
-- deterministic recolor workflow
+- `manifest.json.frame_layout` with explicit frame rectangles
+- fps/loop/duration metadata
+- curation workflow with playback/alignment review
+- GIF/contact-sheet QA
+- alpha cleanup/frame extraction
 - optional layered composition workflow
-- a deterministic `breathe` operation for idle loops
+- deterministic breathe/idle support
 - Apache-2.0 license
-- short actions are described by the project as the safer/stable path; cyclic walk/run needs explicit motion QA
 
 ## Daily Town fit
 
 ### Strong fit
 
-Use sprite-gen as a **production authoring/QA tool** for character motion assets:
+Use sprite-gen as a **production authoring/QA tool** for companion motion candidates:
+
 - Moru `idle_breathe`
-- short `happy_bounce`
-- `curious/investigate`
+- `happy_bounce`
+- `investigate`
 - `clue_react`
 - `resolved_settle`
-- compact journal companion-stamp idle motion where motion is allowed
+- compact companion-stamp idle where motion is appropriate
 
-Why it fits:
-- canonical source image can be used as the identity reference
-- frame extraction/alpha cleanup reduces manual sheet preparation
-- atlas metadata can support a replaceable semantic animation asset layer
-- QA GIF/contact sheets make anatomy drift visible before runtime integration
-- asset output can be replaced without changing domain logic
+Benefits:
+
+- canonical source art remains the identity reference
+- generated frames can be visually curated before approval
+- atlas/frame metadata is compatible with replaceable semantic animation assets
+- contact-sheet/GIF review exposes anatomy drift before runtime integration
+- final asset can be replaced without changing gameplay/domain logic
 
 ### Conditional fit
 
-`walk` can be explored with sprite-gen, but should not be accepted automatically. Daily Town's Moru has a rounded silhouette and short legs, so foot contact, body bounce, bag/scarf secondary motion, and sprout motion need human review.
+`walk` is experimental until motion QA passes.
 
-Treat walk-cycle generation as `candidate` until:
-- foot-contact continuity passes
-- head/face remains stable
-- accessory/sprout motion does not flicker
-- atlas loop passes a real-speed preview
+Moru and future companions require explicit review of:
+
+- foot-contact continuity
+- head/face stability
+- body-mass/bounce consistency
+- sprout/ear/tail continuity
+- bag/scarf/accessory secondary motion
+- loop seam at intended playback speed
+
+No generated walk cycle is automatically considered production-approved.
 
 ### Poor fit / unnecessary
 
-Do not use sprite sheets when Compose/native vector/draw animation is simpler:
-- route dash movement
+Do not use sprite atlases for procedural UI/map motion when native Compose/drawing is simpler:
+
+- route progression
 - active halo pulse
-- simple scale/alpha discovery emphasis
-- card/stamp settle animation
+- discovery ring scale/alpha shell
+- card/sticker settle
 - color/token crossfade
-- HUD transitions
+- HUD transition
 
-Those are procedural UI/effect animations and should remain independent from character sprite production.
+## Recommended hybrid architecture
 
-## Recommended hybrid motion architecture
-
-### Asset-authored character motion
-
-Authoring path:
+### Asset-authored companion motion
 
 ```text
 approved canonical companion art
- -> sprite-gen candidate states
- -> curation + QA
+ -> sprite-gen motion candidate
+ -> frame curation + anatomy QA
  -> approved atlas + manifest
- -> semantic animation asset package
+ -> semantic animation package
  -> Android playback adapter in development session
 ```
 
-Recommended first states:
-- `idle_breathe`: loop, very subtle
-- `happy_bounce`: short one-shot
-- `investigate`: short one-shot / optional hold end frame
-- `clue_react`: short one-shot
-- `resolved_settle`: short one-shot
-- `walk`: experimental candidate until QA passes
+Recommended pilot order:
 
-### Procedural Compose motion
+1. `idle_breathe`
+2. `clue_react`
+3. `resolved_settle`
+4. `investigate`
+5. `happy_bounce`
+6. `walk` only after the earlier states prove the pipeline
 
-Prefer native Compose animation/drawing for:
+### Native/procedural motion
+
+Keep these in development/native animation:
+
 - `effect.route.following`
 - `effect.halo.active`
 - `effect.halo.strong`
-- discovery light/scale burst shell
-- UI page/card transitions
+- discovery expansion/fade shell
+- A-3 card/page transition
 - journal sticker settle
-
-This avoids sprite asset explosion and preserves theme-token control.
 
 ## Semantic animation contract
 
-Suggested semantic keys:
-
 ```text
-animation.companion.moru.idle_breathe
-animation.companion.moru.walk
-animation.companion.moru.investigate
-animation.companion.moru.happy_bounce
-animation.companion.moru.clue_react
-animation.companion.moru.resolved_settle
+animation.companion.{companionId}.idle_breathe
+animation.companion.{companionId}.walk
+animation.companion.{companionId}.investigate
+animation.companion.{companionId}.happy_bounce
+animation.companion.{companionId}.clue_react
+animation.companion.{companionId}.resolved_settle
 ```
 
-Runtime metadata should conceptually include:
-- atlas id
-- frame rects or frame list
-- fps
-- loop flag
-- anchor
-- static fallback semantic key
-- reduced-motion behavior
+Runtime-facing metadata should conceptually include:
 
-Do not bind gameplay code to atlas coordinates or sprite-gen-specific filenames.
+- atlas id
+- explicit frame layout/list
+- frame duration or fps
+- loop flag
+- anchor/pivot
+- static fallback semantic key
+- reduced-motion fallback semantic key
+
+Gameplay code must not know atlas coordinates or sprite-gen-specific filenames.
 
 ## Modular appearance concern
 
-Daily Town supports scarf/bag/accessory/affinity changes. Baking every cosmetic combination into independent animated atlases would cause combinatorial growth.
+Daily Town supports affinity/cosmetic changes. Baking every appearance combination into every animation would create combinatorial growth.
 
 Preferred production order:
-1. animate canonical body + identity-critical parts
-2. test sprite-gen layered composition for accessories that require synchronized motion
-3. keep non-moving cosmetic overlays separate when visually acceptable
-4. pre-bake only approved high-value affinity variants
-5. never generate `6 expressions × 3 lighting × N cosmetics × every animation` blindly
 
-Lighting should preferably remain a runtime/presentation treatment or a small approved lighting-family export, not a new animation generation run for every day phase.
+1. animate canonical body + identity-critical parts
+2. keep non-moving cosmetic overlays separate where visually acceptable
+3. evaluate sprite-gen layered composition only for accessories that require synchronized motion
+4. pre-bake only high-value approved appearance profiles
+5. never produce the full Cartesian product of expression × lighting × affinity × animation
+
+Lighting should stay a presentation dimension whenever possible rather than forcing separate motion generation for every time phase.
 
 ## Motion accessibility
 
 Every animated semantic state requires:
-- static fallback frame
-- reduced-motion alternative
-- no gameplay information communicated only by looping motion
 
-Recommended reduced-motion behavior:
+- static fallback
+- reduced-motion fallback
+- no gameplay meaning communicated only by animation
+
+Examples:
+
 - `idle_breathe` -> neutral still
-- `happy_bounce` -> resolved end pose with brief crossfade
-- `clue_react` -> clue_found still + static sparkle
+- `happy_bounce` -> happy/resolved still with static accent
+- `clue_react` -> clue_found still + static discovery cue
 - halo pulse -> static multi-ring halo
-- route animation -> static route with direction symbols
+- route progression -> static route + direction symbol
 
-## Production recommendation
+## Production decision
 
-Decision: **adopt sprite-gen experimentally as a design/asset-pipeline tool, not as an Android runtime dependency.**
+**Adopt sprite-gen experimentally as an offline design/asset-pipeline tool, not as an Android runtime dependency.**
 
-Pilot scope:
-1. Moru `idle_breathe`
-2. Moru `clue_react`
-3. Moru `resolved_settle`
-4. only then evaluate `walk`
-
-Acceptance requires human visual QA of generated motion; tool output is never auto-approved as production art.
+The first production pilot should use Moru A-2 and short states before attempting locomotion.
 
 ## Development-session handoff
 
-Development may later choose the atlas playback implementation independently. The design contract requires only a provider/tool-neutral playback interface that consumes approved atlas/frame metadata and resolves semantic animation keys. Compose's native animation APIs remain preferable for non-sprite UI/effect motion.
+Development may choose the atlas playback implementation independently. The design contract requires only a tool-neutral playback interface consuming approved atlas/frame metadata and semantic animation keys. Compose/native animation remains preferred for non-sprite UI/effect motion.
