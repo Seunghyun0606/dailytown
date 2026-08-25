@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "candidate_direction",
+  "a3_component_fit": {
+    "spec": "docs/visual/P1_A3_COMPONENT_FIT_SPEC_V1.md",
+    "screens": ["journal_home","discovery_detail","clue_note","collection_grid","memory_detail"],
+    "source_master": "design/source/a3/a3-ui-source-master-v1.svg",
+    "requires_new_product_decision": false
+  },
+  "affinity": {
+    "spec": "docs/visual/P1_AFFINITY_VISUAL_DIRECTIONS_V1.md",
+    "options": ["AF-1_memory_keepsakes","AF-2_botanical_growth","AF-3_explorer_patina"],
+    "recommended": "AF-1_memory_keepsakes_plus_restrained_AF-3",
+    "image_generation_gate": "human_direction_selection"
+  },
+  "evening": {
+    "spec": "docs/visual/P1_EVENING_BRIDGE_STUDY_V1.md",
+    "options": ["EV-1_interpolation_first","EV-2_blue_hour_bridge","EV-3_dedicated_evening_board"],
+    "recommended": "EV-1_interpolation_first",
+    "image_generation_gate": "human_direction_selection"
+  },
+  "subcompanions": {
+    "spec": "docs/visual/P1_SUBCOMPANION_SHIPPING_REVIEW_V1.md",
+    "candidates": ["luca","pino","beri"],
+    "provisional_contract_status": "pass_with_constraints",
+    "shipping_gate": "human_approval"
+  }
+}
