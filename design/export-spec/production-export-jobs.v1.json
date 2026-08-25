@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "purpose": "deterministic split-export plan from approved source masters; outputs remain candidate until QA/checksum pass",
+  "moru": {
+    "source_master": "design/source/companion/moru/moru-a2-vector-source-master-v1.svg",
+    "canonical_expression_sources": [
+      "companion.moru.expression.neutral",
+      "companion.moru.expression.happy",
+      "companion.moru.expression.curious",
+      "companion.moru.expression.surprised",
+      "companion.moru.expression.clue_found",
+      "companion.moru.expression.resolved"
+    ],
+    "lighting_sources": ["lighting.light", "lighting.warm_dusk", "lighting.dark"],
+    "usage_context_exports": [
+      {"context":"map_avatar","target_min_px":96,"preferred":"svg_or_png_alpha","safe_padding_percent":6},
+      {"context":"hud_portrait","target_min_px":128,"preferred":"svg_or_png_alpha","safe_padding_percent":6},
+      {"context":"encounter_halfbody","target_min_px":512,"preferred":"svg_or_png_alpha","safe_padding_percent":6},
+      {"context":"result_large","target_min_px":1024,"preferred":"png_alpha_or_svg","safe_padding_percent":6},
+      {"context":"journal_stamp","target_min_px":256,"preferred":"svg_or_png_alpha","safe_padding_percent":6}
+    ],
+    "anti_explosion_rule": "do_not_prebake_5_contexts_x_6_expressions_x_3_lighting_unless_runtime_visual_validation_proves_required",
+    "candidate_output_state": "candidate"
+  },
+  "markers": {
+    "source_master": "design/source/markers/marker-family-v1.svg",
+    "families": ["DAY","DARK"],
+    "semantic_keys": [
+      "marker.encounter.hinted","marker.encounter.discoverable","marker.encounter.active","marker.encounter.solved","marker.encounter.revisit","marker.clue",
+      "marker.poi.park","marker.poi.culture","marker.poi.landmark","marker.poi.daily_life","marker.poi.nature","marker.poi.other"
+    ],
+    "job_count": 24,
+    "preferred": "svg",
+    "anchor": {"x":0.5,"y":1.0},
+    "candidate_output_state": "candidate"
+  },
+  "a3": {
+    "source_master": "design/source/a3/a3-ui-source-master-v1.svg",
+    "semantic_keys": [
+      "surface.journal.paper","surface.collection.paper","surface.memory.paper","sticker.discovery.default","card.clue.unresolved","card.clue.resolved","stamp.companion.default","stamp.memory.resolved","collection.locked.pattern"
+    ],
+    "job_count": 9,
+    "preferred": "svg_where_simple_png_only_if_texture_requires",
+    "candidate_output_state": "candidate"
+  },
+  "promotion": {
+    "qa_contract": "design/export-spec/source-promotion-qa.v1.json",
+    "sha256_required": true,
+    "sRGB_required_for_raster": true,
+    "only_after_pass": "production_export"
+  }
+}
