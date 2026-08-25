@@ -14,82 +14,125 @@ Status date: 2026-08-26
 - A-3: five-screen storybook/paper component-fit system
 - App identity direction: **ID-A Sprout Town Mark**
 
-## Completed design-contract/source work
+## P1 design-owned work — COMPLETE AT APPROVED_SOURCE LEVEL
 
-- Moru A-2 canonical production source and 6-expression/3-lighting contract
+### BF-B final source
+
+Added:
+
+- `design/source/companion/moru/moru-bf-b-final-board-v1.svg`
+- `design/export-spec/moru-bf-b-export-jobs.v1.json`
+
+The source fixes the Base / Familiar / Trusted / Best Friend progression, compact 48dp rules, and the boundary that BF-C is a future separately versioned character variant rather than a cosmetic profile.
+
+### Luca canonical production source
+
+Added:
+
+- `design/source/companion/luca/luca-canonical-source-master-v1.svg`
+- `design/export-spec/luca-production-manifest.v1.json`
+
+The source defines:
+
+- front / 3-quarter / side / back / black silhouette
+- six semantic expressions
+- LIGHT / WARM_DUSK / DARK lighting contract
+- required usage contexts
+- 48dp map-avatar rules
+- ear-safe accessory constraint
+- Moru-vs-Luca silhouette separation gate
+
+### M-B Responsive Soft motion storyboard
+
+Added:
+
+- `design/source/motion/moru-m-b-storyboard-v1.svg`
+- `design/export-spec/m-b-motion-pilot.v1.json`
+
+Pilot states:
+
+1. `idle_breathe`
+2. `clue_react`
+3. `resolved_settle`
+
+Rules:
+
+- context amplitude: Map < HUD < Encounter/Result
+- reduced-motion static fallback remains mandatory
+- `sprite-gen` is optional offline authoring only
+- generated frame timing/easing/intensity is still a human prototype gate
+- `walk` remains experimental
+
+### ID-A Sprout Town candidate family
+
+Added:
+
+- `design/source/brand/id-a-sprout-town-candidates-v1.svg`
+- `design/export-spec/id-a-brand-manifest.v1.json`
+
+Candidate family:
+
+- `ID-A1` Sprout + Path
+- `ID-A2` Sprout + Door/Town
+- `ID-A3` Sprout + Neighborhood Map
+
+The direction is locked to ID-A, but the final A1/A2/A3 candidate remains a human visual lock before production export.
+
+## Existing completed source work retained
+
+- Moru A-2 canonical source and 6-expression/3-lighting contract
 - DAY/DARK marker source family
 - route / halo / discovery semantic motion contract
-- A-3 reusable source kit and integrated five-screen fit board
+- A-3 reusable source kit and five-screen integrated fit board
 - affinity profile manifest and modular slot source master
-- EV-1 E0..E4 interpolation token contract
-- companion family contract and Luca shipping-production brief
-- M-B motion target brief
-- R-B outdoor acceptance policy
-- ID-A app identity production brief
-- BF-C future character-variant extension TODO
+- EV-1 E0..E4 interpolation tokens
+- R-B balanced outdoor acceptance policy
+- BF-C future variant TODO
 
-## Current visual pack
+## Visual pack
 
-`design/export-spec/visual-pack-manifest.v1.json` is pack version **1.3.0**.
+`design/export-spec/visual-pack-manifest.v1.json` is now pack version **1.4.0** with status `p1_design_source_complete`.
 
-Current approved shipping companion set:
+## Remaining work that cannot be closed by design source generation alone
 
-- Moru
-- Luca
+### Production promotion
 
-## BF-B / BF-C separation
+- generate isolated production derivatives from approved SVG masters
+- run visual QA at intended sizes
+- calculate SHA-256
+- only then mark each derivative `production_export`
 
-Current release uses BF-B inside the replaceable cosmetic/appearance-profile architecture.
+This is mechanical production work, not an unresolved visual direction.
 
-BF-C is not an unresolved MVP design gate. It is a future content-expansion TODO that must use a separately versioned `variantId` after a future explicit decision.
+### Development-session integration QA
 
-Reference: `docs/visual/BF_C_VARIANT_EXTENSION_TODO_V1.md`.
+- real NAVER map marker/route/halo captures
+- EV-1 E2 capture plus baseline map matrix
+- A-3 360/412/600dp Android screenshot fit validation
+- runtime sprite-atlas playback validation independent of sprite-gen authoring
 
-## Development-session handoff unblocked
+### Human gates
 
-Development can proceed with:
-
-1. affinity appearance-profile resolver and modular slot binding
-2. companionId support for Moru + Luca without raw filename/domain coupling
-3. compact map-avatar profile handling
-4. historical affinity/variant fallback data shape
-5. EV-1 continuous interpolation plus forced E0..E4 debug checkpoints
-6. E2 real-map readability capture
-7. A-3 five-screen screenshot QA at 360/412/600dp targets
-8. sprite-atlas playback adapter independent of sprite-gen authoring tooling
-9. R-B QA result band support: PASS / PASS_WITH_DECORATIVE_DEGRADATION / FAIL
-
-No Android/Kotlin code was modified by this design session.
-
-## Remaining production / QA work
-
-- isolated Moru static exports + visual QA/checksum
-- isolated affinity slot exports + 48dp QA/checksum
-- Luca canonical production candidate sheet/source + 48dp QA
-- marker split exports + real-map QA
-- A-3 Android integrated screenshots and fit acceptance
-- M-B sprite-gen Moru pilot output + human motion QA
-- EV-1 E2 + existing map-overlay matrix Android capture
-- physical outdoor R-B final acceptance
-- ID-A1/A2/A3 visual comparison + final identity lock
-
-## Remaining current human gates
-
-1. final M-B timing/easing/intensity after visible prototype review
-2. physical-device outdoor readability final acceptance under R-B
-3. final ID-A icon/logo candidate lock after visual comparison
+1. review generated M-B motion prototype and lock final timing/easing/intensity
+2. physical-device outdoor R-B final acceptance
+3. choose final ID-A1/A2/A3 icon/logo candidate
 
 ## Future enhancement TODOs
 
-- explicit future decision may activate BF-C evolved Moru variants
+- future explicit decision may activate BF-C evolved Moru variants using a separate `variantId`
 - Beri is preferred next companion expansion candidate
-- Pino requires another silhouette-separation pass before shipping
+- Pino needs another silhouette-separation pass before shipping
 
-## Next design production step
+## Development-session handoff remains unblocked
 
-Proceed with actual visual candidates now that directions are approved:
+Development can proceed with:
 
-1. BF-B final visual/source comparison
-2. Luca canonical production sheet
-3. M-B motion storyboard / sprite-gen pilot QA board
-4. ID-A1/A2/A3 icon + wordmark comparison board
+1. Moru + Luca companionId resolver
+2. affinity modular slot binding
+3. historical affinity/variant fallback data shape
+4. EV-1 E0..E4 debug forcing and continuous interpolation
+5. A-3 screenshot QA tooling
+6. sprite-atlas playback adapter
+7. R-B QA result bands: PASS / PASS_WITH_DECORATIVE_DEGRADATION / FAIL
+
+No Android/Kotlin implementation is modified by this design session.
