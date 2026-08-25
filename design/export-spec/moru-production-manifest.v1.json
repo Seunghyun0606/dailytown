@@ -2,7 +2,7 @@
   "schema_version": 1,
   "companion_id": "moru",
   "canonical_profile": "companion.moru.canonical.a2",
-  "status": "approved_source_contract",
+  "status": "approved_source",
   "asset_version": "1.0.0",
   "canonical_lock": {
     "direction": "A-2 balanced little explorer",
@@ -22,11 +22,11 @@
     ]
   },
   "usage_contexts": {
-    "map_avatar": {"source_min_px": 96, "priority": "silhouette", "export_state": "isolated_export_pending"},
-    "hud_portrait": {"source_min_px": 128, "priority": "face_expression", "export_state": "isolated_export_pending"},
-    "encounter_halfbody": {"source_min_px": 512, "priority": "pose_expression", "export_state": "isolated_export_pending"},
-    "result_large": {"source_min_px": 1024, "priority": "expressive_result", "export_state": "isolated_export_pending"},
-    "journal_stamp": {"source_min_px": 256, "priority": "simplified_recognition", "export_state": "isolated_export_pending"}
+    "map_avatar": {"source_min_px": 96, "priority": "silhouette", "export_state": "split_export_pending"},
+    "hud_portrait": {"source_min_px": 128, "priority": "face_expression", "export_state": "split_export_pending"},
+    "encounter_halfbody": {"source_min_px": 512, "priority": "pose_expression", "export_state": "split_export_pending"},
+    "result_large": {"source_min_px": 1024, "priority": "expressive_result", "export_state": "split_export_pending"},
+    "journal_stamp": {"source_min_px": 256, "priority": "simplified_recognition", "export_state": "split_export_pending"}
   },
   "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
   "lighting_families": ["LIGHT", "WARM_DUSK", "DARK"],
@@ -45,11 +45,17 @@
     "missing_cosmetic_slot": "none",
     "missing_animation": "static_semantic_pose"
   },
-  "source_candidate": {
+  "source_master": {
+    "path": "design/source/companion/moru/moru-a2-vector-source-master-v1.svg",
+    "approval_state": "approved_source",
+    "editable": true,
+    "runtime_direct_use": false,
+    "contains_expression_lighting_matrix": true,
+    "contains_usage_context_guides": true
+  },
+  "source_candidate_archive": {
     "record": "design/source/companion/moru/moru-a2-source-record.v1.json",
-    "approval_state": "candidate",
-    "runtime_eligible": false,
-    "purpose": "canonical/expression/lighting/context production board reference"
+    "purpose": "generated concept/production-board reference only"
   },
   "motion_candidates": {
     "sprite_gen_pilot": ["idle_breathe", "clue_react", "resolved_settle"],
@@ -64,5 +70,6 @@
     "semantic_key_required": true,
     "checksum_required_for_production_export": true
   },
-  "next_gate": "isolated_transparent_source_authoring_and_visual_qa"
+  "export_state": "source_master_created",
+  "next_gate": "split_transparent_export_and_visual_qa"
 }
