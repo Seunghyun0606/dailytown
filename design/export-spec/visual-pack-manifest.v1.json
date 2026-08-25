@@ -1,10 +1,17 @@
 {
   "schema_version": 1,
   "pack_id": "daily-town-visual-pack-v1",
-  "pack_version": "1.2.0",
+  "pack_version": "1.3.0",
   "status": "approved_source_package",
   "direction": "Option A - Soft Botanical Explorer",
   "canonical_companion": "moru-a2",
+  "shipping_companions": ["moru", "luca"],
+  "approved_decisions": {
+    "best_friend": "BF-B_signature_explorer",
+    "motion": "M-B_responsive_soft",
+    "outdoor_readability": "R-B_balanced",
+    "app_identity": "ID-A_sprout_town_mark"
+  },
   "source_manifests": [
     "companion-manifest.example.json",
     "moru-production-manifest.v1.json",
@@ -21,7 +28,8 @@
     "affinity-slot-export-jobs.v1.json",
     "evening-interpolation-tokens.v1.json",
     "a3-five-screen-component-fit.v1.json",
-    "a3-integrated-screen-qa.v1.json"
+    "a3-integrated-screen-qa.v1.json",
+    "p1-approved-human-decisions.v1.json"
   ],
   "source_masters": [
     "../source/companion/moru/moru-a2-vector-source-master-v1.svg",
@@ -59,23 +67,30 @@
     "source_master_direct_runtime_use_forbidden": true,
     "evening_new_marker_family_forbidden": true,
     "evening_new_companion_lighting_family_forbidden": true,
-    "affinity_slot_replacement_must_not_change_domain_semantics": true
+    "affinity_slot_replacement_must_not_change_domain_semantics": true,
+    "future_BF_C_must_use_separate_character_variant": true,
+    "shipping_set_is_not_hardcoded_to_file_names": true
   },
   "remaining_production_gates": [
     "isolated_moru_transparent_exports_and_visual_qa",
     "affinity_slot_isolated_exports_48dp_qa_and_checksum",
+    "luca_canonical_source_and_48dp_qa",
     "marker_split_export_and_map_qa",
     "a3_split_export_and_android_five_screen_fit_qa",
-    "sprite_gen_pilot_generation_and_human_motion_qa",
+    "sprite_gen_M_B_pilot_generation_and_human_motion_qa",
     "EV1_E2_real_map_readability_qa",
-    "physical_outdoor_readability_approval"
+    "physical_outdoor_readability_RB_final_approval",
+    "ID_A_candidate_board_and_final_lock"
   ],
   "human_gates": [
-    "shipping_companion_set_selection",
-    "affinity_best_friend_maximum_change_ceiling",
-    "motion_personality_and_final_timing_easing_intensity",
-    "physical_outdoor_readability_approval_policy_and_final_pass",
-    "app_icon_logo_identity_direction_and_final_lock"
+    "final_M_B_motion_timing_easing_intensity_after_prototype",
+    "physical_outdoor_readability_RB_final_pass",
+    "ID_A_final_icon_logo_candidate_lock"
+  ],
+  "future_enhancement_todos": [
+    "explicit_user_or_product_decision_may_activate_BF_C_variant_path",
+    "beri_next_companion_candidate",
+    "pino_silhouette_separation_rework"
   ],
   "human_decision_reference": "../../docs/visual/HUMAN_DECISION_CANDIDATES_V1.md"
 }
