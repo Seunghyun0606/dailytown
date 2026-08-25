@@ -14,9 +14,11 @@
     "a3-ui-asset-manifest.v1.json",
     "map-overlay-qa-matrix.v1.json",
     "sprite-gen-moru-pilot.v1.json",
-    "source-promotion-qa.v1.json"
+    "source-promotion-qa.v1.json",
+    "production-export-jobs.v1.json"
   ],
   "source_masters": [
+    "../source/companion/moru/moru-a2-vector-source-master-v1.svg",
     "../source/markers/marker-family-v1.svg",
     "../source/a3/a3-ui-source-master-v1.svg",
     "../source/companion/moru/moru-a2-source-record.v1.json"
