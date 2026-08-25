@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "families": ["DAY", "DARK"],
+  "semantic_markers": [
+    "marker.encounter.hinted",
+    "marker.encounter.discoverable",
+    "marker.encounter.active",
+    "marker.encounter.solved",
+    "marker.encounter.revisit",
+    "marker.clue",
+    "marker.poi.park",
+    "marker.poi.culture",
+    "marker.poi.landmark",
+    "marker.poi.daily_life",
+    "marker.poi.nature",
+    "marker.poi.other"
+  ],
+  "rules": {
+    "same_geo_anchor_across_variants": true,
+    "bottom_anchor_is_canonical": true,
+    "color_only_state_difference_forbidden": true,
+    "state_dimensions": ["base_silhouette", "internal_icon", "outline", "badge_or_ring"],
+    "selected_state_geo_anchor_must_not_shift": true,
+    "solved_quieter_than_active": true,
+    "dark_family_outline_luminance_priority": true
+  },
+  "fallbacks": {
+    "missing_dark_asset": "approved_high_contrast_fallback",
+    "missing_selected_variant": "base_plus_semantic_halo",
+    "missing_poi_specific": "marker.poi.other"
+  },
+  "export_state": "pending_art_export"
+}
