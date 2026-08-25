@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "ready_for_promotion_and_integration_qa",
+  "design_source_complete": true,
+  "queues": {
+    "production_derivative_generation": [
+      {"group":"moru_static","source":"moru-a2-vector-source-master-v1.svg","gate":"visual_qa_plus_sha256"},
+      {"group":"moru_affinity_BF_B","source":"moru-bf-b-final-board-v1.svg","gate":"48dp_visual_qa_plus_sha256"},
+      {"group":"luca","source":"luca-canonical-source-master-v1.svg","gate":"48dp_silhouette_expression_lighting_qa_plus_sha256"},
+      {"group":"markers","source":"marker-family-v1.svg","gate":"split_export_plus_real_map_qa_plus_sha256"},
+      {"group":"a3","source":"a3-ui-source-master-v1.svg","gate":"split_export_plus_android_fit_qa_plus_sha256"}
+    ],
+    "motion_generation": [
+      {"group":"moru_M_B","source":"moru-m-b-storyboard-v1.svg","pipeline":"sprite-gen_optional","states":["idle_breathe","clue_react","resolved_settle"],"gate":"human_motion_QA"}
+    ],
+    "development_qa": [
+      "EV1_E2_real_map_capture",
+      "baseline_map_overlay_capture_matrix",
+      "A3_360_412_600dp_screenshot_fit",
+      "sprite_atlas_runtime_playback",
+      "R_B_result_band_reporting"
+    ],
+    "human_final_gates": [
+      "M_B_final_timing_easing_intensity",
+      "physical_outdoor_R_B_pass",
+      "ID_A1_A2_A3_final_lock"
+    ]
+  },
+  "rule": "No source or candidate becomes production_export until its listed gate passes."
+}
