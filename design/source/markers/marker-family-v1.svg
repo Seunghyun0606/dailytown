@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+  <title>Daily Town marker family v1 source master</title>
+  <desc>Editable approved-source master for DAY and DARK semantic markers. Split/export only after visual QA.</desc>
+  <defs>
+    <style>
+      .ink{stroke:#214F3B;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+      .lightInk{stroke:#F7FAF5;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+      .dayBody{fill:#F7F3E8;stroke:#214F3B;stroke-width:5}
+      .darkBody{fill:#1E2A44;stroke:#F7FAF5;stroke-width:5}
+      .leaf{fill:#6B8F7A;stroke:#214F3B;stroke-width:3}
+      .leafDark{fill:#A7C7A5;stroke:#F7FAF5;stroke-width:3}
+      .active{fill:#FFD36B;stroke:#214F3B;stroke-width:5}
+      .solved{fill:#48836C;stroke:#214F3B;stroke-width:5}
+      .revisit{fill:#9CC9FF;stroke:#214F3B;stroke-width:5}
+      .clue{fill:#FF5C5C;stroke:#214F3B;stroke-width:5}
+      .activeDark{fill:#FFD36B;stroke:#F7FAF5;stroke-width:5}
+      .solvedDark{fill:#48836C;stroke:#F7FAF5;stroke-width:5}
+      .revisitDark{fill:#78A7F6;stroke:#F7FAF5;stroke-width:5}
+      .clueDark{fill:#FF5C5C;stroke:#F7FAF5;stroke-width:5}
+      .label{font-family:sans-serif;font-size:18px;fill:#1A1F1C}
+      .labelDark{font-family:sans-serif;font-size:18px;fill:#F7FAF5}
+    </style>
+    <g id="pin-day"><path class="dayBody" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#FFFFFF"/></g>
+    <g id="pin-dark"><path class="darkBody" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#1E2A44"/></g>
+    <g id="i-leaf"><path class="leaf" d="M-14 8C-14-9 2-19 17-17C18-1 9 14-8 16Z"/><path class="ink" d="M-9 13L10-9"/></g>
+    <g id="i-leaf-dark"><path class="leafDark" d="M-14 8C-14-9 2-19 17-17C18-1 9 14-8 16Z"/><path class="lightInk" d="M-9 13L10-9"/></g>
+    <g id="i-search"><circle class="ink" cx="-5" cy="-5" r="12"/><path class="ink" d="M5 5L17 17"/></g>
+    <g id="i-search-dark"><circle class="lightInk" cx="-5" cy="-5" r="12"/><path class="lightInk" d="M5 5L17 17"/></g>
+    <g id="i-star"><path class="ink" d="M0-18L5-6L18-5L8 4L11 17L0 10L-11 17L-8 4L-18-5L-5-6Z"/></g>
+    <g id="i-star-dark"><path class="lightInk" d="M0-18L5-6L18-5L8 4L11 17L0 10L-11 17L-8 4L-18-5L-5-6Z"/></g>
+    <g id="i-check"><path class="ink" d="M-16 1L-5 12L17-14"/></g>
+    <g id="i-check-dark"><path class="lightInk" d="M-16 1L-5 12L17-14"/></g>
+    <g id="i-revisit"><path class="ink" d="M10-12C-2-22-22-10-18 7C-15 20 4 23 15 11C24 1 17-11 6-7C-2-4-1 8 7 8"/><path class="ink" d="M5-17L13-12L8-4"/></g>
+    <g id="i-revisit-dark"><path class="lightInk" d="M10-12C-2-22-22-10-18 7C-15 20 4 23 15 11C24 1 17-11 6-7C-2-4-1 8 7 8"/><path class="lightInk" d="M5-17L13-12L8-4"/></g>
+    <g id="i-clue"><path class="ink" d="M0-16V5"/><circle cx="0" cy="15" r="4" fill="#214F3B"/></g>
+    <g id="i-clue-dark"><path class="lightInk" d="M0-16V5"/><circle cx="0" cy="15" r="4" fill="#F7FAF5"/></g>
+    <g id="i-park"><path class="ink" d="M0 18V2M-15 4C-21-7-12-20 0-13C7-23 22-15 19-3C25 4 17 16 7 13C2 18-8 16-11 11C-18 12-23 6-15 4Z"/></g>
+    <g id="i-park-dark"><path class="lightInk" d="M0 18V2M-15 4C-21-7-12-20 0-13C7-23 22-15 19-3C25 4 17 16 7 13C2 18-8 16-11 11C-18 12-23 6-15 4Z"/></g>
+    <g id="i-culture"><path class="ink" d="M-17-12H17V14H-17Z M0-12V14 M-17-6H17"/></g>
+    <g id="i-culture-dark"><path class="lightInk" d="M-17-12H17V14H-17Z M0-12V14 M-17-6H17"/></g>
+    <g id="i-landmark"><path class="ink" d="M-18 14H18M-14 14V-6H14V14M-8-6V-15H8V-6M-4-1H4V7H-4Z"/></g>
+    <g id="i-landmark-dark"><path class="lightInk" d="M-18 14H18M-14 14V-6H14V14M-8-6V-15H8V-6M-4-1H4V7H-4Z"/></g>
+    <g id="i-daily"><path class="ink" d="M-13-5H8V13H-13Z M8-1H14C20-1 20 9 14 9H8 M-8-13V-8 M0-13V-8"/></g>
+    <g id="i-daily-dark"><path class="lightInk" d="M-13-5H8V13H-13Z M8-1H14C20-1 20 9 14 9H8 M-8-13V-8 M0-13V-8"/></g>
+    <g id="i-nature"><path class="ink" d="M-14 11C-16-8 0-18 16-16C17 2 8 14-8 17 M-8 14L10-9"/></g>
+    <g id="i-nature-dark"><path class="lightInk" d="M-14 11C-16-8 0-18 16-16C17 2 8 14-8 17 M-8 14L10-9"/></g>
+    <g id="i-other"><circle cx="-12" cy="0" r="4" fill="#214F3B"/><circle cx="0" cy="0" r="4" fill="#214F3B"/><circle cx="12" cy="0" r="4" fill="#214F3B"/></g>
+    <g id="i-other-dark"><circle cx="-12" cy="0" r="4" fill="#F7FAF5"/><circle cx="0" cy="0" r="4" fill="#F7FAF5"/><circle cx="12" cy="0" r="4" fill="#F7FAF5"/></g>
+  </defs>
+  <rect width="1200" height="560" rx="28" fill="#F4F0E6"/>
+  <text x="40" y="44" class="label" font-size="26">DAY / DARK marker family v1 — approved source master</text>
+  <text x="40" y="78" class="label">Encounter states + POI categories. Common bottom anchor; no color-only gameplay state.</text>
+  <g id="DAY" transform="translate(78 165)">
+    <g id="marker.encounter.hinted" transform="translate(0 0)"><use href="#pin-day"/><use href="#i-leaf"/></g>
+    <g id="marker.encounter.discoverable" transform="translate(95 0)"><use href="#pin-day"/><use href="#i-search"/></g>
+    <g id="marker.encounter.active" transform="translate(190 0)"><path class="active" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#FFD36B"/><use href="#i-star"/></g>
+    <g id="marker.encounter.solved" transform="translate(285 0)"><path class="solved" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#F7F3E8"/><use href="#i-check"/></g>
+    <g id="marker.encounter.revisit" transform="translate(380 0)"><path class="revisit" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#FFFFFF"/><use href="#i-revisit"/></g>
+    <g id="marker.clue" transform="translate(475 0)"><path class="clue" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#FFFFFF"/><use href="#i-clue"/></g>
+    <g id="marker.poi.park" transform="translate(600 0)"><use href="#pin-day"/><use href="#i-park"/></g>
+    <g id="marker.poi.culture" transform="translate(695 0)"><use href="#pin-day"/><use href="#i-culture"/></g>
+    <g id="marker.poi.landmark" transform="translate(790 0)"><use href="#pin-day"/><use href="#i-landmark"/></g>
+    <g id="marker.poi.daily_life" transform="translate(885 0)"><use href="#pin-day"/><use href="#i-daily"/></g>
+    <g id="marker.poi.nature" transform="translate(980 0)"><use href="#pin-day"/><use href="#i-nature"/></g>
+    <g id="marker.poi.other" transform="translate(1075 0)"><use href="#pin-day"/><use href="#i-other"/></g>
+  </g>
+  <g id="DARK" transform="translate(78 385)">
+    <g id="dark.marker.encounter.hinted" transform="translate(0 0)"><use href="#pin-dark"/><use href="#i-leaf-dark"/></g>
+    <g id="dark.marker.encounter.discoverable" transform="translate(95 0)"><use href="#pin-dark"/><use href="#i-search-dark"/></g>
+    <g id="dark.marker.encounter.active" transform="translate(190 0)"><path class="activeDark" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#1E2A44"/><use href="#i-star-dark"/></g>
+    <g id="dark.marker.encounter.solved" transform="translate(285 0)"><path class="solvedDark" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#1E2A44"/><use href="#i-check-dark"/></g>
+    <g id="dark.marker.encounter.revisit" transform="translate(380 0)"><path class="revisitDark" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#1E2A44"/><use href="#i-revisit-dark"/></g>
+    <g id="dark.marker.clue" transform="translate(475 0)"><path class="clueDark" d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z"/><circle cx="0" cy="2" r="23" fill="#1E2A44"/><use href="#i-clue-dark"/></g>
+    <g id="dark.marker.poi.park" transform="translate(600 0)"><use href="#pin-dark"/><use href="#i-park-dark"/></g>
+    <g id="dark.marker.poi.culture" transform="translate(695 0)"><use href="#pin-dark"/><use href="#i-culture-dark"/></g>
+    <g id="dark.marker.poi.landmark" transform="translate(790 0)"><use href="#pin-dark"/><use href="#i-landmark-dark"/></g>
+    <g id="dark.marker.poi.daily_life" transform="translate(885 0)"><use href="#pin-dark"/><use href="#i-daily-dark"/></g>
+    <g id="dark.marker.poi.nature" transform="translate(980 0)"><use href="#pin-dark"/><use href="#i-nature-dark"/></g>
+    <g id="dark.marker.poi.other" transform="translate(1075 0)"><use href="#pin-dark"/><use href="#i-other-dark"/></g>
+  </g>
+  <circle cx="78" cy="245" r="4" fill="#FF5C5C"/><circle cx="173" cy="245" r="4" fill="#FF5C5C"/><circle cx="268" cy="245" r="4" fill="#FF5C5C"/><circle cx="363" cy="245" r="4" fill="#FF5C5C"/><circle cx="458" cy="245" r="4" fill="#FF5C5C"/><circle cx="553" cy="245" r="4" fill="#FF5C5C"/>
+  <text x="40" y="535" class="label">Red anchor dots are QA references only and must not be exported.</text>
+</svg>
