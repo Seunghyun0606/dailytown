@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "fit_board": "design/source/a3/a3-five-screen-fit-board-v1.svg",
+  "component_contract": "design/export-spec/a3-five-screen-component-fit.v1.json",
+  "review_widths_dp": [360, 412, 600],
+  "screens": ["journal_home","discovery_detail","clue_note","collection_grid","memory_detail"],
+  "required_checks": {
+    "journal_home": ["three_entries_visible_at_360dp","fixed_48dp_stamp_slot","neutral_clue_resolved_states_not_color_only"],
+    "discovery_detail": ["4_3_hero_fit","title_wrap_no_stamp_collision","clue_state_survives_hero_removal"],
+    "clue_note": ["unresolved_resolved_grayscale_distinction","resolved_visual_priority_quieter_than_new_clue","no_text_baked_into_texture"],
+    "collection_grid": ["2_columns_at_360_412","3_columns_at_600","locked_pattern_not_dimming_only","completed_state_survives_decoration_removal"],
+    "memory_detail": ["hero_primary_paper_secondary","resolved_state_survives_hero_hidden","historical_affinity_fallback_never_breaks_render"]
+  },
+  "cross_screen": [
+    "paper_not_recolored_by_time_of_day",
+    "event_lighting_only_inside_contained_hero_or_vignette",
+    "no_screen_specific_one_off_art_required",
+    "core_content_no_horizontal_clipping",
+    "reduced_motion_preserves_hierarchy",
+    "one_non_moru_stamp_candidate_must_fit_same_slots"
+  ],
+  "promotion_gate": {
+    "actual_android_screenshot_required": true,
+    "source_board_is_not_runtime_asset": true,
+    "pass_state": "production_fit_validated"
+  }
+}
