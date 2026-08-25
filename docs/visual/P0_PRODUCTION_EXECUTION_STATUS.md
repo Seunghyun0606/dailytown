@@ -2,11 +2,11 @@
 
 Status date: 2026-08-25
 
-This document tracks the immediately executable P0 visual-production work. It contains no Android/Kotlin implementation.
+This document tracks P0 visual-production work. It contains no Android/Kotlin implementation.
 
-## Completed in this execution pass
+## P0 design work completed without further human product decisions
 
-### P0-1 Machine-readable visual package — started / contract files created
+### P0-1 Machine-readable visual package — COMPLETE
 
 Created under `design/export-spec/`:
 
@@ -17,95 +17,113 @@ Created under `design/export-spec/`:
 - `a3-ui-asset-manifest.v1.json`
 - `map-overlay-qa-matrix.v1.json`
 - `visual-pack-manifest.v1.json`
+- `sprite-gen-moru-pilot.v1.json`
+- `source-promotion-qa.v1.json`
+- existing `companion-manifest.example.json`
 
-Existing:
+The semantic package, fallback rules, approval states, checksum requirement, reduced-motion requirement and human gates are machine-readable.
 
-- `companion-manifest.example.json`
+### P0-2 Moru A-2 production source master — COMPLETE AT APPROVED_SOURCE LEVEL
 
-The package now has machine-readable source contracts for tokens, Moru usage contexts, DAY/DARK markers, native effects, A-3 components, and the 18-capture map QA matrix.
+Created:
 
-### P0-2 Moru production asset split — production manifest ready
+- `design/source/companion/moru/moru-a2-vector-source-master-v1.svg`
+- `design/source/companion/moru/moru-a2-source-record.v1.json`
 
-The actual art exports are not yet marked `production_export`, but the required export contexts are locked:
+The vector source master locks:
 
-- `map_avatar`
-- `hud_portrait`
-- `encounter_halfbody`
-- `result_large`
-- `journal_stamp`
+- canonical body geometry
+- six semantic expressions
+- LIGHT / WARM_DUSK / DARK treatment
+- usage-context guides for map avatar / HUD / encounter
+- replaceable scarf/bag/detail zones
 
-Expressions:
+The earlier generated production board is preserved only as a candidate/reference record and is explicitly not runtime-eligible.
 
-- neutral
-- happy
-- curious
-- surprised
-- clue_found
-- resolved
+Remaining promotion work is isolated transparent split export + visual QA + checksum. That is an export/QA gate, not a missing design-system decision.
 
-Lighting:
+### P0-3 Companion motion production scope / sprite-gen pilot preparation — COMPLETE
 
-- LIGHT
-- WARM_DUSK
-- DARK
+Created:
 
-Next art-production action: export canonical A-2 source derivatives against this manifest and attach SHA-256 records only after visual QA.
+- `design/export-spec/sprite-gen-moru-pilot.v1.json`
 
-### P0-4 DAY/DARK marker production — manifest ready
+Pilot states:
 
-Twelve semantic markers are fixed for DAY/DARK family production. State meaning must use silhouette/icon/outline/badge-or-ring, never hue alone.
+- `idle_breathe`
+- `clue_react`
+- `resolved_settle`
 
-Next art-production action: create the actual approved vector/raster source masters while preserving a common geographic anchor.
+Next candidates after pilot:
 
-### P0-5 A-3 production UI asset kit — manifest ready
+- `investigate`
+- `happy_bounce`
 
-The reusable kit contract is fixed for:
+`walk` remains experimental.
 
-- paper surfaces
+`preview_fps` and frame targets are authoring defaults only; final timing/easing/intensity is a human approval gate after visible prototypes.
+
+`route / halo / discovery shell / A-3 transitions` remain native/procedural motion, not sprite-gen runtime assets.
+
+### P0-4 DAY / DARK marker source master — COMPLETE AT APPROVED_SOURCE LEVEL
+
+Created:
+
+- `design/source/markers/marker-family-v1.svg`
+
+The source master contains the 12 semantic markers in DAY and DARK treatments with a common bottom geographic anchor and non-color state distinctions.
+
+`marker-manifest.v1.json` now points to this source master and has moved from `pending_art_export` to `source_master_created`.
+
+Remaining promotion work is split export + representative map readability QA.
+
+### P0-5 A-3 reusable source asset kit — COMPLETE AT APPROVED_SOURCE LEVEL
+
+Created:
+
+- `design/source/a3/a3-ui-source-master-v1.svg`
+
+Includes reusable approved-source primitives for:
+
+- Journal / Collection / Memory paper surfaces
 - discovery sticker
-- clue unresolved/resolved cards
+- unresolved / resolved clue cards
 - companion stamp shell
-- memory resolved stamp
+- resolved memory stamp
 - locked collection pattern
 
-Next art-production action: create reusable source masters, then validate the five P0 screens against them.
+`a3-ui-asset-manifest.v1.json` now points to the source master and has moved to `source_master_created`.
 
-### P0-6 Map Overlay QA — machine-readable matrix ready
+Remaining promotion work is split export + five-screen fit QA.
 
-Baseline matrix:
+### P0-6 Map Overlay QA specification — COMPLETE; EXECUTION HANDED TO APP/FIELD TEST
 
-`3 time anchors × 3 map-complexity classes × 2 motion modes = 18 captures`
+Machine-readable baseline remains:
 
-Physical outdoor acceptance remains a human gate.
+`MORNING / SUNSET / NIGHT × sparse / dense / green-space × normal / reduced motion = 18 captures`
 
-### P0-7 Handoff package — structure ready
+Design-side acceptance criteria are defined. Actual capture execution requires the Android map integration/debug harness, and final outdoor acceptance requires a person on a physical device.
 
-`visual-pack-manifest.v1.json` now declares package contents, semantic groups, approval states, fallback requirement, checksum requirement, and human gates.
+### P0-7 Design → development visual handoff package — COMPLETE
 
-## Not yet production-exported
+`visual-pack-manifest.v1.json` now references source manifests, source masters, promotion QA, sprite-gen pilot contract, semantic asset groups, fallbacks and human gates.
 
-The following are intentionally not called production assets yet:
+No Kotlin/runtime code was changed by this design session.
 
-- Moru raster/vector derivatives
-- DAY/DARK marker files
-- A-3 paper/sticker/card/stamp files
-- sprite-gen Moru pilot atlas
+## Current P0 promotion gates
 
-They require actual authored source artwork plus visual QA before promotion from `approved_source` or `candidate` to `production_export`.
+The following are not missing design decisions; they are validation/export/integration gates:
 
-## Next executable design-production batch
+1. Moru isolated transparent split exports + visual QA + SHA-256
+2. marker split exports + representative real-map QA
+3. A-3 split exports + five-screen fit QA
+4. generated sprite-gen pilot atlas + human motion QA
+5. Android 18-capture overlay test execution
+6. final physical outdoor readability acceptance
 
-No additional product decision is needed to start these source assets because Option A and Moru A-2 are already approved:
+Only assets that pass `source-promotion-qa.v1.json` may become `production_export`.
 
-1. Moru A-2 export master board for the five usage contexts
-2. Moru six-expression production source set
-3. DAY/DARK marker source master set
-4. A-3 reusable source asset kit
-5. Moru sprite-gen pilot preparation using approved canonical source (`idle_breathe`, `clue_react`, `resolved_settle`)
-
-The final sprite-gen motion output remains human-QA gated and `walk` remains experimental.
-
-## Human gates unchanged
+## Human product/design gates unchanged
 
 - Luca/Pino/Beri shipping approval
 - affinity Best Friend transformation ceiling
@@ -113,3 +131,28 @@ The final sprite-gen motion output remains human-QA gated and `walk` remains exp
 - physical outdoor readability approval
 - EVENING dedicated board decision
 - app icon/logo final lock
+
+## P0 conclusion
+
+All P0 work that can be completed in the design session without additional human product decisions or Android runtime execution is now complete at the **design contract + approved-source master** level.
+
+The next phase is P1 design production plus development-session integration/QA.
+
+## Recommended next work
+
+### Design P1
+
+1. Affinity appearance visual candidates for `familiar / trusted / best_friend` within the safe matrix
+2. A-3 five-screen component fit board using the approved source kit
+3. Luca/Pino/Beri final-shipping review package (only if those companions are being considered for launch)
+4. EVENING bridge study: interpolation-first comparison before deciding whether a dedicated board is necessary
+5. App icon / Daily Town logo concept options after the core identity stabilizes
+
+### Development-session handoff next
+
+1. consume `visual-pack-manifest.v1.json`
+2. add semantic asset/token resolver scaffolding
+3. implement/verify forced MORNING/SUNSET/NIGHT screenshot states
+4. execute the 18-capture map overlay QA matrix
+5. prepare sprite-atlas playback adapter independently of sprite-gen
+6. keep route/halo/discovery/A-3 motion native/procedural
