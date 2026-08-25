@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "purpose": "gate candidate/approved-source visual assets before production_export",
+  "gates": {
+    "moru": [
+      "canonical_front_three_quarter_side_back_consistency",
+      "black_silhouette_recognizable",
+      "48dp_target_context_readable",
+      "32dp_fallback_context_acceptable",
+      "six_expressions_distinguishable",
+      "happy_vs_resolved_distinguishable",
+      "curious_vs_clue_found_distinguishable",
+      "lighting_preserves_identity_color",
+      "sprout_face_eye_spacing_locked",
+      "transparent_padding_min_6_percent",
+      "alpha_edges_clean",
+      "no_embedded_map_provider_content"
+    ],
+    "markers": [
+      "common_geo_anchor",
+      "day_light_map_readability",
+      "dark_map_readability",
+      "hinted_active_solved_non_color_distinction",
+      "revisit_non_color_distinction",
+      "selected_state_no_anchor_shift",
+      "poi_icons_readable_at_compact_scale",
+      "provider_labels_not_obscured"
+    ],
+    "a3": [
+      "paper_surface_family_consistent",
+      "paper_texture_does_not_reduce_text_contrast",
+      "locked_completed_non_color_distinction",
+      "unresolved_resolved_clue_non_color_distinction",
+      "companion_stamp_shell_32_64dp_compatible",
+      "decorations_removable_without_hierarchy_loss",
+      "memory_hero_time_of_day_does_not_recolor_outer_surface"
+    ],
+    "motion": [
+      "static_fallback_exists",
+      "reduced_motion_fallback_exists",
+      "identity_stable_across_frames",
+      "loop_seam_acceptable_when_looping",
+      "no_high_frequency_flashing",
+      "map_motion_subordinate_to_readability"
+    ]
+  },
+  "promotion_rule": {
+    "all_applicable_gates_required": true,
+    "checksum_required": true,
+    "semantic_key_required": true,
+    "approval_state_after_pass": "production_export",
+    "concept_board_direct_promotion_forbidden": true
+  }
+}
