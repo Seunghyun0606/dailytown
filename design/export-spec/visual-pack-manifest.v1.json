@@ -1,15 +1,18 @@
 {
   "schema_version": 1,
   "pack_id": "daily-town-visual-pack-v1",
-  "pack_version": "1.3.0",
-  "status": "approved_source_package",
+  "pack_version": "1.4.0",
+  "status": "p1_design_source_complete",
   "direction": "Option A - Soft Botanical Explorer",
   "canonical_companion": "moru-a2",
   "shipping_companions": ["moru", "luca"],
   "approved_decisions": {
     "best_friend": "BF-B_signature_explorer",
+    "future_best_friend_variant_path": "BF-C_separate_character_variant_TODO",
+    "shipping_set": "SC-B_moru_plus_luca",
     "motion": "M-B_responsive_soft",
     "outdoor_readability": "R-B_balanced",
+    "evening": "EV-1_interpolation_first",
     "app_identity": "ID-A_sprout_town_mark"
   },
   "source_manifests": [
@@ -26,6 +29,10 @@
     "p1-design-decisions.v1.json",
     "affinity-moru-manifest.v1.json",
     "affinity-slot-export-jobs.v1.json",
+    "moru-bf-b-export-jobs.v1.json",
+    "luca-production-manifest.v1.json",
+    "m-b-motion-pilot.v1.json",
+    "id-a-brand-manifest.v1.json",
     "evening-interpolation-tokens.v1.json",
     "a3-five-screen-component-fit.v1.json",
     "a3-integrated-screen-qa.v1.json",
@@ -34,6 +41,10 @@
   "source_masters": [
     "../source/companion/moru/moru-a2-vector-source-master-v1.svg",
     "../source/companion/moru/moru-affinity-slots-source-master-v1.svg",
+    "../source/companion/moru/moru-bf-b-final-board-v1.svg",
+    "../source/companion/luca/luca-canonical-source-master-v1.svg",
+    "../source/motion/moru-m-b-storyboard-v1.svg",
+    "../source/brand/id-a-sprout-town-candidates-v1.svg",
     "../source/markers/marker-family-v1.svg",
     "../source/a3/a3-ui-source-master-v1.svg",
     "../source/a3/a3-five-screen-fit-board-v1.svg",
@@ -55,9 +66,10 @@
     "surface.memory.*",
     "stamp.companion.*",
     "sticker.discovery.*",
-    "card.clue.*"
+    "card.clue.*",
+    "brand.*"
   ],
-  "approval_states": ["concept", "candidate", "approved_source", "production_export", "deprecated"],
+  "approval_states": ["concept","candidate","approved_source","production_export","deprecated"],
   "runtime_policy": {
     "only_production_export_may_enter_runtime_resources": true,
     "raw_design_filename_as_domain_identifier_forbidden": true,
@@ -69,21 +81,21 @@
     "evening_new_companion_lighting_family_forbidden": true,
     "affinity_slot_replacement_must_not_change_domain_semantics": true,
     "future_BF_C_must_use_separate_character_variant": true,
-    "shipping_set_is_not_hardcoded_to_file_names": true
+    "shipping_set_is_not_hardcoded_to_file_names": true,
+    "sprite_gen_is_offline_authoring_only": true
   },
-  "remaining_production_gates": [
-    "isolated_moru_transparent_exports_and_visual_qa",
-    "affinity_slot_isolated_exports_48dp_qa_and_checksum",
-    "luca_canonical_source_and_48dp_qa",
-    "marker_split_export_and_map_qa",
-    "a3_split_export_and_android_five_screen_fit_qa",
-    "sprite_gen_M_B_pilot_generation_and_human_motion_qa",
-    "EV1_E2_real_map_readability_qa",
+  "design_owned_p1_status": "complete_at_approved_source_level",
+  "remaining_integration_or_human_gates": [
+    "production_split_exports_visual_qa_and_sha256",
+    "marker_real_map_QA",
+    "a3_android_five_screen_fit_QA",
+    "sprite_gen_M_B_generated_frame_QA",
+    "EV1_E2_and_baseline_map_capture_QA",
     "physical_outdoor_readability_RB_final_approval",
-    "ID_A_candidate_board_and_final_lock"
+    "ID_A1_A2_A3_final_human_lock"
   ],
   "human_gates": [
-    "final_M_B_motion_timing_easing_intensity_after_prototype",
+    "final_M_B_motion_timing_easing_intensity_after_generated_prototype",
     "physical_outdoor_readability_RB_final_pass",
     "ID_A_final_icon_logo_candidate_lock"
   ],
@@ -91,6 +103,5 @@
     "explicit_user_or_product_decision_may_activate_BF_C_variant_path",
     "beri_next_companion_candidate",
     "pino_silhouette_separation_rework"
-  ],
-  "human_decision_reference": "../../docs/visual/HUMAN_DECISION_CANDIDATES_V1.md"
+  ]
 }
