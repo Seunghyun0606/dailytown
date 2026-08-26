@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.visual.MapOverlaySemanticState
 import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.MarkerSemantic
 import com.dailytown.app.visual.VisualArgb
@@ -69,6 +70,12 @@ interface MapViewAdapter {
     fun setCamera(target: GeoPoint, zoom: Double = 16.0)
     fun setTheme(theme: MapThemeSpec) = Unit
     fun setMarkers(markers: List<MapMarkerSpec>)
+    /**
+     * Semantic live-overlay state. Provider adapters may render only dimensions backed by an
+     * approved implementation. A default no-op keeps providers swappable while route/halo/effect
+     * rendering is integrated independently from gameplay/domain state.
+     */
+    fun setOverlayState(state: MapOverlaySemanticState) = Unit
     fun setUserLocation(location: UserLocationSpec?)
     fun onStart() = Unit
     fun onResume() = Unit
