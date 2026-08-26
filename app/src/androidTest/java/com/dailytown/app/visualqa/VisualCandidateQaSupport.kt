@@ -67,6 +67,10 @@ internal object CandidateSvgRenderer {
     private val rootGroup = Regex("""<g\s+transform=\"[^\"]+\">(.*)</g>\s*</svg>""", setOf(RegexOption.DOT_MATCHES_ALL))
     private val simpleChild = Regex("""<(?:ellipse|circle|path|rect)\b[^>]*(?:/>|></(?:ellipse|circle|path|rect)>)""")
     private val compactScale = Regex("""scale\(\.(\d+)\)""")
+    private val cssClassRule = Regex("""\.([A-Za-z_][A-Za-z0-9_-]*)\s*\{([^}]*)\}""")
+    private val elementWithClass = Regex("""<([A-Za-z][A-Za-z0-9:_-]*)([^<>]*\sclass=\"[^\"]+\"[^<>]*?)(/?)>""")
+    private val classAttribute = Regex("""\sclass=\"([^\"]+)\"""")
+    private val attributeName = Regex("""\s([A-Za-z_:][A-Za-z0-9_.:-]*)\s*=""")
 
     fun renderCompanion(
         catalog: CandidateAssetCatalog,
@@ -152,9 +156,56 @@ internal object CandidateSvgRenderer {
      * reliably render compact leading-dot scale values such as `scale(.78)` on the managed-device
      * path. Normalize only that syntactic form here; the numeric transform and authored art stay
      * unchanged. This is an adapter compatibility fix, not an export/design mutation.
+     *
+     * The same managed-device path does not reliably apply embedded CSS classes on isolated
+     * expression layers. Expand those class declarations to equivalent SVG presentation attributes
+     * before parsing. Existing explicit attributes always win, so this does not change authored
+     * geometry or explicit per-element overrides and leaves the source candidate bytes untouched.
      */
-    private fun androidSvgCompatible(svg: String): String =
-        compactScale.replace(svg) { match -> "scale(0.${match.groupValues[1]})" }
+    private fun androidSvgCompatible(svg: String): String {
+        val normalizedScale = compactScale.replace(svg) { match -> "scale(0.${match.groupValues[1]})" }
+        return inlineCssClassPresentationAttributes(normalizedScale)
+    }
+
+    private fun inlineCssClassPresentationAttributes(svg: String): String {
+        val stylesByClass = cssClassRule.findAll(svg).associate { match ->
+            val declarations = linkedMapOf<String, String>()
+            match.groupValues[2].split(';').forEach { declaration ->
+                val separator = declaration.indexOf(':')
+                if (separator > 0) {
+                    val name = declaration.substring(0, separator).trim()
+                    val value = declaration.substring(separator + 1).trim()
+                    if (name.isNotEmpty() && value.isNotEmpty()) declarations[name] = value
+                }
+            }
+            match.groupValues[1] to declarations
+        }
+        if (stylesByClass.isEmpty()) return svg
+
+        return elementWithClass.replace(svg) { match ->
+            val tagName = match.groupValues[1]
+            val attributes = match.groupValues[2]
+            val classNames = classAttribute.find(attributes)?.groupValues?.get(1)
+                ?.split(Regex("\\s+"))
+                ?.filter(String::isNotBlank)
+                .orEmpty()
+            if (classNames.isEmpty()) return@replace match.value
+
+            val withoutClass = classAttribute.replace(attributes, "")
+            val existingAttributes = attributeName.findAll(withoutClass)
+                .map { it.groupValues[1] }
+                .toHashSet()
+            val resolved = linkedMapOf<String, String>()
+            classNames.forEach { className ->
+                stylesByClass[className]?.forEach { (name, value) -> resolved[name] = value }
+            }
+            val additions = resolved.entries.joinToString(separator = "") { (name, value) ->
+                if (name in existingAttributes) "" else " $name=\"$value\""
+            }
+            val selfClosing = if (match.groupValues[3].isNotEmpty()) "/" else ""
+            "<$tagName$withoutClass$additions$selfClosing>"
+        }
+    }
 
     private fun renderLayers(svgLayers: List<String>, width: Int, height: Int): Bitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
