@@ -16,71 +16,75 @@ Status date: 2026-08-26
 
 ## P1 design-owned source work — COMPLETE
 
-Approved source exists for:
+Approved source exists for Moru, Luca, DAY/DARK markers, route/halo/discovery, A-3, EV-1, M-B storyboard, affinity slots and ID-A candidates.
 
-- Moru A-2 canonical body, six expressions and three lighting families
-- BF-B Base / Familiar / Trusted / Best Friend progression
-- Luca canonical source
-- DAY/DARK marker family
-- route / halo / discovery effect contract
-- A-3 reusable source kit and five-screen fit board
-- EV-1 E0..E4 interpolation tokens
-- M-B motion storyboard/pilot contract
-- ID-A1/A2/A3 brand candidate family
+## Companion production-promotion candidates — DESIGN QA COMPLETE
 
-## Production promotion batch 01 — DESIGN QA COMPLETE
+Two production manifests now track **32 isolated SVG candidates** with SHA-256:
 
-Added `design/production/production-promotion-batch-01.v1.json`.
+- `design/production/production-promotion-batch-01.v1.json`
+- `design/production/production-promotion-batch-01-luca-derivatives.v1.json`
 
-The batch contains **23 isolated SVG production candidates** with SHA-256 and design-side render QA:
+### Moru — 18 candidates
 
-### Moru
+- affinity profiles: 4
+- canonical views: 5
+- expressions: 6
+- lighting layers: 3
 
-- 4 affinity profiles: `base / familiar / trusted / best_friend`
-- 5 canonical exports: `front / three_quarter / side / back / silhouette`
-- 6 expression overlays: `neutral / happy / curious / surprised / clue_found / resolved`
-- 3 lighting layers: `LIGHT / WARM_DUSK / DARK`
+### Luca — 14 candidates
 
-### Luca
-
-- 5 canonical exports: `front / three_quarter / side / back / silhouette`
+- canonical views: 5
+- expressions: 6
+- lighting layers: 3
 
 Design-side QA completed:
 
 - SVG/XML parse
-- transparent vector render
-- contact-sheet visual inspection
-- 48dp-equivalent compact readability review
+- vector raster-render verification
+- contact-sheet visual review
+- 48dp-equivalent compact check
 - 32dp fallback spot check
-- Moru expression distinction check
-- Moru lighting identity check
+- expression distinction
+- lighting identity preservation
 - Moru/Luca silhouette separation
-- checksum generation
+- SHA-256 generation
 
-These files intentionally remain `production_export_candidate` until runtime composition/asset-loader smoke tests pass. This avoids incorrectly promoting assets before development integration.
+These remain `production_export_candidate` until runtime integration verifies semantic resolution and expression+lighting composition.
+
+## Development smoke-test contract — READY
+
+Added:
+
+- `design/export-spec/companion-static-smoke-test.v1.json`
+- `docs/visual/DEV_HANDOFF_COMPANION_PROMOTION_BATCH_01.md`
+
+Development must verify:
+
+1. semantic asset resolution without raw filename/domain coupling
+2. 6 expression × 3 lighting composition for Moru and Luca
+3. 48dp compact renders and 32dp fallback spot checks
+4. Moru affinity replacement without semantic mutation
+5. Moru/Luca switching under identical semantic requests
+6. deterministic fallbacks
+7. checksum match before authoritative promotion
+
+No Android/Kotlin implementation is modified by this design session.
 
 ## Current visual pack
 
-`design/export-spec/visual-pack-manifest.v1.json` is now **1.4.1**.
+`design/export-spec/visual-pack-manifest.v1.json` is **1.4.2**.
 
-Status: `p1_design_source_complete_promotion_batch_01_qa_complete`.
+Status: `p1_design_source_complete_companion_promotion_candidates_ready`.
 
-## Next priority — development/integration bridge
+## Next priority after development smoke test
 
-Before authoritative `production_export` promotion for batch 01:
-
-1. verify runtime composition of Moru expression + lighting layers
-2. produce/verify Luca expression + lighting derivatives
-3. smoke-test asset loader/vector adapter in the development session
-
-After that, continue with:
-
-4. DAY/DARK marker split export + real NAVER map QA
-5. A-3 split export + 360/412/600dp Android screenshot QA
-6. M-B sprite-gen pilot output + human motion QA
-7. EV-1 E2 + baseline map capture matrix
-8. physical outdoor R-B final acceptance
-9. ID-A1/A2/A3 final human lock
+1. DAY/DARK marker split export + real NAVER map QA
+2. A-3 split export + 360/412/600dp Android screenshot QA
+3. M-B sprite-gen pilot output + human motion QA
+4. EV-1 E2 + baseline map capture matrix
+5. physical outdoor R-B final acceptance
+6. ID-A1/A2/A3 final human lock
 
 ## Remaining current human gates
 
@@ -93,18 +97,3 @@ After that, continue with:
 - explicit future decision may activate BF-C evolved Moru variants using a separate `variantId`
 - Beri is preferred next companion expansion candidate
 - Pino requires another silhouette-separation pass before shipping
-
-## Development-session handoff
-
-Development may proceed with:
-
-- Moru + Luca companionId resolver
-- modular Moru expression + lighting composition check
-- affinity modular slot binding
-- historical affinity/variant fallback shape
-- EV-1 E0..E4 debug forcing
-- A-3 screenshot QA tooling
-- sprite-atlas playback adapter independent of sprite-gen authoring
-- R-B QA result bands: `PASS / PASS_WITH_DECORATIVE_DEGRADATION / FAIL`
-
-No Android/Kotlin implementation is modified by this design session.
