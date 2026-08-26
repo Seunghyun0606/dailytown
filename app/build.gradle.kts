@@ -142,9 +142,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Candidate art is visible only to instrumentation until it passes integration QA and is promoted.
-    // No design/source master is added to any Android source set.
+    // Only development-QA-passed visual families enter the main APK. Marker candidates stay test-only
+    // until real NAVER base-map evidence passes; design/source masters never enter an Android source set.
     sourceSets {
+        getByName("main").assets.srcDir("../design/production/companion")
+        getByName("main").assets.srcDir("../design/production/a3/v1")
         getByName("androidTest").assets.srcDir("../design/production")
     }
 
@@ -203,7 +205,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test:core-ktx:1.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    // QA-only SVG adapter. Production runtime gets a binding only after candidate promotion.
+    // QA-only SVG adapter. Production runtime uses the semantic production manifest after promotion.
     androidTestImplementation("com.caverock:androidsvg:1.4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
