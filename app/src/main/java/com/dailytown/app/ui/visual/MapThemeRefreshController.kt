@@ -12,7 +12,7 @@ import java.time.LocalTime
  * next useful automatic refresh is the next exact minute boundary. This controller changes only
  * provider-neutral map theme state; marker, overlay, camera, and location semantics stay untouched.
  */
-class MapThemeRefreshController(
+internal class MapThemeRefreshController(
     private val mapAdapter: MapViewAdapter,
     private val themeResolver: MapRuntimeThemeResolver = MapRuntimeThemeResolver(),
     private val clock: () -> LocalTime = LocalTime::now,
