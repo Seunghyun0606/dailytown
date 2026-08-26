@@ -2,6 +2,7 @@ package com.dailytown.app.ui.visual
 
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
+import com.dailytown.app.mystery.EncounterPhase
 import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.visual.EncounterMapVisualResolver
 import com.dailytown.app.visual.MapOverlaySemanticState
@@ -45,11 +46,10 @@ class MapGameplayVisualBinder(
     }
 
     private fun encounterMarkerTitle(selection: EncounterSelection): String =
-        when (selection.encounter.phase.name) {
-            "HIDDEN" -> "? · ${selection.poi.name}"
-            "HINTED" -> "신호 · ${selection.poi.name}"
-            "DISCOVERED" -> "조사 · ${selection.poi.name}"
-            "RESOLVED" -> "해결 · ${selection.poi.name}"
-            else -> selection.poi.name
+        when (selection.encounter.phase) {
+            EncounterPhase.HIDDEN -> "? · ${selection.poi.name}"
+            EncounterPhase.HINTED -> "신호 · ${selection.poi.name}"
+            EncounterPhase.DISCOVERED -> "조사 · ${selection.poi.name}"
+            EncounterPhase.RESOLVED -> "해결 · ${selection.poi.name}"
         }
 }
