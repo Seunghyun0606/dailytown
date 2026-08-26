@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "pack_id": "daily-town-visual-pack-v1",
-  "pack_version": "1.4.0",
-  "status": "p1_design_source_complete",
+  "pack_version": "1.4.1",
+  "status": "p1_design_source_complete_promotion_batch_01_qa_complete",
   "direction": "Option A - Soft Botanical Explorer",
   "canonical_companion": "moru-a2",
   "shipping_companions": ["moru", "luca"],
@@ -50,6 +50,9 @@
     "../source/a3/a3-five-screen-fit-board-v1.svg",
     "../source/companion/moru/moru-a2-source-record.v1.json"
   ],
+  "production_candidate_batches": [
+    "../production/production-promotion-batch-01.v1.json"
+  ],
   "runtime_asset_groups": [
     "companion.*",
     "appearance.*",
@@ -85,10 +88,19 @@
     "sprite_gen_is_offline_authoring_only": true
   },
   "design_owned_p1_status": "complete_at_approved_source_level",
+  "promotion_batch_01": {
+    "status": "design_qa_complete_promotion_candidates",
+    "assets": 23,
+    "covers": ["moru_affinity", "moru_canonical", "moru_expression", "moru_lighting", "luca_canonical"],
+    "next_before_authoritative_production_export": [
+      "runtime_composition_check_for_moru_expression_plus_lighting_layers",
+      "luca_expression_and_lighting_derivatives",
+      "development_asset_loader_or_vector_adapter_smoke_test"
+    ]
+  },
   "remaining_integration_or_human_gates": [
-    "production_split_exports_visual_qa_and_sha256",
-    "marker_real_map_QA",
-    "a3_android_five_screen_fit_QA",
+    "marker_split_export_and_real_map_QA",
+    "a3_split_export_and_android_five_screen_fit_QA",
     "sprite_gen_M_B_generated_frame_QA",
     "EV1_E2_and_baseline_map_capture_QA",
     "physical_outdoor_readability_RB_final_approval",
