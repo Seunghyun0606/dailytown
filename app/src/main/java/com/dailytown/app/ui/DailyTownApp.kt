@@ -38,6 +38,7 @@ import com.dailytown.app.persistence.toState
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
 import com.dailytown.app.reminder.LocalReminderManager
+import com.dailytown.app.ui.visual.MapGameplayVisualBinder
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
@@ -74,6 +75,7 @@ fun DailyTownApp(
         FieldTestSessionMonitor(AndroidBatterySnapshotSource(context.applicationContext))
     }
     val gameplaySessionMonitor = remember { GameplaySessionMonitor() }
+    val mapVisualBinder = remember(mapAdapter) { MapGameplayVisualBinder(mapAdapter) }
 
     val trackingRuntime by trackingCoordinator.state.collectAsState()
     val progressRuntime by progressCoordinator.state.collectAsState()
@@ -253,15 +255,10 @@ fun DailyTownApp(
     }
 
     LaunchedEffect(snapshot.currentLocation, activeEncounter) {
-        val encounterMarker = activeEncounter?.let { selection ->
-            MapMarkerSpec(
-                id = "active-${selection.encounter.id}",
-                title = encounterMarkerTitle(selection),
-                position = selection.poi.position,
-            )
-        }
-        mapAdapter.setMarkers(
-            spots.map { MapMarkerSpec(it.id, it.title, it.position) } + listOfNotNull(encounterMarker),
+        val persistentMarkers = spots.map { MapMarkerSpec(it.id, it.title, it.position) }
+        mapVisualBinder.applyEncounter(
+            selection = activeEncounter,
+            persistentMarkers = persistentMarkers,
         )
         snapshot.currentLocation?.let { sample ->
             mapAdapter.setUserLocation(UserLocationSpec(sample.point, sample.bearingDegrees))
