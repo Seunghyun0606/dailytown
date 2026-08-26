@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "pack_id": "daily-town-visual-pack-v1",
-  "pack_version": "1.4.1",
-  "status": "p1_design_source_complete_promotion_batch_01_qa_complete",
+  "pack_version": "1.4.2",
+  "status": "p1_design_source_complete_companion_promotion_candidates_ready",
   "direction": "Option A - Soft Botanical Explorer",
   "canonical_companion": "moru-a2",
   "shipping_companions": ["moru", "luca"],
@@ -36,7 +36,8 @@
     "evening-interpolation-tokens.v1.json",
     "a3-five-screen-component-fit.v1.json",
     "a3-integrated-screen-qa.v1.json",
-    "p1-approved-human-decisions.v1.json"
+    "p1-approved-human-decisions.v1.json",
+    "companion-static-smoke-test.v1.json"
   ],
   "source_masters": [
     "../source/companion/moru/moru-a2-vector-source-master-v1.svg",
@@ -51,7 +52,8 @@
     "../source/companion/moru/moru-a2-source-record.v1.json"
   ],
   "production_candidate_batches": [
-    "../production/production-promotion-batch-01.v1.json"
+    "../production/production-promotion-batch-01.v1.json",
+    "../production/production-promotion-batch-01-luca-derivatives.v1.json"
   ],
   "runtime_asset_groups": [
     "companion.*",
@@ -88,13 +90,20 @@
     "sprite_gen_is_offline_authoring_only": true
   },
   "design_owned_p1_status": "complete_at_approved_source_level",
-  "promotion_batch_01": {
-    "status": "design_qa_complete_promotion_candidates",
-    "assets": 23,
-    "covers": ["moru_affinity", "moru_canonical", "moru_expression", "moru_lighting", "luca_canonical"],
-    "next_before_authoritative_production_export": [
-      "runtime_composition_check_for_moru_expression_plus_lighting_layers",
-      "luca_expression_and_lighting_derivatives",
+  "companion_static_promotion_candidates": {
+    "status": "design_qa_complete",
+    "asset_count": 32,
+    "covers": [
+      "moru_affinity_4",
+      "moru_canonical_5",
+      "moru_expression_6",
+      "moru_lighting_3",
+      "luca_canonical_5",
+      "luca_expression_6",
+      "luca_lighting_3"
+    ],
+    "remaining_before_authoritative_production_export": [
+      "runtime_composition_check_for_companion_expression_plus_lighting_layers",
       "development_asset_loader_or_vector_adapter_smoke_test"
     ]
   },
