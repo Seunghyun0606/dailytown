@@ -16,6 +16,7 @@ import com.dailytown.app.map.NaverMapAdapter
 import com.dailytown.app.visual.EveningVisualInterpolator
 import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.MarkerSemantic
+import kotlin.math.sqrt
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -56,9 +57,16 @@ class NaverMapVisualQaTest {
                             ),
                         )
                         adapter.setCamera(fixture.center, zoom = 16.0)
-                        adapter.setMarkers(markerScene(fixture.center))
+                        adapter.setMarkers(emptyList())
                     }
-                    val capture = awaitNonFlatScreenshot()
+                    // A marker-free capture is mandatory. Marker pixels must never be able to make a blank
+                    // provider surface look like a successful real-map render.
+                    awaitBaseMapEvidence(
+                        "visual/naver-base/${fixture.id}.${family.name.lowercase()}",
+                    )
+
+                    onMain { adapter.setMarkers(markerScene(fixture.center)) }
+                    val capture = awaitScreenshot()
                     capture.writeToTestStorage("visual/naver-marker/${fixture.id}.${family.name.lowercase()}")
                 }
             }
@@ -68,7 +76,7 @@ class NaverMapVisualQaTest {
                 adapter.setCamera(fixtures[1].center, 16.0)
                 adapter.setMarkers(emptyList())
             }
-            val baseMap = awaitNonFlatScreenshot()
+            val baseMap = awaitBaseMapEvidence("visual/naver-base/e2.dense-urban.light")
             val measuredLuminance = centerLuminance(baseMap)
             assertTrue(measuredLuminance in 0f..1f)
             val e2 = EveningVisualInterpolator.profile(.5f, measuredLuminance)
@@ -82,7 +90,7 @@ class NaverMapVisualQaTest {
                 )
                 adapter.setMarkers(markerScene(fixtures[1].center))
             }
-            awaitNonFlatScreenshot().writeToTestStorage("visual/naver-marker/e2.dense-urban.${e2.markerFamily.name.lowercase()}")
+            awaitScreenshot().writeToTestStorage("visual/naver-marker/e2.dense-urban.${e2.markerFamily.name.lowercase()}")
         } finally {
             onMain {
                 adapter.onPause()
@@ -113,38 +121,97 @@ class NaverMapVisualQaTest {
         repeat(40) {
             when (adapter.health.value.status) {
                 MapHealthStatus.READY -> return
-                MapHealthStatus.AUTH_ERROR, MapHealthStatus.ERROR -> error("NAVER map failed visual-QA initialization: ${adapter.health.value.status}/${adapter.health.value.errorCode}")
+                MapHealthStatus.AUTH_ERROR, MapHealthStatus.ERROR -> error(
+                    "NAVER map failed visual-QA initialization: ${adapter.health.value.status}/${adapter.health.value.errorCode}",
+                )
                 else -> Thread.sleep(250)
             }
         }
         error("NAVER map did not reach READY during visual QA")
     }
 
-    private fun awaitNonFlatScreenshot(): Bitmap {
+    private fun awaitBaseMapEvidence(storageName: String): Bitmap {
         var latest: Bitmap? = null
-        repeat(12) {
-            Thread.sleep(350)
-            latest = instrumentation.uiAutomation.takeScreenshot()
-            latest?.let { bitmap -> if (sampleVariance(bitmap) > 30.0) return bitmap }
+        var latestEvidence: BaseMapEvidence? = null
+        repeat(15) {
+            Thread.sleep(400)
+            val bitmap = instrumentation.uiAutomation.takeScreenshot() ?: return@repeat
+            latest = bitmap
+            val evidence = baseMapEvidence(bitmap)
+            latestEvidence = evidence
+            if (evidence.hasProviderTexture()) {
+                bitmap.writeToTestStorage(storageName)
+                return bitmap
+            }
         }
         val result = latest ?: error("Device screenshot unavailable")
-        assertTrue("NAVER map capture is visually flat/blank", sampleVariance(result) > 30.0)
-        return result
+        result.writeToTestStorage("$storageName.failed")
+        val evidence = latestEvidence ?: baseMapEvidence(result)
+        error(
+            "NAVER marker-free base map did not show provider-map texture " +
+                "(quantizedColors=${evidence.quantizedColors}, luminanceStdDev=${evidence.luminanceStdDev}, " +
+                "strongEdgeRatio=${evidence.strongEdgeRatio})",
+        )
     }
 
-    private fun sampleVariance(bitmap: Bitmap): Double {
-        val values = mutableListOf<Double>()
-        val stepX = (bitmap.width / 20).coerceAtLeast(1)
-        val stepY = (bitmap.height / 20).coerceAtLeast(1)
-        for (y in 0 until bitmap.height step stepY) for (x in 0 until bitmap.width step stepX) {
-            val color = bitmap.getPixel(x, y)
-            val r = (color shr 16) and 0xFF
-            val g = (color shr 8) and 0xFF
-            val b = color and 0xFF
-            values += (r + g + b) / 3.0
+    private fun awaitScreenshot(): Bitmap {
+        Thread.sleep(450)
+        return instrumentation.uiAutomation.takeScreenshot() ?: error("Device screenshot unavailable")
+    }
+
+    /**
+     * Engineering blank-surface guard only, not a product readability threshold.
+     * Samples the central map region so status bars/edge chrome cannot satisfy the gate. The prior
+     * false-positive surface was a near-uniform checker/grid; real provider tiles must contain a
+     * minimum combination of quantized color variety, luminance spread and local high-contrast edges.
+     */
+    private fun baseMapEvidence(bitmap: Bitmap): BaseMapEvidence {
+        val left = bitmap.width * 2 / 10
+        val right = bitmap.width * 8 / 10
+        val top = bitmap.height * 2 / 10
+        val bottom = bitmap.height * 8 / 10
+        val stepX = ((right - left) / 120).coerceAtLeast(1)
+        val stepY = ((bottom - top) / 120).coerceAtLeast(1)
+        val luminances = mutableListOf<Double>()
+        val colorBins = hashSetOf<Int>()
+        var strongEdges = 0
+        var edgeComparisons = 0
+        var previousRow = mutableListOf<Double>()
+
+        for (y in top until bottom step stepY) {
+            val currentRow = mutableListOf<Double>()
+            var previousInRow: Double? = null
+            var column = 0
+            for (x in left until right step stepX) {
+                val color = bitmap.getPixel(x, y)
+                val r = (color shr 16) and 0xFF
+                val g = (color shr 8) and 0xFF
+                val b = color and 0xFF
+                val luma = .2126 * r + .7152 * g + .0722 * b
+                luminances += luma
+                currentRow += luma
+                colorBins += ((r shr 5) shl 6) or ((g shr 5) shl 3) or (b shr 5)
+
+                previousInRow?.let {
+                    edgeComparisons++
+                    if (kotlin.math.abs(luma - it) >= 12.0) strongEdges++
+                }
+                if (column < previousRow.size) {
+                    edgeComparisons++
+                    if (kotlin.math.abs(luma - previousRow[column]) >= 12.0) strongEdges++
+                }
+                previousInRow = luma
+                column++
+            }
+            previousRow = currentRow
         }
-        val mean = values.average()
-        return values.map { (it - mean) * (it - mean) }.average()
+        val mean = luminances.average()
+        val variance = luminances.map { (it - mean) * (it - mean) }.average()
+        return BaseMapEvidence(
+            quantizedColors = colorBins.size,
+            luminanceStdDev = sqrt(variance),
+            strongEdgeRatio = strongEdges.toDouble() / edgeComparisons.coerceAtLeast(1),
+        )
     }
 
     private fun centerLuminance(bitmap: Bitmap): Float {
@@ -166,6 +233,15 @@ class NaverMapVisualQaTest {
             count++
         }
         return (sum / count.coerceAtLeast(1)).toFloat().coerceIn(0f, 1f)
+    }
+
+    private data class BaseMapEvidence(
+        val quantizedColors: Int,
+        val luminanceStdDev: Double,
+        val strongEdgeRatio: Double,
+    ) {
+        fun hasProviderTexture(): Boolean =
+            quantizedColors >= 6 && luminanceStdDev >= 3.0 && strongEdgeRatio >= .005
     }
 
     private data class MapFixture(val id: String, val center: GeoPoint)
