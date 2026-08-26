@@ -16,7 +16,6 @@ import com.dailytown.app.map.NaverMapAdapter
 import com.dailytown.app.visual.EveningVisualInterpolator
 import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.MarkerSemantic
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -24,8 +23,9 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NaverMapVisualQaTest {
+    private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val catalog by lazy {
-        CandidateAssetCatalog(InstrumentationRegistry.getInstrumentation().context.assets)
+        CandidateAssetCatalog(instrumentation.context.assets)
     }
 
     @Test
@@ -48,41 +48,53 @@ class NaverMapVisualQaTest {
             )
             fixtures.forEach { fixture ->
                 listOf(MarkerFamily.DAY, MarkerFamily.DARK).forEach { family ->
-                    adapter.setTheme(
-                        MapThemeSpec(
-                            preferredBrightness = if (family == MarkerFamily.DARK) MapBrightnessFamily.DARK else MapBrightnessFamily.LIGHT,
-                            markerFamily = family,
-                        ),
-                    )
-                    adapter.setCamera(fixture.center, zoom = 16.0)
-                    adapter.setMarkers(markerScene(fixture.center))
+                    onMain {
+                        adapter.setTheme(
+                            MapThemeSpec(
+                                preferredBrightness = if (family == MarkerFamily.DARK) MapBrightnessFamily.DARK else MapBrightnessFamily.LIGHT,
+                                markerFamily = family,
+                            ),
+                        )
+                        adapter.setCamera(fixture.center, zoom = 16.0)
+                        adapter.setMarkers(markerScene(fixture.center))
+                    }
                     val capture = awaitNonFlatScreenshot()
                     capture.writeToTestStorage("visual/naver-marker/${fixture.id}.${family.name.lowercase()}")
                 }
             }
 
-            adapter.setTheme(MapThemeSpec(preferredBrightness = MapBrightnessFamily.LIGHT, markerFamily = MarkerFamily.DAY))
-            adapter.setCamera(fixtures[1].center, 16.0)
-            adapter.setMarkers(emptyList())
+            onMain {
+                adapter.setTheme(MapThemeSpec(preferredBrightness = MapBrightnessFamily.LIGHT, markerFamily = MarkerFamily.DAY))
+                adapter.setCamera(fixtures[1].center, 16.0)
+                adapter.setMarkers(emptyList())
+            }
             val baseMap = awaitNonFlatScreenshot()
             val measuredLuminance = centerLuminance(baseMap)
             assertTrue(measuredLuminance in 0f..1f)
             val e2 = EveningVisualInterpolator.profile(.5f, measuredLuminance)
-            adapter.setTheme(
-                MapThemeSpec(
-                    preferredBrightness = if (e2.markerFamily == MarkerFamily.DARK) MapBrightnessFamily.DARK else MapBrightnessFamily.LIGHT,
-                    markerFamily = e2.markerFamily,
-                    routeColor = e2.route,
-                ),
-            )
-            adapter.setMarkers(markerScene(fixtures[1].center))
+            onMain {
+                adapter.setTheme(
+                    MapThemeSpec(
+                        preferredBrightness = if (e2.markerFamily == MarkerFamily.DARK) MapBrightnessFamily.DARK else MapBrightnessFamily.LIGHT,
+                        markerFamily = e2.markerFamily,
+                        routeColor = e2.route,
+                    ),
+                )
+                adapter.setMarkers(markerScene(fixtures[1].center))
+            }
             awaitNonFlatScreenshot().writeToTestStorage("visual/naver-marker/e2.dense-urban.${e2.markerFamily.name.lowercase()}")
         } finally {
-            adapter.onPause()
-            adapter.onStop()
-            adapter.onDestroy()
+            onMain {
+                adapter.onPause()
+                adapter.onStop()
+                adapter.onDestroy()
+            }
             scenario.close()
         }
+    }
+
+    private fun onMain(block: () -> Unit) {
+        instrumentation.runOnMainSync(block)
     }
 
     private fun markerScene(center: GeoPoint): List<MapMarkerSpec> = listOf(
@@ -112,7 +124,7 @@ class NaverMapVisualQaTest {
         var latest: Bitmap? = null
         repeat(12) {
             Thread.sleep(350)
-            latest = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+            latest = instrumentation.uiAutomation.takeScreenshot()
             latest?.let { bitmap -> if (sampleVariance(bitmap) > 30.0) return bitmap }
         }
         val result = latest ?: error("Device screenshot unavailable")
