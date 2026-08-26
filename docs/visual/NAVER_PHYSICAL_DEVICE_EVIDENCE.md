@@ -51,7 +51,8 @@ The JSON is intentionally privacy-safe. It contains:
 - network INTERNET/VALIDATED booleans and transport category only;
 - provider-neutral map health status/error code;
 - READY latency;
-- each marker-free screenshot attempt's width/height, quantized-color count, luminance standard deviation, edge ratio, and pass/fail result.
+- each marker-free screenshot attempt's width/height, quantized-color count, luminance standard deviation, edge ratio, and pass/fail result;
+- each completed baseline/EV-1 matrix capture with semantic id, phase, map complexity, motion mode, marker family, companion id, and artifact storage name.
 
 It intentionally does **not** contain:
 
@@ -69,11 +70,12 @@ The marker pack remains `production_export_candidate` until all of the following
 1. NAVER authentication succeeds without `401`, `429`, `800`, or other provider auth errors;
 2. physical device reports `emulator=false`;
 3. NAVER adapter remains `READY` without auth/provider error;
-4. network is available and the provider surface passes the marker-free tile/texture guard;
-5. sparse residential, dense urban, and green-space DAY/DARK captures complete;
-6. EV-1 E2 luminance-based family selection capture completes;
-7. a human checks the resulting screenshots for marker readability and confirms NAVER attribution/provider legal UI is not obscured;
-8. final outdoor R-B acceptance remains a separate human gate.
+4. network is available and every required provider surface passes the marker-free tile/texture guard before overlays are counted;
+5. the approved 18-case baseline overlay matrix completes: `MORNING/SUNSET/NIGHT × simple_residential/dense_urban/mixed_poi × normal/reduced_motion`;
+6. all EV-1 forced checkpoints `E0..E4` complete on the dense-map fixture in normal/reduced modes, including E2 luminance-based DAY/DARK family selection;
+7. diagnostics report `baselineCaptureCount=18`, `ev1CheckpointCaptureCount=10`, and `matrixCaptureCount=28` for the complete technical run;
+8. a human checks the resulting screenshots for marker/route/HUD/companion readability, provider road/place comprehension, and confirms NAVER attribution/provider legal UI is not obscured;
+9. final outdoor R-B acceptance remains a separate human gate using `PASS`, `PASS_WITH_DECORATIVE_DEGRADATION`, or `FAIL`.
 
 A passing physical technical run does not by itself close R-B or authorize motion/icon decisions.
 
