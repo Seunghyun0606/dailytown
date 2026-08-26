@@ -46,7 +46,12 @@ jobs:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
+          -Pandroid.enableAdditionalTestOutput=true
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Locate compact visual QA captures
+        if: always()
+        shell: bash
+        run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
       - name: Upload compact-device visual QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -56,6 +61,7 @@ jobs:
             app/build/reports/androidTests/**
             app/build/outputs/androidTest-results/**
             app/build/outputs/managed_device_android_test_additional_output/**
+            app/build/intermediates/managed_device_android_test_additional_output/**
           if-no-files-found: warn
           retention-days: 7
 
@@ -84,8 +90,13 @@ jobs:
       - name: Capture A-3 exact-width 360/412/600dp matrix
         run: >-
           gradle pixelCApi30AtdDebugAndroidTest
+          -Pandroid.enableAdditionalTestOutput=true
           -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.A3VisualQaTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Locate A-3 visual QA captures
+        if: always()
+        shell: bash
+        run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
       - name: Upload A-3 visual QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -95,5 +106,6 @@ jobs:
             app/build/reports/androidTests/**
             app/build/outputs/androidTest-results/**
             app/build/outputs/managed_device_android_test_additional_output/**
+            app/build/intermediates/managed_device_android_test_additional_output/**
           if-no-files-found: warn
           retention-days: 7
