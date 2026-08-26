@@ -93,7 +93,49 @@ jobs:
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.enableAdditionalTestOutput=true
           -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.NaverMapVisualQaTest
+          -Pandroid.testInstrumentationRunnerArguments.dailytownQaRunner=pixel2Api30Atd
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Summarize NAVER real-map diagnostics
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import glob
+          import json
+          import os
+
+          files = sorted(glob.glob("app/build/**/visual/naver-diagnostics/session.json", recursive=True))
+          if not files:
+              print("NAVER QA diagnostic JSON was not produced")
+          for path in files:
+              with open(path, encoding="utf-8") as handle:
+                  data = json.load(handle)
+              env = data.get("environment", {})
+              network = data.get("networkFinal", {})
+              attempts = data.get("baseMapAttempts", [])
+              last = attempts[-1] if attempts else {}
+              summary = {
+                  "artifactPath": path,
+                  "outcome": data.get("outcome"),
+                  "failureCategory": data.get("failureCategory"),
+                  "runnerHint": env.get("runnerHint"),
+                  "model": env.get("model"),
+                  "product": env.get("product"),
+                  "emulator": env.get("emulator"),
+                  "abis": env.get("supportedAbis"),
+                  "networkInternet": network.get("internet"),
+                  "networkValidated": network.get("validated"),
+                  "readyLatencyMs": data.get("readyLatencyMs"),
+                  "attemptCount": len(attempts),
+                  "lastEvidence": {
+                      "quantizedColors": last.get("quantizedColors"),
+                      "luminanceStdDev": last.get("luminanceStdDev"),
+                      "strongEdgeRatio": last.get("strongEdgeRatio"),
+                      "passed": last.get("passed"),
+                  },
+              }
+              print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+          PY
       - name: Locate NAVER real-map captures
         if: always()
         shell: bash
