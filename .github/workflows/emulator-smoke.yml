@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-and-compact-visual-smoke:
+  replay-and-static-visual-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,22 +41,68 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
-      - name: Run replay, companion, marker and optional NAVER real-map QA
+      - name: Run replay and candidate static visual QA
+        run: >-
+          gradle pixel2Api30AtdDebugAndroidTest
+          -Pandroid.enableAdditionalTestOutput=true
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.VisualCandidateQaTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Locate compact static visual QA captures
+        if: always()
+        shell: bash
+        run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
+      - name: Upload compact static visual QA artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dailytown-emulator-static-visual-qa
+          path: |
+            app/build/reports/androidTests/**
+            app/build/outputs/androidTest-results/**
+            app/build/outputs/managed_device_android_test_additional_output/**
+            app/build/intermediates/managed_device_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 7
+
+  naver-real-map-visual-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 15859902
+          packages: platform-tools
+      - name: Install Android build SDK and emulator
+        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" emulator
+      - name: Enable KVM access when available
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.5.0"
+      - name: Run credentialed NAVER real-map visual QA
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.enableAdditionalTestOutput=true
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.NaverMapVisualQaTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
-      - name: Locate compact visual QA captures
+      - name: Locate NAVER real-map captures
         if: always()
         shell: bash
         run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
-      - name: Upload compact-device visual QA artifacts
+      - name: Upload NAVER real-map QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dailytown-emulator-compact-visual-qa
+          name: dailytown-naver-real-map-visual-qa
           path: |
             app/build/reports/androidTests/**
             app/build/outputs/androidTest-results/**
