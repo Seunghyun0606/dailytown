@@ -7,6 +7,7 @@ import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.VisualDebugOverride
 import java.time.LocalTime
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MapRuntimeThemeResolverTest {
@@ -47,7 +48,10 @@ class MapRuntimeThemeResolverTest {
             )
             assertEquals(DayPhase.EVENING, resolved.profile.phase)
             assertEquals(resolved.profile.markerFamily, resolved.mapTheme.markerFamily)
-            assert(resolved.profile.markerFamily == MarkerFamily.DAY || resolved.profile.markerFamily == MarkerFamily.DARK)
+            assertTrue(
+                resolved.profile.markerFamily == MarkerFamily.DAY ||
+                    resolved.profile.markerFamily == MarkerFamily.DARK,
+            )
         }
     }
 
