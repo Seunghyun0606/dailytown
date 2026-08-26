@@ -41,7 +41,7 @@ The screen-space route/halo/effect/HUD geometry inside `NaverMapOverlayQaSceneVi
 
 ## Provider-free contract smoke
 
-`MapOverlayQaContractInstrumentedTest` runs in the compact emulator smoke suite without requiring NAVER credentials. It verifies:
+`MapOverlayQaContractInstrumentedTest` is wired into the compact emulator smoke suite without requiring NAVER credentials. It verifies:
 
 - the approved 18-case source matrix still matches the provider-neutral runtime contract;
 - all five EV-1 checkpoints still match the approved route/lighting/marker-family rules;
@@ -49,6 +49,8 @@ The screen-space route/halo/effect/HUD geometry inside `NaverMapOverlayQaSceneVi
 - both normal representative-frame and reduced-motion static-fallback QA shells produce visible pixels.
 
 This smoke is intentionally **not** a substitute for real NAVER tiles, provider labels/legal UI, or marker readability evidence.
+
+The current head has not produced a new GitHub Actions run after these commits, so the newly wired smoke is not yet claimed as CI PASS. Existing earlier companion/A-3 PASS evidence remains unchanged.
 
 ## EV-1 checkpoint captures
 
