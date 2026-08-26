@@ -1,7 +1,5 @@
 package com.dailytown.app.visual
 
-import com.dailytown.app.mystery.EncounterPhase
-
 /**
  * Provider-neutral semantic state for live-map overlays.
  *
@@ -68,54 +66,6 @@ object MapOverlayReadabilityPlanner {
                 discoveryDecoration = !failClosed && RbDecorativeLayer.DISCOVERY_DECORATION !in degraded,
             ),
             readabilityResult = result,
-        )
-    }
-}
-
-data class EncounterMapVisualState(
-    val markerSemantic: MarkerSemantic?,
-    val selected: Boolean,
-    val overlays: MapOverlaySemanticState,
-)
-
-/**
- * Maps gameplay state to visual semantics only.
- *
- * HIDDEN encounters remain absent from the map. The current product does not yet own a route
- * geometry/navigation source, so this resolver never fabricates a FOLLOWING route. Discovery
- * animation intensity is also left unset until an authored gameplay mapping is approved.
- */
-object EncounterMapVisualResolver {
-    fun resolve(
-        phase: EncounterPhase,
-        isRevisit: Boolean,
-        reducedMotion: Boolean = false,
-    ): EncounterMapVisualState = when (phase) {
-        EncounterPhase.HIDDEN -> EncounterMapVisualState(
-            markerSemantic = null,
-            selected = false,
-            overlays = MapOverlaySemanticState(reducedMotion = reducedMotion),
-        )
-        EncounterPhase.HINTED -> EncounterMapVisualState(
-            markerSemantic = if (isRevisit) MarkerSemantic.ENCOUNTER_REVISIT else MarkerSemantic.ENCOUNTER_HINTED,
-            selected = false,
-            overlays = MapOverlaySemanticState(
-                haloState = MapHaloVisualState.IDLE,
-                reducedMotion = reducedMotion,
-            ),
-        )
-        EncounterPhase.DISCOVERED -> EncounterMapVisualState(
-            markerSemantic = if (isRevisit) MarkerSemantic.ENCOUNTER_REVISIT else MarkerSemantic.ENCOUNTER_ACTIVE,
-            selected = true,
-            overlays = MapOverlaySemanticState(
-                haloState = MapHaloVisualState.ACTIVE,
-                reducedMotion = reducedMotion,
-            ),
-        )
-        EncounterPhase.RESOLVED -> EncounterMapVisualState(
-            markerSemantic = MarkerSemantic.ENCOUNTER_SOLVED,
-            selected = false,
-            overlays = MapOverlaySemanticState(reducedMotion = reducedMotion),
         )
     }
 }
