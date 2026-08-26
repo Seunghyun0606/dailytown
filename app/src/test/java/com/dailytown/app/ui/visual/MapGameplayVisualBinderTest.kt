@@ -3,10 +3,12 @@ package com.dailytown.app.ui.visual
 import android.content.Context
 import android.view.View
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.map.MapBrightnessFamily
 import com.dailytown.app.map.MapHealth
 import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapProviderId
+import com.dailytown.app.map.MapThemeSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.mystery.EncounterContext
@@ -21,6 +23,7 @@ import com.dailytown.app.poi.PoiCategory
 import com.dailytown.app.visual.MapHaloVisualState
 import com.dailytown.app.visual.MapOverlaySemanticState
 import com.dailytown.app.visual.MarkerSemantic
+import java.time.LocalTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Assert.assertEquals
@@ -32,7 +35,7 @@ class MapGameplayVisualBinderTest {
     @Test
     fun hiddenEncounterKeepsOnlyPersistentMarkers() {
         val adapter = RecordingMapAdapter()
-        val binder = MapGameplayVisualBinder(adapter)
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.NOON })
         val persistent = listOf(MapMarkerSpec("ambient", "ambient", GeoPoint(37.0, 127.0)))
 
         binder.applyEncounter(selection(EncounterPhase.HIDDEN), persistent)
@@ -44,7 +47,7 @@ class MapGameplayVisualBinderTest {
     @Test
     fun discoveredEncounterBecomesSelectedActiveMarkerAndHalo() {
         val adapter = RecordingMapAdapter()
-        val binder = MapGameplayVisualBinder(adapter)
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.NOON })
 
         binder.applyEncounter(selection(EncounterPhase.DISCOVERED), emptyList())
 
@@ -58,7 +61,7 @@ class MapGameplayVisualBinderTest {
     @Test
     fun revisitUsesDedicatedSemanticAndReducedMotionPropagates() {
         val adapter = RecordingMapAdapter()
-        val binder = MapGameplayVisualBinder(adapter)
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.NOON })
 
         binder.applyEncounter(
             selection = selection(EncounterPhase.DISCOVERED, isRevisit = true),
@@ -75,7 +78,7 @@ class MapGameplayVisualBinderTest {
     @Test
     fun resolvedEncounterIsSolvedAndNoLongerSelected() {
         val adapter = RecordingMapAdapter()
-        val binder = MapGameplayVisualBinder(adapter)
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.NOON })
 
         binder.applyEncounter(selection(EncounterPhase.RESOLVED), emptyList())
 
@@ -88,13 +91,24 @@ class MapGameplayVisualBinderTest {
     @Test
     fun clearingEncounterAlsoClearsSemanticOverlayState() {
         val adapter = RecordingMapAdapter()
-        val binder = MapGameplayVisualBinder(adapter)
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.NOON })
         binder.applyEncounter(selection(EncounterPhase.DISCOVERED), emptyList())
 
         binder.applyEncounter(null, emptyList(), reducedMotion = true)
 
         assertTrue(adapter.recordedMarkers.isEmpty())
         assertEquals(MapOverlaySemanticState(reducedMotion = true), adapter.recordedOverlayState)
+    }
+
+    @Test
+    fun binderAppliesDayPhaseThemeThroughProviderNeutralSpec() {
+        val adapter = RecordingMapAdapter()
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.of(22, 0) })
+
+        binder.applyEncounter(null, emptyList())
+
+        assertEquals(MapBrightnessFamily.DARK, adapter.recordedTheme.preferredBrightness)
+        assertEquals(adapter.recordedTheme.markerFamily, adapter.recordedTheme.markerFamily)
     }
 
     private fun selection(phase: EncounterPhase, isRevisit: Boolean = false): EncounterSelection {
@@ -126,8 +140,12 @@ class MapGameplayVisualBinderTest {
         override val health: StateFlow<MapHealth> = mutableHealth
         var recordedMarkers: List<MapMarkerSpec> = emptyList()
         var recordedOverlayState: MapOverlaySemanticState = MapOverlaySemanticState()
+        var recordedTheme: MapThemeSpec = MapThemeSpec()
 
         override fun createView(context: Context): View = error("Not used in JVM binder test")
+        override fun setTheme(theme: MapThemeSpec) {
+            recordedTheme = theme
+        }
         override fun setMarkers(markers: List<MapMarkerSpec>) {
             recordedMarkers = markers
         }
