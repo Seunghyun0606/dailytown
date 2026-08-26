@@ -38,7 +38,14 @@ import com.dailytown.app.persistence.toState
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
 import com.dailytown.app.reminder.LocalReminderManager
+import com.dailytown.app.ui.visual.A3ClueCard
+import com.dailytown.app.ui.visual.A3CompanionStamp
+import com.dailytown.app.ui.visual.A3PaperSurface
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
+import com.dailytown.app.ui.visual.SemanticAssetRenderer
+import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
+import com.dailytown.app.visual.A3ClueState
+import com.dailytown.app.visual.A3Screen
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
@@ -76,6 +83,7 @@ fun DailyTownApp(
     }
     val gameplaySessionMonitor = remember { GameplaySessionMonitor() }
     val mapVisualBinder = remember(mapAdapter) { MapGameplayVisualBinder(mapAdapter) }
+    val a3AssetRenderer = rememberProductionA3AssetRenderer()
 
     val trackingRuntime by trackingCoordinator.state.collectAsState()
     val progressRuntime by progressCoordinator.state.collectAsState()
@@ -331,6 +339,7 @@ fun DailyTownApp(
                     selection = activeEncounter,
                     reducer = reducer,
                     distanceMeters = distanceToEncounter,
+                    assetRenderer = a3AssetRenderer,
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
@@ -368,9 +377,19 @@ fun DailyTownApp(
                     )
                 }
 
-                ElevatedCard(Modifier.fillMaxWidth()) {
+                A3PaperSurface(
+                    screen = A3Screen.COLLECTION_GRID,
+                    assetRenderer = a3AssetRenderer,
+                    modifier = Modifier.fillMaxWidth().testTag("a3-collection-surface"),
+                ) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
+                            A3CompanionStamp(a3AssetRenderer, sizeDp = 48)
+                        }
                         Text("${neighborhood.districtKey} · 탐험 ${neighborhood.discoveryCount}곳 · 해결 ${neighborhood.resolvedCount}건")
                     }
                 }
@@ -573,6 +592,7 @@ private fun EncounterCard(
     selection: EncounterSelection?,
     reducer: MysteryReducer,
     distanceMeters: Int?,
+    assetRenderer: SemanticAssetRenderer,
     onCollectClue: (String, MysteryEncounter) -> Unit,
     onResolve: (MysteryEncounter) -> Unit,
     onContinue: () -> Unit,
@@ -590,6 +610,17 @@ private fun EncounterCard(
             Text("컨텍스트 ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}")
             distanceMeters?.let { Text("현재 위치에서 약 ${it}m") }
             Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}")
+
+            if (encounter.phase == EncounterPhase.DISCOVERED || encounter.phase == EncounterPhase.RESOLVED) {
+                A3ClueCard(
+                    state = if (encounter.phase == EncounterPhase.RESOLVED) A3ClueState.RESOLVED else A3ClueState.UNRESOLVED,
+                    assetRenderer = assetRenderer,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(250f / 190f)
+                        .testTag("a3-clue-card"),
+                )
+            }
 
             when (encounter.phase) {
                 EncounterPhase.HIDDEN -> Text("주변을 이동하면 180m 안에서 신호가 나타납니다.")
@@ -718,17 +749,15 @@ private fun MapSurface(mapAdapter: MapViewAdapter, modifier: Modifier = Modifier
         lifecycle.addObserver(observer)
         onDispose {
             lifecycle.removeObserver(observer)
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapAdapter.onPause()
+            if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapAdapter.onStop()
             mapAdapter.onDestroy()
         }
     }
 }
 
-private fun hasLocationPermission(context: android.content.Context): Boolean =
-    ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-private fun demoMysterySpots() = listOf(
-    MysterySpot("cityhall-echo", "시청 광장의 이상한 메아리", GeoPoint(37.56650, 126.97800), 55.0),
-    MysterySpot("stone-trace", "돌담길의 희미한 흔적", GeoPoint(37.56711, 126.97676), 45.0),
-    MysterySpot("hidden-note", "덕수궁 옆 숨겨진 쪽지", GeoPoint(37.56792, 126.97543), 50.0),
-)
+private fun hasLocationPermission(context: android.content.Context): Boolean {
+    val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    return fine || coarse
+}
