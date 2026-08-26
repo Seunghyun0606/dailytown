@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.visual.MapOverlaySemanticState
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
@@ -43,6 +44,7 @@ class NaverMapAdapter(
     private var pendingMarkers: List<MapMarkerSpec> = emptyList()
     private var pendingLocation: UserLocationSpec? = null
     private var pendingTheme: MapThemeSpec = MapThemeSpec()
+    private var pendingOverlayState: MapOverlaySemanticState = MapOverlaySemanticState()
     private val renderedMarkers = mutableMapOf<String, Marker>()
 
     private val isConfigured: Boolean
@@ -146,6 +148,13 @@ class NaverMapAdapter(
         syncMarkers()
     }
 
+    override fun setOverlayState(state: MapOverlaySemanticState) {
+        // Retain the provider-neutral semantic state even before provider-specific route/halo/effect
+        // drawing is enabled. Actual NAVER overlays require approved geometry/style inputs and must
+        // not be invented from QA fixture pixels or motion prototypes.
+        pendingOverlayState = state
+    }
+
     override fun setUserLocation(location: UserLocationSpec?) {
         pendingLocation = location
         syncUserLocation()
@@ -170,6 +179,7 @@ class NaverMapAdapter(
         naverMap = null
         naverMapSdk = null
         authFailedListener = null
+        pendingOverlayState = MapOverlaySemanticState()
         _health.value = MapHealth(MapHealthStatus.DESTROYED)
     }
 
