@@ -63,13 +63,20 @@ for path in files:
     with open(path, encoding="utf-8") as handle:
         data = json.load(handle)
     env = data.get("environment", {})
+    client = data.get("naverClient", {})
     network = data.get("networkFinal", {})
     attempts = data.get("baseMapAttempts", [])
+    captures = data.get("matrixCaptures", [])
+    baseline = [item for item in captures if item.get("kind") == "baseline"]
+    ev1 = [item for item in captures if item.get("kind") == "ev1_checkpoint"]
     last = attempts[-1] if attempts else {}
     print(json.dumps({
         "path": path,
         "outcome": data.get("outcome"),
         "failureCategory": data.get("failureCategory"),
+        "clientMode": client.get("mode"),
+        "expectedRegisteredAndroidPackage": client.get("expectedRegisteredAndroidPackage"),
+        "packageMatchesExpected": client.get("packageMatchesExpected"),
         "runnerHint": env.get("runnerHint"),
         "model": env.get("model"),
         "androidRelease": env.get("androidRelease"),
@@ -78,6 +85,9 @@ for path in files:
         "networkValidated": network.get("validated"),
         "readyLatencyMs": data.get("readyLatencyMs"),
         "attemptCount": len(attempts),
+        "matrixCaptureCount": len(captures),
+        "baselineCaptureCount": len(baseline),
+        "ev1CheckpointCaptureCount": len(ev1),
         "lastEvidence": {
             "quantizedColors": last.get("quantizedColors"),
             "luminanceStdDev": last.get("luminanceStdDev"),
