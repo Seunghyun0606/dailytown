@@ -1,6 +1,7 @@
 package com.dailytown.app.map
 
 import android.content.Context
+import android.graphics.PointF
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -12,6 +13,7 @@ import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 class NaverMapAdapter(
     private val ncpKeyId: String,
+    private val markerVisualSource: MapMarkerVisualSource? = null,
 ) : MapViewAdapter {
     override val providerId = MapProviderId.NAVER
 
@@ -39,6 +42,7 @@ class NaverMapAdapter(
     private var pendingCamera: Pair<GeoPoint, Double>? = null
     private var pendingMarkers: List<MapMarkerSpec> = emptyList()
     private var pendingLocation: UserLocationSpec? = null
+    private var pendingTheme: MapThemeSpec = MapThemeSpec()
     private val renderedMarkers = mutableMapOf<String, Marker>()
 
     private val isConfigured: Boolean
@@ -109,6 +113,7 @@ class NaverMapAdapter(
             view.onCreate(null)
             view.getMapAsync { map ->
                 naverMap = map
+                applyTheme()
                 _health.value = MapHealth(MapHealthStatus.READY)
                 errorView.visibility = View.GONE
                 flushState()
@@ -128,6 +133,12 @@ class NaverMapAdapter(
     override fun setCamera(target: GeoPoint, zoom: Double) {
         pendingCamera = target to zoom
         naverMap?.moveCamera(CameraUpdate.scrollAndZoomTo(target.toLatLng(), zoom))
+    }
+
+    override fun setTheme(theme: MapThemeSpec) {
+        pendingTheme = theme
+        applyTheme()
+        syncMarkers()
     }
 
     override fun setMarkers(markers: List<MapMarkerSpec>) {
@@ -164,8 +175,14 @@ class NaverMapAdapter(
 
     private fun flushState() {
         pendingCamera?.let { (target, zoom) -> setCamera(target, zoom) }
+        applyTheme()
         syncMarkers()
         syncUserLocation()
+    }
+
+    private fun applyTheme() {
+        val map = naverMap ?: return
+        map.isNightModeEnabled = pendingTheme.preferredBrightness == MapBrightnessFamily.DARK
     }
 
     private fun syncMarkers() {
@@ -178,6 +195,14 @@ class NaverMapAdapter(
             val marker = renderedMarkers.getOrPut(spec.id) { Marker() }
             marker.position = spec.position.toLatLng()
             marker.captionText = spec.title
+            val visual = markerVisualSource?.resolve(spec, pendingTheme)
+            if (visual != null) {
+                marker.icon = OverlayImage.fromBitmap(visual.bitmap)
+                marker.anchor = PointF(visual.anchorX, visual.anchorY)
+            } else {
+                marker.icon = Marker.DEFAULT_ICON
+                marker.anchor = Marker.DEFAULT_ANCHOR
+            }
             marker.map = map
         }
     }

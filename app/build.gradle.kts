@@ -106,8 +106,6 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        // Daily Town Android identity. Keep this value in sync with NAVER Maps Console
-        // and reserve the same package in Google Play Console before external release.
         applicationId = "com.dailytown.app"
         minSdk = 26
         targetSdk = 37
@@ -120,49 +118,18 @@ android {
             "NAVER_MAP_NCP_KEY_ID",
             "\"${resolvedNaverMapNcpKeyId.replace("\\", "\\\\").replace("\"", "\\\"")}\"",
         )
-        // Safe runtime diagnostic flag: the credential value itself is never displayed.
         buildConfigField("boolean", "NAVER_MAP_CONFIGURED", naverMapConfigured.toString())
-
-        // Optional closed-field-test policy. -1/false means the human criterion is not set yet,
-        // so diagnostics must report NOT_EVALUATED rather than inventing product thresholds.
         buildConfigField("long", "FIELD_TEST_MIN_SESSION_SECONDS", "${fieldTestMinSessionSeconds}L")
         buildConfigField("int", "FIELD_TEST_MAX_GPS_REJECTION_PERCENT", fieldTestMaxGpsRejectionPercent.toString())
         buildConfigField("boolean", "FIELD_TEST_REQUIRE_MAP_READY", fieldTestRequireMapReady.toString())
         buildConfigField("int", "FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT", fieldTestMaxDistanceErrorPercent.toString())
-        buildConfigField(
-            "int",
-            "FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR",
-            fieldTestMaxBatteryDrainPercentPerHour.toString(),
-        )
+        buildConfigField("int", "FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR", fieldTestMaxBatteryDrainPercentPerHour.toString())
         buildConfigField("int", "FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION", fieldTestMinEncountersPerSession.toString())
-        buildConfigField(
-            "int",
-            "FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT",
-            fieldTestMinEncounterResolutionPercent.toString(),
-        )
-        buildConfigField(
-            "int",
-            "FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT",
-            fieldTestMaxRepeatAreaFatiguePercent.toString(),
-        )
-
-        // Optional multi-session comparison protocol. Matching-preset uses -1/0/1 so an unset
-        // value stays distinguishable from an explicit human decision not to require matching.
-        buildConfigField(
-            "int",
-            "FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT",
-            fieldTestComparisonMinSessionsPerCohort.toString(),
-        )
-        buildConfigField(
-            "int",
-            "FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET",
-            fieldTestComparisonRequireMatchingPreset.toString(),
-        )
-        buildConfigField(
-            "String",
-            "FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE",
-            "\"$fieldTestComparisonRequiredEvidence\"",
-        )
+        buildConfigField("int", "FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT", fieldTestMinEncounterResolutionPercent.toString())
+        buildConfigField("int", "FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT", fieldTestMaxRepeatAreaFatiguePercent.toString())
+        buildConfigField("int", "FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT", fieldTestComparisonMinSessionsPerCohort.toString())
+        buildConfigField("int", "FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET", fieldTestComparisonRequireMatchingPreset.toString())
+        buildConfigField("String", "FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE", "\"$fieldTestComparisonRequiredEvidence\"")
     }
 
     buildFeatures {
@@ -175,9 +142,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Deterministic virtual-device lane for UI/integration smoke tests. The replay path
-    // does not initialize real fused location, so the smaller AOSP ATD is sufficient and
-    // keeps this lane independent from Google Play Services, NAVER credentials, and GPS.
+    // Candidate art is visible only to instrumentation until it passes integration QA and is promoted.
+    // No design/source master is added to any Android source set.
+    sourceSets {
+        getByName("androidTest").assets.srcDir("../design/production")
+    }
+
     testOptions {
         managedDevices {
             localDevices {
@@ -185,8 +155,13 @@ android {
                     device = "Pixel 2"
                     apiLevel = 30
                     systemImageSource = "aosp-atd"
-                    // The GMD default follows the selected system image/host. Pin the tested
-                    // APK ABI explicitly so CI does not depend on host-specific inference.
+                    testedAbi = "x86"
+                }
+                // Wide QA host so exact 360/412/600dp A-3 containers fit without clipping.
+                create("pixelCApi30Atd") {
+                    device = "Pixel C"
+                    apiLevel = 30
+                    systemImageSource = "aosp-atd"
                     testedAbi = "x86"
                 }
             }
@@ -221,15 +196,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     implementation("androidx.datastore:datastore-preferences:1.2.1")
-
-    // Provider implementation: only this adapter depends on NAVER Maps.
     implementation("com.naver.maps:map-sdk:3.23.3")
-
-    // Location is app-owned and intentionally independent from the map provider.
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test:core-ktx:1.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    // QA-only SVG adapter. Production runtime gets a binding only after candidate promotion.
+    androidTestImplementation("com.caverock:androidsvg:1.4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

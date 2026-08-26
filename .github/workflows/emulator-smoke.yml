@@ -1,4 +1,4 @@
-name: Emulator Replay Smoke Test
+name: Emulator Replay + Visual QA
 
 on:
   workflow_dispatch:
@@ -7,8 +7,11 @@ on:
       - "app/build.gradle.kts"
       - "app/src/androidTest/**"
       - "app/src/main/java/com/dailytown/app/ui/**"
+      - "app/src/main/java/com/dailytown/app/visual/**"
       - "app/src/main/java/com/dailytown/app/location/**"
       - "app/src/main/java/com/dailytown/app/map/**"
+      - "design/production/**"
+      - "design/export-spec/**"
       - ".github/workflows/emulator-smoke.yml"
 
 concurrency:
@@ -16,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-smoke:
+  replay-and-compact-visual-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,17 +41,59 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
-      - name: Run replay smoke test on managed virtual device
+      - name: Run replay, companion, marker and optional NAVER real-map QA
+        env:
+          NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
-      - name: Upload instrumented test reports
+      - name: Upload compact-device visual QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dailytown-emulator-test-reports
+          name: dailytown-emulator-compact-visual-qa
           path: |
             app/build/reports/androidTests/**
             app/build/outputs/androidTest-results/**
+            app/build/outputs/managed_device_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 7
+
+  a3-wide-visual-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 15859902
+          packages: platform-tools
+      - name: Install Android build SDK and emulator
+        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" emulator
+      - name: Enable KVM access when available
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.5.0"
+      - name: Capture A-3 exact-width 360/412/600dp matrix
+        run: >-
+          gradle pixelCApi30AtdDebugAndroidTest
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.A3VisualQaTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Upload A-3 visual QA artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dailytown-a3-five-screen-visual-qa
+          path: |
+            app/build/reports/androidTests/**
+            app/build/outputs/androidTest-results/**
+            app/build/outputs/managed_device_android_test_additional_output/**
           if-no-files-found: warn
           retention-days: 7
