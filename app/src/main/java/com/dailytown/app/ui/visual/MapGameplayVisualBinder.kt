@@ -4,7 +4,6 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.mystery.EncounterPhase
 import com.dailytown.app.mystery.EncounterSelection
-import com.dailytown.app.visual.EncounterMapVisualResolver
 import com.dailytown.app.visual.MapOverlaySemanticState
 
 /**
