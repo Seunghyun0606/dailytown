@@ -86,6 +86,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
+      - name: Verify managed-device QA configuration
+        run: gradle verifyManagedDeviceQaConfig
       - name: Run credentialed NAVER real-map visual QA
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
@@ -102,7 +104,6 @@ jobs:
           python3 - <<'PY'
           import glob
           import json
-          import os
 
           files = sorted(glob.glob("app/build/**/visual/naver-diagnostics/session.json", recursive=True))
           if not files:
@@ -111,6 +112,7 @@ jobs:
               with open(path, encoding="utf-8") as handle:
                   data = json.load(handle)
               env = data.get("environment", {})
+              client = data.get("naverClient", {})
               network = data.get("networkFinal", {})
               attempts = data.get("baseMapAttempts", [])
               last = attempts[-1] if attempts else {}
@@ -118,6 +120,9 @@ jobs:
                   "artifactPath": path,
                   "outcome": data.get("outcome"),
                   "failureCategory": data.get("failureCategory"),
+                  "clientMode": client.get("mode"),
+                  "expectedRegisteredAndroidPackage": client.get("expectedRegisteredAndroidPackage"),
+                  "packageMatchesExpected": client.get("packageMatchesExpected"),
                   "runnerHint": env.get("runnerHint"),
                   "model": env.get("model"),
                   "product": env.get("product"),
