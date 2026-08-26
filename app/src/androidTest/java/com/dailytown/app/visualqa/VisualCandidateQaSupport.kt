@@ -67,6 +67,7 @@ internal object CandidateSvgRenderer {
 
     private val groupTransform = Regex("""<g\s+transform=\"([^\"]+)\"""")
     private val defs = Regex("""<defs>.*?</defs>""", setOf(RegexOption.DOT_MATCHES_ALL))
+    private val styleOnlyDefs = Regex("""<defs>\s*<style>.*?</style>\s*</defs>""", setOf(RegexOption.DOT_MATCHES_ALL))
     private val rootGroup = Regex("""<g\s+transform=\"[^\"]+\">(.*)</g>\s*</svg>""", setOf(RegexOption.DOT_MATCHES_ALL))
     private val simpleChild = Regex("""<(?:ellipse|circle|path|rect)\b[^>]*(?:/>|></(?:ellipse|circle|path|rect)>)""")
     private val compactScale = Regex("""scale\(\.(\d+)\)""")
@@ -203,7 +204,8 @@ internal object CandidateSvgRenderer {
         val normalizedRotate = rotateWithWhitespace.replace(normalizedScale) { match ->
             "rotate(${match.groupValues[1]},${match.groupValues[2]},${match.groupValues[3]})"
         }
-        return inlineCssClassPresentationAttributes(normalizedRotate)
+        val inlined = inlineCssClassPresentationAttributes(normalizedRotate)
+        return styleOnlyDefs.replace(inlined, "")
     }
 
     private fun inlineCssClassPresentationAttributes(svg: String): String {
