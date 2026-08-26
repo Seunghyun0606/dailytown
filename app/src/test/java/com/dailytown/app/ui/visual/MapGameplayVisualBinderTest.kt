@@ -37,8 +37,8 @@ class MapGameplayVisualBinderTest {
 
         binder.applyEncounter(selection(EncounterPhase.HIDDEN), persistent)
 
-        assertEquals(persistent, adapter.markers)
-        assertEquals(MapOverlaySemanticState(), adapter.overlayState)
+        assertEquals(persistent, adapter.recordedMarkers)
+        assertEquals(MapOverlaySemanticState(), adapter.recordedOverlayState)
     }
 
     @Test
@@ -48,11 +48,11 @@ class MapGameplayVisualBinderTest {
 
         binder.applyEncounter(selection(EncounterPhase.DISCOVERED), emptyList())
 
-        assertEquals(1, adapter.markers.size)
-        val marker = adapter.markers.single()
+        assertEquals(1, adapter.recordedMarkers.size)
+        val marker = adapter.recordedMarkers.single()
         assertEquals(MarkerSemantic.ENCOUNTER_ACTIVE, marker.semantic)
         assertTrue(marker.selected)
-        assertEquals(MapHaloVisualState.ACTIVE, adapter.overlayState.haloState)
+        assertEquals(MapHaloVisualState.ACTIVE, adapter.recordedOverlayState.haloState)
     }
 
     @Test
@@ -66,10 +66,10 @@ class MapGameplayVisualBinderTest {
             reducedMotion = true,
         )
 
-        val marker = adapter.markers.single()
+        val marker = adapter.recordedMarkers.single()
         assertEquals(MarkerSemantic.ENCOUNTER_REVISIT, marker.semantic)
         assertTrue(marker.selected)
-        assertTrue(adapter.overlayState.reducedMotion)
+        assertTrue(adapter.recordedOverlayState.reducedMotion)
     }
 
     @Test
@@ -79,10 +79,10 @@ class MapGameplayVisualBinderTest {
 
         binder.applyEncounter(selection(EncounterPhase.RESOLVED), emptyList())
 
-        val marker = adapter.markers.single()
+        val marker = adapter.recordedMarkers.single()
         assertEquals(MarkerSemantic.ENCOUNTER_SOLVED, marker.semantic)
         assertFalse(marker.selected)
-        assertEquals(MapHaloVisualState.IDLE, adapter.overlayState.haloState)
+        assertEquals(MapHaloVisualState.IDLE, adapter.recordedOverlayState.haloState)
     }
 
     @Test
@@ -93,8 +93,8 @@ class MapGameplayVisualBinderTest {
 
         binder.applyEncounter(null, emptyList(), reducedMotion = true)
 
-        assertTrue(adapter.markers.isEmpty())
-        assertEquals(MapOverlaySemanticState(reducedMotion = true), adapter.overlayState)
+        assertTrue(adapter.recordedMarkers.isEmpty())
+        assertEquals(MapOverlaySemanticState(reducedMotion = true), adapter.recordedOverlayState)
     }
 
     private fun selection(phase: EncounterPhase, isRevisit: Boolean = false): EncounterSelection {
@@ -124,15 +124,15 @@ class MapGameplayVisualBinderTest {
         override val providerId: MapProviderId = MapProviderId.NAVER
         private val mutableHealth = MutableStateFlow(MapHealth(MapHealthStatus.READY))
         override val health: StateFlow<MapHealth> = mutableHealth
-        var markers: List<MapMarkerSpec> = emptyList()
-        var overlayState: MapOverlaySemanticState = MapOverlaySemanticState()
+        var recordedMarkers: List<MapMarkerSpec> = emptyList()
+        var recordedOverlayState: MapOverlaySemanticState = MapOverlaySemanticState()
 
         override fun createView(context: Context): View = error("Not used in JVM binder test")
         override fun setMarkers(markers: List<MapMarkerSpec>) {
-            this.markers = markers
+            recordedMarkers = markers
         }
         override fun setOverlayState(state: MapOverlaySemanticState) {
-            overlayState = state
+            recordedOverlayState = state
         }
         override fun setUserLocation(location: UserLocationSpec?) = Unit
     }
