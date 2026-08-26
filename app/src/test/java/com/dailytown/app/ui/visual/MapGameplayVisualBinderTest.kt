@@ -22,6 +22,7 @@ import com.dailytown.app.poi.Poi
 import com.dailytown.app.poi.PoiCategory
 import com.dailytown.app.visual.MapHaloVisualState
 import com.dailytown.app.visual.MapOverlaySemanticState
+import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.MarkerSemantic
 import java.time.LocalTime
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -108,7 +109,7 @@ class MapGameplayVisualBinderTest {
         binder.applyEncounter(null, emptyList())
 
         assertEquals(MapBrightnessFamily.DARK, adapter.recordedTheme.preferredBrightness)
-        assertEquals(adapter.recordedTheme.markerFamily, adapter.recordedTheme.markerFamily)
+        assertEquals(MarkerFamily.DARK, adapter.recordedTheme.markerFamily)
     }
 
     private fun selection(phase: EncounterPhase, isRevisit: Boolean = false): EncounterSelection {
