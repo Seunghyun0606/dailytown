@@ -233,12 +233,12 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("com.naver.maps:map-sdk:3.23.3")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    // A-3 only: this is the same SVG parser already proven by the A-3 managed-device QA matrix.
+    implementation("com.caverock:androidsvg:1.4")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test:core-ktx:1.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    // QA-only SVG adapter. Production runtime uses the semantic production manifest after promotion.
-    androidTestImplementation("com.caverock:androidsvg:1.4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
