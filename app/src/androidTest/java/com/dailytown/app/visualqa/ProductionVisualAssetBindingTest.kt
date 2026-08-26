@@ -1,8 +1,10 @@
 package com.dailytown.app.visualqa
 
+import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.ui.visual.AndroidProductionVisualAssetCatalog
+import com.dailytown.app.ui.visual.ProductionCompanionCanvasRenderer
 import com.dailytown.app.ui.visual.ProductionVisualAssetRegistry
 import com.dailytown.app.visual.A3AssetResolver
 import com.dailytown.app.visual.A3MotionTreatment
@@ -110,6 +112,54 @@ class ProductionVisualAssetBindingTest {
                 assertNotNull(productionCatalog.readSvg(key))
             }
         }
+    }
+
+    @Test
+    fun productionCompanionCanvasRendererCoversPromotedExpressionLightingMatrix() {
+        val resolver = CompanionAssetResolver(ProductionVisualAssetRegistry)
+        val renderer = ProductionCompanionCanvasRenderer(productionCatalog)
+
+        listOf("moru", "luca").forEach { companionId ->
+            CompanionExpression.entries.forEach { expression ->
+                CompanionLightingFamily.entries.forEach { lighting ->
+                    val resolved = resolver.resolve(
+                        CompanionVisualRequest(
+                            companionId = companionId,
+                            expression = expression,
+                            lightingFamily = lighting,
+                            usageContext = CompanionUsageContext.HUD_PORTRAIT,
+                        ),
+                    )
+                    val bitmap = renderer.render(resolved, targetPx = 96)
+                    assertTrue(
+                        "Production renderer output too sparse for $companionId/$expression/$lighting",
+                        opaquePixelRatio(bitmap) > .03,
+                    )
+                }
+            }
+        }
+
+        AppearanceProfile.entries.forEach { appearance ->
+            val resolved = resolver.resolve(
+                CompanionVisualRequest(
+                    companionId = "moru",
+                    expression = CompanionExpression.NEUTRAL,
+                    lightingFamily = CompanionLightingFamily.WARM_DUSK,
+                    appearanceProfile = appearance,
+                    usageContext = CompanionUsageContext.RESULT_LARGE,
+                ),
+            )
+            assertTrue("Moru affinity render is transparent: $appearance", opaquePixelRatio(renderer.render(resolved, 128)) > .03)
+        }
+    }
+
+    private fun opaquePixelRatio(bitmap: Bitmap): Double {
+        var opaque = 0
+        val total = bitmap.width * bitmap.height
+        for (y in 0 until bitmap.height) for (x in 0 until bitmap.width) {
+            if ((bitmap.getPixel(x, y) ushr 24) != 0) opaque++
+        }
+        return opaque.toDouble() / total.coerceAtLeast(1)
     }
 
     private fun sha256(bytes: ByteArray): String = MessageDigest.getInstance("SHA-256")
