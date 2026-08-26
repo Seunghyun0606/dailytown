@@ -39,6 +39,17 @@ Every technical capture requests the same semantic stack:
 
 The screen-space route/halo/effect/HUD geometry inside `NaverMapOverlayQaSceneView` is **QA framing only**, not a production visual token. It uses approved semantic/color language and deliberately contains no authored motion timing/easing values.
 
+## Provider-free contract smoke
+
+`MapOverlayQaContractInstrumentedTest` runs in the compact emulator smoke suite without requiring NAVER credentials. It verifies:
+
+- the approved 18-case source matrix still matches the provider-neutral runtime contract;
+- all five EV-1 checkpoints still match the approved route/lighting/marker-family rules;
+- promoted Moru assets can render for the corresponding lighting families;
+- both normal representative-frame and reduced-motion static-fallback QA shells produce visible pixels.
+
+This smoke is intentionally **not** a substitute for real NAVER tiles, provider labels/legal UI, or marker readability evidence.
+
 ## EV-1 checkpoint captures
 
 The baseline matrix already covers three map complexity classes. In addition, the credentialed NAVER test captures all EV-1 forced checkpoints on the dense-map fixture:
