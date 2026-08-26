@@ -25,21 +25,21 @@ fun optionalNonNegativeLong(name: String): Long {
 fun optionalNonNegativeInt(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
-    return raw.toLongOrNull()?.takeIf { it in 0..Int.MAX_VALUE.toLong() }?.toInt()
+    return raw.toIntOrNull()?.takeIf { it >= 0 }
         ?: error("$name must be a non-negative integer when configured.")
 }
 
 fun optionalPositiveInt(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
-    return raw.toLongOrNull()?.takeIf { it in 1..Int.MAX_VALUE.toLong() }?.toInt()
+    return raw.toIntOrNull()?.takeIf { it > 0 }
         ?: error("$name must be a positive integer when configured.")
 }
 
 fun optionalPercent(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
-    return raw.toLongOrNull()?.takeIf { it in 0L..100L }?.toInt()
+    return raw.toIntOrNull()?.takeIf { it in 0..100 }
         ?: error("$name must be an integer from 0 to 100 when configured.")
 }
 
