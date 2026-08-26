@@ -39,13 +39,10 @@ import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
 import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.visual.A3ClueCard
-import com.dailytown.app.ui.visual.A3CompanionStamp
-import com.dailytown.app.ui.visual.A3PaperSurface
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
 import com.dailytown.app.ui.visual.SemanticAssetRenderer
 import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
 import com.dailytown.app.visual.A3ClueState
-import com.dailytown.app.visual.A3Screen
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
@@ -377,19 +374,9 @@ fun DailyTownApp(
                     )
                 }
 
-                A3PaperSurface(
-                    screen = A3Screen.COLLECTION_GRID,
-                    assetRenderer = a3AssetRenderer,
-                    modifier = Modifier.fillMaxWidth().testTag("a3-collection-surface"),
-                ) {
+                ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
-                            A3CompanionStamp(a3AssetRenderer, sizeDp = 48)
-                        }
+                        Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
                         Text("${neighborhood.districtKey} · 탐험 ${neighborhood.discoveryCount}곳 · 해결 ${neighborhood.resolvedCount}건")
                     }
                 }
@@ -749,15 +736,17 @@ private fun MapSurface(mapAdapter: MapViewAdapter, modifier: Modifier = Modifier
         lifecycle.addObserver(observer)
         onDispose {
             lifecycle.removeObserver(observer)
-            if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) mapAdapter.onPause()
-            if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) mapAdapter.onStop()
             mapAdapter.onDestroy()
         }
     }
 }
 
-private fun hasLocationPermission(context: android.content.Context): Boolean {
-    val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    return fine || coarse
-}
+private fun hasLocationPermission(context: android.content.Context): Boolean =
+    ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+private fun demoMysterySpots() = listOf(
+    MysterySpot("cityhall-echo", "시청 광장의 이상한 메아리", GeoPoint(37.56650, 126.97800), 55.0),
+    MysterySpot("stone-trace", "돌담길의 희미한 흔적", GeoPoint(37.56711, 126.97676), 45.0),
+    MysterySpot("hidden-note", "덕수궁 옆 숨겨진 쪽지", GeoPoint(37.56792, 126.97543), 50.0),
+)
