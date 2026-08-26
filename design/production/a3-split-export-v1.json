@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "batch_id": "a3-split-export-v1",
-  "status": "design_qa_complete_production_export_candidate",
+  "status": "production_export",
   "asset_count": 9,
   "qa": {
     "svg_parse": "PASS",
@@ -9,18 +9,32 @@
     "non_color_locked_completed_distinction": "PASS",
     "unresolved_resolved_clue_distinction": "PASS",
     "paper_family_consistency": "PASS",
-    "android_360_412_600dp_fit": "PENDING_DEVELOPMENT_SESSION"
+    "android_360_412_600dp_fit": "PASS",
+    "semantic_resolver_smoke_test": "PASS",
+    "reduced_motion_fallback_validation": "PASS",
+    "target_apk_asset_binding": "PASS",
+    "sha256_byte_match": "PASS"
+  },
+  "development_integration_qa": {
+    "evidence_head": "819d1a22bd5607cb51a6839f49074b43e3335fe3",
+    "workflow_run": 32958759449,
+    "a3_wide_visual_qa": "PASS",
+    "production_binding_smoke": "PASS"
   },
   "assets": [
-    {"semantic_key":"surface.journal.paper","path":"design/production/a3/v1/surface-journal-paper.v1.svg","sha256":"e1b5a39c1f152525db9c55f939379497348ff64e8949317748146a1fc597eded","approval_state":"production_export_candidate"},
-    {"semantic_key":"surface.collection.paper","path":"design/production/a3/v1/surface-collection-paper.v1.svg","sha256":"b001538cd8c121d090d8a7db67b2149ae6719b30b3c8570798224ec2f9b55688","approval_state":"production_export_candidate"},
-    {"semantic_key":"surface.memory.paper","path":"design/production/a3/v1/surface-memory-paper.v1.svg","sha256":"bd22a4057d0ec8c1f73c512f1a38a7f53f9b35f13e5976d7df4f776cd34b002e","approval_state":"production_export_candidate"},
-    {"semantic_key":"sticker.discovery.default","path":"design/production/a3/v1/sticker-discovery-default.v1.svg","sha256":"c1f97b57747710b4f6b39dd45049a3fc763b76095cb7951193b0f14c73d8070b","approval_state":"production_export_candidate"},
-    {"semantic_key":"card.clue.unresolved","path":"design/production/a3/v1/card-clue-unresolved.v1.svg","sha256":"94775fc51f0e2052ee62f8cfe064380f9767928cf35548264c46451ec4e203f5","approval_state":"production_export_candidate"},
-    {"semantic_key":"card.clue.resolved","path":"design/production/a3/v1/card-clue-resolved.v1.svg","sha256":"d28fb89ab5d05016ff4eec9d9de5182b0713b70cab7d7c77d339a8710c68c651","approval_state":"production_export_candidate"},
-    {"semantic_key":"stamp.companion.default","path":"design/production/a3/v1/stamp-companion-default.v1.svg","sha256":"43c49127d4e92a011b9328ee47a61409ac0fff3d273223810f74bbb4a19a1401","approval_state":"production_export_candidate"},
-    {"semantic_key":"stamp.memory.resolved","path":"design/production/a3/v1/stamp-memory-resolved.v1.svg","sha256":"047f2171d8023857bf8e84fa143913c77396cc2330e1aabea7fad4a732564411","approval_state":"production_export_candidate"},
-    {"semantic_key":"collection.locked.pattern","path":"design/production/a3/v1/collection-locked-pattern.v1.svg","sha256":"e1dda622f07f7deba1e858779a0ac693ac7c232c8971295345a54d69ee5de95a","approval_state":"production_export_candidate"}
+    {"semantic_key":"surface.journal.paper","path":"design/production/a3/v1/surface-journal-paper.v1.svg","sha256":"e1b5a39c1f152525db9c55f939379497348ff64e8949317748146a1fc597eded","approval_state":"production_export"},
+    {"semantic_key":"surface.collection.paper","path":"design/production/a3/v1/surface-collection-paper.v1.svg","sha256":"b001538cd8c121d090d8a7db67b2149ae6719b30b3c8570798224ec2f9b55688","approval_state":"production_export"},
+    {"semantic_key":"surface.memory.paper","path":"design/production/a3/v1/surface-memory-paper.v1.svg","sha256":"bd22a4057d0ec8c1f73c512f1a38a7f53f9b35f13e5976d7df4f776cd34b002e","approval_state":"production_export"},
+    {"semantic_key":"sticker.discovery.default","path":"design/production/a3/v1/sticker-discovery-default.v1.svg","sha256":"c1f97b57747710b4f6b39dd45049a3fc763b76095cb7951193b0f14c73d8070b","approval_state":"production_export"},
+    {"semantic_key":"card.clue.unresolved","path":"design/production/a3/v1/card-clue-unresolved.v1.svg","sha256":"94775fc51f0e2052ee62f8cfe064380f9767928cf35548264c46451ec4e203f5","approval_state":"production_export"},
+    {"semantic_key":"card.clue.resolved","path":"design/production/a3/v1/card-clue-resolved.v1.svg","sha256":"d28fb89ab5d05016ff4eec9d9de5182b0713b70cab7d7c77d339a8710c68c651","approval_state":"production_export"},
+    {"semantic_key":"stamp.companion.default","path":"design/production/a3/v1/stamp-companion-default.v1.svg","sha256":"43c49127d4e92a011b9328ee47a61409ac0fff3d273223810f74bbb4a19a1401","approval_state":"production_export"},
+    {"semantic_key":"stamp.memory.resolved","path":"design/production/a3/v1/stamp-memory-resolved.v1.svg","sha256":"047f2171d8023857bf8e84fa143913c77396cc2330e1aabea7fad4a732564411","approval_state":"production_export"},
+    {"semantic_key":"collection.locked.pattern","path":"design/production/a3/v1/collection-locked-pattern.v1.svg","sha256":"e1dda622f07f7deba1e858779a0ac693ac7c232c8971295345a54d69ee5de95a","approval_state":"production_export"}
   ],
-  "promotion_gate": ["android_five_screen_fit_QA_360_412_600dp","semantic_resolver_smoke_test","reduced_motion_fallback_validation"]
+  "promotion_gate": {
+    "android_five_screen_fit_QA_360_412_600dp": "PASS",
+    "semantic_resolver_smoke_test": "PASS",
+    "reduced_motion_fallback_validation": "PASS"
+  }
 }
