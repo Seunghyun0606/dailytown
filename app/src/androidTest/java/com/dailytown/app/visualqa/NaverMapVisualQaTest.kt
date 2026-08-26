@@ -151,7 +151,7 @@ class NaverMapVisualQaTest {
                 }
                 MapHealthStatus.AUTH_ERROR -> throw NaverQaFailure(
                     "auth_error",
-                    "NAVER map failed visual-QA authentication: ${health.errorCode}",
+                    authFailureMessage(health.errorCode),
                 )
                 MapHealthStatus.ERROR -> throw NaverQaFailure(
                     "adapter_initialization_error",
@@ -222,7 +222,7 @@ class NaverMapVisualQaTest {
         when (health.status) {
             MapHealthStatus.AUTH_ERROR -> throw NaverQaFailure(
                 "auth_error_after_ready",
-                "NAVER authentication failed after READY: ${health.errorCode}",
+                authFailureMessage(health.errorCode),
             )
             MapHealthStatus.ERROR -> throw NaverQaFailure(
                 "adapter_error_after_ready",
@@ -234,6 +234,11 @@ class NaverMapVisualQaTest {
                 "NAVER map left READY state during visual QA: ${health.status}",
             )
         }
+    }
+
+    private fun authFailureMessage(errorCode: String?): String = when (errorCode) {
+        "401" -> "NAVER authentication failed (401). Verify the injected NCP Key ID and ensure the NAVER Maps Android application registration contains exactly ${BuildConfig.APPLICATION_ID}."
+        else -> "NAVER map failed visual-QA authentication: $errorCode"
     }
 
     private fun centerLuminance(bitmap: Bitmap): Float {
