@@ -38,6 +38,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
+      - name: Verify managed-device QA configuration
+        run: gradle verifyManagedDeviceQaConfig
       - name: Unit tests
         run: gradle testDebugUnitTest
       - name: Compile instrumented tests
