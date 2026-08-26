@@ -25,7 +25,7 @@ fun optionalNonNegativeLong(name: String): Long {
 fun optionalNonNegativeInt(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
-    return raw.toLongOrNull()?.takeIf { it >= 0L }?.toInt()
+    return raw.toIntOrNull()?.takeIf { it >= 0 }
         ?: error("$name must be a non-negative integer when configured.")
 }
 
