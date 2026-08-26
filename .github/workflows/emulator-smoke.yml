@@ -41,11 +41,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
-      - name: Run replay and candidate static visual QA
+      - name: Run replay, candidate visual QA, and production binding smoke
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.enableAdditionalTestOutput=true
-          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.VisualCandidateQaTest
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
       - name: Locate compact static visual QA captures
         if: always()
