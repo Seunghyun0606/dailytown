@@ -25,6 +25,7 @@ internal class NaverMapQaDiagnostics(
 ) {
     private val events = JSONArray()
     private val attempts = JSONArray()
+    private val matrixCaptures = JSONArray()
     private val networkInitial = readNetworkSnapshot()
     private val runnerHint = InstrumentationRegistry.getArguments().getString("dailytownQaRunner").orEmpty()
     private var readyLatencyMs: Long? = null
@@ -64,11 +65,36 @@ internal class NaverMapQaDiagnostics(
         )
     }
 
+    fun recordMatrixCapture(
+        kind: String,
+        id: String,
+        phase: String,
+        mapComplexity: String,
+        motionMode: String,
+        markerFamily: String,
+        companionId: String,
+        storageName: String,
+    ) {
+        matrixCaptures.put(
+            JSONObject()
+                .put("kind", kind)
+                .put("id", id)
+                .put("phase", phase)
+                .put("mapComplexity", mapComplexity)
+                .put("motionMode", motionMode)
+                .put("markerFamily", markerFamily)
+                .put("companionId", companionId)
+                .put("technicalCaptureCompleted", true)
+                .put("humanVisualReview", "required")
+                .put("storageName", storageName),
+        )
+    }
+
     fun isNetworkValidated(): Boolean = readNetworkSnapshot().optBoolean("validated", false)
 
     fun write(outcome: String, failureCategory: String?) {
         val root = JSONObject()
-            .put("schemaVersion", 2)
+            .put("schemaVersion", 3)
             .put("outcome", outcome)
             .putNullable("failureCategory", failureCategory)
             .put("packageName", context.packageName)
@@ -80,6 +106,7 @@ internal class NaverMapQaDiagnostics(
             .putNullable("readyLatencyMs", readyLatencyMs)
             .put("events", events)
             .put("baseMapAttempts", attempts)
+            .put("matrixCaptures", matrixCaptures)
 
         PlatformTestStorageRegistry.getInstance()
             .openOutputFile("visual/naver-diagnostics/session.json")
