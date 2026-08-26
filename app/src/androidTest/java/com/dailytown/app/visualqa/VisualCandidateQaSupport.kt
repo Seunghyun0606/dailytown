@@ -15,6 +15,7 @@ import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.ResolvedMarkerAsset
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 import org.json.JSONObject
 
 internal data class CandidateEntry(
@@ -62,6 +63,8 @@ internal class CandidateAssetCatalog(private val assets: AssetManager) {
 }
 
 internal object CandidateSvgRenderer {
+    private data class UniformTransform(val translateX: Double, val translateY: Double, val scale: Double)
+
     private val groupTransform = Regex("""<g\s+transform=\"([^\"]+)\"""")
     private val defs = Regex("""<defs>.*?</defs>""", setOf(RegexOption.DOT_MATCHES_ALL))
     private val rootGroup = Regex("""<g\s+transform=\"[^\"]+\">(.*)</g>\s*</svg>""", setOf(RegexOption.DOT_MATCHES_ALL))
@@ -71,6 +74,12 @@ internal object CandidateSvgRenderer {
     private val elementWithClass = Regex("""<([A-Za-z][A-Za-z0-9:_-]*)([^<>]*\sclass=\"[^\"]+\"[^<>]*?)(/?)>""")
     private val classAttribute = Regex("""\sclass=\"([^\"]+)\"""")
     private val attributeName = Regex("""\s([A-Za-z_:][A-Za-z0-9_.:-]*)\s*=""")
+    private val uniformTransform = Regex(
+        """translate\(\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))[\s,]+([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*\)\s*scale\(\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*\)""",
+    )
+    private val rotateWithWhitespace = Regex(
+        """rotate\(\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s+([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s+([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*\)""",
+    )
 
     fun renderCompanion(
         catalog: CandidateAssetCatalog,
@@ -82,10 +91,11 @@ internal object CandidateSvgRenderer {
     ): Bitmap {
         val lightingKey = "lighting.$companionId.${lighting.name.lowercase()}"
         val expressionKey = "companion.$companionId.expression.${expression.semantic}"
-        val body = catalog.text(lightingKey)
-        val targetTransform = groupTransform.find(body)?.groupValues?.get(1)
+        val bodySource = catalog.text(lightingKey)
+        val targetTransform = groupTransform.find(bodySource)?.groupValues?.get(1)
             ?: error("Missing lighting group transform for $lightingKey")
-        val expressionSvg = normalizeExpression(catalog.text(expressionKey), targetTransform)
+        val body = flattenCompanionLayer(bodySource, targetTransform)
+        val expressionSvg = flattenCompanionLayer(catalog.text(expressionKey), targetTransform)
         val layers = mutableListOf(body)
         if (companionId == "moru" && appearance != AppearanceProfile.BASE) {
             val base = catalog.text("appearance.moru.base")
@@ -105,9 +115,10 @@ internal object CandidateSvgRenderer {
     ): Pair<android.graphics.Rect, android.graphics.Rect> {
         val lightingKey = "lighting.$companionId.${lighting.name.lowercase()}"
         val expressionKey = "companion.$companionId.expression.${expression.semantic}"
-        val body = catalog.text(lightingKey)
-        val targetTransform = groupTransform.find(body)?.groupValues?.get(1) ?: error("Missing body transform")
-        val expressionSvg = normalizeExpression(catalog.text(expressionKey), targetTransform)
+        val bodySource = catalog.text(lightingKey)
+        val targetTransform = groupTransform.find(bodySource)?.groupValues?.get(1) ?: error("Missing body transform")
+        val body = flattenCompanionLayer(bodySource, targetTransform)
+        val expressionSvg = flattenCompanionLayer(catalog.text(expressionKey), targetTransform)
         return opaqueBounds(renderLayers(listOf(body), targetPx, targetPx), lightingKey) to
             opaqueBounds(renderLayers(listOf(expressionSvg), targetPx, targetPx), expressionKey)
     }
@@ -122,13 +133,48 @@ internal object CandidateSvgRenderer {
     fun renderAsset(catalog: CandidateAssetCatalog, semanticKey: String, widthPx: Int, heightPx: Int): Bitmap =
         renderLayers(listOf(catalog.text(semanticKey)), widthPx, heightPx)
 
-    private fun normalizeExpression(svg: String, targetTransform: String): String {
-        val normalizedRoot = svg.replaceFirst(
-            Regex("""<svg[^>]*>"""),
-            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"320\" viewBox=\"0 0 256 320\">",
-        )
-        return groupTransform.replaceFirst(normalizedRoot, "<g transform=\"$targetTransform\"")
+    /**
+     * Companion exports place all canonical geometry under one uniform translate+scale root group.
+     * AndroidSVG 1.4 renders the marker exports correctly on the managed device but drops that
+     * companion root transform on this path. Convert the same transform into an equivalent viewBox
+     * instead of changing any authored coordinates: final = translate + scale * source.
+     */
+    private fun flattenCompanionLayer(svg: String, targetTransform: String): String {
+        val body = rootGroup.find(svg)?.groupValues?.get(1)
+            ?: error("Missing companion root group")
+        val transform = parseUniformTransform(targetTransform)
+        return buildFlattenedLayer(defs.find(svg)?.value.orEmpty(), body, transform)
     }
+
+    private fun buildFlattenedLayer(definitions: String, body: String, transform: UniformTransform): String {
+        require(transform.scale > 0.0)
+        val viewBoxX = -transform.translateX / transform.scale
+        val viewBoxY = -transform.translateY / transform.scale
+        val viewBoxWidth = 256.0 / transform.scale
+        val viewBoxHeight = 320.0 / transform.scale
+        return buildString {
+            append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"320\" viewBox=\"")
+            append(svgNumber(viewBoxX)).append(' ')
+            append(svgNumber(viewBoxY)).append(' ')
+            append(svgNumber(viewBoxWidth)).append(' ')
+            append(svgNumber(viewBoxHeight)).append("\">")
+            append(definitions)
+            append(body)
+            append("</svg>")
+        }
+    }
+
+    private fun parseUniformTransform(value: String): UniformTransform {
+        val match = uniformTransform.matchEntire(value.trim())
+            ?: error("Unsupported companion root transform: $value")
+        return UniformTransform(
+            translateX = match.groupValues[1].toDouble(),
+            translateY = match.groupValues[2].toDouble(),
+            scale = match.groupValues[3].toDouble(),
+        )
+    }
+
+    private fun svgNumber(value: Double): String = String.format(Locale.US, "%.8f", value).trimEnd('0').trimEnd('.')
 
     private fun appearanceDelta(base: String, profile: String, targetTransform: String): String? {
         val baseBody = rootGroup.find(base)?.groupValues?.get(1) ?: return null
@@ -139,32 +185,25 @@ internal object CandidateSvgRenderer {
             index >= baseChildren.size || canonical(child) != canonical(baseChildren[index])
         }
         if (delta.isEmpty()) return null
-        val profileDefs = defs.find(profile)?.value.orEmpty()
-        return buildString {
-            append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"320\" viewBox=\"0 0 256 320\">")
-            append(profileDefs)
-            append("<g transform=\"").append(targetTransform).append("\">")
-            delta.forEach(::append)
-            append("</g></svg>")
-        }
+        return buildFlattenedLayer(
+            definitions = defs.find(profile)?.value.orEmpty(),
+            body = delta.joinToString(separator = ""),
+            transform = parseUniformTransform(targetTransform),
+        )
     }
 
     private fun canonical(value: String): String = value.replace(Regex("\\s+"), " ").trim()
 
     /**
-     * AndroidSVG 1.4 accepts the authored SVG structure but its transform-number parser does not
-     * reliably render compact leading-dot scale values such as `scale(.78)` on the managed-device
-     * path. Normalize only that syntactic form here; the numeric transform and authored art stay
-     * unchanged. This is an adapter compatibility fix, not an export/design mutation.
-     *
-     * The same managed-device path does not reliably apply embedded CSS classes on isolated
-     * expression layers. Expand those class declarations to equivalent SVG presentation attributes
-     * before parsing. Existing explicit attributes always win, so this does not change authored
-     * geometry or explicit per-element overrides and leaves the source candidate bytes untouched.
+     * Keep parser-compatibility rewrites inside this QA adapter only. The design source bytes,
+     * semantic manifests and checksums are never mutated.
      */
     private fun androidSvgCompatible(svg: String): String {
         val normalizedScale = compactScale.replace(svg) { match -> "scale(0.${match.groupValues[1]})" }
-        return inlineCssClassPresentationAttributes(normalizedScale)
+        val normalizedRotate = rotateWithWhitespace.replace(normalizedScale) { match ->
+            "rotate(${match.groupValues[1]},${match.groupValues[2]},${match.groupValues[3]})"
+        }
+        return inlineCssClassPresentationAttributes(normalizedRotate)
     }
 
     private fun inlineCssClassPresentationAttributes(svg: String): String {
