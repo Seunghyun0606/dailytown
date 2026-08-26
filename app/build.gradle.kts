@@ -25,7 +25,7 @@ fun optionalNonNegativeLong(name: String): Long {
 fun optionalNonNegativeInt(name: String): Int {
     val raw = optionalConfig(name)
     if (raw.isBlank()) return -1
-    return raw.toIntOrNull()?.takeIf { it >= 0 }
+    return raw.toLongOrNull()?.takeIf { it >= 0L }?.toInt()
         ?: error("$name must be a non-negative integer when configured.")
 }
 
@@ -181,6 +181,37 @@ tasks.register("verifyNaverMapCredential") {
             "NAVER_MAP_NCP_KEY_ID is required for credentialed Daily Town builds."
         }
         println("NAVER Maps credential wiring verified for com.dailytown.app")
+    }
+}
+
+// AGP managed-device setup has emitted a warning that testedAbi was unspecified even while the
+// DSL declares x86. Keep the declaration fail-closed and verify the configured DSL model directly
+// so CI can distinguish an AGP/setup warning from an accidental Daily Town configuration regression.
+tasks.register("verifyManagedDeviceQaConfig") {
+    group = "verification"
+    description = "Verifies the managed-device QA contract used by replay/NAVER/A-3 tests."
+    doLast {
+        val expected = listOf(
+            "pixel2Api30Atd" to "Pixel 2",
+            "pixelCApi30Atd" to "Pixel C",
+        )
+        val localDevices = android.testOptions.managedDevices.localDevices
+        expected.forEach { (name, expectedDevice) ->
+            val configured = localDevices.getByName(name)
+            check(configured.device == expectedDevice) {
+                "$name must use $expectedDevice; found ${configured.device}."
+            }
+            check(configured.apiLevel == 30) {
+                "$name must use API 30; found ${configured.apiLevel}."
+            }
+            check(configured.systemImageSource == "aosp-atd") {
+                "$name must use aosp-atd; found ${configured.systemImageSource}."
+            }
+            check(configured.testedAbi == "x86") {
+                "$name must explicitly use testedAbi=x86; found ${configured.testedAbi}."
+            }
+        }
+        println("Managed-device QA configuration verified: API 30, aosp-atd, testedAbi=x86")
     }
 }
 
