@@ -68,11 +68,12 @@ internal class NaverMapQaDiagnostics(
 
     fun write(outcome: String, failureCategory: String?) {
         val root = JSONObject()
-            .put("schemaVersion", 1)
+            .put("schemaVersion", 2)
             .put("outcome", outcome)
             .putNullable("failureCategory", failureCategory)
             .put("packageName", context.packageName)
             .put("naverCredentialConfigured", BuildConfig.NAVER_MAP_CONFIGURED)
+            .put("naverClient", naverClientJson())
             .put("environment", environmentJson())
             .put("networkInitial", networkInitial)
             .put("networkFinal", readNetworkSnapshot())
@@ -85,6 +86,11 @@ internal class NaverMapQaDiagnostics(
             .bufferedWriter(Charsets.UTF_8)
             .use { it.write(root.toString(2)) }
     }
+
+    private fun naverClientJson(): JSONObject = JSONObject()
+        .put("mode", "NCP_KEY_ID")
+        .put("expectedRegisteredAndroidPackage", BuildConfig.APPLICATION_ID)
+        .put("packageMatchesExpected", context.packageName == BuildConfig.APPLICATION_ID)
 
     private fun environmentJson(): JSONObject = JSONObject()
         .put("runnerHint", runnerHint)
