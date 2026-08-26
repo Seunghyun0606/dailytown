@@ -66,6 +66,7 @@ internal object CandidateSvgRenderer {
     private val defs = Regex("""<defs>.*?</defs>""", setOf(RegexOption.DOT_MATCHES_ALL))
     private val rootGroup = Regex("""<g\s+transform=\"[^\"]+\">(.*)</g>\s*</svg>""", setOf(RegexOption.DOT_MATCHES_ALL))
     private val simpleChild = Regex("""<(?:ellipse|circle|path|rect)\b[^>]*(?:/>|></(?:ellipse|circle|path|rect)>)""")
+    private val compactScale = Regex("""scale\(\.(\d+)\)""")
 
     fun renderCompanion(
         catalog: CandidateAssetCatalog,
@@ -98,10 +99,13 @@ internal object CandidateSvgRenderer {
         lighting: CompanionLightingFamily,
         targetPx: Int,
     ): Pair<android.graphics.Rect, android.graphics.Rect> {
-        val body = catalog.text("lighting.$companionId.${lighting.name.lowercase()}")
+        val lightingKey = "lighting.$companionId.${lighting.name.lowercase()}"
+        val expressionKey = "companion.$companionId.expression.${expression.semantic}"
+        val body = catalog.text(lightingKey)
         val targetTransform = groupTransform.find(body)?.groupValues?.get(1) ?: error("Missing body transform")
-        val expressionSvg = normalizeExpression(catalog.text("companion.$companionId.expression.${expression.semantic}"), targetTransform)
-        return opaqueBounds(renderLayers(listOf(body), targetPx, targetPx)) to opaqueBounds(renderLayers(listOf(expressionSvg), targetPx, targetPx))
+        val expressionSvg = normalizeExpression(catalog.text(expressionKey), targetTransform)
+        return opaqueBounds(renderLayers(listOf(body), targetPx, targetPx), lightingKey) to
+            opaqueBounds(renderLayers(listOf(expressionSvg), targetPx, targetPx), expressionKey)
     }
 
     fun lightingTransform(catalog: CandidateAssetCatalog, companionId: String, lighting: CompanionLightingFamily): String =
@@ -143,15 +147,24 @@ internal object CandidateSvgRenderer {
 
     private fun canonical(value: String): String = value.replace(Regex("\\s+"), " ").trim()
 
+    /**
+     * AndroidSVG 1.4 accepts the authored SVG structure but its transform-number parser does not
+     * reliably render compact leading-dot scale values such as `scale(.78)` on the managed-device
+     * path. Normalize only that syntactic form here; the numeric transform and authored art stay
+     * unchanged. This is an adapter compatibility fix, not an export/design mutation.
+     */
+    private fun androidSvgCompatible(svg: String): String =
+        compactScale.replace(svg) { match -> "scale(0.${match.groupValues[1]})" }
+
     private fun renderLayers(svgLayers: List<String>, width: Int, height: Int): Bitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val destination = RectF(0f, 0f, width.toFloat(), height.toFloat())
-        svgLayers.forEach { SVG.getFromString(it).renderToCanvas(canvas, destination) }
+        svgLayers.forEach { SVG.getFromString(androidSvgCompatible(it)).renderToCanvas(canvas, destination) }
         return bitmap
     }
 
-    private fun opaqueBounds(bitmap: Bitmap): android.graphics.Rect {
+    private fun opaqueBounds(bitmap: Bitmap, label: String): android.graphics.Rect {
         var left = bitmap.width
         var top = bitmap.height
         var right = -1
@@ -161,7 +174,7 @@ internal object CandidateSvgRenderer {
                 left = minOf(left, x); top = minOf(top, y); right = maxOf(right, x); bottom = maxOf(bottom, y)
             }
         }
-        check(right >= left && bottom >= top) { "Rendered layer is transparent" }
+        check(right >= left && bottom >= top) { "Rendered layer is transparent: $label" }
         return android.graphics.Rect(left, top, right + 1, bottom + 1)
     }
 }
