@@ -5,22 +5,29 @@ import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.mystery.EncounterPhase
 import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.visual.MapOverlaySemanticState
+import java.time.LocalTime
 
 /**
- * Application-layer bridge from encounter gameplay state to provider-neutral map visual semantics.
+ * Application-layer bridge from current visual context and encounter gameplay state to
+ * provider-neutral map semantics.
  *
  * This binder does not know NAVER/Google types, raw visual assets, route geometry, or visual timing.
  * Existing ambient/persistent markers are supplied by the caller and kept independent from the
- * short-lived active encounter marker.
+ * short-lived active encounter marker. Time is injected so replay/screenshot callers can remain
+ * deterministic instead of reading the device clock implicitly.
  */
 class MapGameplayVisualBinder(
     private val mapAdapter: MapViewAdapter,
+    private val themeResolver: MapRuntimeThemeResolver = MapRuntimeThemeResolver(),
+    private val currentTime: () -> LocalTime = LocalTime::now,
 ) {
     fun applyEncounter(
         selection: EncounterSelection?,
         persistentMarkers: List<MapMarkerSpec>,
         reducedMotion: Boolean = false,
     ) {
+        mapAdapter.setTheme(themeResolver.resolve(currentTime()).mapTheme)
+
         val visual = selection?.let {
             EncounterMapVisualResolver.resolve(
                 phase = it.encounter.phase,
