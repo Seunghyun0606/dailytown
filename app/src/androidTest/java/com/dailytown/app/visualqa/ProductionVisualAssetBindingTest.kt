@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.ui.visual.AndroidProductionVisualAssetCatalog
+import com.dailytown.app.ui.visual.ProductionA3SvgRenderer
 import com.dailytown.app.ui.visual.ProductionCompanionCanvasRenderer
 import com.dailytown.app.ui.visual.ProductionVisualAssetRegistry
 import com.dailytown.app.visual.A3AssetResolver
@@ -20,6 +21,7 @@ import java.security.MessageDigest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -150,6 +152,29 @@ class ProductionVisualAssetBindingTest {
                 ),
             )
             assertTrue("Moru affinity render is transparent: $appearance", opaquePixelRatio(renderer.render(resolved, 128)) > .03)
+        }
+    }
+
+    @Test
+    fun productionA3RendererCoversPromotedFamilyAndRejectsOtherFamilies() {
+        val renderer = ProductionA3SvgRenderer(productionCatalog)
+        val a3Records = ProductionVisualAssetRegistry.records()
+            .filter { it.family == ProductionVisualAssetRegistry.Family.A3 }
+
+        assertEquals(ProductionVisualAssetRegistry.PROMOTED_A3_COUNT, a3Records.size)
+        a3Records.forEach { record ->
+            val bitmap = renderer.render(record.semanticKey, widthPx = 440, heightPx = 560)
+            assertTrue(
+                "Production A-3 renderer output too sparse for ${record.semanticKey.value}",
+                opaquePixelRatio(bitmap) > .005,
+            )
+        }
+
+        val companionKey = ProductionVisualAssetRegistry.records()
+            .first { it.family == ProductionVisualAssetRegistry.Family.COMPANION }
+            .semanticKey
+        assertThrows(IllegalStateException::class.java) {
+            renderer.render(companionKey, widthPx = 96, heightPx = 96)
         }
     }
 
