@@ -144,6 +144,7 @@ class MapGameplayVisualBinderTest {
         var recordedTheme: MapThemeSpec = MapThemeSpec()
 
         override fun createView(context: Context): View = error("Not used in JVM binder test")
+        override fun setCamera(target: GeoPoint, zoom: Double) = Unit
         override fun setTheme(theme: MapThemeSpec) {
             recordedTheme = theme
         }
