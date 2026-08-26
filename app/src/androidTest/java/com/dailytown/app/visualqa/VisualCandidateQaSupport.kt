@@ -119,7 +119,7 @@ internal object CandidateSvgRenderer {
             Regex("""<svg[^>]*>"""),
             "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"256\" height=\"320\" viewBox=\"0 0 256 320\">",
         )
-        return normalizedRoot.replaceFirst(groupTransform) { "<g transform=\"$targetTransform\"" }
+        return groupTransform.replaceFirst(normalizedRoot, "<g transform=\"$targetTransform\"")
     }
 
     private fun appearanceDelta(base: String, profile: String, targetTransform: String): String? {

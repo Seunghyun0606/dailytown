@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -111,11 +111,12 @@ class A3VisualQaTest {
                         }
                         A3Screen.COLLECTION_GRID -> {
                             A3CollectionGrid(widthDp, Modifier.fillMaxWidth()) { columns ->
+                                val cellWidthDp = ((widthDp - 32 - (columns - 1) * 12) / columns).coerceAtLeast(1)
                                 repeat(2) { rowIndex ->
                                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                         repeat(columns) { columnIndex ->
                                             val locked = (rowIndex + columnIndex) % 2 == 0
-                                            Column(Modifier.weight(1f)) {
+                                            Column(Modifier.width(cellWidthDp.dp)) {
                                                 Image(
                                                     bitmaps.getValue(if (locked) "collection.locked.pattern" else "sticker.discovery.default"),
                                                     null,
