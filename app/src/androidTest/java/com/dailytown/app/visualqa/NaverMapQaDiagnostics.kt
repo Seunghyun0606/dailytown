@@ -1,10 +1,11 @@
 package com.dailytown.app.visualqa
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.graphics.Bitmap
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.io.PlatformTestStorageRegistry
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.map.MapHealth
@@ -24,7 +25,8 @@ internal class NaverMapQaDiagnostics(
 ) {
     private val events = JSONArray()
     private val attempts = JSONArray()
-    private val networkSnapshot = readNetworkSnapshot()
+    private val networkInitial = readNetworkSnapshot()
+    private val runnerHint = InstrumentationRegistry.getArguments().getString("dailytownQaRunner").orEmpty()
     private var readyLatencyMs: Long? = null
 
     fun recordReady(latencyMs: Long, health: MapHealth) {
@@ -62,7 +64,7 @@ internal class NaverMapQaDiagnostics(
         )
     }
 
-    fun isNetworkValidated(): Boolean = networkSnapshot.optBoolean("validated", false)
+    fun isNetworkValidated(): Boolean = readNetworkSnapshot().optBoolean("validated", false)
 
     fun write(outcome: String, failureCategory: String?) {
         val root = JSONObject()
@@ -72,7 +74,8 @@ internal class NaverMapQaDiagnostics(
             .put("packageName", context.packageName)
             .put("naverCredentialConfigured", BuildConfig.NAVER_MAP_CONFIGURED)
             .put("environment", environmentJson())
-            .put("network", networkSnapshot)
+            .put("networkInitial", networkInitial)
+            .put("networkFinal", readNetworkSnapshot())
             .putNullable("readyLatencyMs", readyLatencyMs)
             .put("events", events)
             .put("baseMapAttempts", attempts)
@@ -84,6 +87,7 @@ internal class NaverMapQaDiagnostics(
     }
 
     private fun environmentJson(): JSONObject = JSONObject()
+        .put("runnerHint", runnerHint)
         .put("sdkInt", Build.VERSION.SDK_INT)
         .put("androidRelease", Build.VERSION.RELEASE ?: "")
         .put("manufacturer", Build.MANUFACTURER ?: "")
