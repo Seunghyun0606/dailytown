@@ -185,6 +185,8 @@ def package_evidence(
             )
 
         write_json(staging / "marker-promotion-approval.v1.json", approval)
+        review_path = staging / "REVIEW.md"
+        write_review_instructions(review_path, fingerprint, physical_session_sha256)
         manifest = {
             "schema_version": 1,
             "bundle_type": "dailytown_marker_physical_evidence",
@@ -192,6 +194,7 @@ def package_evidence(
             "marker_candidate_asset_count": EXPECTED_ASSET_COUNT,
             "marker_candidate_fingerprint_sha256": fingerprint,
             "physical_session_sha256": physical_session_sha256,
+            "review_sha256": sha256_file(review_path),
             "runner_hint": (session.get("environment") or {}).get("runnerHint"),
             "emulator": (session.get("environment") or {}).get("emulator"),
             "android_release": (session.get("environment") or {}).get("androidRelease"),
@@ -202,7 +205,6 @@ def package_evidence(
             "promotion_performed": False,
         }
         write_json(staging / "bundle-manifest.v1.json", manifest)
-        write_review_instructions(staging / "REVIEW.md", fingerprint, physical_session_sha256)
 
         if output_dir.exists():
             shutil.rmtree(output_dir)
