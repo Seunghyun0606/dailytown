@@ -132,9 +132,16 @@ def verify_bundle_directory(
     *,
     marker_batch: Path = DEFAULT_MARKER_BATCH,
 ) -> dict[str, Any]:
+    if bundle_dir.is_symlink():
+        raise BundleIntegrityError(f"bundle directory must not be a symlink: {bundle_dir}")
     bundle_dir = bundle_dir.resolve()
     if not bundle_dir.is_dir():
         raise BundleIntegrityError(f"bundle directory does not exist: {bundle_dir}")
+    for path in bundle_dir.rglob("*"):
+        if path.is_symlink():
+            raise BundleIntegrityError(
+                f"bundle contains symlink: {path.relative_to(bundle_dir).as_posix()}"
+            )
 
     fingerprint = verify_marker_batch(ROOT, marker_batch)
     manifest_path = bundle_dir / "bundle-manifest.v1.json"
