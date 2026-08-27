@@ -3,9 +3,11 @@ package com.dailytown.app.visualqa
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.AndroidProductionVisualAssetCatalog
 import com.dailytown.app.ui.visual.ProductionA3SvgRenderer
 import com.dailytown.app.ui.visual.ProductionCompanionCanvasRenderer
+import com.dailytown.app.ui.visual.ProductionMarkerAssetRegistry
 import com.dailytown.app.ui.visual.ProductionVisualAssetRegistry
 import com.dailytown.app.visual.A3AssetResolver
 import com.dailytown.app.visual.A3MotionTreatment
@@ -17,6 +19,7 @@ import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualFallback
 import com.dailytown.app.visual.CompanionVisualRequest
+import java.io.IOException
 import java.security.MessageDigest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -32,6 +35,7 @@ class ProductionVisualAssetBindingTest {
     private val targetAssets = instrumentation.targetContext.assets
     private val candidateCatalog by lazy { CandidateAssetCatalog(instrumentation.context.assets) }
     private val productionCatalog by lazy { AndroidProductionVisualAssetCatalog(targetAssets) }
+    private val productionMarkerCatalog by lazy { AndroidProductionMarkerAssetCatalog(targetAssets) }
 
     @Test
     fun promotedCompanionAndA3AssetsArePackagedWithAuthoritativeChecksums() {
@@ -59,6 +63,68 @@ class ProductionVisualAssetBindingTest {
             assertEquals("Checksum mismatch for ${record.semanticKey.value}", expected.sha256, sha256(bytes))
             val svg = bytes.toString(Charsets.UTF_8)
             assertTrue("Semantic metadata missing from packaged SVG: ${record.semanticKey.value}", svg.contains(record.semanticKey.value))
+        }
+    }
+
+    @Test
+    fun productionMarkerTargetApkBindingIsCandidateExcludedOrChecksumExactAfterPromotion() {
+        val markerCandidates = candidateCatalog.allEntries()
+            .filter { entry -> entry.semanticKey.startsWith("marker.") }
+        assertEquals(24, markerCandidates.size)
+
+        val candidateByPair = markerCandidates.groupBy { entry ->
+            val family = entry.family ?: error("Marker candidate missing family: ${entry.semanticKey}")
+            family to entry.semanticKey
+        }
+        assertEquals("DAY/DARK marker candidate pairs must stay unique", 24, candidateByPair.size)
+
+        val productionRecords = ProductionMarkerAssetRegistry.records()
+        assertEquals(ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT, productionRecords.size)
+        assertTrue(
+            "Marker promotion must be atomic: only 0 or 24 production records are valid",
+            ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT == 0 ||
+                ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT == 24,
+        )
+
+        if (ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT == 0) {
+            assertTrue(productionRecords.isEmpty())
+            markerCandidates.forEach { candidate ->
+                assertTrue(
+                    "Marker candidate path must stay under markers/v1 before promotion: ${candidate.assetPath}",
+                    candidate.assetPath.startsWith("markers/v1/"),
+                )
+                val runtimePath = candidate.assetPath.removePrefix("markers/v1/")
+                assertThrows(
+                    "Candidate marker leaked into target APK: $runtimePath",
+                    IOException::class.java,
+                ) {
+                    targetAssets.open(runtimePath).use { it.readBytes() }
+                }
+            }
+            return
+        }
+
+        assertEquals(24, productionRecords.size)
+        productionRecords.forEach { record ->
+            val expected = candidateByPair[record.family.name to record.semanticKey.value]
+                ?.singleOrNull()
+                ?: error("Expected one marker candidate for ${record.family}/${record.semanticKey.value}")
+            assertTrue(
+                "Marker candidate path must stay under markers/v1: ${expected.assetPath}",
+                expected.assetPath.startsWith("markers/v1/"),
+            )
+            val expectedRuntimePath = expected.assetPath.removePrefix("markers/v1/")
+            assertEquals(
+                "Production marker runtime path changed for ${record.family}/${record.semanticKey.value}",
+                expectedRuntimePath,
+                record.assetPath,
+            )
+            val bytes = productionMarkerCatalog.open(record).use { it.readBytes() }
+            assertEquals(
+                "Marker checksum mismatch for ${record.family}/${record.semanticKey.value}",
+                expected.sha256,
+                sha256(bytes),
+            )
         }
     }
 
