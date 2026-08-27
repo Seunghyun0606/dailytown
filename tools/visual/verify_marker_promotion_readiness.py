@@ -180,7 +180,11 @@ def verify_naver_session(
         raise ReadinessError(f"{path}: no passing marker-free NAVER base-map evidence")
 
 
-def verify_human_approval(path: Path, expected_marker_fingerprint: str) -> None:
+def verify_human_approval(
+    path: Path,
+    expected_marker_fingerprint: str,
+    expected_physical_session_sha256: str,
+) -> None:
     approval = load_json(path)
     if approval.get("schema_version") != 1:
         raise ReadinessError(f"{path}: unsupported human approval schema")
@@ -188,6 +192,8 @@ def verify_human_approval(path: Path, expected_marker_fingerprint: str) -> None:
         raise ReadinessError(f"{path}: human approval references wrong marker batch")
     if approval.get("marker_candidate_fingerprint_sha256") != expected_marker_fingerprint:
         raise ReadinessError(f"{path}: human approval fingerprint does not match current marker batch")
+    if approval.get("physical_session_sha256") != expected_physical_session_sha256:
+        raise ReadinessError(f"{path}: human approval is not bound to the supplied physical session")
     if approval.get("decision") != "APPROVED":
         raise ReadinessError(f"{path}: human decision is not APPROVED")
     if not str(approval.get("reviewer", "")).strip() or not str(approval.get("reviewed_at", "")).strip():
@@ -225,7 +231,11 @@ def verify_readiness(
         expected_emulator=False,
         expected_runner_hint="physical-connected-device",
     )
-    verify_human_approval(human_approval, fingerprint)
+    verify_human_approval(
+        human_approval,
+        fingerprint,
+        sha256_file(physical_session),
+    )
     return fingerprint
 
 
