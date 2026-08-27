@@ -41,11 +41,13 @@ else
   exit 2
 fi
 
-# Remove only connected-device NAVER additional output before the run so an old
-# session cannot be mistaken for the evidence produced by this invocation.
+# Remove known connected-device additional-output roots, then also timestamp this
+# invocation. The timestamp lets discovery stay safe if AGP moves the output path.
 rm -rf \
   app/build/outputs/connected_android_test_additional_output \
   app/build/intermediates/connected_android_test_additional_output
+RUN_MARKER="$(mktemp "${TMPDIR:-/tmp}/dailytown-physical-evidence.XXXXXX")"
+trap 'rm -f "$RUN_MARKER"' EXIT
 
 set +e
 "${GRADLE[@]}" connectedDebugAndroidTest \
@@ -55,16 +57,10 @@ set +e
 STATUS=$?
 set -e
 
-echo "NAVER physical evidence files:"
-for ROOT in \
-  app/build/outputs/connected_android_test_additional_output \
-  app/build/intermediates/connected_android_test_additional_output; do
-  if [[ -d "$ROOT" ]]; then
-    find "$ROOT" -type f \
-      \( -path '*/visual/naver-*' -o -path '*/visual/naver-diagnostics/*' \) \
-      -print 2>/dev/null || true
-  fi
-done
+echo "NAVER physical evidence files from this invocation:"
+find app/build -type f -newer "$RUN_MARKER" \
+  \( -path '*/visual/naver-*' -o -path '*/visual/naver-diagnostics/*' \) \
+  -print 2>/dev/null || true
 
 if [[ "$STATUS" -ne 0 ]]; then
   echo "NAVER physical test failed. Raw diagnostics were left under app/build; no review bundle was created." >&2
@@ -72,13 +68,8 @@ if [[ "$STATUS" -ne 0 ]]; then
 fi
 
 mapfile -t SESSIONS < <(
-  for ROOT in \
-    app/build/outputs/connected_android_test_additional_output \
-    app/build/intermediates/connected_android_test_additional_output; do
-    if [[ -d "$ROOT" ]]; then
-      find "$ROOT" -type f -path '*/visual/naver-diagnostics/session.json' -print 2>/dev/null
-    fi
-  done | sort -u
+  find app/build -type f -newer "$RUN_MARKER" \
+    -path '*/visual/naver-diagnostics/session.json' -print 2>/dev/null | sort -u
 )
 if [[ ${#SESSIONS[@]} -ne 1 ]]; then
   echo "Expected exactly one fresh connected-device NAVER session; found ${#SESSIONS[@]}." >&2
