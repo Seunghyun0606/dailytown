@@ -45,7 +45,7 @@ jobs:
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.enableAdditionalTestOutput=true
-          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionMarkerRuntimeBoundaryTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
       - name: Locate compact static visual QA captures
         if: always()
