@@ -1,6 +1,6 @@
 # Marker physical evidence bundle
 
-The physical NAVER runner now packages one successful real-device marker QA run into a fingerprint-bound review bundle. This does not promote any marker asset and does not replace human review.
+The physical NAVER runner packages one successful real-device marker QA run into a marker-fingerprint and physical-session-bound review bundle. This does not promote any marker asset and does not replace human review.
 
 ## Run
 
@@ -26,8 +26,8 @@ A successful run creates `physical-<UTC timestamp>/` and a matching ZIP. The dir
 - `session.json`: the original physical NAVER diagnostic session;
 - `captures/`: exactly the 28 technical matrix captures referenced by the session;
 - `bundle-manifest.v1.json`: marker batch/fingerprint, physical session SHA-256, per-capture SHA-256, non-emulator runner metadata, and `promotion_performed=false`;
-- `marker-promotion-approval.v1.json`: a copy of the committed approval template with the exact current marker fingerprint filled in, while `decision` and every human check remain `PENDING`;
-- `REVIEW.md`: the human inspection checklist and readiness-check instructions.
+- `marker-promotion-approval.v1.json`: a copy of the committed approval template with both the exact current marker fingerprint and the exact physical `session.json` SHA-256 filled in, while `decision` and every human check remain `PENDING`;
+- `REVIEW.md`: the human inspection checklist, physical session SHA-256, and readiness-check instructions.
 
 `package_marker_physical_evidence.py` fails closed unless:
 
@@ -35,7 +35,9 @@ A successful run creates `physical-<UTC timestamp>/` and a matching ZIP. The dir
 - `session.json` is schema v3, clean PASS, `emulator=false`, `runnerHint=physical-connected-device`, package/client/network valid, and bound to the exact current marker fingerprint;
 - the matrix is exactly 18 baseline + 10 EV-1 completed captures;
 - every referenced `visual/naver-matrix/...` PNG exists and no duplicate or path-traversal storage name is present;
-- the approval template is still PENDING before it is copied into the bundle.
+- the approval template is still PENDING and still contains the physical-session placeholder before packaging.
+
+The packager computes the physical `session.json` SHA-256 once and writes the same value to both `bundle-manifest.v1.json` and the pending approval copy. The completed approval must not be copied between physical runs, even when the marker fingerprint is unchanged.
 
 No coordinate, route geometry, credential value, device serial, automatic upload, production asset mutation, or PR merge is added by this tooling.
 
@@ -49,6 +51,6 @@ Inspect the 28 captures and the app on the same physical phone. Update the bundl
 - provider road/place comprehension;
 - NAVER attribution/legal UI.
 
-Keep any uncertain item as `PENDING` or mark it `FAIL`; do not force an approval. After all checks pass, add reviewer and review timestamp, set the checks and decision to `PASS` / `APPROVED`, then run the existing `verify_marker_promotion_readiness.py` with a passing emulator session, this physical `session.json`, and the completed approval JSON.
+Keep any uncertain item as `PENDING` or mark it `FAIL`; do not force an approval. Do not edit `marker_candidate_fingerprint_sha256` or `physical_session_sha256`. After all checks pass, add reviewer and review timestamp, set the checks and decision to `PASS` / `APPROVED`, then run the existing `verify_marker_promotion_readiness.py` with a passing emulator session, this exact physical `session.json`, and the completed approval JSON.
 
-A readiness PASS is still only permission for a separate explicit development change. Marker promotion and PR merge remain separate actions.
+The readiness checker recomputes the supplied physical session SHA-256 and rejects an approval created for a different session. A readiness PASS is still only permission for a separate explicit development change. Marker promotion and PR merge remain separate actions.
