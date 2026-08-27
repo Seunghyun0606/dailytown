@@ -6,7 +6,9 @@ plugins {
 val naverMapNcpKeyId = providers.gradleProperty("NAVER_MAP_NCP_KEY_ID")
     .orElse(providers.environmentVariable("NAVER_MAP_NCP_KEY_ID"))
     .orElse("TODO_NCP_KEY_ID")
-val resolvedNaverMapNcpKeyId = naverMapNcpKeyId.get()
+// Normalize only at the build boundary so copied GitHub/NAVER values cannot carry surrounding whitespace
+// into BuildConfig. The credential value itself is never logged or committed.
+val resolvedNaverMapNcpKeyId = naverMapNcpKeyId.get().trim()
 val naverMapConfigured = resolvedNaverMapNcpKeyId.isNotBlank() && !resolvedNaverMapNcpKeyId.startsWith("TODO_")
 
 fun optionalConfig(name: String): String = providers.gradleProperty(name)
@@ -145,11 +147,11 @@ android {
     // Only development-QA-passed visual families enter the main APK. Marker candidates stay test-only
     // until real NAVER base-map evidence passes; design/source masters never enter an Android source set.
     sourceSets {
-        getByName("main").assets.srcDir("../design/production/companion")
-        getByName("main").assets.srcDir("../design/production/a3/v1")
-        getByName("androidTest").assets.srcDir("../design/production")
+        getByName("main").assets.directories.add("../design/production/companion")
+        getByName("main").assets.directories.add("../design/production/a3/v1")
+        getByName("androidTest").assets.directories.add("../design/production")
         // Approved source manifests are test-only inputs used to prove the runtime QA matrix matches handoff.
-        getByName("androidTest").assets.srcDir("../design/export-spec")
+        getByName("androidTest").assets.directories.add("../design/export-spec")
     }
 
     testOptions {

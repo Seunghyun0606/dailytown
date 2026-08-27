@@ -134,11 +134,12 @@ class FieldTestRunChecklistEvaluator {
         diagnostic: FieldTestDiagnostic,
         criteria: FieldTestAcceptanceCriteria,
     ): FieldTestRunCheck {
-        val required = criteria.requiredMapHealth != null
+        val expected = criteria.requiredMapHealth?.name
+        val required = expected != null
         val measured = diagnostic.mapHealthStatus
         val status = when {
             required && measured == null -> FieldTestRunCheckStatus.MISSING
-            required && measured != criteria.requiredMapHealth?.name -> FieldTestRunCheckStatus.FAIL
+            required && measured != expected -> FieldTestRunCheckStatus.FAIL
             measured == "READY" -> FieldTestRunCheckStatus.COMPLETE
             required -> FieldTestRunCheckStatus.FAIL
             else -> FieldTestRunCheckStatus.OPTIONAL
