@@ -5,7 +5,10 @@ if ! command -v adb >/dev/null 2>&1; then
   echo "adb is required. Install Android platform-tools first." >&2
   exit 2
 fi
-
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 is required to validate and package marker evidence." >&2
+  exit 2
+fi
 if [[ -z "${NAVER_MAP_NCP_KEY_ID:-}" ]]; then
   echo "NAVER_MAP_NCP_KEY_ID must be supplied through the environment." >&2
   exit 2
@@ -38,6 +41,12 @@ else
   exit 2
 fi
 
+# Remove only connected-device NAVER additional output before the run so an old
+# session cannot be mistaken for the evidence produced by this invocation.
+rm -rf \
+  app/build/outputs/connected_android_test_additional_output \
+  app/build/intermediates/connected_android_test_additional_output
+
 set +e
 "${GRADLE[@]}" connectedDebugAndroidTest \
   -Pandroid.enableAdditionalTestOutput=true \
@@ -47,54 +56,46 @@ STATUS=$?
 set -e
 
 echo "NAVER physical evidence files:"
-find app/build -type f \
-  \( -path '*connected_android_test_additional_output*' -o -path '*additional_test_output*' \) \
-  \( -path '*visual/naver-*' -o -path '*visual/naver-diagnostics*' \) \
-  -print 2>/dev/null || true
+for ROOT in \
+  app/build/outputs/connected_android_test_additional_output \
+  app/build/intermediates/connected_android_test_additional_output; do
+  if [[ -d "$ROOT" ]]; then
+    find "$ROOT" -type f \
+      \( -path '*/visual/naver-*' -o -path '*/visual/naver-diagnostics/*' \) \
+      -print 2>/dev/null || true
+  fi
+done
 
-python3 - <<'PY'
-import glob
-import json
+if [[ "$STATUS" -ne 0 ]]; then
+  echo "NAVER physical test failed. Raw diagnostics were left under app/build; no review bundle was created." >&2
+  exit "$STATUS"
+fi
 
-files = sorted(glob.glob("app/build/**/visual/naver-diagnostics/session.json", recursive=True))
-if not files:
-    print("NAVER diagnostic JSON was not found.")
-for path in files:
-    with open(path, encoding="utf-8") as handle:
-        data = json.load(handle)
-    env = data.get("environment", {})
-    client = data.get("naverClient", {})
-    network = data.get("networkFinal", {})
-    attempts = data.get("baseMapAttempts", [])
-    captures = data.get("matrixCaptures", [])
-    baseline = [item for item in captures if item.get("kind") == "baseline"]
-    ev1 = [item for item in captures if item.get("kind") == "ev1_checkpoint"]
-    last = attempts[-1] if attempts else {}
-    print(json.dumps({
-        "path": path,
-        "outcome": data.get("outcome"),
-        "failureCategory": data.get("failureCategory"),
-        "clientMode": client.get("mode"),
-        "expectedRegisteredAndroidPackage": client.get("expectedRegisteredAndroidPackage"),
-        "packageMatchesExpected": client.get("packageMatchesExpected"),
-        "runnerHint": env.get("runnerHint"),
-        "model": env.get("model"),
-        "androidRelease": env.get("androidRelease"),
-        "emulator": env.get("emulator"),
-        "networkInternet": network.get("internet"),
-        "networkValidated": network.get("validated"),
-        "readyLatencyMs": data.get("readyLatencyMs"),
-        "attemptCount": len(attempts),
-        "matrixCaptureCount": len(captures),
-        "baselineCaptureCount": len(baseline),
-        "ev1CheckpointCaptureCount": len(ev1),
-        "lastEvidence": {
-            "quantizedColors": last.get("quantizedColors"),
-            "luminanceStdDev": last.get("luminanceStdDev"),
-            "strongEdgeRatio": last.get("strongEdgeRatio"),
-            "passed": last.get("passed"),
-        },
-    }, ensure_ascii=False, sort_keys=True))
-PY
+mapfile -t SESSIONS < <(
+  for ROOT in \
+    app/build/outputs/connected_android_test_additional_output \
+    app/build/intermediates/connected_android_test_additional_output; do
+    if [[ -d "$ROOT" ]]; then
+      find "$ROOT" -type f -path '*/visual/naver-diagnostics/session.json' -print 2>/dev/null
+    fi
+  done | sort -u
+)
+if [[ ${#SESSIONS[@]} -ne 1 ]]; then
+  echo "Expected exactly one fresh connected-device NAVER session; found ${#SESSIONS[@]}." >&2
+  exit 3
+fi
 
-exit "$STATUS"
+RUN_STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+OUTPUT_ROOT="${DAILYTOWN_MARKER_EVIDENCE_DIR:-app/build/marker-physical-evidence}"
+BUNDLE_DIR="${OUTPUT_ROOT%/}/physical-${RUN_STAMP}"
+
+python3 tools/visual/package_marker_physical_evidence.py \
+  --session "${SESSIONS[0]}" \
+  --output-dir "$BUNDLE_DIR"
+
+echo ""
+echo "Physical marker evidence is packaged for human review."
+echo "Review: $BUNDLE_DIR/REVIEW.md"
+echo "Pending approval copy: $BUNDLE_DIR/marker-promotion-approval.v1.json"
+echo "Archive: $BUNDLE_DIR.zip"
+echo "Do not promote marker assets until the human approval is completed and the promotion readiness checker passes."
