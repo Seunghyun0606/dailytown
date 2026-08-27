@@ -54,3 +54,7 @@ Inspect the 28 captures and the app on the same physical phone. Update the bundl
 Keep any uncertain item as `PENDING` or mark it `FAIL`; do not force an approval. Do not edit `marker_candidate_fingerprint_sha256` or `physical_session_sha256`. After all checks pass, add reviewer and review timestamp, set every check to `PASS`, and set the top-level decision to `APPROVED`. Then run the existing `verify_marker_promotion_readiness.py` with a passing emulator session, this exact physical `session.json`, and the completed approval JSON.
 
 The readiness checker recomputes the supplied physical session SHA-256 and rejects an approval created for a different session. A readiness PASS is still only permission for a separate explicit development change. Marker promotion and PR merge remain separate actions.
+
+## Human TODO tracking
+
+The real-device marker review remains a human-owned gate and is tracked in the existing Daily Town physical Android/NAVER TODO rather than duplicated in a separate task. The M-B timing/easing/intensity approval, R-B outdoor acceptance, and ID-A final lockup remain tracked in the existing visual approval TODO.
