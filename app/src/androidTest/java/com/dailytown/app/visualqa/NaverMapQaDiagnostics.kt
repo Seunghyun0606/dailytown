@@ -9,6 +9,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.io.PlatformTestStorageRegistry
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.map.MapHealth
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import kotlin.math.sqrt
 import org.json.JSONArray
 import org.json.JSONObject
@@ -100,6 +102,7 @@ internal class NaverMapQaDiagnostics(
             .put("packageName", context.packageName)
             .put("naverCredentialConfigured", BuildConfig.NAVER_MAP_CONFIGURED)
             .put("naverClient", naverClientJson())
+            .put("visualContract", visualContractJson())
             .put("environment", environmentJson())
             .put("networkInitial", networkInitial)
             .put("networkFinal", readNetworkSnapshot())
@@ -118,6 +121,34 @@ internal class NaverMapQaDiagnostics(
         .put("mode", "NCP_KEY_ID")
         .put("expectedRegisteredAndroidPackage", BuildConfig.APPLICATION_ID)
         .put("packageMatchesExpected", context.packageName == BuildConfig.APPLICATION_ID)
+
+    private fun visualContractJson(): JSONObject {
+        val assets = InstrumentationRegistry.getInstrumentation().context.assets
+        val manifest = assets.open("marker-split-export-v1.json")
+            .bufferedReader(StandardCharsets.UTF_8)
+            .use { JSONObject(it.readText()) }
+        val markerAssets = manifest.getJSONArray("assets")
+        val rows = buildList(markerAssets.length()) {
+            for (index in 0 until markerAssets.length()) {
+                val asset = markerAssets.getJSONObject(index)
+                add(
+                    listOf(
+                        asset.getString("family"),
+                        asset.getString("semantic_key"),
+                        asset.getString("sha256"),
+                    ).joinToString("|"),
+                )
+            }
+        }.sorted()
+        val fingerprint = MessageDigest.getInstance("SHA-256")
+            .digest(rows.joinToString("\n").toByteArray(StandardCharsets.UTF_8))
+            .joinToString("") { byte -> (byte.toInt() and 0xFF).toString(16).padStart(2, '0') }
+
+        return JSONObject()
+            .put("markerBatchId", manifest.getString("batch_id"))
+            .put("markerCandidateAssetCount", markerAssets.length())
+            .put("markerCandidateFingerprintSha256", fingerprint)
+    }
 
     private fun environmentJson(): JSONObject = JSONObject()
         .put("runnerHint", runnerHint)

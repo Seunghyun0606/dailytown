@@ -23,6 +23,8 @@ jobs:
           fi
       - name: Field-test export tool tests
         run: python3 -m unittest discover -s tools/field_test -p 'test_*.py'
+      - name: Marker promotion readiness tool tests
+        run: python3 -m unittest discover -s tools/visual -p 'test_*.py'
       - name: Visual candidate checksum and semantic gate
         run: python3 tools/visual/verify_visual_candidates.py
       - uses: actions/setup-java@v5

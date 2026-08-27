@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "marker_batch_id": "marker-split-export-v1",
+  "marker_candidate_fingerprint_sha256": "REPLACE_WITH_FINGERPRINT_FROM_NAVER_SESSION_JSON",
+  "decision": "PENDING",
+  "reviewer": "",
+  "reviewed_at": "",
+  "checks": {
+    "marker_readability": "PENDING",
+    "selected_state_anchor": "PENDING",
+    "route_hud_companion_readability": "PENDING",
+    "provider_road_place_comprehension": "PENDING",
+    "naver_attribution_legal_ui": "PENDING"
+  },
+  "notes": "Copy this file outside the production asset registry, bind it to the exact marker fingerprint from the reviewed evidence, and change decision/checks only after physical-device human review."
+}
