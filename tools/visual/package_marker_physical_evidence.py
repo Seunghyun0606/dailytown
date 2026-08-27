@@ -27,6 +27,7 @@ from verify_marker_promotion_readiness import (
 
 DEFAULT_APPROVAL_TEMPLATE = ROOT / "design/export-spec/marker-promotion-approval.template.v1.json"
 EXPECTED_CAPTURE_COUNT = 28
+EXPECTED_SESSION_SHA_PLACEHOLDER = "REPLACE_WITH_PHYSICAL_SESSION_SHA256_FROM_BUNDLE"
 
 
 class PackagingError(AssertionError):
@@ -79,18 +80,25 @@ def load_capture_sources(session_path: Path, session: dict[str, Any]) -> list[tu
     return result
 
 
-def bind_pending_approval(template_path: Path, fingerprint: str) -> dict[str, Any]:
+def bind_pending_approval(
+    template_path: Path,
+    fingerprint: str,
+    physical_session_sha256: str,
+) -> dict[str, Any]:
     approval = load_json(template_path)
     if approval.get("schema_version") != 1 or approval.get("marker_batch_id") != EXPECTED_BATCH_ID:
         raise PackagingError("approval template schema/batch mismatch")
     if approval.get("decision") != "PENDING":
         raise PackagingError("approval template must remain PENDING")
+    if approval.get("physical_session_sha256") != EXPECTED_SESSION_SHA_PLACEHOLDER:
+        raise PackagingError("approval template physical-session placeholder mismatch")
     checks = approval.get("checks")
     if not isinstance(checks, dict) or set(checks) != REQUIRED_HUMAN_CHECKS:
         raise PackagingError("approval template human-check set mismatch")
     if any(value != "PENDING" for value in checks.values()):
         raise PackagingError("approval template checks must all remain PENDING")
     approval["marker_candidate_fingerprint_sha256"] = fingerprint
+    approval["physical_session_sha256"] = physical_session_sha256
     return approval
 
 
@@ -99,19 +107,21 @@ def write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def write_review_instructions(path: Path, fingerprint: str) -> None:
+def write_review_instructions(path: Path, fingerprint: str, physical_session_sha256: str) -> None:
     path.write_text(
         "# Daily Town marker physical review bundle\n\n"
         "This bundle is evidence only. It does not promote marker assets.\n\n"
         f"- Marker batch: `{EXPECTED_BATCH_ID}`\n"
         f"- Marker assets: `{EXPECTED_ASSET_COUNT}` candidates\n"
         f"- Fingerprint: `{fingerprint}`\n"
+        f"- Physical session SHA-256: `{physical_session_sha256}`\n"
         f"- Matrix captures: `{EXPECTED_CAPTURE_COUNT}`\n\n"
         "Review every capture on the physical-device run and update "
         "`marker-promotion-approval.v1.json` only after checking marker readability, "
         "selected-state anchor, route/HUD/companion readability, provider road/place "
         "comprehension, and NAVER attribution/legal UI. Keep any non-PASS item as "
-        "PENDING/FAIL; do not force approval.\n\n"
+        "PENDING/FAIL; do not force approval. Do not copy approval between physical "
+        "sessions: the approval is bound to this session SHA-256.\n\n"
         "After human approval, run `tools/visual/verify_marker_promotion_readiness.py` "
         "with a passing emulator session, this bundle's `session.json`, and the completed "
         "approval JSON. Readiness PASS still does not mutate production assets.\n",
@@ -142,7 +152,12 @@ def package_evidence(
     )
     session = load_json(session_path)
     capture_sources = load_capture_sources(session_path, session)
-    approval = bind_pending_approval(approval_template, fingerprint)
+    physical_session_sha256 = sha256_file(session_path)
+    approval = bind_pending_approval(
+        approval_template,
+        fingerprint,
+        physical_session_sha256,
+    )
 
     zip_path: Path | None = output_dir.parent / f"{output_dir.name}.zip" if create_zip else None
     if zip_path is not None and zip_path.exists() and not replace:
@@ -176,7 +191,7 @@ def package_evidence(
             "marker_batch_id": EXPECTED_BATCH_ID,
             "marker_candidate_asset_count": EXPECTED_ASSET_COUNT,
             "marker_candidate_fingerprint_sha256": fingerprint,
-            "physical_session_sha256": sha256_file(staging / "session.json"),
+            "physical_session_sha256": physical_session_sha256,
             "runner_hint": (session.get("environment") or {}).get("runnerHint"),
             "emulator": (session.get("environment") or {}).get("emulator"),
             "android_release": (session.get("environment") or {}).get("androidRelease"),
@@ -187,7 +202,7 @@ def package_evidence(
             "promotion_performed": False,
         }
         write_json(staging / "bundle-manifest.v1.json", manifest)
-        write_review_instructions(staging / "REVIEW.md", fingerprint)
+        write_review_instructions(staging / "REVIEW.md", fingerprint, physical_session_sha256)
 
         if output_dir.exists():
             shutil.rmtree(output_dir)
