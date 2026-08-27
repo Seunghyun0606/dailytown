@@ -2,6 +2,7 @@
   "schema_version": 1,
   "marker_batch_id": "marker-split-export-v1",
   "marker_candidate_fingerprint_sha256": "REPLACE_WITH_FINGERPRINT_FROM_NAVER_SESSION_JSON",
+  "physical_session_sha256": "REPLACE_WITH_PHYSICAL_SESSION_SHA256_FROM_BUNDLE",
   "decision": "PENDING",
   "reviewer": "",
   "reviewed_at": "",
@@ -12,5 +13,5 @@
     "provider_road_place_comprehension": "PENDING",
     "naver_attribution_legal_ui": "PENDING"
   },
-  "notes": "Copy this file outside the production asset registry, bind it to the exact marker fingerprint from the reviewed evidence, and change decision/checks only after physical-device human review."
+  "notes": "Copy this file outside the production asset registry, bind it to the exact marker fingerprint and physical session SHA-256 from the reviewed evidence, and change decision/checks only after physical-device human review."
 }
