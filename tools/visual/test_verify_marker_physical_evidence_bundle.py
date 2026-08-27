@@ -146,6 +146,16 @@ class MarkerPhysicalEvidenceBundleIntegrityTest(unittest.TestCase):
             with self.assertRaisesRegex(verify.BundleIntegrityError, "file set mismatch"):
                 self.verify_dir(bundle)
 
+    def test_rejects_directory_symlink(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            bundle, _ = make_bundle(root)
+            external = root / "external.txt"
+            external.write_text("external", encoding="utf-8")
+            (bundle / "linked.txt").symlink_to(external)
+            with self.assertRaisesRegex(verify.BundleIntegrityError, "contains symlink"):
+                self.verify_dir(bundle)
+
     def test_rejects_approval_from_other_session(self):
         with tempfile.TemporaryDirectory() as td:
             bundle, _ = make_bundle(Path(td))
