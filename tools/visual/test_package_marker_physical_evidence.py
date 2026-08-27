@@ -66,6 +66,7 @@ def make_template(root: Path):
         "schema_version": 1,
         "marker_batch_id": "marker-split-export-v1",
         "marker_candidate_fingerprint_sha256": "REPLACE",
+        "physical_session_sha256": pack.EXPECTED_SESSION_SHA_PLACEHOLDER,
         "decision": "PENDING",
         "reviewer": "",
         "reviewed_at": "",
@@ -104,6 +105,11 @@ class PackageMarkerPhysicalEvidenceTest(unittest.TestCase):
             self.assertFalse(manifest["promotion_performed"])
             approval = json.loads((bundle / "marker-promotion-approval.v1.json").read_text())
             self.assertEqual(approval["marker_candidate_fingerprint_sha256"], FP)
+            self.assertEqual(approval["physical_session_sha256"], manifest["physical_session_sha256"])
+            self.assertEqual(
+                approval["physical_session_sha256"],
+                pack.sha256_file(bundle / "session.json"),
+            )
             self.assertEqual(approval["decision"], "PENDING")
             self.assertEqual(len(list((bundle / "captures").rglob("*.png"))), 28)
 
@@ -130,6 +136,24 @@ class PackageMarkerPhysicalEvidenceTest(unittest.TestCase):
             root = Path(td)
             with self.assertRaises(pack.ReadinessError):
                 self.run_package(root, make_session(root, fingerprint="b" * 64))
+
+    def test_rejects_approval_template_without_session_placeholder(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            session = make_session(root)
+            template = make_template(root)
+            data = json.loads(template.read_text())
+            data["physical_session_sha256"] = "stale-session-hash"
+            template.write_text(json.dumps(data), encoding="utf-8")
+            with patch.object(pack, "verify_marker_batch", return_value=FP):
+                with self.assertRaisesRegex(pack.PackagingError, "physical-session placeholder"):
+                    pack.package_evidence(
+                        session_path=session,
+                        output_dir=root / "bundle",
+                        marker_batch=root / "unused-batch.json",
+                        approval_template=template,
+                        create_zip=False,
+                    )
 
 
 if __name__ == "__main__":
