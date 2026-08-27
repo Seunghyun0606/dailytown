@@ -9,14 +9,22 @@ import com.dailytown.app.poi.CachingPoiRepository
 import com.dailytown.app.poi.FixturePoiRepository
 import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.DailyTownApp
+import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.MapThemeRefreshController
+import com.dailytown.app.ui.visual.ProductionMarkerSvgVisualSource
 
 class MainActivity : ComponentActivity() {
     private lateinit var mapThemeRefreshController: MapThemeRefreshController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mapAdapter = NaverMapAdapter(BuildConfig.NAVER_MAP_NCP_KEY_ID)
+        val markerVisualSource = ProductionMarkerSvgVisualSource(
+            AndroidProductionMarkerAssetCatalog(assets),
+        )
+        val mapAdapter = NaverMapAdapter(
+            ncpKeyId = BuildConfig.NAVER_MAP_NCP_KEY_ID,
+            markerVisualSource = markerVisualSource,
+        )
         mapThemeRefreshController = MapThemeRefreshController(mapAdapter)
         val progressStore = DataStoreProgressStore(applicationContext)
         val poiRepository = CachingPoiRepository(FixturePoiRepository())
