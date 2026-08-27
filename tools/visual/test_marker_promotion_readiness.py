@@ -93,6 +93,7 @@ class MarkerPromotionReadinessTest(unittest.TestCase):
             'schema_version': 1,
             'marker_batch_id': marker_readiness.EXPECTED_BATCH_ID,
             'marker_candidate_fingerprint_sha256': self.fingerprint,
+            'physical_session_sha256': marker_readiness.sha256_file(self.physical_path),
             'decision': decision,
             'reviewer': 'human-reviewer',
             'reviewed_at': '2026-08-27T15:00:00+09:00',
@@ -132,6 +133,15 @@ class MarkerPromotionReadinessTest(unittest.TestCase):
         first = self.batch['assets'][0]
         (self.root / first['path']).write_text('changed', encoding='utf-8')
         with self.assertRaisesRegex(marker_readiness.ReadinessError, 'checksum mismatch'):
+            self.verify()
+
+    def test_approval_from_different_physical_session_is_rejected(self):
+        approval = self.approval('APPROVED')
+        physical = self.session(False, 'physical-connected-device')
+        physical['environment']['model'] = 'Different Physical Phone Session'
+        self.write_json(self.physical_path, physical)
+        self.write_json(self.approval_path, approval)
+        with self.assertRaisesRegex(marker_readiness.ReadinessError, 'supplied physical session'):
             self.verify()
 
 
