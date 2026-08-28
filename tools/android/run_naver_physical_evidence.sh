@@ -79,14 +79,22 @@ fi
 RUN_STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUTPUT_ROOT="${DAILYTOWN_MARKER_EVIDENCE_DIR:-app/build/marker-physical-evidence}"
 BUNDLE_DIR="${OUTPUT_ROOT%/}/physical-${RUN_STAMP}"
+BUNDLE_ZIP="$BUNDLE_DIR.zip"
 
 python3 tools/visual/package_marker_physical_evidence.py \
   --session "${SESSIONS[0]}" \
   --output-dir "$BUNDLE_DIR"
 
+# The packager creates both a directory and matching ZIP. Verify both independently
+# before reporting success so a corrupt or unsafe review bundle cannot be handed off.
+python3 tools/visual/verify_marker_physical_evidence_bundle.py \
+  --bundle "$BUNDLE_DIR"
+python3 tools/visual/verify_marker_physical_evidence_bundle.py \
+  --bundle "$BUNDLE_ZIP"
+
 echo ""
-echo "Physical marker evidence is packaged for human review."
+echo "Physical marker evidence is packaged and integrity-verified for human review."
 echo "Review: $BUNDLE_DIR/REVIEW.md"
 echo "Pending approval copy: $BUNDLE_DIR/marker-promotion-approval.v1.json"
-echo "Archive: $BUNDLE_DIR.zip"
+echo "Archive: $BUNDLE_ZIP"
 echo "Do not promote marker assets until the human approval is completed and the promotion readiness checker passes."
