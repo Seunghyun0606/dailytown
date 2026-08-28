@@ -17,7 +17,7 @@ DAILYTOWN_MARKER_EVIDENCE_DIR=/safe/local/path/marker-evidence \
   tools/android/run_naver_physical_evidence.sh
 ```
 
-The runner refuses emulator targets, clears only stale connected-device additional NAVER output before starting, runs the existing `NaverMapVisualQaTest`, and creates a review bundle only when that test exits successfully.
+The runner refuses emulator targets, clears only stale connected-device additional NAVER output before starting, runs the existing `NaverMapVisualQaTest`, and creates a review bundle only when that test exits successfully. After packaging, it independently verifies both the generated bundle directory and matching ZIP with `verify_marker_physical_evidence_bundle.py`; it reports success only if both integrity checks pass.
 
 ## Bundle contract
 
@@ -43,7 +43,7 @@ No coordinate, route geometry, credential value, device serial, automatic upload
 
 ## Bundle integrity verification
 
-Before human review, after copying a bundle between machines, and again before promotion readiness, verify the bundle directory or ZIP independently:
+The physical runner automatically performs both directory and ZIP integrity verification before reporting a successful package. The verifier can also be rerun manually after copying a bundle between machines, after human approval edits, and again before promotion readiness:
 
 ```bash
 python3 tools/visual/verify_marker_physical_evidence_bundle.py \
@@ -66,6 +66,7 @@ The verifier is non-mutating and never promotes assets. It fails closed unless a
 - all 28 manifest capture records match the session `id`, `kind`, and derived bundle path;
 - every capture file exists and matches its manifest SHA-256;
 - the bundle contains exactly the four root files plus the 28 expected capture files, with no missing or unexpected files;
+- directory input contains no symlink files or symlink directories;
 - approval schema, marker fingerprint, physical-session SHA-256, and human-check keys remain valid;
 - a human-modified `APPROVED` approval has all five checks `PASS` plus non-empty reviewer and review timestamp;
 - ZIP input has exactly one top-level bundle directory and contains no absolute/traversal paths, duplicate entries, symlinks, or oversized extraction payloads.
