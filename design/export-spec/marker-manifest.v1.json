@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "production_export_candidate_batch_ready",
+  "families": ["DAY", "DARK"],
+  "semantic_markers": ["marker.encounter.hinted","marker.encounter.discoverable","marker.encounter.active","marker.encounter.solved","marker.encounter.revisit","marker.clue","marker.poi.park","marker.poi.culture","marker.poi.landmark","marker.poi.daily_life","marker.poi.nature","marker.poi.other"],
+  "rules": {"same_geo_anchor_across_variants":true,"bottom_anchor_is_canonical":true,"color_only_state_difference_forbidden":true,"state_dimensions":["base_silhouette","internal_icon","outline","badge_or_ring"],"selected_state_geo_anchor_must_not_shift":true,"solved_quieter_than_active":true,"dark_family_outline_luminance_priority":true},
+  "fallbacks": {"missing_dark_asset":"approved_high_contrast_fallback","missing_selected_variant":"base_plus_semantic_halo","missing_poi_specific":"marker.poi.other"},
+  "source_master": {"path":"design/source/markers/marker-family-v1.svg","approval_state":"approved_source","editable":true,"contains_day_and_dark":true,"runtime_direct_use":false},
+  "split_export": {"batch":"design/production/marker-split-export-v1.json","asset_count":24,"design_qa":"PASS","runtime_direct_use_before_map_qa":false},
+  "export_state": "split_export_complete_design_qa_pass",
+  "next_gate": "real_NAVER_map_readability_and_runtime_anchor_QA"
+}

@@ -1,0 +1,210 @@
+name: Emulator Replay + Visual QA
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "app/build.gradle.kts"
+      - "app/src/androidTest/**"
+      - "app/src/main/java/com/dailytown/app/ui/**"
+      - "app/src/main/java/com/dailytown/app/visual/**"
+      - "app/src/main/java/com/dailytown/app/location/**"
+      - "app/src/main/java/com/dailytown/app/map/**"
+      - "design/production/**"
+      - "design/export-spec/**"
+      - ".github/workflows/emulator-smoke.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  replay-and-static-visual-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 15859902
+          packages: platform-tools
+      - name: Install Android build SDK and emulator
+        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" emulator
+      - name: Enable KVM access when available
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.5.0"
+      - name: Run replay, static visual, production binding, and overlay-contract smoke
+        run: >-
+          gradle pixel2Api30AtdDebugAndroidTest
+          -Pandroid.enableAdditionalTestOutput=true
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionMarkerRuntimeBoundaryTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Locate compact static visual QA captures
+        if: always()
+        shell: bash
+        run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
+      - name: Upload compact static visual QA artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dailytown-emulator-static-visual-qa
+          path: |
+            app/build/reports/androidTests/**
+            app/build/outputs/androidTest-results/**
+            app/build/outputs/managed_device_android_test_additional_output/**
+            app/build/intermediates/managed_device_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 7
+
+  naver-real-map-visual-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 15859902
+          packages: platform-tools
+      - name: Install Android build SDK and emulator
+        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" emulator
+      - name: Enable KVM access when available
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.5.0"
+      - name: Verify managed-device QA configuration
+        run: gradle verifyManagedDeviceQaConfig
+      - name: Run credentialed NAVER real-map visual QA
+        env:
+          NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
+        run: >-
+          gradle pixel2Api30AtdDebugAndroidTest
+          -Pandroid.enableAdditionalTestOutput=true
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.NaverMapVisualQaTest
+          -Pandroid.testInstrumentationRunnerArguments.dailytownQaRunner=pixel2Api30Atd
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Summarize NAVER real-map diagnostics
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import glob
+          import json
+
+          files = sorted(glob.glob("app/build/**/visual/naver-diagnostics/session.json", recursive=True))
+          if not files:
+              print("NAVER QA diagnostic JSON was not produced")
+          for path in files:
+              with open(path, encoding="utf-8") as handle:
+                  data = json.load(handle)
+              env = data.get("environment", {})
+              client = data.get("naverClient", {})
+              network = data.get("networkFinal", {})
+              attempts = data.get("baseMapAttempts", [])
+              captures = data.get("matrixCaptures", [])
+              baseline = [item for item in captures if item.get("kind") == "baseline"]
+              ev1 = [item for item in captures if item.get("kind") == "ev1_checkpoint"]
+              last = attempts[-1] if attempts else {}
+              summary = {
+                  "artifactPath": path,
+                  "outcome": data.get("outcome"),
+                  "failureCategory": data.get("failureCategory"),
+                  "clientMode": client.get("mode"),
+                  "expectedRegisteredAndroidPackage": client.get("expectedRegisteredAndroidPackage"),
+                  "packageMatchesExpected": client.get("packageMatchesExpected"),
+                  "runnerHint": env.get("runnerHint"),
+                  "model": env.get("model"),
+                  "product": env.get("product"),
+                  "emulator": env.get("emulator"),
+                  "abis": env.get("supportedAbis"),
+                  "networkInternet": network.get("internet"),
+                  "networkValidated": network.get("validated"),
+                  "readyLatencyMs": data.get("readyLatencyMs"),
+                  "attemptCount": len(attempts),
+                  "matrixCaptureCount": len(captures),
+                  "baselineCaptureCount": len(baseline),
+                  "ev1CheckpointCaptureCount": len(ev1),
+                  "lastEvidence": {
+                      "quantizedColors": last.get("quantizedColors"),
+                      "luminanceStdDev": last.get("luminanceStdDev"),
+                      "strongEdgeRatio": last.get("strongEdgeRatio"),
+                      "passed": last.get("passed"),
+                  },
+              }
+              print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+          PY
+      - name: Locate NAVER real-map captures
+        if: always()
+        shell: bash
+        run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
+      - name: Upload NAVER real-map QA artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dailytown-naver-real-map-visual-qa
+          path: |
+            app/build/reports/androidTests/**
+            app/build/outputs/androidTest-results/**
+            app/build/outputs/managed_device_android_test_additional_output/**
+            app/build/intermediates/managed_device_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 7
+
+  a3-wide-visual-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 15859902
+          packages: platform-tools
+      - name: Install Android build SDK and emulator
+        run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" emulator
+      - name: Enable KVM access when available
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+          fi
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.5.0"
+      - name: Capture A-3 exact-width 360/412/600dp matrix
+        run: >-
+          gradle pixelCApi30AtdDebugAndroidTest
+          -Pandroid.enableAdditionalTestOutput=true
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.A3VisualQaTest
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Locate A-3 visual QA captures
+        if: always()
+        shell: bash
+        run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
+      - name: Upload A-3 visual QA artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dailytown-a3-five-screen-visual-qa
+          path: |
+            app/build/reports/androidTests/**
+            app/build/outputs/androidTest-results/**
+            app/build/outputs/managed_device_android_test_additional_output/**
+            app/build/intermediates/managed_device_android_test_additional_output/**
+          if-no-files-found: warn
+          retention-days: 7

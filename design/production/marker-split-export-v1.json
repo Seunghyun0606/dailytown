@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "batch_id": "marker-split-export-v1",
+  "status": "design_qa_complete_production_export_candidate",
+  "asset_count": 24,
+  "family_count": 2,
+  "common_geo_anchor": {"x": 0.5, "y": 0.96875, "viewbox_tip": [0, 76]},
+  "qa": {
+    "svg_parse": "PASS",
+    "raster_render_contact_sheet": "PASS",
+    "common_anchor": "PASS",
+    "non_color_state_distinction": "PASS",
+    "day_dark_icon_correspondence": "PASS",
+    "real_map_readability": "PENDING_DEVELOPMENT_SESSION"
+  },
+  "assets": [
+    {"family":"DAY","semantic_key":"marker.encounter.hinted","path":"design/production/markers/v1/day/day-encounter-hinted.v1.svg","sha256":"0249216eb8d8596dca0bd7b429c6a9e444ecc9e1f3b722ca2dd7e0b81ac293ec","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.encounter.discoverable","path":"design/production/markers/v1/day/day-encounter-discoverable.v1.svg","sha256":"5502f27b1587afd6e566b3fd46673150f5dfb0024e559b182a85e0ef89991a73","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.encounter.active","path":"design/production/markers/v1/day/day-encounter-active.v1.svg","sha256":"c74e4d02cb9429f6621e19649b6ba961118a078043ca7e0bd8987b8af51d47ca","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.encounter.solved","path":"design/production/markers/v1/day/day-encounter-solved.v1.svg","sha256":"2263f31e5082437b94074fcf6451f0dccb3364fa94c0e60cfeb1ddf5b809d8e7","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.encounter.revisit","path":"design/production/markers/v1/day/day-encounter-revisit.v1.svg","sha256":"6c1992260535cbc88165fcd22d984d61ba997e95a5210c9445144a4ba7b7cb1c","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.clue","path":"design/production/markers/v1/day/day-clue.v1.svg","sha256":"b8a7f79bad8307bcf5b9267af2653857a43be1534f414e4efe0bb52891e25f49","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.poi.park","path":"design/production/markers/v1/day/day-poi-park.v1.svg","sha256":"fbca55f5035e4dc3c071d4a4e995fb2206f7527d34cac61c5e592e559e579893","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.poi.culture","path":"design/production/markers/v1/day/day-poi-culture.v1.svg","sha256":"a29f36d0d1b7aba2600e03cae0615848d8f0a20c9e6d42c0cee57f69e24c8077","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.poi.landmark","path":"design/production/markers/v1/day/day-poi-landmark.v1.svg","sha256":"6623fa28423300de865e2683d2cfa7c6baf5ad5ef9b779275b5e5d666302fc05","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.poi.daily_life","path":"design/production/markers/v1/day/day-poi-daily_life.v1.svg","sha256":"ad2a713625bb880d178f72efd8d9e6e6e97f2b145ebf1c66f1a9825603c444e8","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.poi.nature","path":"design/production/markers/v1/day/day-poi-nature.v1.svg","sha256":"b66872541fa99cda0470941d752dc1933888823bdfad81e8004e3708baa2c614","approval_state":"production_export_candidate"},
+    {"family":"DAY","semantic_key":"marker.poi.other","path":"design/production/markers/v1/day/day-poi-other.v1.svg","sha256":"a99ef7adbcfb8beae8b7b856b48d7d1ebc23034b5b856b871ecfe34d1554ebfb","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.encounter.hinted","path":"design/production/markers/v1/dark/dark-encounter-hinted.v1.svg","sha256":"4edaba37e552c8e6abfa3c3a44f3d67db680ba8d3b42ed58ea97f4dbbe9632f5","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.encounter.discoverable","path":"design/production/markers/v1/dark/dark-encounter-discoverable.v1.svg","sha256":"9ceb3ba729f0d94177d9faca1529322b584190c33d2fa0869a46e097d32143e9","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.encounter.active","path":"design/production/markers/v1/dark/dark-encounter-active.v1.svg","sha256":"50385232ecb972c45b82ebbf32c99a2fe925de6834c81212ba0b76a1ce214795","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.encounter.solved","path":"design/production/markers/v1/dark/dark-encounter-solved.v1.svg","sha256":"cd8db68b7dd17f83712a7a092838f496f9a5954d528ca1e3617ebb57ad75de05","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.encounter.revisit","path":"design/production/markers/v1/dark/dark-encounter-revisit.v1.svg","sha256":"91592c0540bbfd52a2fe0a2c2ee69ffda4cd686668dfd7ec73f0fea008c26967","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.clue","path":"design/production/markers/v1/dark/dark-clue.v1.svg","sha256":"ea387ba64cbe3c3cedc22c722e8983ebf50736a4c4df6bcde6bc0eb581cfdafc","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.poi.park","path":"design/production/markers/v1/dark/dark-poi-park.v1.svg","sha256":"94f9392164812a33ff2c72fae48d6a0e5cd8280788a94f8287beadb431075d6e","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.poi.culture","path":"design/production/markers/v1/dark/dark-poi-culture.v1.svg","sha256":"5ec2cf9a0ec20dca374c26e0739bae9f9134a26899c8c34ee8671442479d23ba","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.poi.landmark","path":"design/production/markers/v1/dark/dark-poi-landmark.v1.svg","sha256":"42b67e664b417690d83a31ea04d6e3fba9b3861856b181bbe58b9960f29a0dd1","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.poi.daily_life","path":"design/production/markers/v1/dark/dark-poi-daily_life.v1.svg","sha256":"89283ef7a20529ce2d337b25e25d99b9ea712eefad36b29d3b5929dc02f0a4fd","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.poi.nature","path":"design/production/markers/v1/dark/dark-poi-nature.v1.svg","sha256":"e01ed7e9c9f0d6d5900a0a77afe50d382a7fecd2a1e1967a0308d3b940942f73","approval_state":"production_export_candidate"},
+    {"family":"DARK","semantic_key":"marker.poi.other","path":"design/production/markers/v1/dark/dark-poi-other.v1.svg","sha256":"551b9a9c7433095f1b363f2521e954ea0a87b9dedb1456c080078971244c6a74","approval_state":"production_export_candidate"}
+  ],
+  "promotion_gate": ["real_NAVER_map_readability_QA","selected_state_anchor_runtime_check","semantic_resolver_smoke_test"]
+}

@@ -1,39 +1,61 @@
 package com.dailytown.app.map
 
 import android.content.Context
+import android.graphics.PointF
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.visual.MapOverlaySemanticState
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * NAVER-specific rendering adapter. Nothing outside this class needs NAVER SDK types.
  * When credentials are missing, it renders a safe placeholder while replay/location/domain flows stay testable.
+ * Authentication failures are translated into safe provider-neutral health diagnostics without exposing the NCP key ID.
  */
 class NaverMapAdapter(
     private val ncpKeyId: String,
+    private val markerVisualSource: MapMarkerVisualSource? = null,
 ) : MapViewAdapter {
     override val providerId = MapProviderId.NAVER
 
+    private val _health = MutableStateFlow(
+        MapHealth(
+            status = if (isConfiguredValue(ncpKeyId)) MapHealthStatus.INITIALIZING else MapHealthStatus.UNCONFIGURED,
+        ),
+    )
+    override val health: StateFlow<MapHealth> = _health
+
     private var mapView: MapView? = null
     private var naverMap: NaverMap? = null
+    private var naverMapSdk: NaverMapSdk? = null
+    private var authFailedListener: NaverMapSdk.OnAuthFailedListener? = null
     private var pendingCamera: Pair<GeoPoint, Double>? = null
     private var pendingMarkers: List<MapMarkerSpec> = emptyList()
     private var pendingLocation: UserLocationSpec? = null
+    private var pendingTheme: MapThemeSpec = MapThemeSpec()
+    private var pendingOverlayState: MapOverlaySemanticState = MapOverlaySemanticState()
     private val renderedMarkers = mutableMapOf<String, Marker>()
 
     private val isConfigured: Boolean
-        get() = ncpKeyId.isNotBlank() && !ncpKeyId.startsWith("TODO_")
+        get() = isConfiguredValue(ncpKeyId)
 
     override fun createView(context: Context): View {
         if (!isConfigured) {
+            _health.value = MapHealth(
+                status = MapHealthStatus.UNCONFIGURED,
+                userMessage = "NAVER Maps credential is not configured.",
+            )
             return FrameLayout(context).apply {
                 addView(
                     TextView(context).apply {
@@ -48,15 +70,66 @@ class NaverMapAdapter(
             }
         }
 
-        NaverMapSdk.getInstance(context).client = NaverMapSdk.NcpKeyClient(ncpKeyId)
-        return MapView(context).also { view ->
+        _health.value = MapHealth(MapHealthStatus.INITIALIZING)
+        val container = FrameLayout(context)
+        val view = MapView(context)
+        val errorView = TextView(context).apply {
+            gravity = Gravity.CENTER
+            visibility = View.GONE
+            setPadding(24, 16, 24, 16)
+        }
+        container.addView(
+            view,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+            ),
+        )
+        container.addView(
+            errorView,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP,
+            ),
+        )
+
+        try {
+            val sdk = NaverMapSdk.getInstance(context)
+            val listener = NaverMapSdk.OnAuthFailedListener { exception ->
+                val message = authFailureMessage(exception)
+                _health.value = MapHealth(
+                    status = MapHealthStatus.AUTH_ERROR,
+                    errorCode = exception.errorCode,
+                    userMessage = message,
+                )
+                errorView.text = message
+                errorView.visibility = View.VISIBLE
+            }
+            naverMapSdk = sdk
+            authFailedListener = listener
+            sdk.client = NaverMapSdk.NcpKeyClient(ncpKeyId)
+            sdk.onAuthFailedListener = listener
+
             mapView = view
             view.onCreate(null)
             view.getMapAsync { map ->
                 naverMap = map
+                applyTheme()
+                _health.value = MapHealth(MapHealthStatus.READY)
+                errorView.visibility = View.GONE
                 flushState()
             }
+        } catch (error: Throwable) {
+            _health.value = MapHealth(
+                status = MapHealthStatus.ERROR,
+                errorCode = "initialization",
+                userMessage = "NAVER Maps 초기화에 실패했습니다.",
+            )
+            errorView.text = "NAVER Maps 초기화에 실패했습니다."
+            errorView.visibility = View.VISIBLE
         }
+        return container
     }
 
     override fun setCamera(target: GeoPoint, zoom: Double) {
@@ -64,9 +137,22 @@ class NaverMapAdapter(
         naverMap?.moveCamera(CameraUpdate.scrollAndZoomTo(target.toLatLng(), zoom))
     }
 
+    override fun setTheme(theme: MapThemeSpec) {
+        pendingTheme = theme
+        applyTheme()
+        syncMarkers()
+    }
+
     override fun setMarkers(markers: List<MapMarkerSpec>) {
         pendingMarkers = markers
         syncMarkers()
+    }
+
+    override fun setOverlayState(state: MapOverlaySemanticState) {
+        // Retain the provider-neutral semantic state even before provider-specific route/halo/effect
+        // drawing is enabled. Actual NAVER overlays require approved geometry/style inputs and must
+        // not be invented from QA fixture pixels or motion prototypes.
+        pendingOverlayState = state
     }
 
     override fun setUserLocation(location: UserLocationSpec?) {
@@ -83,15 +169,30 @@ class NaverMapAdapter(
     override fun onDestroy() {
         renderedMarkers.values.forEach { it.map = null }
         renderedMarkers.clear()
+        val sdk = naverMapSdk
+        val listener = authFailedListener
+        if (sdk != null && listener != null && sdk.onAuthFailedListener === listener) {
+            sdk.onAuthFailedListener = null
+        }
         mapView?.onDestroy()
         mapView = null
         naverMap = null
+        naverMapSdk = null
+        authFailedListener = null
+        pendingOverlayState = MapOverlaySemanticState()
+        _health.value = MapHealth(MapHealthStatus.DESTROYED)
     }
 
     private fun flushState() {
         pendingCamera?.let { (target, zoom) -> setCamera(target, zoom) }
+        applyTheme()
         syncMarkers()
         syncUserLocation()
+    }
+
+    private fun applyTheme() {
+        val map = naverMap ?: return
+        map.isNightModeEnabled = pendingTheme.preferredBrightness == MapBrightnessFamily.DARK
     }
 
     private fun syncMarkers() {
@@ -104,6 +205,14 @@ class NaverMapAdapter(
             val marker = renderedMarkers.getOrPut(spec.id) { Marker() }
             marker.position = spec.position.toLatLng()
             marker.captionText = spec.title
+            val visual = markerVisualSource?.resolve(spec, pendingTheme)
+            if (visual != null) {
+                marker.icon = OverlayImage.fromBitmap(visual.bitmap)
+                marker.anchor = PointF(visual.anchorX, visual.anchorY)
+            } else {
+                marker.icon = Marker.DEFAULT_ICON
+                marker.anchor = Marker.DEFAULT_ANCHOR
+            }
             marker.map = map
         }
     }
@@ -119,5 +228,17 @@ class NaverMapAdapter(
         }
     }
 
+    private fun authFailureMessage(exception: NaverMapSdk.AuthFailedException): String = when (exception.errorCode) {
+        "401" -> "NAVER Maps 인증 실패 (401)\nNCP Key ID와 Android 패키지 등록을 확인하세요."
+        "429" -> "NAVER Maps 사용 불가 (429)\nDynamic Map 선택 여부와 사용량 한도를 확인하세요."
+        "800" -> "NAVER Maps 인증 정보 없음 (800)\nNAVER_MAP_NCP_KEY_ID 주입 상태를 확인하세요."
+        else -> "NAVER Maps 인증 오류 (${exception.errorCode})\nNAVER Cloud Maps 설정을 확인하세요."
+    }
+
     private fun GeoPoint.toLatLng() = LatLng(latitude, longitude)
+
+    private companion object {
+        fun isConfiguredValue(value: String): Boolean =
+            value.isNotBlank() && !value.startsWith("TODO_")
+    }
 }

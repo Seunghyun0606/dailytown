@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -22,36 +23,40 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.companion.CompanionMoment
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
+import com.dailytown.app.diagnostics.AndroidBatterySnapshotSource
 import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
+import com.dailytown.app.diagnostics.FieldTestSessionMonitor
+import com.dailytown.app.diagnostics.GameplaySessionMonitor
 import com.dailytown.app.domain.*
 import com.dailytown.app.location.*
+import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.mystery.*
-import com.dailytown.app.persistence.ExplorationProgress
-import com.dailytown.app.persistence.ProgressStore
-import com.dailytown.app.persistence.dailyPeriodKey
 import com.dailytown.app.persistence.toState
-import com.dailytown.app.persistence.weeklyPeriodKey
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
 import com.dailytown.app.reminder.LocalReminderManager
+import com.dailytown.app.ui.visual.A3ClueCard
+import com.dailytown.app.ui.visual.MapGameplayVisualBinder
+import com.dailytown.app.ui.visual.SemanticAssetRenderer
+import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
+import com.dailytown.app.visual.A3ClueState
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
-
-private enum class TrackingMode { OFF, DEVICE, REPLAY }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTownApp(
     mapAdapter: MapViewAdapter,
-    progressStore: ProgressStore,
+    progressStore: com.dailytown.app.persistence.ProgressStore,
     poiRepository: PoiRepository,
     reminderManager: LocalReminderManager,
 ) {
     val context = LocalContext.current
+    val mapHealth by mapAdapter.health.collectAsState()
     val spots = remember { demoMysterySpots() }
     val defaultCompanion = remember { Companion("moru", "모루", 12) }
     val initialState = remember { ExplorationState(companion = defaultCompanion) }
@@ -65,23 +70,33 @@ fun DailyTownApp(
 
     val templates = remember { MysteryTemplateCatalog.defaults() }
     val reducer = remember { MysteryReducer(templates.associateBy { it.id }) }
-    val encounterGenerator = remember { EncounterGenerator(templates = templates) }
-    val proximityController = remember { EncounterProximityController(reducer = reducer) }
+    val encounterCoordinator = remember { EncounterCoordinator(templates = templates) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
-    val goalRotationCoordinator = remember { GoalRotationCoordinator() }
+    val trackingCoordinator = remember { TrackingSessionCoordinator() }
+    val progressCoordinator = remember(progressStore) { ProgressRuntimeCoordinator(progressStore) }
+    val fieldTestSessionMonitor = remember {
+        FieldTestSessionMonitor(AndroidBatterySnapshotSource(context.applicationContext))
+    }
+    val gameplaySessionMonitor = remember { GameplaySessionMonitor() }
+    val mapVisualBinder = remember(mapAdapter) { MapGameplayVisualBinder(mapAdapter) }
+    val a3AssetRenderer = rememberProductionA3AssetRenderer()
+
+    val trackingRuntime by trackingCoordinator.state.collectAsState()
+    val progressRuntime by progressCoordinator.state.collectAsState()
+    val trackingMode = trackingRuntime.mode
+    val trackingPreset = trackingRuntime.preset
+    val gameProgress = progressRuntime.progress
+    val dailyGoals = progressRuntime.dailyGoals
+    val weeklyGoals = progressRuntime.weeklyGoals
+    val persistenceReady = progressRuntime.ready
 
     var snapshot by remember { mutableStateOf(session.current()) }
-    var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
-    var encounterSequence by remember { mutableIntStateOf(0) }
-    var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
-    var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
-    var persistenceReady by remember { mutableStateOf(false) }
-    var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
-    var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
+    var referenceDistanceText by remember { mutableStateOf("") }
+    var sessionToken by remember { mutableIntStateOf(0) }
 
     val reminderPreference = remember { reminderManager.preference() }
     var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
@@ -94,45 +109,35 @@ fun DailyTownApp(
         )
     }
     val replaySource = remember { ReplayLocationSource() }
-
     val currentDate = LocalDate.now()
-    val dayKey = dailyPeriodKey(currentDate)
-    val weekKey = weeklyPeriodKey(currentDate)
 
-    LaunchedEffect(progressStore) {
+    LaunchedEffect(progressCoordinator) {
         try {
-            val restored = progressStore.load()
-            val rotation = goalRotationCoordinator.ensure(restored, LocalDate.now())
-            gameProgress = rotation.progress
-            dailyGoals = rotation.dailyGoals
-            weeklyGoals = rotation.weeklyGoals
-            session.restore(rotation.progress.toState(defaultCompanion))
+            val restored = progressCoordinator.restore(LocalDate.now())
+            session.restore(restored.progress.toState(defaultCompanion))
             snapshot = session.current()
         } catch (error: Throwable) {
             errorMessage = "진행도 불러오기 실패: ${error.message ?: "unknown"}"
-        } finally {
-            persistenceReady = true
+            val fallback = progressCoordinator.activateFallback(LocalDate.now())
+            session.restore(fallback.progress.toState(defaultCompanion))
+            snapshot = session.current()
         }
     }
 
-    LaunchedEffect(dayKey, weekKey, persistenceReady) {
+    LaunchedEffect(currentDate, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        val rotation = goalRotationCoordinator.ensure(gameProgress, LocalDate.now())
-        if (rotation.progress != gameProgress) gameProgress = rotation.progress
-        dailyGoals = rotation.dailyGoals
-        weeklyGoals = rotation.weeklyGoals
+        progressCoordinator.ensureCurrentPeriod(LocalDate.now())
     }
 
     LaunchedEffect(snapshot.state, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        val synced = gameProgress.syncExploration(snapshot.state, LocalDate.now())
-        if (synced != gameProgress) gameProgress = synced
+        progressCoordinator.syncExploration(snapshot.state, LocalDate.now())
     }
 
-    LaunchedEffect(gameProgress, persistenceReady) {
-        if (!persistenceReady) return@LaunchedEffect
+    LaunchedEffect(gameProgress, persistenceReady, progressRuntime.persistenceEnabled) {
+        if (!persistenceReady || !progressRuntime.persistenceEnabled) return@LaunchedEffect
         try {
-            progressStore.save(gameProgress)
+            progressCoordinator.persist()
         } catch (error: Throwable) {
             errorMessage = "진행도 저장 실패: ${error.message ?: "unknown"}"
         }
@@ -144,12 +149,20 @@ fun DailyTownApp(
     }
 
     fun start(mode: TrackingMode) {
+        sessionToken += 1
         session.restartTracking()
+        encounterCoordinator.reset()
+        gameplaySessionMonitor.reset()
+        if (mode == TrackingMode.DEVICE) {
+            fieldTestSessionMonitor.begin()
+        } else {
+            fieldTestSessionMonitor.reset()
+        }
         snapshot = session.current()
         activeEncounter = null
         lastCompanionMoment = null
         errorMessage = null
-        trackingMode = mode
+        trackingCoordinator.start(mode)
     }
 
     fun applyReaction(moment: CompanionMoment) {
@@ -200,65 +213,57 @@ fun DailyTownApp(
         activeEncounter?.encounter?.phase,
     ) {
         val sample = snapshot.currentLocation ?: return@LaunchedEffect
-        var selection = activeEncounter
+        val previousEncounter = activeEncounter
+        val nearbyPois = if (previousEncounter == null) {
+            poiRepository.nearby(sample.point, radiusMeters = 900.0)
+        } else {
+            emptyList()
+        }
 
-        if (selection == null) {
-            val pois = poiRepository.nearby(sample.point, radiusMeters = 900.0)
-            val history = EncounterHistory(
+        val step = encounterCoordinator.advance(
+            current = previousEncounter,
+            user = sample.point,
+            nearbyPois = nearbyPois,
+            runtime = EncounterRuntimeContext(
+                visitedPoiIds = gameProgress.encounterVisitedPoiIds,
                 recentPoiIds = gameProgress.recentPoiIds.toSet(),
                 recentTemplateIds = gameProgress.recentTemplateIds.toSet(),
                 recentPairKeys = gameProgress.recentPairKeys.toSet(),
-            )
-            val encounterContext = EncounterContextFactory.create(
-                date = LocalDate.now(),
-                time = LocalTime.now(),
                 companionBond = snapshot.state.companion.bond,
                 memoryKeys = gameProgress.companionMemoryKeys,
-            )
-            selection = encounterGenerator.choose(
-                encounterKey = "enc-${encounterSequence++}",
-                center = sample.point,
-                pois = pois,
-                context = encounterContext,
-                visitedPoiIds = gameProgress.encounterVisitedPoiIds,
-                history = history,
-            )
-            activeEncounter = selection
-        }
-
-        val current = selection ?: return@LaunchedEffect
-        if (current.encounter.phase == EncounterPhase.RESOLVED) return@LaunchedEffect
-
-        val advanced = proximityController.advance(
-            encounter = current.encounter,
-            user = sample.point,
-            poi = current.poi.position,
+            ),
+            date = LocalDate.now(),
+            time = LocalTime.now(),
         )
-        if (advanced == current.encounter) return@LaunchedEffect
-
-        val previousPhase = current.encounter.phase
-        activeEncounter = current.copy(encounter = advanced)
-        if (previousPhase == EncounterPhase.HIDDEN && advanced.phase == EncounterPhase.HINTED) {
-            applyReaction(CompanionMoment.HINT_APPEARED)
+        if (previousEncounter == null) {
+            step.selection?.let { gameplaySessionMonitor.recordEncounterOffered(it.isRevisit) }
         }
-        if (previousPhase != EncounterPhase.DISCOVERED && advanced.phase == EncounterPhase.DISCOVERED) {
-            gameProgress = gameProgress
-                .recordEncounterVisit(current.poi.id, current.template.id, LocalDate.now())
-                .recordMemory("poi:${current.poi.id}")
-            applyReaction(CompanionMoment.SPOT_DISCOVERED)
+        activeEncounter = step.selection
+
+        when (step.transition) {
+            EncounterTransition.HINTED -> {
+                gameplaySessionMonitor.recordHinted()
+                applyReaction(CompanionMoment.HINT_APPEARED)
+            }
+            EncounterTransition.DISCOVERED -> {
+                val selection = step.selection ?: return@LaunchedEffect
+                gameplaySessionMonitor.recordDiscovered(selection.isRevisit)
+                progressCoordinator.mutate(LocalDate.now()) { progress ->
+                    progress
+                        .recordEncounterVisit(selection.poi.id, selection.template.id, LocalDate.now())
+                        .recordMemory("poi:${selection.poi.id}")
+                }
+                applyReaction(CompanionMoment.SPOT_DISCOVERED)
+            }
+            EncounterTransition.NONE -> Unit
         }
     }
 
     LaunchedEffect(snapshot.currentLocation, activeEncounter) {
-        val encounterMarker = activeEncounter?.let { selection ->
-            MapMarkerSpec(
-                id = "active-${selection.encounter.id}",
-                title = encounterMarkerTitle(selection),
-                position = selection.poi.position,
-            )
-        }
-        mapAdapter.setMarkers(
-            spots.map { MapMarkerSpec(it.id, it.title, it.position) } + listOfNotNull(encounterMarker),
+        val persistentMarkers = spots.map { MapMarkerSpec(it.id, it.title, it.position) }
+        mapVisualBinder.applyEncounter(
+            selection = activeEncounter,
+            persistentMarkers = persistentMarkers,
         )
         snapshot.currentLocation?.let { sample ->
             mapAdapter.setUserLocation(UserLocationSpec(sample.point, sample.bearingDegrees))
@@ -274,8 +279,9 @@ fun DailyTownApp(
         distanceWalkedMeters = snapshot.state.distanceWalkedMeters,
     )
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
-        activeEncounter?.let { proximityController.distanceTo(sample.point, it.poi.position).roundToInt() }
+        activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
+    val gameplayMetrics = gameplaySessionMonitor.snapshot()
 
     MaterialTheme {
         Scaffold(topBar = { TopAppBar(title = { Text("Daily Town") }) }) { padding ->
@@ -289,7 +295,9 @@ fun DailyTownApp(
             ) {
                 Spacer(Modifier.height(4.dp))
                 Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall)
-                Text("지도: ${mapAdapter.providerId} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}")
+                Text(
+                    "지도: ${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}",
+                )
 
                 MapSurface(
                     mapAdapter = mapAdapter,
@@ -301,8 +309,22 @@ fun DailyTownApp(
                         Text("누적 탐험 거리 ${snapshot.state.distanceWalkedMeters.roundToInt()}m")
                         Text("미스터리 단서 ${gameProgress.inventoryClueIds.size}개 · 해결 ${gameProgress.resolvedEncounterIds.size}건")
                         Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
-                        if (snapshot.rejectedLocationCount > 0) {
-                            Text("GPS 품질 필터 제외 ${snapshot.rejectedLocationCount}회")
+                        if (snapshot.totalLocationSampleCount > 0) {
+                            Text(
+                                "세션 ${snapshot.sessionDistanceMeters.roundToInt()}m · 추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                            )
+                        }
+                        if (gameplayMetrics.encounterOfferedCount > 0) {
+                            val resolutionRate = gameplayMetrics.encounterResolutionRatePercent?.let { "$it%" } ?: "-"
+                            Text(
+                                "세션 미스터리 발견 ${gameplayMetrics.discoveredEncounterCount} · 해결 ${gameplayMetrics.resolvedEncounterCount} · 해결률 $resolutionRate · 단서 ${gameplayMetrics.cluesCollectedCount}",
+                            )
+                            gameplayMetrics.repeatAreaFatigueProxyPercent?.let { fatigue ->
+                                Text(
+                                    "재방문 ${gameplayMetrics.revisitOfferedCount}건 · 반복 피로 proxy ${fatigue}%",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
                         }
                         snapshot.newlyDiscovered.firstOrNull()?.let {
                             Text("주변 발견: ${it.title}", style = MaterialTheme.typography.titleMedium)
@@ -314,18 +336,29 @@ fun DailyTownApp(
                     selection = activeEncounter,
                     reducer = reducer,
                     distanceMeters = distanceToEncounter,
+                    assetRenderer = a3AssetRenderer,
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
-                            gameProgress = gameProgress.recordClue(clueId, LocalDate.now())
+                            gameplaySessionMonitor.recordClueCollected()
+                            progressCoordinator.mutate(LocalDate.now()) { progress ->
+                                progress.recordClue(clueId, LocalDate.now())
+                            }
                             applyReaction(CompanionMoment.CLUE_FOUND)
                         }
                     },
                     onResolve = { resolved ->
-                        activeEncounter = activeEncounter?.copy(encounter = resolved)
-                        val mechanic = activeEncounter?.template?.mechanic
-                        gameProgress = gameProgress.recordResolution(resolved, LocalDate.now())
-                        if (mechanic != null) gameProgress = gameProgress.recordMemory("mechanic:${mechanic.name}")
+                        val resolvingSelection = activeEncounter
+                        activeEncounter = resolvingSelection?.copy(encounter = resolved)
+                        resolvingSelection?.let { gameplaySessionMonitor.recordResolved(it.isRevisit) }
+                        val mechanic = resolvingSelection?.template?.mechanic
+                        progressCoordinator.mutate(LocalDate.now()) { progress ->
+                            var updated = progress.recordResolution(resolved, LocalDate.now())
+                            if (mechanic != null) {
+                                updated = updated.recordMemory("mechanic:${mechanic.name}")
+                            }
+                            updated
+                        }
                         applyReaction(CompanionMoment.MYSTERY_RESOLVED)
                     },
                     onContinue = {
@@ -367,8 +400,10 @@ fun DailyTownApp(
                                 FilterChip(
                                     selected = trackingPreset == preset,
                                     onClick = {
-                                        if (trackingMode == TrackingMode.DEVICE) trackingMode = TrackingMode.OFF
-                                        trackingPreset = preset
+                                        if (trackingMode == TrackingMode.DEVICE) {
+                                            fieldTestSessionMonitor.end()
+                                        }
+                                        trackingCoordinator.selectPreset(preset)
                                     },
                                     label = { Text(trackingPresetLabel(preset)) },
                                 )
@@ -411,7 +446,10 @@ fun DailyTownApp(
                             }
                         }
                         if (reminderEnabled && !reminderManager.canPostNotifications()) {
-                            Text("시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.", color = MaterialTheme.colorScheme.error)
+                            Text(
+                                "시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.",
+                                color = MaterialTheme.colorScheme.error,
+                            )
                         }
                     }
                 }
@@ -419,14 +457,43 @@ fun DailyTownApp(
                 ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
-                        Text("패키지/빌드/파생 통계만 공유하며 좌표와 지도 API 키는 제외합니다.", style = MaterialTheme.typography.bodySmall)
-                        Text("패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 주입 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "완료" else "없음"}")
+                        Text(
+                            "패키지/빌드/파생 통계만 공유하며 좌표·이벤트 ID·지도 API 키는 제외합니다.",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "주입" else "없음"} · 지도 ${mapHealthLabel(mapHealth.status)}",
+                        )
+                        Text(
+                            if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        OutlinedTextField(
+                            value = referenceDistanceText,
+                            onValueChange = { value ->
+                                if (value.all(Char::isDigit)) referenceDistanceText = value
+                            },
+                            label = { Text("기준 경로 거리(m, 선택)") },
+                            supportingText = { Text("좌표 대신 미리 확인한 총 거리 숫자만 입력합니다.") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                         OutlinedButton(onClick = {
+                            val sessionMetrics = fieldTestSessionMonitor.metrics(
+                                sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                                sessionDurationSeconds = snapshot.trackingDurationSeconds,
+                                referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
+                            )
                             val report = FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
+                                acceptedLocationCount = snapshot.acceptedLocationCount,
                                 rejectedLocationCount = snapshot.rejectedLocationCount,
+                                trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                                sessionMetrics = sessionMetrics,
+                                gameplayMetrics = gameplayMetrics,
                                 appVersion = BuildConfig.VERSION_NAME,
                                 mapProvider = mapAdapter.providerId.name,
+                                mapHealth = mapHealth,
                                 trackingPreset = trackingPreset,
                             ).render()
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -439,6 +506,30 @@ fun DailyTownApp(
                     }
                 }
 
+                FieldTestComparisonCard(
+                    sessionToken = sessionToken,
+                    canRecordCurrentSession = trackingMode == TrackingMode.OFF && snapshot.totalLocationSampleCount > 0,
+                    buildDiagnostic = {
+                        val sessionMetrics = fieldTestSessionMonitor.metrics(
+                            sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                            sessionDurationSeconds = snapshot.trackingDurationSeconds,
+                            referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
+                        )
+                        FieldTestDiagnosticBuilder.build(
+                            progress = normalizedProgress,
+                            acceptedLocationCount = snapshot.acceptedLocationCount,
+                            rejectedLocationCount = snapshot.rejectedLocationCount,
+                            trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                            sessionMetrics = sessionMetrics,
+                            gameplayMetrics = gameplayMetrics,
+                            appVersion = BuildConfig.VERSION_NAME,
+                            mapProvider = mapAdapter.providerId.name,
+                            mapHealth = mapHealth,
+                            trackingPreset = trackingPreset,
+                        )
+                    },
+                )
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = {
                         if (hasLocationPermission(context)) start(TrackingMode.DEVICE)
@@ -450,9 +541,15 @@ fun DailyTownApp(
                         )
                     }) { Text("실제 위치") }
 
-                    OutlinedButton(onClick = { start(TrackingMode.REPLAY) }) { Text("경로 리플레이") }
+                    OutlinedButton(
+                        onClick = { start(TrackingMode.REPLAY) },
+                        modifier = Modifier.testTag("tracking-replay"),
+                    ) { Text("경로 리플레이") }
                     TextButton(onClick = {
-                        trackingMode = TrackingMode.OFF
+                        if (trackingMode == TrackingMode.DEVICE) {
+                            fieldTestSessionMonitor.end()
+                        }
+                        trackingCoordinator.stop()
                         mapAdapter.setUserLocation(null)
                     }) { Text("중지") }
                 }
@@ -462,8 +559,13 @@ fun DailyTownApp(
                     when (trackingMode) {
                         TrackingMode.DEVICE -> "실기기 위치 추적 중 · ${trackingPresetLabel(trackingPreset)}"
                         TrackingMode.REPLAY -> "서울시청 → 덕수궁 테스트 경로 재생 중"
-                        TrackingMode.OFF -> if (persistenceReady) "탐험 대기 중 · 게임 진행도 저장 활성" else "진행도 불러오는 중"
+                        TrackingMode.OFF -> when {
+                            !persistenceReady -> "진행도 불러오는 중"
+                            progressRuntime.persistenceEnabled -> "탐험 대기 중 · 게임 진행도 저장 활성"
+                            else -> "탐험 대기 중 · 진행도 임시 모드"
+                        }
                     },
+                    modifier = Modifier.testTag("tracking-status"),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(Modifier.height(16.dp))
@@ -477,6 +579,7 @@ private fun EncounterCard(
     selection: EncounterSelection?,
     reducer: MysteryReducer,
     distanceMeters: Int?,
+    assetRenderer: SemanticAssetRenderer,
     onCollectClue: (String, MysteryEncounter) -> Unit,
     onResolve: (MysteryEncounter) -> Unit,
     onContinue: () -> Unit,
@@ -494,6 +597,17 @@ private fun EncounterCard(
             Text("컨텍스트 ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}")
             distanceMeters?.let { Text("현재 위치에서 약 ${it}m") }
             Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}")
+
+            if (encounter.phase == EncounterPhase.DISCOVERED || encounter.phase == EncounterPhase.RESOLVED) {
+                A3ClueCard(
+                    state = if (encounter.phase == EncounterPhase.RESOLVED) A3ClueState.RESOLVED else A3ClueState.UNRESOLVED,
+                    assetRenderer = assetRenderer,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(250f / 190f)
+                        .testTag("a3-clue-card"),
+                )
+            }
 
             when (encounter.phase) {
                 EncounterPhase.HIDDEN -> Text("주변을 이동하면 180m 안에서 신호가 나타납니다.")
@@ -549,6 +663,15 @@ private fun trackingPresetLabel(preset: LocationTrackingPreset) = when (preset) 
     LocationTrackingPreset.BATTERY_SAVER -> "절약"
     LocationTrackingPreset.BALANCED -> "균형"
     LocationTrackingPreset.PRECISE -> "정밀"
+}
+
+private fun mapHealthLabel(status: MapHealthStatus) = when (status) {
+    MapHealthStatus.UNCONFIGURED -> "지도 키 없음"
+    MapHealthStatus.INITIALIZING -> "지도 준비 중"
+    MapHealthStatus.READY -> "지도 정상"
+    MapHealthStatus.AUTH_ERROR -> "지도 인증 오류"
+    MapHealthStatus.ERROR -> "지도 오류"
+    MapHealthStatus.DESTROYED -> "지도 종료"
 }
 
 private fun phaseLabel(phase: EncounterPhase) = when (phase) {

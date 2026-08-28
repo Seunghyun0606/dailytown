@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "companion_id": "moru",
+  "canonical_profile": "companion.moru.canonical.a2",
+  "artifact_role": "production_source_board_candidate",
+  "approval_state": "candidate",
+  "generated_in_design_session": true,
+  "source_board_filename": "a_large_clean_flat_ui_style_asset_sheet_prod.png",
+  "sha256": "5c74a92fe84e680d033a292677e557570145106f7b7dd4f0d67b140514bb91d6",
+  "contains": {
+    "canonical_views": ["front", "three_quarter", "side", "back", "silhouette"],
+    "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
+    "lighting_families": ["LIGHT", "WARM_DUSK", "DARK"],
+    "usage_context_samples": ["map_avatar", "hud_portrait", "encounter_halfbody", "result_large", "journal_stamp"],
+    "motion_pilot_contact_examples": ["idle_breathe", "clue_react", "resolved_settle"],
+    "marker_preview": true,
+    "a3_asset_preview": true
+  },
+  "runtime_eligible": false,
+  "reason_runtime_ineligible": [
+    "multi-panel source board rather than isolated transparent derivatives",
+    "requires individual export and alpha-edge QA",
+    "requires context-specific safe-area QA",
+    "requires checksum per isolated production export"
+  ],
+  "next_promotion_state": "approved_source",
+  "promotion_requirements": [
+    "canonical anatomy consistency review",
+    "six-expression distinction review",
+    "LIGHT/WARM_DUSK/DARK identity preservation review",
+    "usage-context crop/safe-area review",
+    "isolated transparent asset authoring"
+  ]
+}

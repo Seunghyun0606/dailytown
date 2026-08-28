@@ -2,14 +2,31 @@ name: Android CI
 
 on:
   push:
-    branches: [main, "feat/**"]
+    branches: [main]
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against committed NAVER credentials
+        shell: bash
+        run: |
+          if git grep -nE "NAVER_MAP_NCP_KEY_ID[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"; then
+            echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file. Use Gradle user properties, an environment variable, or a GitHub Actions secret instead."
+            exit 1
+          fi
+      - name: Field-test export tool tests
+        run: python3 -m unittest discover -s tools/field_test -p 'test_*.py'
+      - name: Marker promotion readiness tool tests
+        run: python3 -m unittest discover -s tools/visual -p 'test_*.py'
+      - name: Visual candidate checksum and semantic gate
+        run: python3 tools/visual/verify_visual_candidates.py
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -23,8 +40,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
+      - name: Verify managed-device QA configuration
+        run: gradle verifyManagedDeviceQaConfig
       - name: Unit tests
         run: gradle testDebugUnitTest
+      - name: Compile instrumented tests
+        run: gradle assembleDebugAndroidTest
       - name: Android lint
         run: gradle lintDebug
       - name: Build debug APK

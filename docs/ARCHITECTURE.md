@@ -6,53 +6,169 @@ The MVP must validate whether walking around a familiar neighborhood can repeate
 
 ## 2. Platform decision
 
-Android native is the MVP default. This reduces uncertainty around background location, permissions, battery behavior, map SDK integration, and Play testing. Cross-platform is deferred until the gameplay loop is validated.
+Android native is the MVP default. This reduces uncertainty around location permissions, battery behavior, map SDK integration, and Play testing. Cross-platform is deferred until the gameplay loop is validated.
 
 ## 3. Dependency boundaries
 
 ```text
 Compose UI
    ↓
-Application state / use cases
+Application runtime coordinators
    ↓
-Pure domain (exploration, mystery, companion, content rotation)
+Pure runtime/domain
    ↓
-Ports: LocationSource / MapProvider / PoiRepository / StoryRepository
+Ports: LocationSource / MapViewAdapter / PoiRepository / ProgressStore
    ↓
-Adapters: Android Location / Naver|Kakao|Google Map / public-data APIs / backend
+Adapters: Android Location / NAVER Map / public-data APIs / DataStore
 ```
 
-Rules must not depend on a map SDK or Android framework. This allows replay tests with recorded routes and prevents vendor lock-in.
+Current runtime coordinators are:
+
+- `TrackingSessionCoordinator`: deterministic OFF/DEVICE/REPLAY and location-preset transitions.
+- `ProgressRuntimeCoordinator`: persisted progress, period normalization, goal rotation, exploration synchronization, and persistence eligibility.
+- `EncounterCoordinator`: short-lived encounter selection/sequencing/proximity transitions.
+- `ExplorationSession`: accepted movement state plus privacy-safe session-quality counters and per-session derived distance.
+
+Rules must not depend on a map SDK or Android framework. Compose owns permission launchers, rendering, and user-facing errors, while runtime coordinators own state transitions. `ProgressStore`, `PoiRepository`, `LocationSource`, and `MapViewAdapter` remain ports around platform/provider-specific implementations.
+
+The progress runtime deliberately separates **ready** from **persistenceEnabled**. If DataStore restore fails, the app may enter an explicit in-memory fallback mode, but persistence stays disabled so default progress cannot overwrite previously stored data after a transient read failure.
+
+This split allows replay/JVM tests, keeps map replacement feasible, and prevents encounter/content/tracking/persistence rules from accumulating inside the UI composable.
 
 ## 4. Map strategy
 
-Do not select a map vendor by scattering SDK types throughout the app. Implement one adapter behind `MapProvider` after the vendor decision. Selection criteria:
+NAVER Maps is the MVP provider for the Korean market. Its SDK types are contained inside `NaverMapAdapter`; application/UI code consumes only provider-neutral `MapViewAdapter`, `MapHealth`, `MapMarkerSpec`, and `UserLocationSpec` types.
 
-1. Korean POI/map quality and Android SDK stability
-2. Terms for location-based game display and caching
-3. MAU/request pricing at MVP and scale
-4. Marker/overlay performance
-5. Geocoding/routing requirements
-6. Ability to operate with public-data POIs independently
+`MapHealth` exposes only provider-safe state (`UNCONFIGURED`, `INITIALIZING`, `READY`, `AUTH_ERROR`, `ERROR`, `DESTROYED`) and an optional provider error code. Raw SDK exceptions and credential values do not cross the adapter boundary. A future Google adapter can report the same health model without changing field-test diagnostics or application logic.
 
-Naver/Kakao are primary Korean-market candidates; Google remains a fallback for global expansion. Vendor credentials are deliberately excluded from the bootstrap.
+The credential is from the standalone NAVER Cloud **Maps** product. The Android package restriction is `com.dailytown.app`. Credential values are supplied through Gradle/environment/GitHub Actions Secret and are never committed or printed by verification tasks.
 
-## 5. Content exhaustion mitigation
+The provider contract remains intentionally small so a future Google adapter can replace NAVER without changing exploration, encounter, location, POI, or diagnostic rules.
+
+## 5. Location strategy
+
+Location collection is app-owned rather than map-provider-owned. `LocationSource` has separate device and replay implementations. Fused Location Services is initialized lazily only when real device tracking starts, so replay and managed-emulator tests do not require Google Play Services or GPS.
+
+`TrackingSessionCoordinator` is framework-free and owns mode/preset transitions. Selecting a new precision preset pauses active DEVICE tracking so a new Android location request can be created; REPLAY can continue across preset changes.
+
+`ExplorationSession` tracks only privacy-safe session metrics: accepted sample count, rejected sample count/rate, elapsed tracking duration derived from monotonic sample timestamps, and distance walked during the current tracking session. These short-lived metrics reset on a new tracking session and are not restored from persistence.
+
+The MVP is foreground-only and deliberately does not request background location. Raw high-frequency samples are not persisted.
+
+## 6. Progress and goal strategy
+
+`ProgressRuntimeCoordinator` is the single application-level owner of:
+
+- loading persisted `ExplorationProgress`
+- daily/weekly period normalization
+- deterministic goal rotation
+- synchronization from `ExplorationState`
+- encounter/clue/memory progress mutations
+- deciding whether persistence is safe for the current session
+
+Compose observes one `ProgressRuntimeState` instead of maintaining separate mutable copies of progress, daily goals, weekly goals, and persistence-ready flags.
+
+A successful restore enables persistence. An explicit fallback after a read failure keeps the app usable but disables writes for that session. This avoids the common failure mode where a temporary DataStore read error causes an empty/default model to be saved over valid progress.
+
+## 7. Content exhaustion mitigation
 
 The content system separates a physical place from an encounter template. The same area can produce different experiences through:
 
 - rotating mystery templates
-- companion-specific reactions
-- revisit state and time/weather context
+- companion-specific reactions and semantic memory
+- revisit state and time context
 - neighborhood completion sets
 - low-frequency rare encounters
-- generated dialogue constrained by authored scenario rules
+- soft anti-repeat scoring instead of permanently removing visited places
+- generated dialogue constrained by authored scenario rules later
 
-`ContentRotation` starts this separation by ranking novelty independently from raw distance.
+`EncounterGenerator` ranks POI × template candidates, while `EncounterCoordinator` owns the runtime transition from selection through hinted/discovered states. This keeps the ranking mechanics testable without Compose or Android dependencies.
 
-## 6. Privacy baseline
+## 8. Field-test telemetry, comparison, protocol, and acceptance strategy
 
-- Raw high-frequency location should stay on device unless a server feature explicitly requires upload.
+`FieldTestSessionMonitor` records only coarse battery start/end snapshots and derived movement metrics. `GameplaySessionMonitor` records only session-local counters for offered/hinted/discovered/resolved encounters, clue collections, and revisit counts. Neither monitor stores GPS coordinates, POI IDs, encounter IDs, template IDs, or event payloads.
+
+Battery evidence uses Android's battery level/scale and, where supported by the device, the remaining charge counter. Any session connected to external power is marked `EXTERNALLY_POWERED` and cannot create battery PASS/FAIL evidence. Missing battery properties likewise stay unevaluated.
+
+For route accuracy, the tester may enter only a pre-verified total route distance in meters. The app compares that scalar reference with `ExplorationSession.sessionDistanceMeters` and calculates percentage error. No reference-route geometry or raw trace is required.
+
+Gameplay quality is derived as:
+
+- encounters/session = encounters that reached `DISCOVERED`, not merely generated candidates
+- encounter resolution rate = resolved / discovered encounters
+- revisit share = revisit offers / all offers
+- repeat-area fatigue proxy = unresolved share of **discovered revisit** encounters
+
+The repeat-area fatigue metric is explicitly a proxy, not a sentiment measurement. If the session contains no discovered revisits, it remains unavailable instead of reporting a misleading 0%.
+
+`FieldTestComparisonRecorder` compares multiple completed sessions without expanding the privacy boundary. A tester manually classifies each completed session as `NEW_AREA` or `REPEAT_AREA`; the recorder stores at most 20 **derived** `FieldTestSessionSummary` values in process memory only. It never persists coordinates, route geometry, free-form place labels, POI/encounter/template IDs, or raw event payloads.
+
+Comparison cohorts report both the rounded average and `evidenceCount/sessionCount` for every metric. Missing battery, route-reference, revisit, or other evidence is excluded from the average rather than converted to zero. The comparison report exposes `repeat area - new area` deltas only when both cohorts contain evaluable evidence and deliberately does not automatically label a positive/negative delta as good or bad because metric semantics differ.
+
+The in-app comparison recorder uses a short-lived session token only to block duplicate taps for the same completed session. The token is not exported, persisted, or included in the comparison model/report. Comparison data disappears when the app process ends or the tester explicitly resets it.
+
+`FieldTestProtocolEvaluator` sits above the comparison report and answers a narrower question: **is there enough consistently collected evidence to begin product review?** It never decides whether a delta is good or bad. Its states are:
+
+- `DATA_INSUFFICIENT`: a cohort is empty or there is no shared evaluable comparison evidence.
+- `COMPARABLE`: cohort comparison can be inspected, but product-review policy is unset or not fully satisfied.
+- `PRODUCT_REVIEW_READY`: every human-configured protocol gate is satisfied.
+
+Protocol gates are policy-free in source and can require a minimum number of sessions per cohort, one matching tracking preset across both cohorts, and selected evidence types. Required evidence must be present in at least the configured cohort minimum; if no minimum is configured, one valid sample is sufficient for that evidence gate. `REPEAT_AREA_FATIGUE` is intentionally repeat-cohort-only because NEW_AREA sessions commonly have no revisit-fatigue value.
+
+Closed-test builds can configure the protocol through:
+
+```text
+FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT
+FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET
+FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE
+```
+
+Supported evidence keys and field-test usage are documented in `docs/FIELD_TEST_PROTOCOL.md`. Invalid comparison-policy values fail Gradle configuration. Internal Debug artifact metadata records the non-secret protocol values alongside single-session acceptance policy.
+
+`FieldTestAcceptanceEvaluator` separately evaluates each recorded session against **human-approved** thresholds and intentionally ships with no hard-coded product thresholds.
+
+Supported single-session criteria currently include:
+
+- minimum tracking-session duration
+- maximum GPS rejection rate
+- required provider-neutral map health
+- maximum route-distance error percentage
+- maximum battery percentage-point drain per hour
+- minimum discovered encounters per session
+- minimum encounter resolution rate
+- maximum repeat-area fatigue proxy
+
+Closed-test builds can supply single-session criteria without source changes through Gradle properties or environment variables:
+
+```text
+FIELD_TEST_MIN_SESSION_SECONDS
+FIELD_TEST_MAX_GPS_REJECTION_PERCENT
+FIELD_TEST_REQUIRE_MAP_READY
+FIELD_TEST_MAX_DISTANCE_ERROR_PERCENT
+FIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR
+FIELD_TEST_MIN_ENCOUNTERS_PER_SESSION
+FIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT
+FIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT
+```
+
+Unset acceptance criteria remain `NOT_EVALUATED`; they never silently pass. Unset comparison protocol stays at `COMPARABLE` once both cohorts have evidence rather than inventing readiness policy.
+
+## 9. Test boundaries
+
+- Pure domain/runtime behavior: JVM unit tests, including encounter, tracking-state, progress-runtime, GPS-quality, session-duration/distance, battery/distance telemetry, gameplay telemetry, multi-session cohort comparison, missing-evidence handling, protocol readiness, and acceptance-evaluation rules.
+- Android UI/replay integration: AOSP ATD managed device, with the tested APK ABI explicitly pinned.
+- Normal pull-request CI: unit tests, instrumented-test compilation, lint, debug build, credential hard-code guard.
+- Credentialed internal APK: manual Actions workflow with value-blind credential verification, optional acceptance/comparison-policy injection, and artifact SHA-256 metadata.
+- Real GPS accuracy, battery behavior, OEM differences, gameplay feel, and final NAVER package/key/map-health validation: physical Android device.
+
+## 10. Privacy baseline
+
+- Raw high-frequency location stays on device unless a future server feature explicitly requires upload.
 - Persist derived visit/progress events rather than continuous traces by default.
-- Never commit production API keys.
+- Session duration/distance, GPS rates, route-distance error, coarse battery consumption, encounter counts/rates, and repeat-area fatigue proxy are derived metrics.
+- Per-session comparison summaries are process-memory-only, bounded, and contain no free-form place labels or raw event/location identifiers.
+- Protocol evaluation consumes aggregate comparison summaries only and exports safe status/issue metadata.
+- Session diagnostics and comparison reports never export POI IDs, encounter IDs, template IDs, route geometry, or event payloads.
+- Never commit or log production credentials.
+- Diagnostics contain package/build/map-health/derived counters/acceptance results but no raw coordinates, provider exception payloads, or credential values.
 - Add explicit consent and retention policy before analytics/location backend integration.

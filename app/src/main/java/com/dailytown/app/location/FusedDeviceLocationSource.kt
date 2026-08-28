@@ -1,6 +1,7 @@
 package com.dailytown.app.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
@@ -15,9 +16,15 @@ import com.google.android.gms.location.Priority
 class FusedDeviceLocationSource(
     private val context: Context,
     private val config: LocationTrackingConfig = LocationTrackingPreset.BALANCED.config,
-    private val client: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context),
+    client: FusedLocationProviderClient? = null,
 ) : LocationSource {
     override val name: String = "device"
+
+    // Keep Google Play Services lazy so replay-only/emulator paths do not initialize
+    // fused location until the user explicitly starts real device tracking.
+    private val client: FusedLocationProviderClient by lazy(LazyThreadSafetyMode.NONE) {
+        client ?: LocationServices.getFusedLocationProviderClient(context)
+    }
 
     private var callback: LocationCallback? = null
 
@@ -50,8 +57,7 @@ class FusedDeviceLocationSource(
         callback = newCallback
 
         try {
-            client.requestLocationUpdates(request, newCallback, context.mainLooper)
-                .addOnFailureListener(onError)
+            requestUpdates(request, newCallback, onError)
         } catch (security: SecurityException) {
             callback = null
             onError(security)
@@ -59,8 +65,21 @@ class FusedDeviceLocationSource(
     }
 
     override fun stop() {
-        callback?.let(client::removeLocationUpdates)
+        val activeCallback = callback ?: return
         callback = null
+        client.removeLocationUpdates(activeCallback)
+    }
+
+    // start() performs the runtime fine/coarse permission check immediately before
+    // entering this helper. Keep the lint suppression scoped only to the privileged call.
+    @SuppressLint("MissingPermission")
+    private fun requestUpdates(
+        request: LocationRequest,
+        callback: LocationCallback,
+        onError: (Throwable) -> Unit,
+    ) {
+        client.requestLocationUpdates(request, callback, context.mainLooper)
+            .addOnFailureListener(onError)
     }
 
     private fun priority(mode: LocationPriorityMode): Int = when (mode) {

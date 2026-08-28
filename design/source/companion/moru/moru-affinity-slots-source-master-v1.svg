@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <title>Daily Town Moru affinity modular slots source master v1</title>
+  <defs>
+    <style>
+      .bg{fill:#EEF3F5}.card{fill:#FFFDF7;stroke:#D8D3C3;stroke-width:2}.ink{fill:#1A1F1C}.muted{fill:#66756D}.leaf{fill:#6B8F7A;stroke:#214F3B;stroke-width:3}.leaf2{fill:#A7C7A5;stroke:#214F3B;stroke-width:3}.butter{fill:#FFD36B;stroke:#214F3B;stroke-width:3}.peach{fill:#FFB184;stroke:#214F3B;stroke-width:3}.cloth{fill:#6B8F7A;stroke:#214F3B;stroke-width:4}.bag{fill:#9B6A45;stroke:#4D3427;stroke-width:4}.line{stroke:#214F3B;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}.txt{font-family:sans-serif;font-size:22px;fill:#1A1F1C}.small{font-family:sans-serif;font-size:16px;fill:#66756D}
+    </style>
+  </defs>
+  <rect width="1400" height="900" rx="30" class="bg"/>
+  <text x="42" y="54" class="txt" font-size="30">Moru affinity modular slot source master v1</text>
+  <text x="42" y="84" class="small">Approved direction: AF-1 Memory Keepsakes + restrained AF-3 Explorer Patina. Canonical anatomy is not modified.</text>
+
+  <!-- Familiar: first-walk charm -->
+  <g id="slot.moru.bag.charm_first_walk" transform="translate(70 150)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">bag.charm_first_walk</text>
+    <path d="M78 78H190Q216 78 216 104V184Q216 210 190 210H78Q52 210 52 184V104Q52 78 78 78Z" class="bag"/>
+    <path d="M92 78Q92 50 134 50Q176 50 176 78" class="line"/>
+    <circle cx="205" cy="158" r="18" fill="#FFFDF7" stroke="#214F3B" stroke-width="3"/>
+    <path d="M198 164C198 150 210 142 221 144C219 157 212 165 199 168Z" class="leaf2"/>
+  </g>
+
+  <!-- Trusted: stitched scarf patch -->
+  <g id="slot.moru.scarf.stitched_memory_patch" transform="translate(390 150)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">scarf.stitched_memory_patch</text>
+    <path d="M44 118Q140 74 236 118L220 172Q140 142 60 172Z" class="cloth"/>
+    <rect x="148" y="116" width="42" height="34" rx="7" fill="#F7F3E8" stroke="#214F3B" stroke-width="3"/>
+    <path d="M156 126L183 141M183 126L156 141" stroke="#E8794F" stroke-width="3"/>
+    <path d="M70 153L86 161M94 158L109 165M197 157L213 164" stroke="#FFD36B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Trusted: shared route tag -->
+  <g id="slot.moru.bag.shared_route_tag" transform="translate(710 150)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">bag.shared_route_tag</text>
+    <path d="M76 78H190Q216 78 216 104V184Q216 210 190 210H76Q50 210 50 184V104Q50 78 76 78Z" class="bag"/>
+    <path d="M92 78Q92 50 134 50Q176 50 176 78" class="line"/>
+    <path d="M190 119L233 128L220 177L177 168Z" fill="#F7F3E8" stroke="#214F3B" stroke-width="3"/>
+    <path d="M190 153C198 136 210 135 215 147S228 160 231 144" fill="none" stroke="#6F9F71" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Best friend: pressed leaf thread -->
+  <g id="slot.moru.sprout.pressed_leaf_thread" transform="translate(1030 150)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">sprout.pressed_leaf_thread</text>
+    <path d="M140 184V96" class="line"/>
+    <path d="M136 112C106 106 91 82 96 58C126 60 145 78 143 107Z" class="leaf"/>
+    <path d="M145 112C175 106 190 82 185 58C155 60 136 78 138 107Z" class="leaf2"/>
+    <path d="M144 78C170 74 184 58 186 38C164 39 146 52 141 72Z" fill="#F4F0E6" stroke="#214F3B" stroke-width="3"/>
+    <path d="M143 73L176 47" stroke="#E8794F" stroke-width="3" stroke-linecap="round"/>
+    <path d="M160 49Q174 64 187 49" fill="none" stroke="#FFD36B" stroke-width="3"/>
+  </g>
+
+  <!-- Best friend: travel worn scarf -->
+  <g id="slot.moru.scarf.travel_worn_patchwork" transform="translate(70 455)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">scarf.travel_worn_patchwork</text>
+    <path d="M42 118Q140 73 238 118L218 176Q140 145 62 176Z" class="cloth"/>
+    <path d="M72 141L102 132L111 155L80 164Z" fill="#FFB184" stroke="#214F3B" stroke-width="3"/>
+    <path d="M126 118L157 120L153 149L123 146Z" fill="#A7C7A5" stroke="#214F3B" stroke-width="3"/>
+    <path d="M177 138L207 129L214 157L184 165Z" fill="#FFD36B" stroke="#214F3B" stroke-width="3"/>
+    <path d="M64 166L80 170M92 168L108 172M201 167L216 171" stroke="#F7F3E8" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Best friend: memory tag set -->
+  <g id="slot.moru.bag.memory_tag_set" transform="translate(390 455)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">bag.memory_tag_set</text>
+    <path d="M74 78H188Q214 78 214 104V184Q214 210 188 210H74Q48 210 48 184V104Q48 78 74 78Z" class="bag"/>
+    <path d="M90 78Q90 50 132 50Q174 50 174 78" class="line"/>
+    <path d="M188 115L228 124L219 160L178 152Z" fill="#F7F3E8" stroke="#214F3B" stroke-width="3"/>
+    <circle cx="199" cy="139" r="7" class="butter"/>
+    <path d="M182 157L220 165L213 196L175 189Z" fill="#A7C7A5" stroke="#214F3B" stroke-width="3"/>
+    <path d="M183 183L206 164" stroke="#214F3B" stroke-width="3"/>
+  </g>
+
+  <!-- Best friend accessory -->
+  <g id="slot.moru.accessory.pressed_leaf_keepsake" transform="translate(710 455)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">accessory.pressed_leaf_keepsake</text>
+    <path d="M89 71H193Q211 71 211 89V197Q211 215 193 215H89Q71 215 71 197V89Q71 71 89 71Z" fill="#F7F3E8" stroke="#214F3B" stroke-width="4"/>
+    <path d="M130 175C124 133 150 104 185 106C183 146 164 174 130 181Z" class="leaf2"/>
+    <path d="M136 173L174 117" stroke="#214F3B" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="91" cy="91" r="7" class="butter"/>
+  </g>
+
+  <!-- Compact profile guidance -->
+  <g id="compact-profile-guidance" transform="translate(1030 455)">
+    <rect width="280" height="250" rx="24" class="card"/>
+    <text x="22" y="34" class="small">48dp compact profile guidance</text>
+    <circle cx="82" cy="136" r="44" fill="#F7F3E8" stroke="#214F3B" stroke-width="3"/>
+    <path d="M82 103V82" class="line"/><path d="M80 88C66 86 58 76 59 64C73 65 82 74 82 86Z" class="leaf"/><path d="M84 88C98 86 106 76 105 64C91 65 82 74 82 86Z" class="leaf2"/>
+    <path d="M55 146Q82 132 109 146L104 163Q82 154 60 163Z" class="cloth"/>
+    <circle cx="68" cy="130" r="4" class="ink"/><circle cx="96" cy="130" r="4" class="ink"/>
+    <path d="M77 141Q82 145 87 141" class="line" stroke-width="2"/>
+    <text x="144" y="106" class="small">KEEP</text><text x="144" y="128" class="small">• scarf identity</text><text x="144" y="150" class="small">• optional sprout detail</text><text x="144" y="178" class="small">OMIT</text><text x="144" y="200" class="small">• bag tags</text><text x="144" y="222" class="small">• tiny accessory</text>
+  </g>
+
+  <text x="42" y="850" class="small">Approved-source master only. Each slot is independently replaceable; production derivatives require isolated export, 48dp QA where applicable, and checksum promotion.</text>
+</svg>
