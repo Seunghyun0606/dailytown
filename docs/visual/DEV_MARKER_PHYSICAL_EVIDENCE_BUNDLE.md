@@ -73,6 +73,8 @@ The verifier is non-mutating and never promotes assets. It fails closed unless a
 
 A `PENDING` approval is valid for bundle integrity because integrity verification does not replace human review. Only `verify_marker_promotion_readiness.py` decides whether the completed human approval is sufficient for promotion readiness.
 
+The runner-to-verifier handoff is CI-guarded by `tools/visual/test_physical_evidence_runner_contract.py`, including `bash -n` syntax validation and the required package → directory verify → ZIP verify order.
+
 ## Human completion
 
 Inspect the 28 captures and the app on the same physical phone. Update the bundle's approval JSON only after checking:
@@ -88,6 +90,10 @@ Keep any uncertain item as `PENDING` or mark it `FAIL`; do not force an approval
 Run the bundle integrity verifier again after editing the approval JSON. Then run the existing `verify_marker_promotion_readiness.py` with a passing emulator session, this exact physical `session.json`, and the completed approval JSON.
 
 The readiness checker recomputes the supplied physical session SHA-256 and rejects an approval created for a different session. A readiness PASS is still only permission for a separate explicit development change. Marker promotion and PR merge remain separate actions.
+
+## Verification status
+
+Current integration head `8919f290a90acb142015d7d09eb4d8691e18a3e4` is green on Android CI #511 and Emulator Replay + Visual QA #380. NAVER real-map QA passed with baseline 18/18, EV-1 10/10, total 28/28, `failureCategory=null`, and READY latency about 430 ms.
 
 ## Human TODO tracking
 
