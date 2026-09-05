@@ -145,6 +145,14 @@ class MarkerActivationContractTest(unittest.TestCase):
         self.assertEqual({'DAY', 'DARK'}, {item['family'] for item in plan['records']})
         self.assertTrue(all(item['runtime_asset_path'].startswith(item['family'].lower() + '/') for item in plan['records']))
 
+    def test_marker_candidate_hash_normalizes_windows_crlf(self):
+        canonical = b'<svg>\n<title>marker</title>\n</svg>\n'
+        windows_checkout = canonical.replace(b'\n', b'\r\n')
+        self.assertEqual(
+            hashlib.sha256(canonical).hexdigest(),
+            marker_activation.sha256_marker_candidate_bytes(windows_checkout),
+        )
+
     def test_candidate_state_rejects_main_apk_marker_source_exposure(self):
         self.app_build.write_text(
             'sourceSets {\n'

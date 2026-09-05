@@ -112,6 +112,24 @@ class MarkerPromotionReadinessTest(unittest.TestCase):
     def test_full_bound_evidence_passes(self):
         self.assertEqual(self.fingerprint, self.verify())
 
+    def test_windows_separator_candidate_paths_are_accepted(self):
+        for asset in self.batch['assets']:
+            asset['path'] = asset['path'].replace('/', '\\')
+        self.write_json(self.batch_path, self.batch)
+        self.assertEqual(
+            self.fingerprint,
+            marker_readiness.verify_marker_batch(self.root, self.batch_path),
+        )
+
+    def test_windows_crlf_candidate_checkout_is_accepted(self):
+        first = self.batch['assets'][0]
+        path = self.root / first['path']
+        path.write_bytes(path.read_bytes().replace(b'\n', b'\r\n'))
+        self.assertEqual(
+            self.fingerprint,
+            marker_readiness.verify_marker_batch(self.root, self.batch_path),
+        )
+
     def test_physical_evidence_cannot_be_emulator(self):
         self.write_json(self.physical_path, self.session(True, 'physical-connected-device'))
         with self.assertRaisesRegex(marker_readiness.ReadinessError, 'physical device'):

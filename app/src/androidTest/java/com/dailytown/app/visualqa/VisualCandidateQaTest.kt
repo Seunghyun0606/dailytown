@@ -85,10 +85,30 @@ class VisualCandidateQaTest {
             val canvas = Canvas(sheet)
             MarkerSemantic.entries.forEachIndexed { index, semantic ->
                 val bitmap = CandidateSvgRenderer.renderMarker(catalog, semantic.key.value, family)
+                val bounds = opaqueBounds(bitmap)
+                assertTrue("marker must retain its negative-viewBox left margin", bounds.left > 0)
+                assertTrue("marker must retain its negative-viewBox top margin", bounds.top > 0)
                 canvas.drawBitmap(bitmap, ((index % 6) * 48).toFloat(), ((index / 6) * 64).toFloat(), null)
             }
             sheet.writeToTestStorage("visual/marker/${family.name.lowercase()}.12-markers.contact-sheet")
         }
+    }
+
+    private fun opaqueBounds(bitmap: Bitmap): android.graphics.Rect {
+        var left = bitmap.width
+        var top = bitmap.height
+        var right = -1
+        var bottom = -1
+        for (y in 0 until bitmap.height) for (x in 0 until bitmap.width) {
+            if ((bitmap.getPixel(x, y) ushr 24) != 0) {
+                left = minOf(left, x)
+                top = minOf(top, y)
+                right = maxOf(right, x)
+                bottom = maxOf(bottom, y)
+            }
+        }
+        assertTrue("marker bitmap must contain opaque pixels", right >= left && bottom >= top)
+        return android.graphics.Rect(left, top, right + 1, bottom + 1)
     }
 
     @Test

@@ -64,6 +64,11 @@ def sha256_file(path: Path) -> str:
     return value.hexdigest()
 
 
+def sha256_marker_candidate(path: Path) -> str:
+    """Hash SVG candidates in Git's LF-canonical form across checkout hosts."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
 def marker_fingerprint(assets: list[dict[str, Any]]) -> str:
     rows = [
         f"{asset.get('family','')}|{asset.get('semantic_key','')}|{asset.get('sha256','')}"
@@ -103,13 +108,18 @@ def verify_marker_batch(root: Path, batch_path: Path) -> str:
 
         if asset.get("approval_state") != "production_export_candidate":
             raise ReadinessError(f"{pair}: marker asset is not candidate-only")
-        rel = Path(str(asset.get("path", "")))
-        if rel.is_absolute() or not str(rel).startswith("design/production/markers/v1/"):
+        raw_path = str(asset.get("path", ""))
+        # Marker-batch JSON uses repository-relative POSIX paths.  Normalize
+        # Windows separators before parsing so the same candidate manifest is
+        # validated consistently on every host OS.
+        normalized_path = raw_path.replace("\\", "/")
+        rel = Path(normalized_path)
+        if rel.is_absolute() or not normalized_path.startswith("design/production/markers/v1/"):
             raise ReadinessError(f"{pair}: invalid marker candidate path: {rel}")
         path = root / rel
         if not path.is_file():
             raise ReadinessError(f"{pair}: missing marker candidate: {rel}")
-        if sha256_file(path) != asset.get("sha256"):
+        if sha256_marker_candidate(path) != asset.get("sha256"):
             raise ReadinessError(f"{pair}: marker candidate checksum mismatch: {rel}")
 
     for family, semantics in semantics_by_family.items():

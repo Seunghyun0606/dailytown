@@ -134,7 +134,7 @@ internal object CandidateSvgRenderer {
         family: MarkerFamily,
         widthPx: Int = 48,
         heightPx: Int = 64,
-    ): Bitmap = renderSvg(catalog.text(semanticKey, family), widthPx, heightPx)
+    ): Bitmap = renderMarkerSvg(catalog.text(semanticKey, family), widthPx, heightPx)
 
     fun renderAsset(
         catalog: CandidateAssetCatalog,
@@ -171,6 +171,18 @@ internal object CandidateSvgRenderer {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         SVG.getFromString(svg).renderToCanvas(canvas, RectF(0f, 0f, width.toFloat(), height.toFloat()))
+        return bitmap
+    }
+
+    private fun renderMarkerSvg(svg: String, width: Int, height: Int): Bitmap {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val document = SVG.getFromString(svg)
+        // Marker candidates use negative viewBox origins.  Give AndroidSVG the
+        // destination dimensions before rendering so that origin is transformed
+        // into the bitmap rather than clipped at its top-left corner.
+        document.setDocumentWidth(width.toFloat())
+        document.setDocumentHeight(height.toFloat())
+        document.renderToCanvas(Canvas(bitmap))
         return bitmap
     }
 

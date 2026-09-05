@@ -80,12 +80,13 @@ def read_text(path: Path) -> str:
         raise ActivationContractError(f"cannot read required file: {path}: {exc}") from exc
 
 
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+def sha256_marker_candidate_bytes(content: bytes) -> str:
+    """Hash SVG candidates in Git's LF-canonical form across checkout hosts."""
+    return hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
+
+
+def sha256_marker_candidate(path: Path) -> str:
+    return sha256_marker_candidate_bytes(path.read_bytes())
 
 
 def marker_fingerprint(assets: list[dict[str, Any]]) -> str:
@@ -156,7 +157,7 @@ def validate_batch(root: Path, batch_path: Path, *, expected_state: str) -> tupl
         absolute = root / rel
         if not absolute.is_file():
             raise ActivationContractError(f"{pair}: missing marker asset: {rel}")
-        if sha256_file(absolute) != sha256:
+        if sha256_marker_candidate(absolute) != sha256:
             raise ActivationContractError(f"{pair}: marker asset checksum mismatch: {rel}")
 
         normalized.append(
