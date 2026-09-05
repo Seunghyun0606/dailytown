@@ -30,4 +30,21 @@ fun defaultFixturePois(): List<Poi> = listOf(
     Poi("deoksugung-wall", "덕수궁 돌담길", GeoPoint(37.56711, 126.97676), "jung-gu", PoiCategory.STREET),
     Poi("deoksugung", "덕수궁", GeoPoint(37.56580, 126.97515), "jung-gu", PoiCategory.CULTURE),
     Poi("seoul-plaza", "서울광장", GeoPoint(37.56560, 126.97798), "jung-gu", PoiCategory.PUBLIC_SPACE),
+    Poi(
+        "seongnam-sports-complex",
+        "성남종합운동장",
+        GeoPoint(37.43450117, 127.137906833),
+        "seongnam-jungwon",
+        PoiCategory.LANDMARK,
+    ),
+    // Field-test fixture for 스타벅스 성남모란DT점 (경기 성남시 중원구 둔촌대로 131).
+    // The point is centered between the verified adjacent road-address coordinates and must be
+    // visually rechecked against the real storefront during the first physical field-test run.
+    Poi(
+        "starbucks-seongnam-moran-dt",
+        "스타벅스 성남모란DT점",
+        GeoPoint(37.42919320, 127.13345424),
+        "seongnam-jungwon",
+        PoiCategory.OTHER,
+    ),
 )
