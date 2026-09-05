@@ -3,6 +3,7 @@ package com.dailytown.app.map
 import android.content.Context
 import android.graphics.PointF
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -72,7 +73,24 @@ class NaverMapAdapter(
 
         _health.value = MapHealth(MapHealthStatus.INITIALIZING)
         val container = FrameLayout(context)
-        val view = MapView(context)
+        val view = MapView(context).apply {
+            // The map lives inside a vertically scrollable Compose screen. Claim the gesture stream
+            // as soon as the user touches the map so vertical panning/zooming does not drag the parent
+            // screen at the same time. Re-enable parent interception when the gesture finishes.
+            setOnTouchListener { touchedView, event ->
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN,
+                    MotionEvent.ACTION_MOVE,
+                    MotionEvent.ACTION_POINTER_DOWN,
+                    -> touchedView.parent?.requestDisallowInterceptTouchEvent(true)
+
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL,
+                    -> touchedView.parent?.requestDisallowInterceptTouchEvent(false)
+                }
+                false
+            }
+        }
         val errorView = TextView(context).apply {
             gravity = Gravity.CENTER
             visibility = View.GONE
