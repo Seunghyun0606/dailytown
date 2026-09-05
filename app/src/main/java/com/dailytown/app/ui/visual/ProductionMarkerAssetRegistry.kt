@@ -75,19 +75,55 @@ class MarkerProductionAssetIndex(
 }
 
 /**
- * Deliberately empty until the fingerprint-bound physical + human readiness gate passes.
- * Wiring this singleton into the app is safe: an absent record returns null and NAVER keeps
- * its provider default marker instead of consuming a production_export_candidate asset.
+ * Fingerprint-bound physical + emulator + human readiness passed for marker-split-export-v1.
+ * Keep this list explicit and family-aware so production activation stays auditable and atomic.
  */
 object ProductionMarkerAssetRegistry : ProductionMarkerAssetLookup {
-    private val index = MarkerProductionAssetIndex(emptyList())
+    private fun marker(
+        family: MarkerFamily,
+        semanticKey: String,
+        assetPath: String,
+    ) = ProductionMarkerAssetRecord(
+        family = family,
+        semanticKey = SemanticAssetKey(semanticKey),
+        assetPath = assetPath,
+    )
+
+    private val index = MarkerProductionAssetIndex(
+        listOf(
+            marker(MarkerFamily.DAY, "marker.encounter.hinted", "day/day-encounter-hinted.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.encounter.discoverable", "day/day-encounter-discoverable.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.encounter.active", "day/day-encounter-active.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.encounter.solved", "day/day-encounter-solved.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.encounter.revisit", "day/day-encounter-revisit.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.clue", "day/day-clue.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.poi.park", "day/day-poi-park.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.poi.culture", "day/day-poi-culture.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.poi.landmark", "day/day-poi-landmark.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.poi.daily_life", "day/day-poi-daily_life.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.poi.nature", "day/day-poi-nature.v1.svg"),
+            marker(MarkerFamily.DAY, "marker.poi.other", "day/day-poi-other.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.encounter.hinted", "dark/dark-encounter-hinted.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.encounter.discoverable", "dark/dark-encounter-discoverable.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.encounter.active", "dark/dark-encounter-active.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.encounter.solved", "dark/dark-encounter-solved.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.encounter.revisit", "dark/dark-encounter-revisit.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.clue", "dark/dark-clue.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.poi.park", "dark/dark-poi-park.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.poi.culture", "dark/dark-poi-culture.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.poi.landmark", "dark/dark-poi-landmark.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.poi.daily_life", "dark/dark-poi-daily_life.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.poi.nature", "dark/dark-poi-nature.v1.svg"),
+            marker(MarkerFamily.DARK, "marker.poi.other", "dark/dark-poi-other.v1.svg"),
+        ),
+    )
 
     override fun contains(family: MarkerFamily, key: SemanticAssetKey): Boolean = index.contains(family, key)
     override fun resolve(family: MarkerFamily, key: SemanticAssetKey): ProductionMarkerAssetRecord? =
         index.resolve(family, key)
     override fun records(): List<ProductionMarkerAssetRecord> = index.records()
 
-    const val PROMOTED_MARKER_COUNT = 0
+    const val PROMOTED_MARKER_COUNT = 24
 
     init {
         check(records().size == PROMOTED_MARKER_COUNT) {

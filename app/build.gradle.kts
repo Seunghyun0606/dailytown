@@ -144,11 +144,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Only development-QA-passed visual families enter the main APK. Marker candidates stay test-only
-    // until real NAVER base-map evidence passes; design/source masters never enter an Android source set.
+    // Only development-QA-passed visual families enter the main APK. Marker v1 was promoted only
+    // after fingerprint-bound emulator + physical + human readiness passed; source masters stay excluded.
     sourceSets {
         getByName("main").assets.directories.add("../design/production/companion")
         getByName("main").assets.directories.add("../design/production/a3/v1")
+        getByName("main").assets.directories.add("../design/production/markers/v1")
         getByName("androidTest").assets.directories.add("../design/production")
         // Approved source manifests are test-only inputs used to prove the runtime QA matrix matches handoff.
         getByName("androidTest").assets.directories.add("../design/export-spec")
@@ -235,7 +236,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("com.naver.maps:map-sdk:3.23.3")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    // A-3 only: this is the same SVG parser already proven by the A-3 managed-device QA matrix.
+    // A-3 and production marker SVG runtime use the same parser proven by managed-device QA.
     implementation("com.caverock:androidsvg:1.4")
 
     testImplementation("junit:junit:4.13.2")

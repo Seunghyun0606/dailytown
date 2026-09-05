@@ -3,7 +3,6 @@ package com.dailytown.app.ui.visual
 import com.dailytown.app.visual.MarkerFamily
 import com.dailytown.app.visual.MarkerSemantic
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -59,10 +58,20 @@ class ProductionMarkerAssetRegistryTest {
     }
 
     @Test
-    fun productionSingletonRemainsEmptyUntilExplicitPromotion() {
-        assertEquals(0, ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT)
-        assertTrue(ProductionMarkerAssetRegistry.records().isEmpty())
-        assertFalse(ProductionMarkerAssetRegistry.contains(MarkerFamily.DAY, active))
-        assertFalse(ProductionMarkerAssetRegistry.contains(MarkerFamily.DARK, active))
+    fun productionSingletonContainsExactDayDarkMarkerMatrixAfterPromotion() {
+        val records = ProductionMarkerAssetRegistry.records()
+        assertEquals(24, ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT)
+        assertEquals(24, records.size)
+        assertEquals(12, records.count { it.family == MarkerFamily.DAY })
+        assertEquals(12, records.count { it.family == MarkerFamily.DARK })
+
+        MarkerFamily.entries.forEach { family ->
+            MarkerSemantic.entries.forEach { semantic ->
+                assertTrue(
+                    "Missing production marker for $family/${semantic.key.value}",
+                    ProductionMarkerAssetRegistry.contains(family, semantic.key),
+                )
+            }
+        }
     }
 }

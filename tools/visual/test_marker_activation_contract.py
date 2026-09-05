@@ -124,14 +124,18 @@ class MarkerActivationContractTest(unittest.TestCase):
             marker_registry=self.registry,
         )
 
-    def test_actual_repository_remains_candidate_only(self):
-        fingerprint = marker_activation.verify_candidate_state(
+    def test_actual_repository_is_exact_production_activation(self):
+        fingerprint = marker_activation.verify_production_state(
             root=marker_activation.ROOT,
             batch_path=marker_activation.DEFAULT_MARKER_BATCH,
             app_build=marker_activation.DEFAULT_APP_BUILD,
             marker_registry=marker_activation.DEFAULT_MARKER_REGISTRY,
         )
         self.assertRegex(fingerprint, r'^[0-9a-f]{64}$')
+        self.assertEqual(
+            marker_activation.EXPECTED_ASSET_COUNT,
+            marker_activation.parse_promoted_count(marker_activation.read_text(marker_activation.DEFAULT_MARKER_REGISTRY)),
+        )
 
     def test_candidate_state_passes_and_plan_is_exact_family_aware_24(self):
         fingerprint = self.verify_candidate()

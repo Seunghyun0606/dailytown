@@ -2,7 +2,6 @@ package com.dailytown.app.ui.visual
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.RectF
 import android.util.LruCache
 import com.caverock.androidsvg.SVG
 import com.dailytown.app.map.MapMarkerBitmap
@@ -12,11 +11,7 @@ import com.dailytown.app.map.MapThemeSpec
 import com.dailytown.app.visual.MarkerAssetResolver
 import kotlin.math.roundToInt
 
-/**
- * Android-owned semantic marker renderer. It is safe to wire before promotion because the
- * production registry is empty; missing records return null and the map provider keeps its
- * default marker. Candidate files are never opened by this class.
- */
+/** Android-owned semantic marker renderer backed only by production-export marker assets. */
 class ProductionMarkerSvgVisualSource(
     private val catalog: ProductionMarkerSvgCatalog,
     private val lookup: ProductionMarkerAssetLookup = ProductionMarkerAssetRegistry,
@@ -56,10 +51,14 @@ class ProductionMarkerSvgVisualSource(
         val widthPx = documentWidth.roundToInt().coerceAtLeast(1)
         val heightPx = documentHeight.roundToInt().coerceAtLeast(1)
         val bitmap = Bitmap.createBitmap(widthPx, heightPx, Bitmap.Config.ARGB_8888)
-        svg.renderToCanvas(
-            Canvas(bitmap),
-            RectF(0f, 0f, widthPx.toFloat(), heightPx.toFloat()),
-        )
+
+        // Marker SVGs intentionally use negative viewBox origins so the geographic tip can sit near
+        // the bottom of the document. Setting the document viewport preserves that authored framing;
+        // rendering into an explicit RectF would crop the negative-origin geometry.
+        svg.setDocumentWidth(widthPx.toFloat())
+        svg.setDocumentHeight(heightPx.toFloat())
+        svg.renderToCanvas(Canvas(bitmap))
+
         check(hasOpaquePixel(bitmap)) {
             "Production marker rendered transparent: family=${record.family} semantic=${record.semanticKey.value}"
         }

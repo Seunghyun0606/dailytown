@@ -15,8 +15,11 @@ import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapThemeSpec
 import com.dailytown.app.map.NaverMapAdapter
+import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.AndroidProductionVisualAssetCatalog
 import com.dailytown.app.ui.visual.ProductionCompanionCanvasRenderer
+import com.dailytown.app.ui.visual.ProductionMarkerAssetRegistry
+import com.dailytown.app.ui.visual.ProductionMarkerSvgVisualSource
 import com.dailytown.app.ui.visual.ProductionVisualAssetRegistry
 import com.dailytown.app.visual.AppearanceProfile
 import com.dailytown.app.visual.CompanionAssetResolver
@@ -42,7 +45,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class NaverMapVisualQaTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
-    private val catalog by lazy { CandidateAssetCatalog(instrumentation.context.assets) }
     private val sourceCatalog by lazy { MapOverlayQaSourceCatalog(instrumentation.context.assets) }
     private val companionResolver by lazy { CompanionAssetResolver(ProductionVisualAssetRegistry) }
     private val companionRenderer by lazy {
@@ -50,13 +52,20 @@ class NaverMapVisualQaTest {
             AndroidProductionVisualAssetCatalog(instrumentation.targetContext.assets),
         )
     }
+    private val productionMarkerSource by lazy {
+        ProductionMarkerSvgVisualSource(
+            AndroidProductionMarkerAssetCatalog(instrumentation.targetContext.assets),
+        )
+    }
 
     @Test
     fun approvedOverlayMatrixRendersOnRealNaverMapAndEv1UsesMeasuredE2Luminance() {
         assumeTrue("NAVER credential is required for real-map visual QA", BuildConfig.NAVER_MAP_CONFIGURED)
+        assertEquals(24, ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT)
+        assertEquals(24, ProductionMarkerAssetRegistry.records().size)
         val eveningCheckpoints = sourceCatalog.verifyApprovedSourcesAndRuntimeContract()
         val diagnostics = NaverMapQaDiagnostics(instrumentation.targetContext)
-        val adapter = NaverMapAdapter(BuildConfig.NAVER_MAP_NCP_KEY_ID, CandidateMarkerVisualSource(catalog))
+        val adapter = NaverMapAdapter(BuildConfig.NAVER_MAP_NCP_KEY_ID, productionMarkerSource)
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         lateinit var sceneView: NaverMapOverlayQaSceneView
         var outcome = "FAIL"

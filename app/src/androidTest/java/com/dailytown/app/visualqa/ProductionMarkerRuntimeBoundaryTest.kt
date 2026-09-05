@@ -1,5 +1,6 @@
 package com.dailytown.app.visualqa
 
+import android.graphics.Rect
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.domain.GeoPoint
@@ -16,7 +17,6 @@ import com.dailytown.app.visual.MarkerSemantic
 import com.dailytown.app.visual.ResolvedMarkerAsset
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +29,7 @@ class ProductionMarkerRuntimeBoundaryTest {
     private val active = MarkerSemantic.ENCOUNTER_ACTIVE.key
 
     @Test
-    fun familyAwareRendererCanRenderCurrentApprovedShapeWithoutPromotingIt() {
+    fun familyAwareRendererCanRenderCurrentApprovedShape() {
         val index = MarkerProductionAssetIndex(
             listOf(
                 ProductionMarkerAssetRecord(
@@ -72,13 +72,36 @@ class ProductionMarkerRuntimeBoundaryTest {
     }
 
     @Test
-    fun wiredProductionSourceStaysFailClosedWhileRegistryIsEmpty() {
-        val source = ProductionMarkerSvgVisualSource(AndroidProductionMarkerAssetCatalog(targetAssets))
-        val rendered = source.resolve(marker(), MapThemeSpec(markerFamily = MarkerFamily.DAY))
+    fun promotedProductionSourceRendersExactDayDarkMatrixWithoutNegativeViewBoxClipping() {
+        val records = ProductionMarkerAssetRegistry.records()
+        assertEquals(24, ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT)
+        assertEquals(24, records.size)
+        assertEquals(12, records.count { it.family == MarkerFamily.DAY })
+        assertEquals(12, records.count { it.family == MarkerFamily.DARK })
 
-        assertEquals(0, ProductionMarkerAssetRegistry.PROMOTED_MARKER_COUNT)
-        assertTrue(ProductionMarkerAssetRegistry.records().isEmpty())
-        assertNull(rendered)
+        val source = ProductionMarkerSvgVisualSource(AndroidProductionMarkerAssetCatalog(targetAssets))
+        MarkerFamily.entries.forEach { family ->
+            MarkerSemantic.entries.forEach { semantic ->
+                val record = ProductionMarkerAssetRegistry.resolve(family, semantic.key)
+                assertNotNull("Missing production record for $family/${semantic.key.value}", record)
+
+                val rendered = requireNotNull(
+                    source.resolve(
+                        marker(semantic = semantic, selected = semantic == MarkerSemantic.ENCOUNTER_ACTIVE),
+                        MapThemeSpec(markerFamily = family),
+                    ),
+                )
+                assertEquals(96, rendered.bitmap.width)
+                assertEquals(128, rendered.bitmap.height)
+                assertEquals(ResolvedMarkerAsset.GEO_ANCHOR_X, rendered.anchorX, 0f)
+                assertEquals(ResolvedMarkerAsset.GEO_ANCHOR_Y, rendered.anchorY, 0f)
+                assertTrue(hasOpaquePixel(rendered.bitmap))
+
+                val bounds = opaqueBounds(rendered.bitmap)
+                assertTrue("Production marker clipped at left edge: $family/${semantic.key.value} bounds=$bounds", bounds.left > 0)
+                assertTrue("Production marker clipped at top edge: $family/${semantic.key.value} bounds=$bounds", bounds.top > 0)
+            }
+        }
     }
 
     private fun candidateCatalog() = ProductionMarkerSvgCatalog { record ->
@@ -87,11 +110,14 @@ class ProductionMarkerRuntimeBoundaryTest {
             .use { it.readText() }
     }
 
-    private fun marker(selected: Boolean = false) = MapMarkerSpec(
+    private fun marker(
+        semantic: MarkerSemantic = MarkerSemantic.ENCOUNTER_ACTIVE,
+        selected: Boolean = false,
+    ) = MapMarkerSpec(
         id = "marker-runtime-boundary",
         title = "QA",
         position = GeoPoint(37.5665, 126.9780),
-        semantic = MarkerSemantic.ENCOUNTER_ACTIVE,
+        semantic = semantic,
         selected = selected,
     )
 
@@ -100,5 +126,22 @@ class ProductionMarkerRuntimeBoundaryTest {
             if ((bitmap.getPixel(x, y) ushr 24) != 0) return true
         }
         return false
+    }
+
+    private fun opaqueBounds(bitmap: android.graphics.Bitmap): Rect {
+        var left = bitmap.width
+        var top = bitmap.height
+        var right = -1
+        var bottom = -1
+        for (y in 0 until bitmap.height) for (x in 0 until bitmap.width) {
+            if ((bitmap.getPixel(x, y) ushr 24) != 0) {
+                left = minOf(left, x)
+                top = minOf(top, y)
+                right = maxOf(right, x)
+                bottom = maxOf(bottom, y)
+            }
+        }
+        check(right >= left && bottom >= top) { "Production marker rendered fully transparent" }
+        return Rect(left, top, right + 1, bottom + 1)
     }
 }
