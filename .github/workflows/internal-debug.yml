@@ -10,15 +10,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TOUR_API_SERVICE_KEY: ${{ secrets.TOUR_API_SERVICE_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - name: Guard against committed NAVER credentials
+      - name: Guard against committed credentials
         shell: bash
         run: |
           if git grep -nE "NAVER_MAP_NCP_KEY_ID[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"; then
             echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file."
             exit 1
           fi
+          if git grep -nE "TOUR_API_SERVICE_KEY[[:space:]]*[:=][[:space:]]*['\"]?[^[:space:]'\"]{20,}"; then
+            echo "::error::A TourAPI credential appears to be hard-coded in a tracked file."
+            exit 1
+          fi
+      - name: Verify adopted Play release baseline
+        run: python3 tools/release/verify_play_release_baseline.py
       - name: Load approved MVP field-test baseline
         shell: bash
         run: |
@@ -43,6 +51,14 @@ jobs:
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
         run: gradle verifyNaverMapCredential
+      - name: Verify TourAPI credential when configured
+        shell: bash
+        run: |
+          if [[ -n "${TOUR_API_SERVICE_KEY:-}" ]]; then
+            gradle verifyTourApiCredential
+          else
+            echo "TourAPI secret not configured; internal APK will use field-test fixture POIs."
+          fi
       - name: Unit tests
         run: gradle testDebugUnitTest
       - name: Compile instrumented tests
@@ -58,7 +74,10 @@ jobs:
         run: |
           cd app/build/outputs/apk/debug
           sha256sum app-debug.apk > app-debug.apk.sha256
-          printf 'package=com.dailytown.app\nversion=0.7.0\ncommit=%s\n' "$GITHUB_SHA" > build-metadata.txt
+          printf 'package=com.dailytown.app\nversion=0.7.0\ncommit=%s\npoiSource=%s\n' \
+            "$GITHUB_SHA" \
+            "$(if [[ -n "${TOUR_API_SERVICE_KEY:-}" ]]; then echo tourapi; else echo fixture; fi)" \
+            > build-metadata.txt
           printf 'FIELD_TEST_MIN_SESSION_SECONDS=%s\nFIELD_TEST_MAX_GPS_REJECTION_PERCENT=%s\nFIELD_TEST_REQUIRE_MAP_READY=%s\nFIELD_TEST_MAX_DISTANCE_ERROR_PERCENT=%s\nFIELD_TEST_MAX_BATTERY_DRAIN_PERCENT_PER_HOUR=%s\nFIELD_TEST_MIN_ENCOUNTERS_PER_SESSION=%s\nFIELD_TEST_MIN_ENCOUNTER_RESOLUTION_PERCENT=%s\nFIELD_TEST_MAX_REPEAT_AREA_FATIGUE_PERCENT=%s\nFIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT=%s\nFIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET=%s\nFIELD_TEST_COMPARISON_REQUIRED_EVIDENCE=%s\n' \
             "${FIELD_TEST_MIN_SESSION_SECONDS:-unset}" \
             "${FIELD_TEST_MAX_GPS_REJECTION_PERCENT:-unset}" \
