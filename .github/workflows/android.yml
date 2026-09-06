@@ -26,6 +26,9 @@ jobs:
         run: |
           python3 -m unittest tools.field_test.test_mvp_baseline
           sed -n 's/^export //p' tools/field_test/mvp_baseline.env >> "$GITHUB_ENV"
+      - name: Field-test shell tool syntax
+        shell: bash
+        run: bash -n tools/field_test/prepare_physical_test.sh tools/field_test/review_physical_export.sh
       - name: Field-test export tool tests
         run: python3 -m unittest discover -s tools/field_test -p 'test_*.py'
       - name: Marker promotion readiness tool tests
