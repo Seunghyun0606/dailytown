@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.dailytown.app.BuildConfig
@@ -66,12 +67,12 @@ import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
 
-private enum class MvpSection(val label: String, val symbol: String) {
-    EXPLORE("탐험", "⌖"),
-    COMPANION("동행", "●"),
-    COLLECTION("기록", "▦"),
-    GOALS("목표", "✓"),
-    SETTINGS("설정", "⚙"),
+private enum class MvpSection(val label: String, val symbol: String, val testTag: String) {
+    EXPLORE("탐험", "⌖", "nav-explore"),
+    COMPANION("동행", "●", "nav-companion"),
+    COLLECTION("기록", "▦", "nav-collection"),
+    GOALS("목표", "✓", "nav-goals"),
+    SETTINGS("설정", "⚙", "nav-settings"),
 }
 
 @Composable
@@ -110,6 +111,7 @@ fun DailyTownMvpShell(
                             },
                             icon = { Text(section.symbol) },
                             label = { Text(section.label) },
+                            modifier = Modifier.testTag(section.testTag),
                         )
                     }
                 }
@@ -158,11 +160,19 @@ private fun BoxScope.SectionLayer(
     active: Boolean,
     content: @Composable () -> Unit,
 ) {
+    val visibilityModifier = if (active) {
+        Modifier
+    } else {
+        // Keep the composable/runtime alive, but remove inactive screens from the semantics tree so
+        // TalkBack and UI tests only see the currently visible destination.
+        Modifier.clearAndSetSemantics { }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .zIndex(if (active) 1f else 0f)
-            .alpha(if (active) 1f else 0f),
+            .alpha(if (active) 1f else 0f)
+            .then(visibilityModifier),
     ) {
         content()
     }
