@@ -18,7 +18,7 @@ import com.dailytown.app.poi.CachingPoiRepository
 import com.dailytown.app.poi.FixturePoiRepository
 import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.reminder.LocalReminderManager
-import com.dailytown.app.ui.DailyTownApp
+import com.dailytown.app.ui.DailyTownMvpShell
 import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.MapThemeRefreshController
 import com.dailytown.app.ui.visual.ProductionMarkerSvgVisualSource
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         val poiRepository = CachingPoiRepository(FixturePoiRepository())
         val reminderManager = LocalReminderManager(applicationContext).also { it.restoreIfEnabled() }
         setContent {
-            DailyTownApp(
+            DailyTownMvpShell(
                 mapAdapter = mapAdapter,
                 progressStore = progressStore,
                 poiRepository = poiRepository,
