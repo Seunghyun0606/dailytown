@@ -37,10 +37,35 @@ class TourApiPoiRepositoryTest {
     }
 
     @Test
-    fun `TourAPI location request uses WGS84 mapX longitude mapY latitude and clamps radius`() {
+    fun `TourAPI request snaps raw GPS to neighborhood grid and pads provider radius`() {
         val url = buildTourApiLocationUrl(
             baseUrl = "https://example.test/KorService2",
             serviceKey = "decoded key/+",
+            mobileApp = "DailyTown",
+            mobileOs = "AND",
+            center = GeoPoint(37.57593, 126.97682),
+            radiusMeters = 900.0,
+        )
+        val query = url.substringAfter('?')
+            .split('&')
+            .associate { pair ->
+                val (rawKey, rawValue) = pair.split('=', limit = 2)
+                decode(rawKey) to decode(rawValue)
+            }
+
+        assertTrue(url.startsWith("https://example.test/KorService2/locationBasedList2?"))
+        assertEquals("decoded key/+", query["serviceKey"])
+        assertEquals("126.98", query["mapX"])
+        assertEquals("37.58", query["mapY"])
+        assertEquals("2500", query["radius"])
+        assertEquals("json", query["_type"])
+    }
+
+    @Test
+    fun `TourAPI provider radius still respects official maximum`() {
+        val url = buildTourApiLocationUrl(
+            baseUrl = "https://example.test/KorService2",
+            serviceKey = "key",
             mobileApp = "DailyTown",
             mobileOs = "AND",
             center = GeoPoint(37.57593, 126.97682),
@@ -53,12 +78,7 @@ class TourApiPoiRepositoryTest {
                 decode(rawKey) to decode(rawValue)
             }
 
-        assertTrue(url.startsWith("https://example.test/KorService2/locationBasedList2?"))
-        assertEquals("decoded key/+", query["serviceKey"])
-        assertEquals("126.97682", query["mapX"])
-        assertEquals("37.57593", query["mapY"])
         assertEquals("20000", query["radius"])
-        assertEquals("json", query["_type"])
     }
 
     private fun decode(value: String): String =
