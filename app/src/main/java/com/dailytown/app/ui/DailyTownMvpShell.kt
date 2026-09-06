@@ -37,13 +37,18 @@ import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.persistence.ProgressStore
 import com.dailytown.app.poi.PoiRepository
+import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.progress.GoalDefinition
 import com.dailytown.app.progress.GoalMetric
 import com.dailytown.app.progress.GoalProgressEvaluator
 import com.dailytown.app.progress.GoalRotationCoordinator
 import com.dailytown.app.reminder.LocalReminderManager
+import com.dailytown.app.ui.visual.A3CompanionStamp
+import com.dailytown.app.ui.visual.A3PaperSurface
 import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
 import com.dailytown.app.ui.visual.ProductionCompanionVisual
+import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
+import com.dailytown.app.visual.A3Screen
 import com.dailytown.app.visual.AppearanceProfile
 import com.dailytown.app.visual.CompanionExpression
 import com.dailytown.app.visual.CompanionUsageContext
@@ -150,6 +155,7 @@ private fun CompanionScreen(progress: ExplorationProgress?) {
     val lighting = remember {
         MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
     }
+    val a3AssetRenderer = rememberProductionA3AssetRenderer()
     ScreenColumn(title = "동행 · 모루") {
         ElevatedCard(Modifier.fillMaxWidth()) {
             Column(
@@ -168,8 +174,19 @@ private fun CompanionScreen(progress: ExplorationProgress?) {
                     modifier = Modifier.size(240.dp),
                     contentDescription = "동행 캐릭터 모루",
                 )
-                Text("모루", style = MaterialTheme.typography.headlineSmall)
-                Text("호감도 $bond")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    A3CompanionStamp(
+                        assetRenderer = a3AssetRenderer,
+                        sizeDp = 48,
+                    )
+                    Column {
+                        Text("모루", style = MaterialTheme.typography.headlineSmall)
+                        Text("호감도 $bond")
+                    }
+                }
                 Text("함께 발견한 기억 ${progress?.companionMemoryKeys?.size ?: 0}개")
             }
         }
@@ -186,28 +203,46 @@ private fun CompanionScreen(progress: ExplorationProgress?) {
 
 @Composable
 private fun CollectionScreen(progress: ExplorationProgress?) {
-    ScreenColumn(title = "동네 기록") {
-        ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("탐험 컬렉션", style = MaterialTheme.typography.titleMedium)
-                StatRow("발견한 장소", "${progress?.encounterVisitedPoiIds?.size ?: 0}곳")
-                StatRow("해결한 미스터리", "${progress?.resolvedEncounterIds?.size ?: 0}건")
-                StatRow("수집한 단서", "${progress?.inventoryClueIds?.size ?: 0}개")
-                StatRow("누적 이동", "${progress?.distanceWalkedMeters?.roundToInt() ?: 0}m")
+    val a3AssetRenderer = rememberProductionA3AssetRenderer()
+    val fixtureNames = remember {
+        defaultFixturePois().associate { poi -> poi.id to poi.name }
+    }
+    A3PaperSurface(
+        screen = A3Screen.COLLECTION_GRID,
+        assetRenderer = a3AssetRenderer,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text("동네 기록", style = MaterialTheme.typography.headlineSmall)
+            ElevatedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("탐험 컬렉션", style = MaterialTheme.typography.titleMedium)
+                    StatRow("발견한 장소", "${progress?.encounterVisitedPoiIds?.size ?: 0}곳")
+                    StatRow("해결한 미스터리", "${progress?.resolvedEncounterIds?.size ?: 0}건")
+                    StatRow("수집한 단서", "${progress?.inventoryClueIds?.size ?: 0}개")
+                    StatRow("누적 이동", "${progress?.distanceWalkedMeters?.roundToInt() ?: 0}m")
+                }
             }
-        }
-        ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("최근 탐험", style = MaterialTheme.typography.titleMedium)
-                val recent = progress?.recentPoiIds.orEmpty()
-                if (recent.isEmpty()) {
-                    Text("아직 기록된 장소가 없습니다.")
-                } else {
-                    recent.take(8).forEachIndexed { index, poiId ->
-                        Text("${index + 1}. $poiId")
+            ElevatedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("최근 탐험", style = MaterialTheme.typography.titleMedium)
+                    val recent = progress?.recentPoiIds.orEmpty()
+                    if (recent.isEmpty()) {
+                        Text("아직 기록된 장소가 없습니다.")
+                    } else {
+                        recent.take(8).forEachIndexed { index, poiId ->
+                            Text("${index + 1}. ${fixtureNames[poiId] ?: poiId}")
+                        }
                     }
                 }
             }
+            Spacer(Modifier.height(12.dp))
         }
     }
 }
@@ -262,8 +297,8 @@ private fun SettingsScreen() {
         ElevatedCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("개발 상태", style = MaterialTheme.typography.titleMedium)
-                Text("현재 Field Test/진단 도구는 탐험 화면 하단에 유지되어 있습니다.")
-                Text("사용자용 탐험 UI와 QA 도구의 완전 분리는 다음 통합 단계에서 진행합니다.")
+                Text("Field Test/진단 도구를 사용자 탐험 화면에서 분리하는 중입니다.")
+                Text("세션 상태 보존을 먼저 고정한 뒤 설정의 개발/QA 영역으로 이동합니다.")
             }
         }
     }
