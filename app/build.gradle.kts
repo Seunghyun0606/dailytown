@@ -11,11 +11,20 @@ val naverMapNcpKeyId = providers.gradleProperty("NAVER_MAP_NCP_KEY_ID")
 val resolvedNaverMapNcpKeyId = naverMapNcpKeyId.get().trim()
 val naverMapConfigured = resolvedNaverMapNcpKeyId.isNotBlank() && !resolvedNaverMapNcpKeyId.startsWith("TODO_")
 
+val tourApiServiceKey = providers.gradleProperty("TOUR_API_SERVICE_KEY")
+    .orElse(providers.environmentVariable("TOUR_API_SERVICE_KEY"))
+    .orElse("TODO_TOUR_API_SERVICE_KEY")
+val resolvedTourApiServiceKey = tourApiServiceKey.get().trim()
+val tourApiConfigured = resolvedTourApiServiceKey.isNotBlank() && !resolvedTourApiServiceKey.startsWith("TODO_")
+
 fun optionalConfig(name: String): String = providers.gradleProperty(name)
     .orElse(providers.environmentVariable(name))
     .orElse("")
     .get()
     .trim()
+
+fun escapedBuildConfigString(value: String): String =
+    value.replace("\\", "\\\\").replace("\"", "\\\"")
 
 fun optionalNonNegativeLong(name: String): Long {
     val raw = optionalConfig(name)
@@ -103,6 +112,17 @@ val fieldTestComparisonMinSessionsPerCohort = optionalPositiveInt("FIELD_TEST_CO
 val fieldTestComparisonRequireMatchingPreset = optionalTriStateBoolean("FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET")
 val fieldTestComparisonRequiredEvidence = optionalComparisonEvidence("FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE")
 
+val releaseStoreFile = optionalConfig("DAILYTOWN_UPLOAD_STORE_FILE")
+val releaseStorePassword = optionalConfig("DAILYTOWN_UPLOAD_STORE_PASSWORD")
+val releaseKeyAlias = optionalConfig("DAILYTOWN_UPLOAD_KEY_ALIAS")
+val releaseKeyPassword = optionalConfig("DAILYTOWN_UPLOAD_KEY_PASSWORD")
+val releaseSigningConfigured = listOf(
+    releaseStoreFile,
+    releaseStorePassword,
+    releaseKeyAlias,
+    releaseKeyPassword,
+).all { it.isNotBlank() }
+
 android {
     namespace = "com.dailytown.app"
     compileSdk = 37
@@ -118,9 +138,15 @@ android {
         buildConfigField(
             "String",
             "NAVER_MAP_NCP_KEY_ID",
-            "\"${resolvedNaverMapNcpKeyId.replace("\\", "\\\\").replace("\"", "\\\"")}\"",
+            "\"${escapedBuildConfigString(resolvedNaverMapNcpKeyId)}\"",
         )
         buildConfigField("boolean", "NAVER_MAP_CONFIGURED", naverMapConfigured.toString())
+        buildConfigField(
+            "String",
+            "TOUR_API_SERVICE_KEY",
+            "\"${escapedBuildConfigString(resolvedTourApiServiceKey)}\"",
+        )
+        buildConfigField("boolean", "TOUR_API_CONFIGURED", tourApiConfigured.toString())
         buildConfigField("long", "FIELD_TEST_MIN_SESSION_SECONDS", "${fieldTestMinSessionSeconds}L")
         buildConfigField("int", "FIELD_TEST_MAX_GPS_REJECTION_PERCENT", fieldTestMaxGpsRejectionPercent.toString())
         buildConfigField("boolean", "FIELD_TEST_REQUIRE_MAP_READY", fieldTestRequireMapReady.toString())
@@ -132,6 +158,25 @@ android {
         buildConfigField("int", "FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT", fieldTestComparisonMinSessionsPerCohort.toString())
         buildConfigField("int", "FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET", fieldTestComparisonRequireMatchingPreset.toString())
         buildConfigField("String", "FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE", "\"$fieldTestComparisonRequiredEvidence\"")
+    }
+
+    signingConfigs {
+        if (releaseSigningConfigured) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
     }
 
     buildFeatures {
@@ -187,6 +232,37 @@ tasks.register("verifyNaverMapCredential") {
         }
         println("NAVER Maps credential wiring verified for com.dailytown.app")
     }
+}
+
+tasks.register("verifyTourApiCredential") {
+    group = "verification"
+    description = "Fails unless TOUR_API_SERVICE_KEY is supplied through Gradle or environment."
+    doLast {
+        check(tourApiConfigured) {
+            "TOUR_API_SERVICE_KEY is required for TourAPI-backed Daily Town builds."
+        }
+        println("TourAPI credential wiring verified for com.dailytown.app")
+    }
+}
+
+tasks.register("verifyReleaseSigningConfig") {
+    group = "verification"
+    description = "Fails unless the Play upload-key signing inputs are supplied through the environment."
+    doLast {
+        check(releaseSigningConfigured) {
+            "Set DAILYTOWN_UPLOAD_STORE_FILE, DAILYTOWN_UPLOAD_STORE_PASSWORD, DAILYTOWN_UPLOAD_KEY_ALIAS, and DAILYTOWN_UPLOAD_KEY_PASSWORD before building an upload bundle."
+        }
+        check(file(releaseStoreFile).isFile) {
+            "DAILYTOWN_UPLOAD_STORE_FILE must point to an existing keystore file."
+        }
+        println("Daily Town upload-key signing configuration is present")
+    }
+}
+
+tasks.register("bundleForPlay") {
+    group = "build"
+    description = "Builds the signed release AAB after validating upload-key configuration."
+    dependsOn("verifyReleaseSigningConfig", "bundleRelease")
 }
 
 // AGP managed-device setup has emitted a warning that testedAbi was unspecified even while the
