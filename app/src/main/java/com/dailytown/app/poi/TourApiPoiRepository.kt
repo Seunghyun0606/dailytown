@@ -5,6 +5,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import kotlin.math.round
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -12,6 +13,8 @@ import org.json.JSONObject
 
 private const val TOUR_API_BASE_URL = "https://apis.data.go.kr/B551011/KorService2"
 private const val TOUR_API_MAX_RADIUS_METERS = 20_000
+private const val TOUR_API_QUERY_GRID_DEGREES = 0.02
+private const val TOUR_API_QUERY_PADDING_METERS = 1_600.0
 
 internal data class TourApiNearbyItem(
     val contentId: String,
@@ -111,6 +114,11 @@ internal class HttpTourApiNearbySource(
         }
 }
 
+/**
+ * TourAPI only needs a neighborhood-scale query origin. Do not transmit the raw gameplay GPS
+ * sample: snap it to an approximately 2 km grid and compensate with a padded query radius.
+ * CachingPoiRepository subsequently filters returned POIs against the precise on-device request.
+ */
 internal fun buildTourApiLocationUrl(
     baseUrl: String,
     serviceKey: String,
@@ -119,7 +127,10 @@ internal fun buildTourApiLocationUrl(
     center: GeoPoint,
     radiusMeters: Double,
 ): String {
-    val radius = radiusMeters.toInt().coerceIn(1, TOUR_API_MAX_RADIUS_METERS)
+    val providerCenter = snapTourApiQueryCenter(center)
+    val radius = (radiusMeters + TOUR_API_QUERY_PADDING_METERS)
+        .toInt()
+        .coerceIn(1, TOUR_API_MAX_RADIUS_METERS)
     val query = linkedMapOf(
         "serviceKey" to serviceKey,
         "MobileOS" to mobileOs,
@@ -128,14 +139,22 @@ internal fun buildTourApiLocationUrl(
         "pageNo" to "1",
         "numOfRows" to "100",
         "arrange" to "E",
-        "mapX" to center.longitude.toString(),
-        "mapY" to center.latitude.toString(),
+        "mapX" to providerCenter.longitude.toString(),
+        "mapY" to providerCenter.latitude.toString(),
         "radius" to radius.toString(),
     ).entries.joinToString("&") { (key, value) ->
         "${encodeQuery(key)}=${encodeQuery(value)}"
     }
     return "${baseUrl.trimEnd('/')}/locationBasedList2?$query"
 }
+
+internal fun snapTourApiQueryCenter(center: GeoPoint): GeoPoint = GeoPoint(
+    latitude = snapToGrid(center.latitude),
+    longitude = snapToGrid(center.longitude),
+)
+
+private fun snapToGrid(value: Double): Double =
+    round(value / TOUR_API_QUERY_GRID_DEGREES) * TOUR_API_QUERY_GRID_DEGREES
 
 private fun encodeQuery(value: String): String =
     URLEncoder.encode(value, StandardCharsets.UTF_8.name())
