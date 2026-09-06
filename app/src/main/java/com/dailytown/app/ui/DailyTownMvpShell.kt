@@ -2,6 +2,7 @@ package com.dailytown.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -28,7 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.persistence.ExplorationProgress
@@ -99,20 +102,45 @@ fun DailyTownMvpShell(
                     .fillMaxSize()
                     .padding(padding),
             ) {
-                when (selectedSection) {
-                    MvpSection.EXPLORE -> DailyTownApp(
+                // Keep Explore composed even while another tab is visible. Its location source,
+                // encounter coordinator and field-test monitors therefore survive tab switches.
+                SectionLayer(active = selectedSection == MvpSection.EXPLORE) {
+                    DailyTownApp(
                         mapAdapter = mapAdapter,
                         progressStore = progressStore,
                         poiRepository = poiRepository,
                         reminderManager = reminderManager,
                     )
-                    MvpSection.COMPANION -> CompanionScreen(progress)
-                    MvpSection.COLLECTION -> CollectionScreen(progress)
-                    MvpSection.GOALS -> GoalsScreen(progress, dailyGoals, weeklyGoals)
-                    MvpSection.SETTINGS -> SettingsScreen()
+                }
+                SectionLayer(active = selectedSection == MvpSection.COMPANION) {
+                    CompanionScreen(progress)
+                }
+                SectionLayer(active = selectedSection == MvpSection.COLLECTION) {
+                    CollectionScreen(progress)
+                }
+                SectionLayer(active = selectedSection == MvpSection.GOALS) {
+                    GoalsScreen(progress, dailyGoals, weeklyGoals)
+                }
+                SectionLayer(active = selectedSection == MvpSection.SETTINGS) {
+                    SettingsScreen()
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun BoxScope.SectionLayer(
+    active: Boolean,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(if (active) 1f else 0f)
+            .alpha(if (active) 1f else 0f),
+    ) {
+        content()
     }
 }
 
