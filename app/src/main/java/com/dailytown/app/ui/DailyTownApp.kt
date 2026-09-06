@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -37,10 +38,16 @@ import com.dailytown.app.persistence.toState
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
 import com.dailytown.app.ui.visual.A3ClueCard
+import com.dailytown.app.ui.visual.CompanionHudVisualResolver
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
+import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
+import com.dailytown.app.ui.visual.ProductionCompanionVisual
 import com.dailytown.app.ui.visual.SemanticAssetRenderer
 import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
 import com.dailytown.app.visual.A3ClueState
+import com.dailytown.app.visual.AppearanceProfile
+import com.dailytown.app.visual.CompanionUsageContext
+import com.dailytown.app.visual.CompanionVisualRequest
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
@@ -271,6 +278,8 @@ fun DailyTownApp(
         activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
     val gameplayMetrics = gameplaySessionMonitor.snapshot()
+    val companionExpression = CompanionHudVisualResolver.expression(lastCompanionMoment)
+    val companionLighting = MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
 
     MaterialTheme {
         Scaffold(
@@ -302,6 +311,43 @@ fun DailyTownApp(
                     mapAdapter = mapAdapter,
                     modifier = Modifier.fillMaxWidth().height(250.dp),
                 )
+
+                ElevatedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("explore-companion-hud"),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        ProductionCompanionVisual(
+                            request = CompanionVisualRequest(
+                                companionId = snapshot.state.companion.id,
+                                expression = companionExpression,
+                                lightingFamily = companionLighting,
+                                appearanceProfile = AppearanceProfile.BASE,
+                                usageContext = CompanionUsageContext.HUD_PORTRAIT,
+                            ),
+                            modifier = Modifier.size(88.dp),
+                            contentDescription = "동행 캐릭터 ${snapshot.state.companion.name}",
+                            rasterTargetPx = 192,
+                        )
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(3.dp),
+                        ) {
+                            Text(snapshot.state.companion.name, style = MaterialTheme.typography.titleMedium)
+                            Text("호감도 ${snapshot.state.companion.bond}", style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
+                                    ?: "같이 걸어볼까? 주변에서 새로운 신호를 찾아보자.",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+                }
 
                 ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -368,13 +414,6 @@ fun DailyTownApp(
                         lastCompanionMoment = null
                     },
                 )
-
-                lastCompanionMoment?.let { moment ->
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(companionMomentLabel(snapshot.state.companion.name, moment)) },
-                    )
-                }
 
                 ElevatedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
