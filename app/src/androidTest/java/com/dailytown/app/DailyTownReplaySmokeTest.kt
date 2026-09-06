@@ -22,6 +22,7 @@ class DailyTownReplaySmokeTest {
 
     @Test
     fun replayRouteStartsWithoutLocationPermissionOrMapCredential() {
+        openQaTools()
         composeRule.onNodeWithTag("tracking-replay")
             .performScrollTo()
             .performClick()
@@ -35,6 +36,7 @@ class DailyTownReplaySmokeTest {
 
     @Test
     fun replaySessionSurvivesBottomNavigationRoundTrip() {
+        openQaTools()
         composeRule.onNodeWithTag("tracking-replay")
             .performScrollTo()
             .performClick()
@@ -54,6 +56,7 @@ class DailyTownReplaySmokeTest {
 
     @Test
     fun replaySessionsLatchSetupThenEnablePrivacySafeStructuredExport() {
+        openQaTools()
         composeRule.onNodeWithTag("field-test-cohort-counts")
             .assert(hasText("신규 0회 · 반복 0회"))
         composeRule.onNodeWithTag("field-test-protocol-status")
@@ -137,6 +140,15 @@ class DailyTownReplaySmokeTest {
             .assert(hasText("프로토콜: 데이터 부족"))
         composeRule.onNodeWithTag("field-test-export-json")
             .assertIsNotEnabled()
+    }
+
+    private fun openQaTools() {
+        composeRule.onNodeWithText("설정")
+            .performClick()
+        composeRule.onNodeWithTag("settings-open-qa")
+            .performScrollTo()
+            .performClick()
+        composeRule.waitForIdle()
     }
 
     private fun startReplayAndStop(
