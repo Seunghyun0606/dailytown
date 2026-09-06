@@ -13,8 +13,7 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.NaverMapAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.persistence.DataStoreProgressStore
-import com.dailytown.app.poi.CachingPoiRepository
-import com.dailytown.app.poi.FixturePoiRepository
+import com.dailytown.app.poi.ProductionPoiRepositoryFactory
 import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.DailyTownMvpShell
@@ -48,7 +47,9 @@ class MainActivity : ComponentActivity() {
         )
         mapThemeRefreshController = MapThemeRefreshController(mapAdapter)
         val progressStore = DataStoreProgressStore(applicationContext)
-        val poiRepository = CachingPoiRepository(FixturePoiRepository())
+        val poiRepository = ProductionPoiRepositoryFactory.create(
+            tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf { BuildConfig.TOUR_API_CONFIGURED },
+        )
         val reminderManager = LocalReminderManager(applicationContext).also { it.restoreIfEnabled() }
         setContent {
             DailyTownMvpShell(
