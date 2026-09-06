@@ -3,7 +3,6 @@ package com.dailytown.app.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -37,7 +36,6 @@ import com.dailytown.app.mystery.*
 import com.dailytown.app.persistence.toState
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.*
-import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.visual.A3ClueCard
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
 import com.dailytown.app.ui.visual.SemanticAssetRenderer
@@ -53,7 +51,7 @@ fun DailyTownApp(
     mapAdapter: MapViewAdapter,
     progressStore: com.dailytown.app.persistence.ProgressStore,
     poiRepository: PoiRepository,
-    reminderManager: LocalReminderManager,
+    showQaTools: Boolean = false,
 ) {
     val context = LocalContext.current
     val mapHealth by mapAdapter.health.collectAsState()
@@ -97,10 +95,6 @@ fun DailyTownApp(
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
     var referenceDistanceText by remember { mutableStateOf("") }
     var sessionToken by remember { mutableIntStateOf(0) }
-
-    val reminderPreference = remember { reminderManager.preference() }
-    var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
-    var reminderHour by remember { mutableIntStateOf(reminderPreference.hour) }
 
     val deviceSource = remember(trackingPreset) {
         FusedDeviceLocationSource(
@@ -165,6 +159,14 @@ fun DailyTownApp(
         trackingCoordinator.start(mode)
     }
 
+    fun stopTracking() {
+        if (trackingMode == TrackingMode.DEVICE) {
+            fieldTestSessionMonitor.end()
+        }
+        trackingCoordinator.stop()
+        mapAdapter.setUserLocation(null)
+    }
+
     fun applyReaction(moment: CompanionMoment) {
         lastCompanionMoment = moment
         val reaction = reactionPolicy.react(snapshot.state.companion, moment)
@@ -178,20 +180,7 @@ fun DailyTownApp(
         val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) start(TrackingMode.DEVICE)
-        else errorMessage = "위치 권한이 필요합니다. 리플레이 모드는 권한 없이 사용할 수 있습니다."
-    }
-
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { granted ->
-        if (granted) {
-            reminderManager.enable(reminderHour)
-            reminderEnabled = true
-        } else {
-            reminderManager.disable()
-            reminderEnabled = false
-            errorMessage = "알림 권한이 없어 탐험 리마인더를 켤 수 없습니다."
-        }
+        else errorMessage = "위치 권한이 필요합니다."
     }
 
     DisposableEffect(trackingMode, trackingPreset) {
@@ -284,7 +273,13 @@ fun DailyTownApp(
     val gameplayMetrics = gameplaySessionMonitor.snapshot()
 
     MaterialTheme {
-        Scaffold(topBar = { TopAppBar(title = { Text("Daily Town") }) }) { padding ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(if (showQaTools) "Daily Town · Field Test" else "Daily Town") },
+                )
+            },
+        ) { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -296,7 +291,11 @@ fun DailyTownApp(
                 Spacer(Modifier.height(4.dp))
                 Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "지도: ${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}",
+                    if (showQaTools) {
+                        "지도: ${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}"
+                    } else {
+                        "${snapshot.state.companion.name}와 함께 주변을 탐험해 보세요 · 호감도 ${snapshot.state.companion.bond}"
+                    },
                 )
 
                 MapSurface(
@@ -309,12 +308,15 @@ fun DailyTownApp(
                         Text("누적 탐험 거리 ${snapshot.state.distanceWalkedMeters.roundToInt()}m")
                         Text("미스터리 단서 ${gameProgress.inventoryClueIds.size}개 · 해결 ${gameProgress.resolvedEncounterIds.size}건")
                         Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
-                        if (snapshot.totalLocationSampleCount > 0) {
+                        if (snapshot.sessionDistanceMeters > 0.0) {
+                            Text("이번 탐험 ${snapshot.sessionDistanceMeters.roundToInt()}m")
+                        }
+                        if (showQaTools && snapshot.totalLocationSampleCount > 0) {
                             Text(
-                                "세션 ${snapshot.sessionDistanceMeters.roundToInt()}m · 추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                                "추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
                             )
                         }
-                        if (gameplayMetrics.encounterOfferedCount > 0) {
+                        if (showQaTools && gameplayMetrics.encounterOfferedCount > 0) {
                             val resolutionRate = gameplayMetrics.encounterResolutionRatePercent?.let { "$it%" } ?: "-"
                             Text(
                                 "세션 미스터리 발견 ${gameplayMetrics.discoveredEncounterCount} · 해결 ${gameplayMetrics.resolvedEncounterCount} · 해결률 $resolutionRate · 단서 ${gameplayMetrics.cluesCollectedCount}",
@@ -392,99 +394,89 @@ fun DailyTownApp(
                     }
                 }
 
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("위치 추적 모드", style = MaterialTheme.typography.titleMedium)
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            LocationTrackingPreset.entries.forEach { preset ->
-                                FilterChip(
-                                    selected = trackingPreset == preset,
-                                    onClick = {
-                                        if (trackingMode == TrackingMode.DEVICE) {
-                                            fieldTestSessionMonitor.end()
-                                        }
-                                        trackingCoordinator.selectPreset(preset)
-                                    },
-                                    label = { Text(trackingPresetLabel(preset)) },
-                                )
+                if (showQaTools) {
+                    ElevatedCard(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text("위치 추적 모드", style = MaterialTheme.typography.titleMedium)
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                LocationTrackingPreset.entries.forEach { preset ->
+                                    FilterChip(
+                                        selected = trackingPreset == preset,
+                                        onClick = {
+                                            if (trackingMode == TrackingMode.DEVICE) {
+                                                fieldTestSessionMonitor.end()
+                                            }
+                                            trackingCoordinator.selectPreset(preset)
+                                        },
+                                        label = { Text(trackingPresetLabel(preset)) },
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("탐험 리마인더", style = MaterialTheme.typography.titleMedium)
-                        Text("기본은 꺼짐이며 위치를 사용하지 않습니다.", style = MaterialTheme.typography.bodySmall)
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Switch(
-                                checked = reminderEnabled,
-                                onCheckedChange = { enabled ->
-                                    if (!enabled) {
-                                        reminderManager.disable()
-                                        reminderEnabled = false
-                                    } else if (Build.VERSION.SDK_INT >= 33 && !reminderManager.canPostNotifications()) {
-                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                    } else {
-                                        reminderManager.enable(reminderHour)
-                                        reminderEnabled = true
-                                    }
-                                },
-                            )
-                            Text(if (reminderEnabled) "매일 ${reminderHour}시 전후 알림" else "알림 끔")
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf(12, 18, 20).forEach { hour ->
-                                FilterChip(
-                                    selected = reminderHour == hour,
-                                    onClick = {
-                                        reminderHour = hour
-                                        if (reminderEnabled) reminderManager.enable(hour)
-                                    },
-                                    label = { Text("${hour}시") },
-                                )
-                            }
-                        }
-                        if (reminderEnabled && !reminderManager.canPostNotifications()) {
+                    ElevatedCard(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                "시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.",
-                                color = MaterialTheme.colorScheme.error,
+                                "패키지/빌드/파생 통계만 공유하며 좌표·이벤트 ID·지도 API 키는 제외합니다.",
+                                style = MaterialTheme.typography.bodySmall,
                             )
+                            Text(
+                                "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "주입" else "없음"} · 지도 ${mapHealthLabel(mapHealth.status)}",
+                            )
+                            Text(
+                                if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                            OutlinedTextField(
+                                value = referenceDistanceText,
+                                onValueChange = { value ->
+                                    if (value.all(Char::isDigit)) referenceDistanceText = value
+                                },
+                                label = { Text("기준 경로 거리(m, 선택)") },
+                                supportingText = { Text("좌표 대신 미리 확인한 총 거리 숫자만 입력합니다.") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            OutlinedButton(onClick = {
+                                val sessionMetrics = fieldTestSessionMonitor.metrics(
+                                    sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                                    sessionDurationSeconds = snapshot.trackingDurationSeconds,
+                                    referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
+                                )
+                                val report = FieldTestDiagnosticBuilder.build(
+                                    progress = normalizedProgress,
+                                    acceptedLocationCount = snapshot.acceptedLocationCount,
+                                    rejectedLocationCount = snapshot.rejectedLocationCount,
+                                    trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                                    sessionMetrics = sessionMetrics,
+                                    gameplayMetrics = gameplayMetrics,
+                                    appVersion = BuildConfig.VERSION_NAME,
+                                    mapProvider = mapAdapter.providerId.name,
+                                    mapHealth = mapHealth,
+                                    trackingPreset = trackingPreset,
+                                ).render()
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test diagnostic")
+                                    putExtra(Intent.EXTRA_TEXT, report)
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, "진단 리포트 공유"))
+                            }) { Text("진단 리포트 공유") }
                         }
                     }
-                }
 
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "패키지/빌드/파생 통계만 공유하며 좌표·이벤트 ID·지도 API 키는 제외합니다.",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Text(
-                            "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "주입" else "없음"} · 지도 ${mapHealthLabel(mapHealth.status)}",
-                        )
-                        Text(
-                            if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        OutlinedTextField(
-                            value = referenceDistanceText,
-                            onValueChange = { value ->
-                                if (value.all(Char::isDigit)) referenceDistanceText = value
-                            },
-                            label = { Text("기준 경로 거리(m, 선택)") },
-                            supportingText = { Text("좌표 대신 미리 확인한 총 거리 숫자만 입력합니다.") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                        OutlinedButton(onClick = {
+                    FieldTestComparisonCard(
+                        sessionToken = sessionToken,
+                        canRecordCurrentSession = trackingMode == TrackingMode.OFF && snapshot.totalLocationSampleCount > 0,
+                        buildDiagnostic = {
                             val sessionMetrics = fieldTestSessionMonitor.metrics(
                                 sessionDistanceMeters = snapshot.sessionDistanceMeters,
                                 sessionDurationSeconds = snapshot.trackingDurationSeconds,
                                 referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
                             )
-                            val report = FieldTestDiagnosticBuilder.build(
+                            FieldTestDiagnosticBuilder.build(
                                 progress = normalizedProgress,
                                 acceptedLocationCount = snapshot.acceptedLocationCount,
                                 rejectedLocationCount = snapshot.rejectedLocationCount,
@@ -495,40 +487,10 @@ fun DailyTownApp(
                                 mapProvider = mapAdapter.providerId.name,
                                 mapHealth = mapHealth,
                                 trackingPreset = trackingPreset,
-                            ).render()
-                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test diagnostic")
-                                putExtra(Intent.EXTRA_TEXT, report)
-                            }
-                            context.startActivity(Intent.createChooser(shareIntent, "진단 리포트 공유"))
-                        }) { Text("진단 리포트 공유") }
-                    }
+                            )
+                        },
+                    )
                 }
-
-                FieldTestComparisonCard(
-                    sessionToken = sessionToken,
-                    canRecordCurrentSession = trackingMode == TrackingMode.OFF && snapshot.totalLocationSampleCount > 0,
-                    buildDiagnostic = {
-                        val sessionMetrics = fieldTestSessionMonitor.metrics(
-                            sessionDistanceMeters = snapshot.sessionDistanceMeters,
-                            sessionDurationSeconds = snapshot.trackingDurationSeconds,
-                            referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
-                        )
-                        FieldTestDiagnosticBuilder.build(
-                            progress = normalizedProgress,
-                            acceptedLocationCount = snapshot.acceptedLocationCount,
-                            rejectedLocationCount = snapshot.rejectedLocationCount,
-                            trackingDurationSeconds = snapshot.trackingDurationSeconds,
-                            sessionMetrics = sessionMetrics,
-                            gameplayMetrics = gameplayMetrics,
-                            appVersion = BuildConfig.VERSION_NAME,
-                            mapProvider = mapAdapter.providerId.name,
-                            mapHealth = mapHealth,
-                            trackingPreset = trackingPreset,
-                        )
-                    },
-                )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = {
@@ -541,17 +503,15 @@ fun DailyTownApp(
                         )
                     }) { Text("실제 위치") }
 
-                    OutlinedButton(
-                        onClick = { start(TrackingMode.REPLAY) },
-                        modifier = Modifier.testTag("tracking-replay"),
-                    ) { Text("경로 리플레이") }
-                    TextButton(onClick = {
-                        if (trackingMode == TrackingMode.DEVICE) {
-                            fieldTestSessionMonitor.end()
-                        }
-                        trackingCoordinator.stop()
-                        mapAdapter.setUserLocation(null)
-                    }) { Text("중지") }
+                    if (showQaTools) {
+                        OutlinedButton(
+                            onClick = { start(TrackingMode.REPLAY) },
+                            modifier = Modifier.testTag("tracking-replay"),
+                        ) { Text("경로 리플레이") }
+                    }
+                    if (trackingMode != TrackingMode.OFF) {
+                        TextButton(onClick = ::stopTracking) { Text("중지") }
+                    }
                 }
 
                 errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
