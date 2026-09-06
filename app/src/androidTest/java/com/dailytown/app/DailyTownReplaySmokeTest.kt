@@ -43,10 +43,10 @@ class DailyTownReplaySmokeTest {
         composeRule.mainClock.advanceTimeBy(500L)
         composeRule.waitForIdle()
 
-        composeRule.onNodeWithText("동행")
+        composeRule.onNodeWithTag("nav-companion")
             .performClick()
         composeRule.waitForIdle()
-        composeRule.onNodeWithText("탐험")
+        composeRule.onNodeWithTag("nav-explore")
             .performClick()
         composeRule.waitForIdle()
 
@@ -143,7 +143,7 @@ class DailyTownReplaySmokeTest {
     }
 
     private fun openQaTools() {
-        composeRule.onNodeWithText("설정")
+        composeRule.onNodeWithTag("nav-settings")
             .performClick()
         composeRule.onNodeWithTag("settings-open-qa")
             .performScrollTo()
