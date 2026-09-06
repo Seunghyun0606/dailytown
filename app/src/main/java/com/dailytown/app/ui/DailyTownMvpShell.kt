@@ -47,6 +47,7 @@ import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.persistence.ProgressStore
 import com.dailytown.app.poi.PoiRepository
+import com.dailytown.app.poi.PoiSourceMetadata
 import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.progress.GoalDefinition
 import com.dailytown.app.progress.GoalMetric
@@ -87,6 +88,7 @@ fun DailyTownMvpShell(
     var progress by remember { mutableStateOf<ExplorationProgress?>(null) }
     var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
     var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
+    val poiSources = remember(poiRepository) { poiRepository.sourceMetadata() }
 
     LaunchedEffect(selectedSection, progressStore) {
         if (selectedSection == MvpSection.EXPLORE) return@LaunchedEffect
@@ -144,6 +146,7 @@ fun DailyTownMvpShell(
                 SectionLayer(active = selectedSection == MvpSection.SETTINGS) {
                     SettingsScreen(
                         reminderManager = reminderManager,
+                        poiSources = poiSources,
                         onOpenQa = {
                             qaMode = true
                             selectedSection = MvpSection.EXPLORE
@@ -316,6 +319,7 @@ private fun GoalGroup(
 @Composable
 private fun SettingsScreen(
     reminderManager: LocalReminderManager,
+    poiSources: List<PoiSourceMetadata>,
     onOpenQa: () -> Unit,
 ) {
     val initialPreference = remember { reminderManager.preference() }
@@ -342,6 +346,25 @@ private fun SettingsScreen(
                 Text("Daily Town", style = MaterialTheme.typography.titleMedium)
                 Text("앱 버전 ${BuildConfig.VERSION_NAME}")
                 Text("NAVER 지도 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "연결됨" else "설정 필요"}")
+                Text("Production POI ${if (BuildConfig.TOUR_API_CONFIGURED) "TourAPI 활성" else "Field Test fixture"}")
+            }
+        }
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("settings-poi-attribution"),
+        ) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("POI 데이터 출처", style = MaterialTheme.typography.titleMedium)
+                if (poiSources.isEmpty()) {
+                    Text("출처 정보 없음")
+                } else {
+                    poiSources.forEach { source ->
+                        Text(source.displayName, style = MaterialTheme.typography.labelLarge)
+                        Text(source.attributionText)
+                        Text(source.licenseSummary, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
         }
         ElevatedCard(Modifier.fillMaxWidth()) {
