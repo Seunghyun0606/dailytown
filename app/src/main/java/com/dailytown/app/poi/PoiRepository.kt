@@ -30,6 +30,39 @@ fun defaultFixturePois(): List<Poi> = listOf(
     Poi("deoksugung-wall", "덕수궁 돌담길", GeoPoint(37.56711, 126.97676), "jung-gu", PoiCategory.STREET),
     Poi("deoksugung", "덕수궁", GeoPoint(37.56580, 126.97515), "jung-gu", PoiCategory.CULTURE),
     Poi("seoul-plaza", "서울광장", GeoPoint(37.56560, 126.97798), "jung-gu", PoiCategory.PUBLIC_SPACE),
+    // Central-Seoul field-test fixtures. These anchors intentionally use stable, recognizable
+    // public places so the same NEW_AREA -> REPEAT_AREA route can be repeated on a real device.
+    Poi(
+        "euljiro-1ga-station",
+        "을지로입구역",
+        GeoPoint(37.566110, 126.982500),
+        "jung-gu",
+        PoiCategory.LANDMARK,
+    ),
+    Poi(
+        "sk-seorin-building",
+        "SK서린빌딩",
+        GeoPoint(37.5696896560345, 126.98030408661),
+        "jongno-gu",
+        PoiCategory.LANDMARK,
+    ),
+    // "광화문" is anchored to Gwanghwamun Gate itself rather than the broader square/district.
+    Poi(
+        "gwanghwamun-gate",
+        "광화문",
+        GeoPoint(37.575930, 126.976820),
+        "jongno-gu",
+        PoiCategory.CULTURE,
+    ),
+    // Insadong is an area, so the fixture uses a representative central point on Insadong-gil
+    // near 24 Insadong-gil instead of pretending the entire neighborhood is a single point.
+    Poi(
+        "insadong",
+        "인사동",
+        GeoPoint(37.5729518, 126.9865200),
+        "jongno-gu",
+        PoiCategory.STREET,
+    ),
     Poi(
         "seongnam-sports-complex",
         "성남종합운동장",
