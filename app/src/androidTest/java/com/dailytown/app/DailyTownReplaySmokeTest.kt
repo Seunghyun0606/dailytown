@@ -1,6 +1,8 @@
 package com.dailytown.app
 
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertDoesNotExist
+import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
@@ -19,6 +21,12 @@ import org.junit.runner.RunWith
 class DailyTownReplaySmokeTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<MainActivity>()
+
+    @Test
+    fun exploreShowsProductionCompanionHudWithoutStartingTracking() {
+        composeRule.onNodeWithTag("explore-companion-hud")
+            .assertExists()
+    }
 
     @Test
     fun replayRouteStartsWithoutLocationPermissionOrMapCredential() {
@@ -46,6 +54,9 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("nav-companion")
             .performClick()
         composeRule.waitForIdle()
+        composeRule.onNodeWithTag("tracking-status")
+            .assertDoesNotExist()
+
         composeRule.onNodeWithTag("nav-explore")
             .performClick()
         composeRule.waitForIdle()
