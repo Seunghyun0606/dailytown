@@ -14,13 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Guard against committed NAVER credentials
+      - name: Guard against committed credentials
         shell: bash
         run: |
           if git grep -nE "NAVER_MAP_NCP_KEY_ID[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"; then
             echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file. Use Gradle user properties, an environment variable, or a GitHub Actions secret instead."
             exit 1
           fi
+          if git grep -nE "TOUR_API_SERVICE_KEY[[:space:]]*[:=][[:space:]]*['\"]?[^[:space:]'\"]{20,}"; then
+            echo "::error::A TourAPI credential appears to be hard-coded in a tracked file. Use Gradle user properties or an environment variable instead."
+            exit 1
+          fi
+          if git grep -nE "DAILYTOWN_UPLOAD_(STORE_PASSWORD|KEY_PASSWORD)[[:space:]]*[:=][[:space:]]*['\"]?[^[:space:]'\"]{8,}"; then
+            echo "::error::A release signing password appears to be hard-coded in a tracked file."
+            exit 1
+          fi
+      - name: Verify adopted Play release baseline
+        run: python3 tools/release/verify_play_release_baseline.py
       - name: Load approved MVP field-test baseline
         shell: bash
         run: |
