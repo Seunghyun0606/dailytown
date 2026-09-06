@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.dailytown.app.location.FusedDeviceLocationSource
 import com.dailytown.app.location.LocationTrackingPreset
@@ -27,16 +26,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var mapThemeRefreshController: MapThemeRefreshController
     private lateinit var mapAdapter: FixturePoiOverlayMapAdapter
     private var initialLocationSource: FusedDeviceLocationSource? = null
-
-    private val initialLocationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-    ) { result ->
-        val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-            result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        if (granted && ::mapAdapter.isInitialized) {
-            centerMapOnCurrentLocationOnce()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 reminderManager = reminderManager,
             )
         }
-        requestInitialMapLocation()
+        centerInitialMapIfPermissionAlreadyGranted()
     }
 
     override fun onResume() {
@@ -89,16 +78,14 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    private fun requestInitialMapLocation() {
+    /**
+     * Cold start must never steal the app surface with a system permission dialog.
+     * If location permission already exists we may center once; otherwise the explicit
+     * "실제 위치" action inside DailyTownApp owns the permission request and tracking start.
+     */
+    private fun centerInitialMapIfPermissionAlreadyGranted() {
         if (hasLocationPermission()) {
             centerMapOnCurrentLocationOnce()
-        } else {
-            initialLocationPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                ),
-            )
         }
     }
 
