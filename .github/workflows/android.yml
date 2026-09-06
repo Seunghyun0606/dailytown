@@ -21,6 +21,11 @@ jobs:
             echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file. Use Gradle user properties, an environment variable, or a GitHub Actions secret instead."
             exit 1
           fi
+      - name: Load approved MVP field-test baseline
+        shell: bash
+        run: |
+          python3 -m unittest tools.field_test.test_mvp_baseline
+          sed -n 's/^export //p' tools/field_test/mvp_baseline.env >> "$GITHUB_ENV"
       - name: Field-test export tool tests
         run: python3 -m unittest discover -s tools/field_test -p 'test_*.py'
       - name: Marker promotion readiness tool tests
