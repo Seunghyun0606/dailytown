@@ -34,6 +34,25 @@ class DailyTownReplaySmokeTest {
     }
 
     @Test
+    fun replaySessionSurvivesBottomNavigationRoundTrip() {
+        composeRule.onNodeWithTag("tracking-replay")
+            .performScrollTo()
+            .performClick()
+        composeRule.mainClock.advanceTimeBy(500L)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText("동행")
+            .performClick()
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText("탐험")
+            .performClick()
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithTag("tracking-status")
+            .assert(hasText("서울시청 → 덕수궁 테스트 경로 재생 중"))
+    }
+
+    @Test
     fun replaySessionsLatchSetupThenEnablePrivacySafeStructuredExport() {
         composeRule.onNodeWithTag("field-test-cohort-counts")
             .assert(hasText("신규 0회 · 반복 0회"))
