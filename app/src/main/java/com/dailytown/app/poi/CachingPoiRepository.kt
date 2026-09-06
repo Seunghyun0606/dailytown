@@ -54,6 +54,8 @@ class CachingPoiRepository(
         }
     }
 
+    override fun sourceMetadata(): List<PoiSourceMetadata> = delegate.sourceMetadata()
+
     fun clear() {
         entries.clear()
     }
