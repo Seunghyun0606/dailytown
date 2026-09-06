@@ -1,5 +1,9 @@
 package com.dailytown.app.ui
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -14,15 +18,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.dailytown.app.BuildConfig
@@ -73,6 +82,7 @@ fun DailyTownMvpShell(
     reminderManager: LocalReminderManager,
 ) {
     var selectedSection by rememberSaveable { mutableStateOf(MvpSection.EXPLORE) }
+    var qaMode by rememberSaveable { mutableStateOf(false) }
     var progress by remember { mutableStateOf<ExplorationProgress?>(null) }
     var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
     var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
@@ -94,7 +104,10 @@ fun DailyTownMvpShell(
                     MvpSection.entries.forEach { section ->
                         NavigationBarItem(
                             selected = selectedSection == section,
-                            onClick = { selectedSection = section },
+                            onClick = {
+                                selectedSection = section
+                                if (section == MvpSection.EXPLORE) qaMode = false
+                            },
                             icon = { Text(section.symbol) },
                             label = { Text(section.label) },
                         )
@@ -114,7 +127,7 @@ fun DailyTownMvpShell(
                         mapAdapter = mapAdapter,
                         progressStore = progressStore,
                         poiRepository = poiRepository,
-                        reminderManager = reminderManager,
+                        showQaTools = qaMode,
                     )
                 }
                 SectionLayer(active = selectedSection == MvpSection.COMPANION) {
@@ -127,7 +140,13 @@ fun DailyTownMvpShell(
                     GoalsScreen(progress, dailyGoals, weeklyGoals)
                 }
                 SectionLayer(active = selectedSection == MvpSection.SETTINGS) {
-                    SettingsScreen()
+                    SettingsScreen(
+                        reminderManager = reminderManager,
+                        onOpenQa = {
+                            qaMode = true
+                            selectedSection = MvpSection.EXPLORE
+                        },
+                    )
                 }
             }
         }
@@ -285,7 +304,28 @@ private fun GoalGroup(
 }
 
 @Composable
-private fun SettingsScreen() {
+private fun SettingsScreen(
+    reminderManager: LocalReminderManager,
+    onOpenQa: () -> Unit,
+) {
+    val initialPreference = remember { reminderManager.preference() }
+    var reminderEnabled by remember { mutableStateOf(initialPreference.enabled) }
+    var reminderHour by remember { mutableIntStateOf(initialPreference.hour) }
+    var reminderError by remember { mutableStateOf<String?>(null) }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            reminderManager.enable(reminderHour)
+            reminderEnabled = true
+            reminderError = null
+        } else {
+            reminderManager.disable()
+            reminderEnabled = false
+            reminderError = "알림 권한이 없어 탐험 리마인더를 켤 수 없습니다."
+        }
+    }
+
     ScreenColumn(title = "설정") {
         ElevatedCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -295,10 +335,56 @@ private fun SettingsScreen() {
             }
         }
         ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("개발 상태", style = MaterialTheme.typography.titleMedium)
-                Text("Field Test/진단 도구를 사용자 탐험 화면에서 분리하는 중입니다.")
-                Text("세션 상태 보존을 먼저 고정한 뒤 설정의 개발/QA 영역으로 이동합니다.")
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("탐험 리마인더", style = MaterialTheme.typography.titleMedium)
+                Text("위치 정보는 사용하지 않고 선택한 시간대에만 알림을 보냅니다.")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Switch(
+                        checked = reminderEnabled,
+                        onCheckedChange = { enabled ->
+                            if (!enabled) {
+                                reminderManager.disable()
+                                reminderEnabled = false
+                                reminderError = null
+                            } else if (Build.VERSION.SDK_INT >= 33 && !reminderManager.canPostNotifications()) {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                reminderManager.enable(reminderHour)
+                                reminderEnabled = true
+                                reminderError = null
+                            }
+                        },
+                    )
+                    Text(if (reminderEnabled) "매일 ${reminderHour}시 전후 알림" else "알림 끔")
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(12, 18, 20).forEach { hour ->
+                        FilterChip(
+                            selected = reminderHour == hour,
+                            onClick = {
+                                reminderHour = hour
+                                if (reminderEnabled) reminderManager.enable(hour)
+                            },
+                            label = { Text("${hour}시") },
+                        )
+                    }
+                }
+                reminderError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            }
+        }
+        ElevatedCard(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("개발 / Field Test", style = MaterialTheme.typography.titleMedium)
+                Text("GPS 품질, replay, 진단 리포트, NEW_AREA/REPEAT_AREA 비교 도구는 일반 탐험 화면과 분리되어 있습니다.")
+                Button(
+                    onClick = onOpenQa,
+                    modifier = Modifier.testTag("settings-open-qa"),
+                ) {
+                    Text("Field Test / QA 열기")
+                }
             }
         }
     }
