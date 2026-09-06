@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import re
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+BUILD = ROOT / "app" / "build.gradle.kts"
+MANIFEST = ROOT / "app" / "src" / "main" / "AndroidManifest.xml"
+PRIVACY = ROOT / "docs" / "privacy" / "PRIVACY_POLICY_DRAFT.md"
+DATA_SAFETY = ROOT / "docs" / "privacy" / "DATA_SAFETY_DRAFT.md"
+RELEASE = ROOT / "docs" / "release" / "PLAY_RELEASE_BASELINE.md"
+POI_POLICY = ROOT / "docs" / "poi" / "PRODUCTION_POI_POLICY.md"
+
+
+def fail(message: str) -> None:
+    print(f"ERROR: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        fail(message)
+
+
+def main() -> None:
+    for path in (BUILD, MANIFEST, PRIVACY, DATA_SAFETY, RELEASE, POI_POLICY):
+        require(path.is_file(), f"required release baseline file missing: {path.relative_to(ROOT)}")
+
+    build = BUILD.read_text(encoding="utf-8")
+    manifest = MANIFEST.read_text(encoding="utf-8")
+
+    target_match = re.search(r"\btargetSdk\s*=\s*(\d+)", build)
+    require(target_match is not None, "targetSdk is not declared")
+    target_sdk = int(target_match.group(1))
+    require(target_sdk >= 37, f"adopted baseline requires targetSdk >= 37; found {target_sdk}")
+
+    require("android.permission.ACCESS_FINE_LOCATION" in manifest, "foreground precise-location permission missing")
+    require("android.permission.ACCESS_COARSE_LOCATION" in manifest, "foreground coarse-location permission missing")
+    require("android.permission.ACCESS_BACKGROUND_LOCATION" not in manifest, "MVP baseline forbids background location")
+
+    for token in (
+        "firebase-analytics",
+        "firebase-crashlytics",
+        "play-services-ads",
+        "app-measurement",
+    ):
+        require(token not in build.lower(), f"no-analytics/no-ads baseline violated by dependency token: {token}")
+
+    for token in (
+        "TOUR_API_SERVICE_KEY",
+        "TOUR_API_CONFIGURED",
+        "verifyTourApiCredential",
+        "DAILYTOWN_UPLOAD_STORE_FILE",
+        "DAILYTOWN_UPLOAD_KEY_ALIAS",
+        "verifyReleaseSigningConfig",
+        "bundleForPlay",
+    ):
+        require(token in build, f"release/POI wiring missing: {token}")
+
+    print(
+        "Play release baseline verified: targetSdk>=37, foreground-only location, "
+        "no analytics/ads baseline, TourAPI wiring, upload signing, privacy docs"
+    )
+
+
+if __name__ == "__main__":
+    main()
