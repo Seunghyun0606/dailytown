@@ -27,7 +27,7 @@ internal fun interface TourApiNearbySource {
     suspend fun fetch(center: GeoPoint, radiusMeters: Double): List<TourApiNearbyItem>
 }
 
-class TourApiPoiRepository(
+internal class TourApiPoiRepository(
     private val source: TourApiNearbySource,
 ) : PoiRepository {
     override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> =
@@ -70,7 +70,7 @@ class TourApiPoiRepository(
     }
 }
 
-class HttpTourApiNearbySource(
+internal class HttpTourApiNearbySource(
     private val serviceKey: String,
     private val mobileApp: String = "DailyTown",
     private val mobileOs: String = "AND",
