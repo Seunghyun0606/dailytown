@@ -6,9 +6,10 @@ import com.dailytown.app.domain.GeoPoint
  * Development field-test decorator that keeps fixture POI markers visible regardless of the
  * short-lived gameplay marker set emitted by DailyTownApp.
  *
- * It also follows the first camera request of a location session only. Subsequent location updates
- * keep the user-location overlay fresh without forcing the camera back after the tester manually
- * pans the map. Calling setUserLocation(null) re-arms the next session's first-camera follow.
+ * It follows the first camera request of a location session only. Subsequent location updates keep
+ * the user-location overlay fresh without forcing the camera back after the tester manually pans
+ * the map. An explicit recenter moves immediately and arms one fresh follow for the next tracking
+ * session; setUserLocation(null) also re-arms that first-camera follow.
  */
 class FixturePoiOverlayMapAdapter(
     private val delegate: MapViewAdapter,
@@ -35,8 +36,10 @@ class FixturePoiOverlayMapAdapter(
     }
 
     fun recenter(target: GeoPoint, zoom: Double = 16.0) {
-        cameraFollowArmed = false
         delegate.setCamera(target, zoom)
+        // Initial one-shot centering is not a tracking session. Keep one camera follow available so
+        // pressing "실제 위치" or starting replay can center on its first fresh sample exactly once.
+        cameraFollowArmed = true
     }
 
     override fun setUserLocation(location: UserLocationSpec?) {
