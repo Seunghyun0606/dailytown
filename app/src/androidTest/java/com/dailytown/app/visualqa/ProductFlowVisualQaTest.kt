@@ -5,6 +5,7 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.persistence.ExplorationProgress
@@ -42,7 +43,10 @@ class ProductFlowVisualQaTest {
         composeRule.onNodeWithTag("journal-entry-0").performClick()
         capture("record-discovery-detail", "discovery-detail")
 
-        composeRule.onNodeWithTag("discovery-open-clue").performClick()
+        // On shorter managed-device viewports the clue action sits below the initial discovery
+        // viewport. Compose's performClick does not implicitly scroll a lazy/scrollable ancestor,
+        // so explicitly bring the actual product action into view before clicking it.
+        composeRule.onNodeWithTag("discovery-open-clue").performScrollTo().performClick()
         capture("record-clue-note", "clue-note")
 
         composeRule.onNodeWithTag("clue-back").performClick()
