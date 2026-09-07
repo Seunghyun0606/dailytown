@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.dailytown.app.location.FusedDeviceLocationSource
 import com.dailytown.app.location.LocationTrackingPreset
 import com.dailytown.app.map.FixturePoiOverlayMapAdapter
@@ -21,11 +22,14 @@ import com.dailytown.app.ui.DailyTownMvpShell
 import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.MapThemeRefreshController
 import com.dailytown.app.ui.visual.ProductionMarkerSvgVisualSource
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private lateinit var mapThemeRefreshController: MapThemeRefreshController
     private lateinit var mapAdapter: FixturePoiOverlayMapAdapter
     private var initialLocationSource: FusedDeviceLocationSource? = null
+    private var poiRefreshJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +65,17 @@ class MainActivity : ComponentActivity() {
             delegate = basePoiRepository,
             publish = mapAdapter::setNearbyPoiMarkers,
         )
+        // Keep the visual POI feed independent from encounter lifetime. An active mystery can stay
+        // selected for many minutes while the tester keeps walking; accepted user-location updates
+        // therefore refresh the nearby repository even when encounter selection no longer queries it.
+        // Only one refresh coroutine is allowed at once. The repository cache/padded coverage handles
+        // high-frequency samples and network outages without churning provider requests or markers.
+        mapAdapter.setUserLocationListener { point ->
+            if (poiRefreshJob?.isActive == true) return@setUserLocationListener
+            poiRefreshJob = lifecycleScope.launch {
+                poiRepository.nearby(point, radiusMeters = 900.0)
+            }
+        }
         val reminderManager = LocalReminderManager(applicationContext).also { it.restoreIfEnabled() }
         setContent {
             DailyTownMvpShell(
@@ -86,6 +101,9 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         initialLocationSource?.stop()
         initialLocationSource = null
+        poiRefreshJob?.cancel()
+        poiRefreshJob = null
+        mapAdapter.setUserLocationListener(null)
         mapThemeRefreshController.close()
         super.onDestroy()
     }
