@@ -1,7 +1,6 @@
 package com.dailytown.app.visualqa
 
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -55,7 +54,9 @@ class ProductFlowVisualQaTest {
 
     private fun capture(tag: String, name: String) {
         composeRule.waitForIdle()
-        composeRule.onNodeWithTag(tag).assertExists()
+        // captureToImage() already fails when the tagged node does not exist, so keeping the
+        // capture itself as the assertion avoids relying on a test API that is absent from the
+        // Compose test artifact pinned by this project.
         composeRule.onNodeWithTag(tag)
             .captureToImage()
             .asAndroidBitmap()
