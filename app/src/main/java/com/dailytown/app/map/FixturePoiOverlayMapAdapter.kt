@@ -5,6 +5,7 @@ import com.dailytown.app.domain.GeoPoint
 
 private val LEGACY_DEMO_MARKER_IDS = setOf("cityhall-echo", "stone-trace", "hidden-note")
 private const val ACTIVE_MARKER_OVERLAP_METERS = 12.0
+private const val BASE_POI_DEDUPE_METERS = 10.0
 
 /**
  * Provider-neutral POI overlay decorator used by both production exploration and physical QA.
@@ -79,16 +80,23 @@ class FixturePoiOverlayMapAdapter(
         val activePositions = gameplayMarkers.filter { it.selected || it.id.startsWith("active-") }
             .map { it.position }
 
+        // Production/nearby markers win over fixtures. This lets a debug field-test build show both
+        // sources without rendering two markers for Seoul City Hall or another shared anchor.
         val baseMarkers = buildList {
-            if (showFixtureMarkers) addAll(fixtureMarkers)
             addAll(nearbyPoiMarkers)
-        }
-            .distinctBy { it.id }
-            .filterNot { marker ->
-                activePositions.any { active ->
-                    distance.distanceMeters(marker.position, active) <= ACTIVE_MARKER_OVERLAP_METERS
-                }
+            if (showFixtureMarkers) addAll(fixtureMarkers)
+        }.fold(mutableListOf<MapMarkerSpec>()) { accepted, candidate ->
+            val duplicatesExisting = accepted.any { existing ->
+                existing.title == candidate.title ||
+                    distance.distanceMeters(existing.position, candidate.position) <= BASE_POI_DEDUPE_METERS
             }
+            if (!duplicatesExisting) accepted.add(candidate)
+            accepted
+        }.filterNot { marker ->
+            activePositions.any { active ->
+                distance.distanceMeters(marker.position, active) <= ACTIVE_MARKER_OVERLAP_METERS
+            }
+        }
 
         val gameplayIds = gameplayMarkers.mapTo(mutableSetOf()) { it.id }
         return buildList {
