@@ -50,6 +50,9 @@ def main() -> None:
         "TOUR_API_SERVICE_KEY",
         "TOUR_API_CONFIGURED",
         "verifyTourApiCredential",
+        "DAILYTOWN_POI_API_BASE_URL",
+        "DAILYTOWN_POI_API_CONFIGURED",
+        "verifyDailyTownPoiGateway",
         "DAILYTOWN_UPLOAD_STORE_FILE",
         "DAILYTOWN_UPLOAD_KEY_ALIAS",
         "verifyReleaseSigningConfig",
@@ -57,8 +60,15 @@ def main() -> None:
     ):
         require(token in build, f"release/POI wiring missing: {token}")
 
+    require(
+        'dailyTownPoiApiBaseUrl.startsWith("https://")' in build,
+        "Daily Town POI gateway configuration must reject non-HTTPS endpoints",
+    )
+
     # Direct TourAPI access is allowed only for internal/debug field validation. The release build
     # must override both BuildConfig fields so a Play AAB cannot contain the provider service key.
+    # The non-secret app-owned HTTPS gateway URL remains available to release as the canonical POI
+    # boundary once an operator configures/deploys it.
     release_block = re.search(
         r'getByName\("release"\)\s*\{(?P<body>.*?)if\s*\(releaseSigningConfigured\)',
         build,
@@ -80,10 +90,15 @@ def main() -> None:
         ) is not None,
         "release build must override TOUR_API_CONFIGURED=false",
     )
+    require(
+        "DAILYTOWN_POI_API_BASE_URL" not in release_body,
+        "release must inherit the non-secret gateway endpoint rather than overriding it with a provider credential path",
+    )
 
     print(
         "Play release baseline verified: targetSdk>=37, foreground-only location, "
-        "no analytics/ads baseline, internal-only TourAPI credential, upload signing, privacy docs"
+        "no analytics/ads baseline, internal-only TourAPI credential, HTTPS app-owned POI gateway boundary, "
+        "upload signing, privacy docs"
     )
 
 
