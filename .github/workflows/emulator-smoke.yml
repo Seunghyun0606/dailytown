@@ -6,12 +6,15 @@ on:
     paths:
       - "app/build.gradle.kts"
       - "app/src/androidTest/**"
+      - "app/src/main/java/com/dailytown/app/MainActivity.kt"
       - "app/src/main/java/com/dailytown/app/ui/**"
       - "app/src/main/java/com/dailytown/app/visual/**"
       - "app/src/main/java/com/dailytown/app/location/**"
       - "app/src/main/java/com/dailytown/app/map/**"
+      - "app/src/main/java/com/dailytown/app/poi/**"
       - "design/production/**"
       - "design/export-spec/**"
+      - "tools/android/run_naver_emulator_qa_with_retry.sh"
       - ".github/workflows/emulator-smoke.yml"
 
 concurrency:
@@ -91,12 +94,7 @@ jobs:
       - name: Run credentialed NAVER real-map visual QA
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
-        run: >-
-          gradle pixel2Api30AtdDebugAndroidTest
-          -Pandroid.enableAdditionalTestOutput=true
-          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.NaverMapVisualQaTest
-          -Pandroid.testInstrumentationRunnerArguments.dailytownQaRunner=pixel2Api30Atd
-          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+        run: bash tools/android/run_naver_emulator_qa_with_retry.sh
       - name: Summarize NAVER real-map diagnostics
         if: always()
         shell: bash
