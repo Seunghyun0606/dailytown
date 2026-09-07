@@ -1,32 +1,49 @@
 package com.dailytown.app.map
 
+import com.dailytown.app.domain.ExplorationEngine
 import com.dailytown.app.domain.GeoPoint
 
+private val LEGACY_DEMO_MARKER_IDS = setOf("cityhall-echo", "stone-trace", "hidden-note")
+private const val ACTIVE_MARKER_OVERLAP_METERS = 12.0
+
 /**
- * Development field-test decorator that keeps fixture POI markers visible regardless of the
- * short-lived gameplay marker set emitted by DailyTownApp.
+ * Provider-neutral POI overlay decorator used by both production exploration and physical QA.
  *
- * It follows the first camera request of a location session only. Subsequent location updates keep
- * the user-location overlay fresh without forcing the camera back after the tester manually pans
- * the map. An explicit recenter moves immediately and arms one fresh follow for the next tracking
- * session; setUserLocation(null) also re-arms that first-camera follow.
+ * `nearbyPoiMarkers` are supplied by the active PoiRepository (TourAPI in configured builds,
+ * fixture fallback otherwise). Optional field-test fixtures can be enabled for a dedicated QA
+ * build so known Seoul/Jungwon anchors remain visible without becoming production content.
+ *
+ * The old hard-coded demo mystery markers are intentionally filtered from map output. The
+ * encounter pipeline still owns its selected/active marker and always wins marker precedence.
+ *
+ * Camera behavior follows the first fresh location of a tracking session only. Subsequent location
+ * updates refresh the user-location overlay without stealing manual map panning.
  */
 class FixturePoiOverlayMapAdapter(
     private val delegate: MapViewAdapter,
     fixtureMarkers: List<MapMarkerSpec>,
+    private val showFixtureMarkers: Boolean = true,
+    private val suppressLegacyDemoMarkers: Boolean = true,
+    private val distance: ExplorationEngine = ExplorationEngine(),
 ) : MapViewAdapter by delegate {
     private var fixtureMarkers: List<MapMarkerSpec> = fixtureMarkers
+    private var nearbyPoiMarkers: List<MapMarkerSpec> = emptyList()
     private var runtimeMarkers: List<MapMarkerSpec> = emptyList()
     private var cameraFollowArmed: Boolean = true
 
     override fun setMarkers(markers: List<MapMarkerSpec>) {
         runtimeMarkers = markers
-        delegate.setMarkers(mergeMarkers())
+        renderMergedMarkers()
     }
 
     fun setFixtureMarkers(markers: List<MapMarkerSpec>) {
         fixtureMarkers = markers
-        delegate.setMarkers(mergeMarkers())
+        renderMergedMarkers()
+    }
+
+    fun setNearbyPoiMarkers(markers: List<MapMarkerSpec>) {
+        nearbyPoiMarkers = markers
+        renderMergedMarkers()
     }
 
     override fun setCamera(target: GeoPoint, zoom: Double) {
@@ -49,9 +66,34 @@ class FixturePoiOverlayMapAdapter(
         delegate.setUserLocation(location)
     }
 
-    private fun mergeMarkers(): List<MapMarkerSpec> = buildList {
-        val runtimeIds = runtimeMarkers.mapTo(mutableSetOf()) { it.id }
-        addAll(fixtureMarkers.filterNot { it.id in runtimeIds })
-        addAll(runtimeMarkers)
+    private fun renderMergedMarkers() {
+        delegate.setMarkers(mergeMarkers())
+    }
+
+    private fun mergeMarkers(): List<MapMarkerSpec> {
+        val gameplayMarkers = if (suppressLegacyDemoMarkers) {
+            runtimeMarkers.filterNot { it.id in LEGACY_DEMO_MARKER_IDS }
+        } else {
+            runtimeMarkers
+        }
+        val activePositions = gameplayMarkers.filter { it.selected || it.id.startsWith("active-") }
+            .map { it.position }
+
+        val baseMarkers = buildList {
+            if (showFixtureMarkers) addAll(fixtureMarkers)
+            addAll(nearbyPoiMarkers)
+        }
+            .distinctBy { it.id }
+            .filterNot { marker ->
+                activePositions.any { active ->
+                    distance.distanceMeters(marker.position, active) <= ACTIVE_MARKER_OVERLAP_METERS
+                }
+            }
+
+        val gameplayIds = gameplayMarkers.mapTo(mutableSetOf()) { it.id }
+        return buildList {
+            addAll(baseMarkers.filterNot { it.id in gameplayIds })
+            addAll(gameplayMarkers)
+        }
     }
 }
