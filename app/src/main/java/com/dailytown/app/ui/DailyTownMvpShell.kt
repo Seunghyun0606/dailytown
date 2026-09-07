@@ -24,6 +24,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.dailytown.app.BuildConfig
@@ -48,7 +50,6 @@ import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.persistence.ProgressStore
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.poi.PoiSourceMetadata
-import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.progress.GoalDefinition
 import com.dailytown.app.progress.GoalMetric
 import com.dailytown.app.progress.GoalProgressEvaluator
@@ -56,6 +57,8 @@ import com.dailytown.app.progress.GoalRotationCoordinator
 import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.visual.A3CompanionStamp
 import com.dailytown.app.ui.visual.A3PaperSurface
+import com.dailytown.app.ui.visual.DailyTownTheme
+import com.dailytown.app.ui.visual.DailyTownTokens
 import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
 import com.dailytown.app.ui.visual.ProductionCompanionVisual
 import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
@@ -66,7 +69,6 @@ import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
 import java.time.LocalDate
 import java.time.LocalTime
-import kotlin.math.roundToInt
 
 private enum class MvpSection(val label: String, val symbol: String, val testTag: String) {
     EXPLORE("탐험", "⌖", "nav-explore"),
@@ -100,10 +102,14 @@ fun DailyTownMvpShell(
         if (rotation.progress != loaded) progressStore.save(rotation.progress)
     }
 
-    MaterialTheme {
+    DailyTownTheme {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
             bottomBar = {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 3.dp,
+                ) {
                     MvpSection.entries.forEach { section ->
                         NavigationBarItem(
                             selected = selectedSection == section,
@@ -111,9 +117,19 @@ fun DailyTownMvpShell(
                                 selectedSection = section
                                 if (section == MvpSection.EXPLORE) qaMode = false
                             },
-                            icon = { Text(section.symbol) },
+                            icon = {
+                                Text(
+                                    section.symbol,
+                                    fontWeight = if (selectedSection == section) FontWeight.Bold else FontWeight.Normal,
+                                )
+                            },
                             label = { Text(section.label) },
                             modifier = Modifier.testTag(section.testTag),
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = DailyTownTokens.LeafSecondary.copy(alpha = 0.42f),
+                            ),
                         )
                     }
                 }
@@ -124,8 +140,7 @@ fun DailyTownMvpShell(
                     .fillMaxSize()
                     .padding(padding),
             ) {
-                // Keep Explore composed even while another tab is visible. Its location source,
-                // encounter coordinator and field-test monitors therefore survive tab switches.
+                // Keep Explore composed while another tab is visible so location/gameplay runtime survives.
                 SectionLayer(active = selectedSection == MvpSection.EXPLORE) {
                     DailyTownApp(
                         mapAdapter = mapAdapter,
@@ -138,7 +153,7 @@ fun DailyTownMvpShell(
                     CompanionScreen(progress)
                 }
                 SectionLayer(active = selectedSection == MvpSection.COLLECTION) {
-                    CollectionScreen(progress)
+                    DailyTownRecordsScreen(progress)
                 }
                 SectionLayer(active = selectedSection == MvpSection.GOALS) {
                     GoalsScreen(progress, dailyGoals, weeklyGoals)
@@ -163,13 +178,7 @@ private fun BoxScope.SectionLayer(
     active: Boolean,
     content: @Composable () -> Unit,
 ) {
-    val visibilityModifier = if (active) {
-        Modifier
-    } else {
-        // Keep the composable/runtime alive, but remove inactive screens from the semantics tree so
-        // TalkBack and UI tests only see the currently visible destination.
-        Modifier.clearAndSetSemantics { }
-    }
+    val visibilityModifier = if (active) Modifier else Modifier.clearAndSetSemantics { }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -188,92 +197,67 @@ private fun CompanionScreen(progress: ExplorationProgress?) {
         MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
     }
     val a3AssetRenderer = rememberProductionA3AssetRenderer()
-    ScreenColumn(title = "동행 · 모루") {
-        ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                ProductionCompanionVisual(
-                    request = CompanionVisualRequest(
-                        companionId = "moru",
-                        expression = CompanionExpression.NEUTRAL,
-                        lightingFamily = lighting,
-                        appearanceProfile = AppearanceProfile.BASE,
-                        usageContext = CompanionUsageContext.RESULT_LARGE,
-                    ),
-                    modifier = Modifier.size(240.dp),
-                    contentDescription = "동행 캐릭터 모루",
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    A3CompanionStamp(
-                        assetRenderer = a3AssetRenderer,
-                        sizeDp = 48,
-                    )
-                    Column {
-                        Text("모루", style = MaterialTheme.typography.headlineSmall)
-                        Text("호감도 $bond")
-                    }
-                }
-                Text("함께 발견한 기억 ${progress?.companionMemoryKeys?.size ?: 0}개")
-            }
-        }
-        ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("우리의 기록", style = MaterialTheme.typography.titleMedium)
-                Text("탐험한 POI ${progress?.encounterVisitedPoiIds?.size ?: 0}곳")
-                Text("해결한 미스터리 ${progress?.resolvedEncounterIds?.size ?: 0}건")
-                Text("수집한 단서 ${progress?.inventoryClueIds?.size ?: 0}개")
-            }
-        }
-    }
-}
-
-@Composable
-private fun CollectionScreen(progress: ExplorationProgress?) {
-    val a3AssetRenderer = rememberProductionA3AssetRenderer()
-    val fixtureNames = remember {
-        defaultFixturePois().associate { poi -> poi.id to poi.name }
-    }
     A3PaperSurface(
-        screen = A3Screen.COLLECTION_GRID,
+        screen = A3Screen.MEMORY_DETAIL,
         assetRenderer = a3AssetRenderer,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag("companion-product-screen"),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 18.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Text("동네 기록", style = MaterialTheme.typography.headlineSmall)
-            ElevatedCard(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("탐험 컬렉션", style = MaterialTheme.typography.titleMedium)
-                    StatRow("발견한 장소", "${progress?.encounterVisitedPoiIds?.size ?: 0}곳")
-                    StatRow("해결한 미스터리", "${progress?.resolvedEncounterIds?.size ?: 0}건")
-                    StatRow("수집한 단서", "${progress?.inventoryClueIds?.size ?: 0}개")
-                    StatRow("누적 이동", "${progress?.distanceWalkedMeters?.roundToInt() ?: 0}m")
-                }
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("오늘의 동행", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                Text("모루", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+                Text("같이 걸었던 시간이 모루의 기억이 됩니다.")
             }
             ElevatedCard(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("최근 탐험", style = MaterialTheme.typography.titleMedium)
-                    val recent = progress?.recentPoiIds.orEmpty()
-                    if (recent.isEmpty()) {
-                        Text("아직 기록된 장소가 없습니다.")
-                    } else {
-                        recent.take(8).forEachIndexed { index, poiId ->
-                            Text("${index + 1}. ${fixtureNames[poiId] ?: poiId}")
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    ProductionCompanionVisual(
+                        request = CompanionVisualRequest(
+                            companionId = "moru",
+                            expression = CompanionExpression.NEUTRAL,
+                            lightingFamily = lighting,
+                            appearanceProfile = AppearanceProfile.BASE,
+                            usageContext = CompanionUsageContext.RESULT_LARGE,
+                        ),
+                        modifier = Modifier.size(248.dp),
+                        contentDescription = "동행 캐릭터 모루",
+                        rasterTargetPx = 384,
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        A3CompanionStamp(assetRenderer = a3AssetRenderer, sizeDp = 48)
+                        Column {
+                            Text("호감도 $bond", style = MaterialTheme.typography.titleMedium)
+                            Text("함께 발견한 기억 ${progress?.companionMemoryKeys?.size ?: 0}개", style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
             }
+            ElevatedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("우리의 산책", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    StatRow("발견한 장소", "${progress?.encounterVisitedPoiIds?.size ?: 0}곳")
+                    StatRow("해결한 미스터리", "${progress?.resolvedEncounterIds?.size ?: 0}건")
+                    StatRow("수집한 단서", "${progress?.inventoryClueIds?.size ?: 0}개")
+                }
+            }
+            Text(
+                if (BuildConfig.DEBUG) "M-B motion prototype · final timing pending" else "M-B static fallback",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(Modifier.height(12.dp))
         }
     }
@@ -286,7 +270,7 @@ private fun GoalsScreen(
     weeklyGoals: List<GoalDefinition>,
 ) {
     val evaluator = remember { GoalProgressEvaluator() }
-    ScreenColumn(title = "오늘의 목표") {
+    ScreenColumn(title = "오늘의 산책", subtitle = "작은 목표를 채우면서 새로운 동네 이야기를 만나보세요.") {
         GoalGroup("오늘", dailyGoals, progress, evaluator)
         GoalGroup("이번 주", weeklyGoals, progress, evaluator)
     }
@@ -301,15 +285,19 @@ private fun GoalGroup(
 ) {
     ElevatedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
+            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             if (progress == null || goals.isEmpty()) {
                 Text("진행도를 불러오는 중입니다.")
             } else {
                 goals.forEach { goal ->
                     val state = evaluator.evaluate(goal, progress, LocalDate.now())
-                    Text(
-                        "${if (state.isComplete) "✓" else "•"} ${goalLabel(goal)}  ${state.current}/${state.target}",
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text("${if (state.isComplete) "✓" else "○"} ${goalLabel(goal)}")
+                        Text("${state.current}/${state.target}", fontWeight = FontWeight.SemiBold)
+                    }
                 }
             }
         }
@@ -340,13 +328,13 @@ private fun SettingsScreen(
         }
     }
 
-    ScreenColumn(title = "설정") {
+    ScreenColumn(title = "설정", subtitle = "Daily Town의 탐험과 알림 방식을 조정합니다.") {
         ElevatedCard(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Daily Town", style = MaterialTheme.typography.titleMedium)
+                Text("Daily Town", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
                 Text("앱 버전 ${BuildConfig.VERSION_NAME}")
                 Text("NAVER 지도 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "연결됨" else "설정 필요"}")
-                Text("Production POI ${if (BuildConfig.TOUR_API_CONFIGURED) "TourAPI 활성" else "Field Test fixture"}")
+                Text("Production POI ${if (BuildConfig.TOUR_API_CONFIGURED) "TourAPI 활성" else if (BuildConfig.DEBUG) "Field Test fixture" else "설정 필요"}")
             }
         }
         ElevatedCard(
@@ -408,15 +396,14 @@ private fun SettingsScreen(
                 reminderError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
         }
-        ElevatedCard(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("개발 / Field Test", style = MaterialTheme.typography.titleMedium)
-                Text("GPS 품질, replay, 진단 리포트, NEW_AREA/REPEAT_AREA 비교 도구는 일반 탐험 화면과 분리되어 있습니다.")
-                Button(
-                    onClick = onOpenQa,
-                    modifier = Modifier.testTag("settings-open-qa"),
-                ) {
-                    Text("Field Test / QA 열기")
+        if (BuildConfig.DEBUG) {
+            ElevatedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("개발 / Field Test", style = MaterialTheme.typography.titleMedium)
+                    Text("GPS 품질, replay, 진단 리포트, NEW_AREA/REPEAT_AREA 비교 도구는 일반 탐험 화면과 분리되어 있습니다.")
+                    Button(onClick = onOpenQa, modifier = Modifier.testTag("settings-open-qa")) {
+                        Text("Field Test / QA 열기")
+                    }
                 }
             }
         }
@@ -426,16 +413,20 @@ private fun SettingsScreen(
 @Composable
 private fun ScreenColumn(
     title: String,
+    subtitle: String,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(horizontal = 16.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text(title, style = MaterialTheme.typography.headlineSmall)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+            Text(subtitle, style = MaterialTheme.typography.bodyMedium)
+        }
         content()
         Spacer(Modifier.height(12.dp))
     }
@@ -448,7 +439,7 @@ private fun StatRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(label)
-        Text(value)
+        Text(value, fontWeight = FontWeight.SemiBold)
     }
 }
 
