@@ -57,9 +57,33 @@ def main() -> None:
     ):
         require(token in build, f"release/POI wiring missing: {token}")
 
+    # Direct TourAPI access is allowed only for internal/debug field validation. The release build
+    # must override both BuildConfig fields so a Play AAB cannot contain the provider service key.
+    release_block = re.search(
+        r'getByName\("release"\)\s*\{(?P<body>.*?)if\s*\(releaseSigningConfigured\)',
+        build,
+        re.DOTALL,
+    )
+    require(release_block is not None, "release buildType block missing")
+    release_body = release_block.group("body")
+    require(
+        re.search(
+            r'buildConfigField\(\s*"String"\s*,\s*"TOUR_API_SERVICE_KEY"\s*,\s*"\\"\\""\s*\)',
+            release_body,
+        ) is not None,
+        "release build must override TOUR_API_SERVICE_KEY to an empty string",
+    )
+    require(
+        re.search(
+            r'buildConfigField\(\s*"boolean"\s*,\s*"TOUR_API_CONFIGURED"\s*,\s*"false"\s*\)',
+            release_body,
+        ) is not None,
+        "release build must override TOUR_API_CONFIGURED=false",
+    )
+
     print(
         "Play release baseline verified: targetSdk>=37, foreground-only location, "
-        "no analytics/ads baseline, TourAPI wiring, upload signing, privacy docs"
+        "no analytics/ads baseline, internal-only TourAPI credential, upload signing, privacy docs"
     )
 
 
