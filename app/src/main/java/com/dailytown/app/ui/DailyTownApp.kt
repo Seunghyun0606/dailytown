@@ -247,7 +247,12 @@ fun DailyTownApp(
                 gameplaySessionMonitor.recordDiscovered(selection.isRevisit)
                 progressCoordinator.mutate(LocalDate.now()) { progress ->
                     progress
-                        .recordEncounterVisit(selection.poi.id, selection.template.id, LocalDate.now())
+                        .recordEncounterVisit(
+                            poiId = selection.poi.id,
+                            templateId = selection.template.id,
+                            date = LocalDate.now(),
+                            poiTitle = selection.poi.name,
+                        )
                         .recordMemory("poi:${selection.poi.id}")
                 }
                 applyReaction(CompanionMoment.SPOT_DISCOVERED)
