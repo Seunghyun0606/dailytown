@@ -190,6 +190,17 @@ jobs:
           -Pandroid.enableAdditionalTestOutput=true
           -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.A3VisualQaTest,com.dailytown.app.visualqa.ProductFlowVisualQaTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+      - name: Verify actual product A-3 captures
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in journal-home discovery-detail clue-note collection-grid memory-detail; do
+            if ! find app/build -type f -path "*/visual/product-a3/$name.png" -print -quit | grep -q .; then
+              echo "::error::Missing actual product A-3 capture: $name"
+              exit 1
+            fi
+          done
+          echo "Actual product A-3 five-screen capture gate PASS"
       - name: Locate A-3 visual QA captures
         if: always()
         shell: bash
