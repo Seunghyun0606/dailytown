@@ -53,24 +53,36 @@ fun DailyTownRecordsScreen(progress: ExplorationProgress?) {
     var selectedPoiIndex by remember { mutableIntStateOf(0) }
     val assetRenderer = rememberProductionA3AssetRenderer()
     val recentPoiIds = progress?.recentPoiIds.orEmpty()
+    val recentPoiTitles = progress?.recentPoiTitles.orEmpty()
     val fixtureNames = remember { defaultFixturePois().associate { it.id to it.name } }
     val selectedPoiId = recentPoiIds.getOrNull(selectedPoiIndex)
-    val selectedTitle = selectedPoiId?.let { fixtureNames[it] }
-        ?: selectedPoiId?.let { "최근 발견 ${selectedPoiIndex + 1}" }
-        ?: "아직 발견하지 않은 장소"
+    val selectedTitle = selectedPoiId?.let {
+        recentPoiTitle(selectedPoiIndex, it, recentPoiTitles, fixtureNames)
+    } ?: "아직 발견하지 않은 장소"
 
     when (route) {
-        RecordRoute.JOURNAL_HOME -> JournalHome(progress, recentPoiIds, fixtureNames, assetRenderer, { index -> selectedPoiIndex = index; route = RecordRoute.DISCOVERY_DETAIL }, { route = RecordRoute.COLLECTION_GRID }, { route = RecordRoute.MEMORY_DETAIL })
+        RecordRoute.JOURNAL_HOME -> JournalHome(progress, recentPoiIds, recentPoiTitles, fixtureNames, assetRenderer, { index -> selectedPoiIndex = index; route = RecordRoute.DISCOVERY_DETAIL }, { route = RecordRoute.COLLECTION_GRID }, { route = RecordRoute.MEMORY_DETAIL })
         RecordRoute.DISCOVERY_DETAIL -> DiscoveryDetail(progress, selectedTitle, assetRenderer, { route = RecordRoute.JOURNAL_HOME }, { route = RecordRoute.CLUE_NOTE }, { route = RecordRoute.MEMORY_DETAIL })
         RecordRoute.CLUE_NOTE -> ClueNote(progress, selectedTitle, assetRenderer) { route = RecordRoute.DISCOVERY_DETAIL }
-        RecordRoute.COLLECTION_GRID -> CollectionGrid(progress, recentPoiIds, fixtureNames, assetRenderer, { route = RecordRoute.JOURNAL_HOME }, { route = RecordRoute.MEMORY_DETAIL }) { index -> selectedPoiIndex = index; route = RecordRoute.DISCOVERY_DETAIL }
+        RecordRoute.COLLECTION_GRID -> CollectionGrid(progress, recentPoiIds, recentPoiTitles, fixtureNames, assetRenderer, { route = RecordRoute.JOURNAL_HOME }, { route = RecordRoute.MEMORY_DETAIL }) { index -> selectedPoiIndex = index; route = RecordRoute.DISCOVERY_DETAIL }
         RecordRoute.MEMORY_DETAIL -> MemoryDetail(progress, selectedTitle, assetRenderer, { route = RecordRoute.JOURNAL_HOME }) { route = RecordRoute.COLLECTION_GRID }
     }
 }
 
+private fun recentPoiTitle(
+    index: Int,
+    poiId: String,
+    recentPoiTitles: List<String>,
+    fixtureNames: Map<String, String>,
+): String = recentPoiTitles.getOrNull(index)
+    ?.trim()
+    ?.takeIf { it.isNotEmpty() }
+    ?: fixtureNames[poiId]
+    ?: "최근 발견 ${index + 1}"
+
 @Composable
 private fun JournalHome(
-    progress: ExplorationProgress?, recentPoiIds: List<String>, fixtureNames: Map<String, String>,
+    progress: ExplorationProgress?, recentPoiIds: List<String>, recentPoiTitles: List<String>, fixtureNames: Map<String, String>,
     assetRenderer: SemanticAssetRenderer, onOpenDiscovery: (Int) -> Unit, onOpenCollection: () -> Unit, onOpenMemory: () -> Unit,
 ) {
     A3Page(A3Screen.JOURNAL_HOME, "record-journal-home", assetRenderer) {
@@ -95,7 +107,7 @@ private fun JournalHome(
             }
         } else {
             recentPoiIds.take(8).forEachIndexed { index, poiId ->
-                val title = fixtureNames[poiId] ?: "최근 발견 ${index + 1}"
+                val title = recentPoiTitle(index, poiId, recentPoiTitles, fixtureNames)
                 val remembered = "poi:$poiId" in progress?.companionMemoryKeys.orEmpty()
                 ElevatedCard(Modifier.fillMaxWidth().clickable { onOpenDiscovery(index) }.testTag("journal-entry-$index")) {
                     Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -135,7 +147,7 @@ private fun DiscoveryDetail(progress: ExplorationProgress?, title: String, asset
                 Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("단서 노트", style = MaterialTheme.typography.titleMedium)
-                        Text("수집한 단서 ${progress?.inventoryClueIds?.size ?: 0}개", style = MaterialTheme.typography.bodySmall)
+                        Text("수집한 단서 ${progress.inventoryClueIds.size}개", style = MaterialTheme.typography.bodySmall)
                     }
                     Text("열기 ›")
                 }
@@ -178,7 +190,7 @@ private fun ClueNote(progress: ExplorationProgress?, sourceTitle: String, assetR
 
 @Composable
 private fun CollectionGrid(
-    progress: ExplorationProgress?, recentPoiIds: List<String>, fixtureNames: Map<String, String>, assetRenderer: SemanticAssetRenderer,
+    progress: ExplorationProgress?, recentPoiIds: List<String>, recentPoiTitles: List<String>, fixtureNames: Map<String, String>, assetRenderer: SemanticAssetRenderer,
     onOpenJournal: () -> Unit, onOpenMemory: () -> Unit, onOpenDiscovery: (Int) -> Unit,
 ) {
     val widthDp = LocalConfiguration.current.screenWidthDp
@@ -211,7 +223,10 @@ private fun CollectionGrid(
                                 verticalArrangement = Arrangement.spacedBy(6.dp),
                             ) {
                                 A3Asset(assetRenderer, if (unlocked) "sticker.discovery.default" else "collection.locked.pattern", Modifier.fillMaxWidth().aspectRatio(1f))
-                                Text(if (poiId != null) fixtureNames[poiId] ?: "발견 ${slot + 1}" else "아직 미발견", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    if (poiId != null) recentPoiTitle(slot, poiId, recentPoiTitles, fixtureNames) else "아직 미발견",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
                                 Text(if (unlocked) "✓ 수집됨" else "◇ LOCKED", style = MaterialTheme.typography.labelSmall)
                             }
                         }
@@ -230,7 +245,7 @@ private fun MemoryDetail(progress: ExplorationProgress?, title: String, assetRen
             Column(Modifier.fillMaxWidth().padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 A3Asset(assetRenderer, "sticker.discovery.default", Modifier.fillMaxWidth(0.72f).aspectRatio(1f))
                 Text(title, style = MaterialTheme.typography.headlineSmall)
-                Text(if (progress?.companionMemoryKeys.isNullOrEmpty()) "아직 모루와 남긴 기억이 없어요." else "함께 걸으며 남긴 기억 ${progress?.companionMemoryKeys?.size ?: 0}개 중 한 장면")
+                Text(if (progress?.companionMemoryKeys.isNullOrEmpty()) "아직 모루와 남긴 기억이 없어요." else "함께 걸으며 남긴 기억 ${progress.companionMemoryKeys.size}개 중 한 장면")
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     A3Asset(assetRenderer, "stamp.memory.resolved", Modifier.size(58.dp))
                     A3CompanionStamp(assetRenderer, sizeDp = 64)
