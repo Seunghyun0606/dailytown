@@ -13,6 +13,7 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.NaverMapAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.persistence.DataStoreProgressStore
+import com.dailytown.app.poi.MapPublishingPoiRepository
 import com.dailytown.app.poi.ProductionPoiRepositoryFactory
 import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.reminder.LocalReminderManager
@@ -39,16 +40,26 @@ class MainActivity : ComponentActivity() {
             delegate = providerMapAdapter,
             fixtureMarkers = defaultFixturePois().map { poi ->
                 MapMarkerSpec(
-                    id = poi.id,
+                    id = "fixture:${poi.id}",
                     title = poi.name,
                     position = poi.position,
                 )
             },
+            // Internal/debug builds intentionally retain known Seoul/Jungwon anchors so one APK can
+            // validate the production POI feed and the repeatable physical field-test route together.
+            // Release builds never expose these fixed fixtures.
+            showFixtureMarkers = BuildConfig.DEBUG,
+            suppressLegacyDemoMarkers = true,
         )
         mapThemeRefreshController = MapThemeRefreshController(mapAdapter)
         val progressStore = DataStoreProgressStore(applicationContext)
-        val poiRepository = ProductionPoiRepositoryFactory.create(
+        val basePoiRepository = ProductionPoiRepositoryFactory.create(
             tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf { BuildConfig.TOUR_API_CONFIGURED },
+            allowFixtureFallback = BuildConfig.DEBUG,
+        )
+        val poiRepository = MapPublishingPoiRepository(
+            delegate = basePoiRepository,
+            publish = mapAdapter::setNearbyPoiMarkers,
         )
         val reminderManager = LocalReminderManager(applicationContext).also { it.restoreIfEnabled() }
         setContent {
