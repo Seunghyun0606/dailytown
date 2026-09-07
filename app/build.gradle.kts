@@ -141,6 +141,8 @@ android {
             "\"${escapedBuildConfigString(resolvedNaverMapNcpKeyId)}\"",
         )
         buildConfigField("boolean", "NAVER_MAP_CONFIGURED", naverMapConfigured.toString())
+        // Direct TourAPI access is an internal/debug-only bridge. The service key is deliberately
+        // overridden to an empty value in release below so a Play AAB cannot accidentally embed it.
         buildConfigField(
             "String",
             "TOUR_API_SERVICE_KEY",
@@ -173,6 +175,11 @@ android {
 
     buildTypes {
         getByName("release") {
+            // Public/release artifacts must never contain the provider credential. Until the
+            // app-owned POI proxy is configured, ProductionPoiRepositoryFactory therefore degrades
+            // to the release-safe empty source rather than silently shipping fixture POIs or a key.
+            buildConfigField("String", "TOUR_API_SERVICE_KEY", "\"\"")
+            buildConfigField("boolean", "TOUR_API_CONFIGURED", "false")
             if (releaseSigningConfigured) {
                 signingConfig = signingConfigs.getByName("release")
             }
@@ -236,12 +243,12 @@ tasks.register("verifyNaverMapCredential") {
 
 tasks.register("verifyTourApiCredential") {
     group = "verification"
-    description = "Fails unless TOUR_API_SERVICE_KEY is supplied through Gradle or environment."
+    description = "Fails unless TOUR_API_SERVICE_KEY is supplied through Gradle or environment for internal/debug validation."
     doLast {
         check(tourApiConfigured) {
-            "TOUR_API_SERVICE_KEY is required for TourAPI-backed Daily Town builds."
+            "TOUR_API_SERVICE_KEY is required for TourAPI-backed internal/debug Daily Town builds."
         }
-        println("TourAPI credential wiring verified for com.dailytown.app")
+        println("TourAPI internal/debug credential wiring verified for com.dailytown.app")
     }
 }
 
