@@ -86,10 +86,14 @@ jobs:
             -validity 30 \
             -dname "CN=DailyTown CI, OU=CI, O=DailyTown, L=Seoul, C=KR" \
             >/dev/null 2>&1
-          export DAILYTOWN_UPLOAD_STORE_FILE="$store"
-          export DAILYTOWN_UPLOAD_STORE_PASSWORD="$password"
-          export DAILYTOWN_UPLOAD_KEY_ALIAS="$alias"
-          export DAILYTOWN_UPLOAD_KEY_PASSWORD="$password"
+          store_file_var="DAILYTOWN_UPLOAD_STORE_FILE"
+          store_password_var="DAILYTOWN_UPLOAD_STORE_PASSWORD"
+          key_alias_var="DAILYTOWN_UPLOAD_KEY_ALIAS"
+          key_password_var="DAILYTOWN_UPLOAD_KEY_PASSWORD"
+          export "$store_file_var=$store"
+          export "$store_password_var=$password"
+          export "$key_alias_var=$alias"
+          export "$key_password_var=$password"
           gradle bundleForPlay
           test -s app/build/outputs/bundle/release/app-release.aab
           rm -f "$store"
