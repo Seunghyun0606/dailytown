@@ -43,6 +43,20 @@ class FixturePoiOverlayMapAdapterTest {
     }
 
     @Test
+    fun userLocationListenerReceivesAcceptedNonNullPositionsOnly() {
+        val delegate = RecordingMapAdapter()
+        val adapter = FixturePoiOverlayMapAdapter(delegate, emptyList())
+        val received = mutableListOf<GeoPoint>()
+        val point = GeoPoint(37.5665, 126.9780)
+        adapter.setUserLocationListener(received::add)
+
+        adapter.setUserLocation(UserLocationSpec(point))
+        adapter.setUserLocation(null)
+
+        assertEquals(listOf(point), received)
+    }
+
+    @Test
     fun productionNearbyMarkerWinsOverMatchingFieldTestFixture() {
         val delegate = RecordingMapAdapter()
         val point = GeoPoint(37.5665, 126.9780)
