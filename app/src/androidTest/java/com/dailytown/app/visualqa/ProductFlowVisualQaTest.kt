@@ -1,6 +1,7 @@
 package com.dailytown.app.visualqa
 
-import androidx.compose.ui.test.fetchSemanticsNode
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -55,11 +56,11 @@ class ProductFlowVisualQaTest {
 
     private fun capture(tag: String, name: String) {
         composeRule.waitForIdle()
-        // Keep the semantic-node check separate from image capture. Some A-3 destinations are
-        // scrollable and larger than the viewport, which makes node-level captureToImage invalid
-        // even though the actual product screen is rendered correctly. Device screenshots capture
-        // exactly what a field tester sees while fetchSemanticsNode fails if navigation is broken.
-        composeRule.onNodeWithTag(tag).fetchSemanticsNode()
+        // Keep navigation verification separate from capture. Scrollable product destinations can
+        // exceed the viewport and are therefore not valid node-level captureToImage targets. The
+        // tag assertion proves the intended destination is active; the device screenshot records
+        // exactly what a field tester sees on screen.
+        composeRule.onNodeWithTag(tag).assert(hasTestTag(tag))
         val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
             ?: error("Device screenshot unavailable for $tag")
         bitmap.writeToTestStorage("visual/product-a3/$name")
