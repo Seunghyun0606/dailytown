@@ -1,55 +1,63 @@
 # M-B Runtime Playback — Development Integration
 
-Status: **runtime playback core implemented; authored atlas + human tuning still pending.**
+Status: **internal/debug visible bitmap sprite-atlas prototype implemented; final timing/easing/intensity approval still pending.**
 
-This document records the Android/runtime boundary for the approved `M-B_responsive_soft` motion direction without inventing the still-open timing/easing/intensity values.
+This document records the Android/runtime boundary for the approved `M-B_responsive_soft` motion direction without treating prototype tuning as a final design approval.
 
 ## Runtime contract
 
-- `MotionAssetResolver` resolves semantic animation keys only.
-- `SpriteAtlasDescriptor` owns provider-neutral atlas pixel bounds and ordered frame rectangles.
-- `MotionPlaybackPlanner` requires both an authored atlas descriptor and an injected `MotionPlaybackTuning` before animation can run.
-- `SpriteAtlasFrameSelector` is a pure elapsed-time function. It never reads the device clock.
-- `sprite-gen` remains an offline authoring tool and is not an Android/runtime dependency.
+- `MotionAssetResolver` and `MotionPlaybackCore` retain the provider-neutral semantic atlas contract.
+- `MoruPrototypeSpriteManifest` now provides a visible development prototype for the three approved pilot motions.
+- `ProductionMoruSpriteMotionVisual` renders promoted Moru vector layers into multiple bitmap frames, packs those frames into one in-memory bitmap atlas, and displays cropped atlas frames sequentially.
+- `sprite-gen` remains an optional offline authoring/curation tool and is not an Android runtime dependency.
+- production callers continue to use semantic companion state; raw design filenames remain behind the production asset registry/renderer boundary.
 
-## Approved M-B source semantics carried into runtime
+## Visible prototype states
 
-- `idle_breathe` -> loop.
-- `clue_react` -> one shot.
-- `resolved_settle` -> one shot.
-- `walk` -> experimental only; runtime planner keeps it static.
-- reduced motion -> static current semantic expression.
+- `idle_breathe` -> multi-frame loop.
+- `clue_react` -> multi-frame one shot ending in `clue_found`.
+- `resolved_settle` -> multi-frame one shot ending in `resolved`.
+- `walk` -> remains experimental/static.
+- reduced motion -> static semantic expression.
 
-These are copied from `design/export-spec/m-b-motion-pilot.v1.json`; no new visual decision is introduced here.
+The prototype creates real bitmap sprite frames from the promoted Moru vector layers. It is no longer a single SVG/vector bitmap shown unchanged on every frame.
 
-## Fail-closed behavior
+## Human-gate policy
 
-Animation remains static when any of the following is true:
+The frame durations, small scale offsets, vertical offsets, and rotation offsets in `MoruPrototypeSpriteManifest` are **prototype-only values** used so the motion can be reviewed on a real Android device.
 
-- reduced motion is enabled;
-- the motion is experimental-only;
-- the semantic animation asset is unavailable;
-- no authored atlas descriptor exists;
-- no human-approved timing/easing/intensity tuning exists;
-- approved tuning frame count does not match the authored atlas.
+They are intentionally labeled:
 
-There is intentionally no default frame duration, easing, intensity, FPS, or total animation duration in production code.
+`prototype_pending_human_tuning`
 
-## Human TODO
+Until the human M-B timing/easing/intensity gate is explicitly approved:
 
-- TODO(human/design): approve visible M-B prototype timing, easing, and intensity.
-- TODO(design/export): produce the runtime atlas + frame manifest from the approved storyboard/export pipeline.
-- TODO(development): after both inputs exist, add the Android atlas bitmap adapter and visible Compose playback QA without changing the provider-neutral planner contract.
-- TODO(human/design): approve the visible prototype before any M-B tuning is promoted to production data.
+- `BuildConfig.DEBUG` / internal builds may show the visible sprite prototype;
+- release builds use the existing static production companion renderer;
+- the prototype values must not be described as the final approved M-B tuning;
+- `walk` must not be promoted from experimental status.
 
-## Test boundary
+## Product integration
 
-Unit tests cover:
+`ProductionCompanionVisual` now routes eligible Moru debug/internal rendering through the bitmap sprite prototype. This means the installed internal APK can review motion in the actual Explore/Companion product surfaces instead of only a synthetic motion test screen.
 
-- no tuning -> static fallback even if an atlas exists;
-- reduced motion -> static semantic expression;
-- `walk` -> experimental/static;
-- injected approved tuning -> atlas playback plan;
-- frame-count mismatch -> static fail-closed;
-- deterministic loop and one-shot frame selection;
-- approved M-B loop/one-shot semantics.
+Journal stamp usage stays static so historical record surfaces remain stable and reduced-motion-safe.
+
+## Tests
+
+JVM coverage now verifies:
+
+- all three approved pilot motions have multi-frame prototype sequences;
+- idle loops while clue/resolved are one-shot;
+- clue/re-solved sequences end on the correct semantic expression;
+- `walk` remains unavailable;
+- prototype tuning is explicitly not marked final-approved.
+
+Existing `MotionPlaybackCoreTest` continues to guard the generic authored-atlas planner and fail-closed production behavior.
+
+## Remaining human/design work
+
+- review the visible internal APK prototype on a real Android device;
+- choose PASS/TUNE for timing, easing feel, and intensity;
+- if tuning changes, update the prototype manifest and repeat visible QA;
+- only after explicit approval may release builds enable the authored M-B motion profile.
