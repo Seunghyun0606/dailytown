@@ -18,6 +18,32 @@ require_secret_env() {
   fi
 }
 
+resolve_python() {
+  local candidate
+
+  # Git Bash on Windows can expose Microsoft Store/App Execution Alias shims as
+  # python3/python. Do not trust command -v alone; verify that the candidate can
+  # actually execute Python code. Keep all probe output suppressed so broken
+  # shims cannot print a misleading bare "Python" line during preflight.
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 && \
+       "$candidate" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+      PYTHON_CMD=("$candidate")
+      return 0
+    fi
+  done
+
+  if command -v py >/dev/null 2>&1 && \
+     py -3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+    PYTHON_CMD=(py -3)
+    return 0
+  fi
+
+  echo "Python 3.9+ is required, but no working interpreter was found." >&2
+  echo "Install Python or make python/python3/py available on PATH." >&2
+  exit 7
+}
+
 require_secret_env \
   NAVER_MAP_NCP_KEY_ID \
   'Set it without echoing the value: read -rsp "NAVER_MAP_NCP_KEY_ID: " NAVER_MAP_NCP_KEY_ID; echo; export NAVER_MAP_NCP_KEY_ID'
@@ -34,6 +60,8 @@ if ! command -v adb >/dev/null 2>&1; then
   exit 4
 fi
 
+resolve_python
+
 adb start-server >/dev/null
 mapfile -t devices < <(adb devices | awk 'NR > 1 && $2 == "device" { print $1 }')
 if [[ ${#devices[@]} -ne 1 ]]; then
@@ -47,15 +75,17 @@ if [[ "$serial" == emulator-* ]] || [[ "$(adb -s "$serial" shell getprop ro.kern
   exit 6
 fi
 
+python_label="$("${PYTHON_CMD[@]}" -c 'import sys; print(f"Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")')"
 printf '%s\n' \
   "Daily Town full physical preflight" \
+  "- Python runtime: $python_label" \
   "- validates approved field-test thresholds" \
   "- verifies NAVER + TourAPI credential wiring without printing credential values" \
   "- runs JVM tests and Android lint" \
   "- installs one debug APK containing production TourAPI POIs plus known Seoul/Jungwon QA anchors"
 
-python3 -m unittest tools.field_test.test_mvp_baseline
-python3 tools/release/verify_play_release_baseline.py
+"${PYTHON_CMD[@]}" -m unittest tools.field_test.test_mvp_baseline
+"${PYTHON_CMD[@]}" tools/release/verify_play_release_baseline.py
 
 gradle verifyNaverMapCredential verifyTourApiCredential
 gradle testDebugUnitTest lintDebug installDebug
