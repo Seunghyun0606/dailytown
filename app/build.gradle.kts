@@ -100,6 +100,12 @@ fun optionalComparisonEvidence(name: String): String {
     return values.joinToString(",")
 }
 
+val dailyTownPoiApiBaseUrl = optionalConfig("DAILYTOWN_POI_API_BASE_URL").trimEnd('/')
+check(dailyTownPoiApiBaseUrl.isBlank() || dailyTownPoiApiBaseUrl.startsWith("https://")) {
+    "DAILYTOWN_POI_API_BASE_URL must use HTTPS when configured."
+}
+val dailyTownPoiApiConfigured = dailyTownPoiApiBaseUrl.isNotBlank()
+
 val fieldTestMinSessionSeconds = optionalNonNegativeLong("FIELD_TEST_MIN_SESSION_SECONDS")
 val fieldTestMaxGpsRejectionPercent = optionalPercent("FIELD_TEST_MAX_GPS_REJECTION_PERCENT")
 val fieldTestRequireMapReady = optionalBoolean("FIELD_TEST_REQUIRE_MAP_READY")
@@ -149,6 +155,14 @@ android {
             "\"${escapedBuildConfigString(resolvedTourApiServiceKey)}\"",
         )
         buildConfigField("boolean", "TOUR_API_CONFIGURED", tourApiConfigured.toString())
+        // Non-secret app-owned gateway endpoint. Release uses this provider-neutral boundary when
+        // configured; upstream provider credentials remain server-side and never enter the AAB.
+        buildConfigField(
+            "String",
+            "DAILYTOWN_POI_API_BASE_URL",
+            "\"${escapedBuildConfigString(dailyTownPoiApiBaseUrl)}\"",
+        )
+        buildConfigField("boolean", "DAILYTOWN_POI_API_CONFIGURED", dailyTownPoiApiConfigured.toString())
         buildConfigField("long", "FIELD_TEST_MIN_SESSION_SECONDS", "${fieldTestMinSessionSeconds}L")
         buildConfigField("int", "FIELD_TEST_MAX_GPS_REJECTION_PERCENT", fieldTestMaxGpsRejectionPercent.toString())
         buildConfigField("boolean", "FIELD_TEST_REQUIRE_MAP_READY", fieldTestRequireMapReady.toString())
@@ -175,9 +189,8 @@ android {
 
     buildTypes {
         getByName("release") {
-            // Public/release artifacts must never contain the provider credential. Until the
-            // app-owned POI proxy is configured, ProductionPoiRepositoryFactory therefore degrades
-            // to the release-safe empty source rather than silently shipping fixture POIs or a key.
+            // Public/release artifacts must never contain the provider credential. Release POIs may
+            // come only through the non-secret Daily Town gateway endpoint configured above.
             buildConfigField("String", "TOUR_API_SERVICE_KEY", "\"\"")
             buildConfigField("boolean", "TOUR_API_CONFIGURED", "false")
             if (releaseSigningConfigured) {
@@ -249,6 +262,17 @@ tasks.register("verifyTourApiCredential") {
             "TOUR_API_SERVICE_KEY is required for TourAPI-backed internal/debug Daily Town builds."
         }
         println("TourAPI internal/debug credential wiring verified for com.dailytown.app")
+    }
+}
+
+tasks.register("verifyDailyTownPoiGateway") {
+    group = "verification"
+    description = "Fails unless an HTTPS Daily Town POI gateway endpoint is configured."
+    doLast {
+        check(dailyTownPoiApiConfigured) {
+            "Set DAILYTOWN_POI_API_BASE_URL to the app-owned HTTPS POI gateway endpoint."
+        }
+        println("Daily Town POI gateway wiring verified")
     }
 }
 
