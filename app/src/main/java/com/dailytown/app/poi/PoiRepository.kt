@@ -90,6 +90,17 @@ fun defaultFixturePois(): List<Poi> = listOf(
         "jongno-gu",
         PoiCategory.STREET,
     ),
+    // Jungwon-gu Office uses Seongnam City's published Jungwon-gu Office stop anchor
+    // (중원구청 06-015). The office address is 중원구 제일로 36; visually confirm the marker
+    // against the actual office frontage during the first physical run before treating it as a
+    // trusted building-centroid reference.
+    Poi(
+        "jungwon-gu-office",
+        "중원구청",
+        GeoPoint(37.43079833, 127.13670250),
+        "seongnam-jungwon",
+        PoiCategory.LANDMARK,
+    ),
     Poi(
         "seongnam-sports-complex",
         "성남종합운동장",
