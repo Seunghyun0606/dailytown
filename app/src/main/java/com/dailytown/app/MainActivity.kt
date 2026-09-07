@@ -42,16 +42,20 @@ class MainActivity : ComponentActivity() {
         )
         mapAdapter = FixturePoiOverlayMapAdapter(
             delegate = providerMapAdapter,
-            fixtureMarkers = defaultFixturePois().map { poi ->
-                MapMarkerSpec(
-                    id = "fixture:${poi.id}",
-                    title = poi.name,
-                    position = poi.position,
-                )
+            fixtureMarkers = if (BuildConfig.DEBUG) {
+                defaultFixturePois().map { poi ->
+                    MapMarkerSpec(
+                        id = "fixture:${poi.id}",
+                        title = poi.name,
+                        position = poi.position,
+                    )
+                }
+            } else {
+                emptyList()
             },
             // Internal/debug builds intentionally retain known Seoul/Jungwon anchors so one APK can
             // validate the production POI feed and the repeatable physical field-test route together.
-            // Release builds never expose these fixed fixtures.
+            // Release builds neither construct nor expose these fixed marker records.
             showFixtureMarkers = BuildConfig.DEBUG,
             suppressLegacyDemoMarkers = true,
         )
@@ -59,6 +63,7 @@ class MainActivity : ComponentActivity() {
         val progressStore = DataStoreProgressStore(applicationContext)
         val basePoiRepository = ProductionPoiRepositoryFactory.create(
             tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf { BuildConfig.TOUR_API_CONFIGURED },
+            proxyBaseUrl = BuildConfig.DAILYTOWN_POI_API_BASE_URL.takeIf { BuildConfig.DAILYTOWN_POI_API_CONFIGURED },
             allowFixtureFallback = BuildConfig.DEBUG,
         )
         val poiRepository = MapPublishingPoiRepository(
