@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -268,12 +269,6 @@ fun DailyTownApp(
     }
 
     val normalizedProgress = gameProgress.normalizePeriods(currentDate)
-    val neighborhood = NeighborhoodProgress(
-        districtKey = activeEncounter?.poi?.districtKey ?: "jung-gu",
-        visitedPoiIds = gameProgress.encounterVisitedPoiIds,
-        resolvedEncounterIds = gameProgress.resolvedEncounterIds,
-        distanceWalkedMeters = snapshot.state.distanceWalkedMeters,
-    )
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
         activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
@@ -283,9 +278,21 @@ fun DailyTownApp(
 
     MaterialTheme {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 TopAppBar(
-                    title = { Text(if (showQaTools) "Daily Town · Field Test" else "Daily Town") },
+                    title = {
+                        Column {
+                            Text(if (showQaTools) "Daily Town · Field Test" else "Daily Town")
+                            if (!showQaTools) {
+                                Text(
+                                    "모루와 걷는 동네 탐험",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    },
                 )
             },
         ) { padding ->
@@ -293,98 +300,150 @@ fun DailyTownApp(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 14.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Spacer(Modifier.height(4.dp))
-                Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall)
-                Text(
-                    if (showQaTools) {
-                        "지도: ${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}"
-                    } else {
-                        "${snapshot.state.companion.name}와 함께 주변을 탐험해 보세요 · 호감도 ${snapshot.state.companion.bond}"
-                    },
-                )
+                Spacer(Modifier.height(2.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        if (showQaTools) {
+                            "${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · ${trackingPresetLabel(trackingPreset)}"
+                        } else {
+                            lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
+                                ?: "멀리 갈 필요 없어요. 지금 있는 동네에서 작은 신호부터 찾아보세요."
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
 
-                MapSurface(
-                    mapAdapter = mapAdapter,
-                    modifier = Modifier.fillMaxWidth().height(250.dp),
-                )
-
-                ElevatedCard(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("explore-companion-hud"),
+                        .height(360.dp)
+                        .clip(MaterialTheme.shapes.large)
+                        .testTag("explore-map-hero"),
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    MapSurface(
+                        mapAdapter = mapAdapter,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(10.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.93f),
+                        tonalElevation = 4.dp,
                     ) {
-                        ProductionCompanionVisual(
-                            request = CompanionVisualRequest(
-                                companionId = snapshot.state.companion.id,
-                                expression = companionExpression,
-                                lightingFamily = companionLighting,
-                                appearanceProfile = AppearanceProfile.BASE,
-                                usageContext = CompanionUsageContext.HUD_PORTRAIT,
-                            ),
-                            modifier = Modifier.size(88.dp),
-                            contentDescription = "동행 캐릭터 ${snapshot.state.companion.name}",
-                            rasterTargetPx = 192,
+                        Text(
+                            if (trackingMode == TrackingMode.OFF) "○ 탐험 대기" else "● 탐험 중",
+                            modifier = Modifier.padding(horizontal = 11.dp, vertical = 7.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
                         )
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(3.dp),
+                    }
+
+                    if (distanceToEncounter != null) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(10.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.94f),
+                            tonalElevation = 4.dp,
                         ) {
-                            Text(snapshot.state.companion.name, style = MaterialTheme.typography.titleMedium)
-                            Text("호감도 ${snapshot.state.companion.bond}", style = MaterialTheme.typography.bodySmall)
                             Text(
-                                lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
-                                    ?: "같이 걸어볼까? 주변에서 새로운 신호를 찾아보자.",
-                                style = MaterialTheme.typography.bodyMedium,
+                                "신호 약 ${distanceToEncounter}m",
+                                modifier = Modifier.padding(horizontal = 11.dp, vertical = 7.dp),
+                                style = MaterialTheme.typography.labelMedium,
                             )
                         }
                     }
-                }
 
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("누적 탐험 거리 ${snapshot.state.distanceWalkedMeters.roundToInt()}m")
-                        Text("미스터리 단서 ${gameProgress.inventoryClueIds.size}개 · 해결 ${gameProgress.resolvedEncounterIds.size}건")
-                        Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
-                        if (snapshot.sessionDistanceMeters > 0.0) {
-                            Text("이번 탐험 ${snapshot.sessionDistanceMeters.roundToInt()}m")
-                        }
-                        if (showQaTools && snapshot.totalLocationSampleCount > 0) {
-                            Text(
-                                "추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                    ElevatedCard(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(10.dp)
+                            .fillMaxWidth(0.82f)
+                            .testTag("explore-companion-hud"),
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            ProductionCompanionVisual(
+                                request = CompanionVisualRequest(
+                                    companionId = snapshot.state.companion.id,
+                                    expression = companionExpression,
+                                    lightingFamily = companionLighting,
+                                    appearanceProfile = AppearanceProfile.BASE,
+                                    usageContext = CompanionUsageContext.HUD_PORTRAIT,
+                                ),
+                                modifier = Modifier.size(76.dp),
+                                contentDescription = "동행 캐릭터 ${snapshot.state.companion.name}",
+                                rasterTargetPx = 192,
                             )
-                        }
-                        if (showQaTools && gameplayMetrics.encounterOfferedCount > 0) {
-                            val resolutionRate = gameplayMetrics.encounterResolutionRatePercent?.let { "$it%" } ?: "-"
-                            Text(
-                                "세션 미스터리 발견 ${gameplayMetrics.discoveredEncounterCount} · 해결 ${gameplayMetrics.resolvedEncounterCount} · 해결률 $resolutionRate · 단서 ${gameplayMetrics.cluesCollectedCount}",
-                            )
-                            gameplayMetrics.repeatAreaFatigueProxyPercent?.let { fatigue ->
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp),
+                            ) {
+                                Text(snapshot.state.companion.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                                Text("호감도 ${snapshot.state.companion.bond}", style = MaterialTheme.typography.labelSmall)
                                 Text(
-                                    "재방문 ${gameplayMetrics.revisitOfferedCount}건 · 반복 피로 proxy ${fatigue}%",
+                                    lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
+                                        ?: "주변을 천천히 둘러보자.",
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
                         }
-                        snapshot.newlyDiscovered.firstOrNull()?.let {
-                            Text("주변 발견: ${it.title}", style = MaterialTheme.typography.titleMedium)
-                        }
                     }
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Button(
+                        onClick = {
+                            if (hasLocationPermission(context)) start(TrackingMode.DEVICE)
+                            else locationPermissionLauncher.launch(
+                                arrayOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                                ),
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                    ) { Text(if (trackingMode == TrackingMode.DEVICE) "위치 다시 시작" else "내 위치로 탐험") }
+
+                    if (showQaTools) {
+                        OutlinedButton(
+                            onClick = { start(TrackingMode.REPLAY) },
+                            modifier = Modifier.testTag("tracking-replay"),
+                        ) { Text("리플레이") }
+                    }
+                    if (trackingMode != TrackingMode.OFF) {
+                        TextButton(onClick = ::stopTracking) { Text("중지") }
+                    }
+                }
+
+                ExplorationSummaryStrip(
+                    distanceMeters = snapshot.state.distanceWalkedMeters.roundToInt(),
+                    discoveries = gameProgress.encounterVisitedPoiIds.size,
+                    clues = gameProgress.inventoryClueIds.size,
+                    memories = gameProgress.companionMemoryKeys.size,
+                )
 
                 EncounterCard(
                     selection = activeEncounter,
                     reducer = reducer,
                     distanceMeters = distanceToEncounter,
                     assetRenderer = a3AssetRenderer,
+                    showQaTools = showQaTools,
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
@@ -414,24 +473,6 @@ fun DailyTownApp(
                         lastCompanionMoment = null
                     },
                 )
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
-                        Text("${neighborhood.districtKey} · 탐험 ${neighborhood.discoveryCount}곳 · 해결 ${neighborhood.resolvedCount}건")
-                    }
-                }
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("회전 목표", style = MaterialTheme.typography.titleMedium)
-                        (dailyGoals + weeklyGoals).forEach { goal ->
-                            val progress = goalEvaluator.evaluate(goal, normalizedProgress, currentDate)
-                            val prefix = if (goal.period == GoalPeriod.DAILY) "오늘" else "이번 주"
-                            Text("${if (progress.isComplete) "✓" else "•"} $prefix ${goalLabel(goal)}: ${progress.current}/${progress.target}")
-                        }
-                    }
-                }
 
                 if (showQaTools) {
                     ElevatedCard(Modifier.fillMaxWidth()) {
@@ -468,11 +509,25 @@ fun DailyTownApp(
                                 if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
                                 style = MaterialTheme.typography.bodySmall,
                             )
+                            if (snapshot.totalLocationSampleCount > 0) {
+                                Text(
+                                    "추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                            if (gameplayMetrics.encounterOfferedCount > 0) {
+                                val resolutionRate = gameplayMetrics.encounterResolutionRatePercent?.let { "$it%" } ?: "-"
+                                Text(
+                                    "세션 발견 ${gameplayMetrics.discoveredEncounterCount} · 해결 ${gameplayMetrics.resolvedEncounterCount} · 해결률 $resolutionRate · 단서 ${gameplayMetrics.cluesCollectedCount}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                                gameplayMetrics.repeatAreaFatigueProxyPercent?.let { fatigue ->
+                                    Text("재방문 ${gameplayMetrics.revisitOfferedCount}건 · 반복 피로 proxy ${fatigue}%", style = MaterialTheme.typography.bodySmall)
+                                }
+                            }
                             OutlinedTextField(
                                 value = referenceDistanceText,
-                                onValueChange = { value ->
-                                    if (value.all(Char::isDigit)) referenceDistanceText = value
-                                },
+                                onValueChange = { value -> if (value.all(Char::isDigit)) referenceDistanceText = value },
                                 label = { Text("기준 경로 거리(m, 선택)") },
                                 supportingText = { Text("좌표 대신 미리 확인한 총 거리 숫자만 입력합니다.") },
                                 singleLine = true,
@@ -531,28 +586,6 @@ fun DailyTownApp(
                     )
                 }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = {
-                        if (hasLocationPermission(context)) start(TrackingMode.DEVICE)
-                        else locationPermissionLauncher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                            ),
-                        )
-                    }) { Text("실제 위치") }
-
-                    if (showQaTools) {
-                        OutlinedButton(
-                            onClick = { start(TrackingMode.REPLAY) },
-                            modifier = Modifier.testTag("tracking-replay"),
-                        ) { Text("경로 리플레이") }
-                    }
-                    if (trackingMode != TrackingMode.OFF) {
-                        TextButton(onClick = ::stopTracking) { Text("중지") }
-                    }
-                }
-
                 errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 Text(
                     when (trackingMode) {
@@ -574,28 +607,61 @@ fun DailyTownApp(
 }
 
 @Composable
+private fun ExplorationSummaryStrip(
+    distanceMeters: Int,
+    discoveries: Int,
+    clues: Int,
+    memories: Int,
+) {
+    ElevatedCard(Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 11.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            SummaryMetric("걸음", "${distanceMeters}m")
+            SummaryMetric("발견", "${discoveries}곳")
+            SummaryMetric("단서", "${clues}개")
+            SummaryMetric("기억", "${memories}개")
+        }
+    }
+}
+
+@Composable
+private fun SummaryMetric(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(value, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        Text(label, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
 private fun EncounterCard(
     selection: EncounterSelection?,
     reducer: MysteryReducer,
     distanceMeters: Int?,
     assetRenderer: SemanticAssetRenderer,
+    showQaTools: Boolean,
     onCollectClue: (String, MysteryEncounter) -> Unit,
     onResolve: (MysteryEncounter) -> Unit,
     onContinue: () -> Unit,
 ) {
-    ElevatedCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("현재 미스터리", style = MaterialTheme.typography.titleMedium)
+    ElevatedCard(Modifier.fillMaxWidth().testTag("explore-encounter-card")) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("주변의 이야기", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
             if (selection == null) {
-                Text("위치가 들어오면 주변 POI에서 후보를 생성합니다.")
+                Text("걸음을 시작하면 모루가 가까운 장소의 작은 신호를 알려줄 거예요.")
                 return@Column
             }
 
             val encounter = selection.encounter
-            Text("${rarityLabel(selection.rarity)} · ${selection.poi.name} · ${mechanicLabel(selection.template.mechanic)}")
-            Text("컨텍스트 ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}")
-            distanceMeters?.let { Text("현재 위치에서 약 ${it}m") }
-            Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}")
+            Text(selection.poi.name, style = MaterialTheme.typography.titleMedium)
+            Text(mechanicLabel(selection.template.mechanic), style = MaterialTheme.typography.bodyMedium)
+            distanceMeters?.let { Text("현재 위치에서 약 ${it}m", style = MaterialTheme.typography.bodySmall) }
+
+            if (showQaTools) {
+                Text("${rarityLabel(selection.rarity)} · ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}", style = MaterialTheme.typography.bodySmall)
+                Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}", style = MaterialTheme.typography.bodySmall)
+            }
 
             if (encounter.phase == EncounterPhase.DISCOVERED || encounter.phase == EncounterPhase.RESOLVED) {
                 A3ClueCard(
@@ -609,16 +675,17 @@ private fun EncounterCard(
             }
 
             when (encounter.phase) {
-                EncounterPhase.HIDDEN -> Text("주변을 이동하면 180m 안에서 신호가 나타납니다.")
-                EncounterPhase.HINTED -> Text("신호 포착 · 약 60m 안으로 접근하면 조사할 수 있습니다.")
+                EncounterPhase.HIDDEN -> Text("조금 더 걸어보면 신호가 또렷해져요.")
+                EncounterPhase.HINTED -> Text("모루가 신호를 찾았어요. 가까이 가면 조사할 수 있어요.")
                 EncounterPhase.DISCOVERED -> {
+                    Text("이곳에서 단서를 살펴보세요.")
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         if (encounter.clueIds.size < selection.template.requiredClues) {
                             Button(onClick = {
                                 val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
                                 val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
                                 onCollectClue(clueId, updated)
-                            }) { Text("단서 조사") }
+                            }) { Text("단서 살펴보기") }
                         }
                         Button(
                             enabled = encounter.clueIds.size >= selection.template.requiredClues,
@@ -626,23 +693,16 @@ private fun EncounterCard(
                                 val resolved = reducer.reduce(encounter, EncounterEvent.Resolve)
                                 if (resolved.phase == EncounterPhase.RESOLVED) onResolve(resolved)
                             },
-                        ) { Text("해결") }
+                        ) { Text("이야기 해결") }
                     }
                 }
                 EncounterPhase.RESOLVED -> {
-                    Text("해결 완료 · 동행에게 이 장소의 기억이 남았습니다.")
-                    Button(onClick = onContinue) { Text("다음 탐험") }
+                    Text("해결한 이야기가 모루와의 기억에 남았어요.")
+                    Button(onClick = onContinue) { Text("다음 신호 찾기") }
                 }
             }
         }
     }
-}
-
-private fun encounterMarkerTitle(selection: EncounterSelection): String = when (selection.encounter.phase) {
-    EncounterPhase.HIDDEN -> "? · ${selection.poi.name}"
-    EncounterPhase.HINTED -> "신호 · ${selection.poi.name}"
-    EncounterPhase.DISCOVERED -> "조사 · ${selection.poi.name}"
-    EncounterPhase.RESOLVED -> "해결 · ${selection.poi.name}"
 }
 
 private fun rarityLabel(rarity: EncounterRarity) = when (rarity) {
@@ -689,13 +749,6 @@ private fun mechanicLabel(mechanic: MysteryMechanic) = when (mechanic) {
     MysteryMechanic.PHOTO_ANGLE -> "시점 비교"
     MysteryMechanic.LOCAL_MEMORY -> "동네의 기억"
     MysteryMechanic.COMPANION_SENSE -> "동행의 감각"
-}
-
-private fun goalLabel(goal: GoalDefinition) = when (goal.metric) {
-    GoalMetric.WALK_DISTANCE_METERS -> "걷기"
-    GoalMetric.DISCOVER_SPOT -> "새 지점 발견"
-    GoalMetric.RESOLVE_MYSTERY -> "미스터리 해결"
-    GoalMetric.COLLECT_CLUE -> "단서 수집"
 }
 
 private fun companionMomentLabel(name: String, moment: CompanionMoment) = when (moment) {
