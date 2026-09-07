@@ -1,11 +1,11 @@
 package com.dailytown.app.visualqa
 
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.fetchSemanticsNode
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.core.graphics.writeToTestStorage
+import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.ui.DailyTownRecordsScreen
 import com.dailytown.app.ui.visual.DailyTownTheme
@@ -55,12 +55,13 @@ class ProductFlowVisualQaTest {
 
     private fun capture(tag: String, name: String) {
         composeRule.waitForIdle()
-        // captureToImage() already fails when the tagged node does not exist, so keeping the
-        // capture itself as the assertion avoids relying on a test API that is absent from the
-        // Compose test artifact pinned by this project.
-        composeRule.onNodeWithTag(tag)
-            .captureToImage()
-            .asAndroidBitmap()
-            .writeToTestStorage("visual/product-a3/$name")
+        // Keep the semantic-node check separate from image capture. Some A-3 destinations are
+        // scrollable and larger than the viewport, which makes node-level captureToImage invalid
+        // even though the actual product screen is rendered correctly. Device screenshots capture
+        // exactly what a field tester sees while fetchSemanticsNode fails if navigation is broken.
+        composeRule.onNodeWithTag(tag).fetchSemanticsNode()
+        val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+            ?: error("Device screenshot unavailable for $tag")
+        bitmap.writeToTestStorage("visual/product-a3/$name")
     }
 }
