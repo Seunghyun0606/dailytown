@@ -38,7 +38,7 @@ jobs:
           sed -n 's/^export //p' tools/field_test/mvp_baseline.env >> "$GITHUB_ENV"
       - name: Field-test shell tool syntax
         shell: bash
-        run: bash -n tools/field_test/prepare_physical_test.sh tools/field_test/review_physical_export.sh
+        run: bash -n tools/field_test/prepare_physical_test.sh tools/field_test/review_physical_export.sh tools/android/run_naver_emulator_qa_with_retry.sh
       - name: Field-test export tool tests
         run: python3 -m unittest discover -s tools/field_test -p 'test_*.py'
       - name: Marker promotion readiness tool tests
@@ -68,6 +68,31 @@ jobs:
         run: gradle lintDebug
       - name: Build debug APK
         run: gradle assembleDebug
+      - name: Build signed release AAB with ephemeral CI upload key
+        shell: bash
+        run: |
+          set -euo pipefail
+          store="$RUNNER_TEMP/dailytown-ci-upload.jks"
+          password="dailytown-ci-only-password"
+          alias="dailytown-ci"
+          keytool -genkeypair -noprompt \
+            -keystore "$store" \
+            -storetype JKS \
+            -storepass "$password" \
+            -keypass "$password" \
+            -alias "$alias" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 30 \
+            -dname "CN=DailyTown CI, OU=CI, O=DailyTown, L=Seoul, C=KR" \
+            >/dev/null 2>&1
+          export DAILYTOWN_UPLOAD_STORE_FILE="$store"
+          export DAILYTOWN_UPLOAD_STORE_PASSWORD="$password"
+          export DAILYTOWN_UPLOAD_KEY_ALIAS="$alias"
+          export DAILYTOWN_UPLOAD_KEY_PASSWORD="$password"
+          gradle bundleForPlay
+          test -s app/build/outputs/bundle/release/app-release.aab
+          rm -f "$store"
       - name: Upload main replay APK
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
