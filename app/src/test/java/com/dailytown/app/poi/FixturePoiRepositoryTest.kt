@@ -57,7 +57,11 @@ class FixturePoiRepositoryTest {
         val nearby = repo.nearby(GeoPoint(37.43450117, 127.137906833), 900.0)
 
         assertEquals(
-            setOf("seongnam-sports-complex", "starbucks-seongnam-moran-dt"),
+            setOf(
+                "jungwon-gu-office",
+                "seongnam-sports-complex",
+                "starbucks-seongnam-moran-dt",
+            ),
             nearby.map { it.id }.toSet(),
         )
     }
