@@ -109,13 +109,13 @@ internal fun ProductionMoruSpriteMotionVisual(
 ) {
     val motion = prototypeMotionFor(request)
     val sequence = MoruPrototypeSpriteManifest.sequence(motion)
-    val canPrototype = BuildConfig.DEBUG &&
-        request.companionId == "moru" &&
-        request.usageContext != CompanionUsageContext.JOURNAL_STAMP &&
-        !request.reducedMotion &&
-        sequence != null
-
-    if (!canPrototype || sequence == null) {
+    if (
+        !BuildConfig.DEBUG ||
+        request.companionId != "moru" ||
+        request.usageContext == CompanionUsageContext.JOURNAL_STAMP ||
+        request.reducedMotion ||
+        sequence == null
+    ) {
         StaticProductionCompanionVisual(
             request = request,
             modifier = modifier,
