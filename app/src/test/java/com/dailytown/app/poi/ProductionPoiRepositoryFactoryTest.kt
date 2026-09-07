@@ -29,4 +29,25 @@ class ProductionPoiRepositoryFactoryTest {
         assertTrue(repository.nearby(seoul, 900.0).isEmpty())
         assertTrue(repository.sourceMetadata().isEmpty())
     }
+
+    @Test
+    fun `https app owned gateway becomes canonical without provider credential`() {
+        val repository = ProductionPoiRepositoryFactory.create(
+            tourApiServiceKey = null,
+            proxyBaseUrl = "https://poi.dailytown.example",
+            allowFixtureFallback = false,
+        )
+
+        assertTrue(repository.sourceMetadata().any { it.id == "dailytown-poi-gateway" })
+        assertTrue(repository.sourceMetadata().none { it.role == PoiSourceRole.FIXTURE })
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `gateway rejects non https endpoint`() {
+        ProductionPoiRepositoryFactory.create(
+            tourApiServiceKey = null,
+            proxyBaseUrl = "http://poi.dailytown.example",
+            allowFixtureFallback = false,
+        )
+    }
 }
