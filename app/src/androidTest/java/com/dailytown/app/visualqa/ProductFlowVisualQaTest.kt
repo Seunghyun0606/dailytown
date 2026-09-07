@@ -22,9 +22,10 @@ class ProductFlowVisualQaTest {
         companionBond = 31,
         inventoryClueIds = setOf("clue-a", "clue-b", "clue-c"),
         resolvedEncounterIds = setOf("encounter-a"),
-        encounterVisitedPoiIds = setOf("cityhall", "deoksugung", "insadong"),
-        recentPoiIds = listOf("cityhall", "deoksugung", "insadong"),
-        companionMemoryKeys = setOf("poi:cityhall", "poi:deoksugung"),
+        encounterVisitedPoiIds = setOf("tourapi:1001", "tourapi:1002", "tourapi:1003"),
+        recentPoiIds = listOf("tourapi:1001", "tourapi:1002", "tourapi:1003"),
+        recentPoiTitles = listOf("서울광장", "덕수궁", "인사동 문화거리"),
+        companionMemoryKeys = setOf("poi:tourapi:1001", "poi:tourapi:1002"),
     )
 
     @Test
