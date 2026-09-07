@@ -2,28 +2,36 @@ package com.dailytown.app.poi
 
 /**
  * Runtime POI composition for the adopted production direction:
- * - TourAPI is the canonical source when configured.
- * - Optional live enrichment providers can be injected later without replacing canonical records.
+ * - Release prefers the app-owned HTTPS POI gateway, keeping upstream credentials off-device.
+ * - Internal/debug may call TourAPI directly when a service key is configured.
+ * - Optional live enrichment providers can be injected without replacing canonical records.
  * - Field-test fixtures are permitted only when the caller explicitly allows development fallback.
  */
 object ProductionPoiRepositoryFactory {
     fun create(
         tourApiServiceKey: String?,
+        proxyBaseUrl: String? = null,
         enrichments: List<PoiRepository> = emptyList(),
         allowFixtureFallback: Boolean = true,
     ): PoiRepository {
-        val key = tourApiServiceKey.orEmpty().trim()
-        if (key.isBlank() || key.startsWith("TODO_")) {
-            return if (allowFixtureFallback) {
-                CachingPoiRepository(FixturePoiRepository())
-            } else {
-                EmptyPoiRepository
+        val proxyUrl = proxyBaseUrl.orEmpty().trim().trimEnd('/')
+        val directKey = tourApiServiceKey.orEmpty().trim()
+
+        val canonical: PoiRepository = when {
+            proxyUrl.isNotBlank() -> {
+                require(proxyUrl.startsWith("https://")) {
+                    "Daily Town POI gateway must use HTTPS."
+                }
+                DailyTownPoiProxyRepository(HttpDailyTownPoiProxySource(proxyUrl))
             }
+            directKey.isNotBlank() && !directKey.startsWith("TODO_") -> {
+                TourApiPoiRepository(HttpTourApiNearbySource(serviceKey = directKey))
+            }
+            allowFixtureFallback -> FixturePoiRepository()
+            else -> EmptyPoiRepository
         }
 
-        val canonical = TourApiPoiRepository(
-            HttpTourApiNearbySource(serviceKey = key),
-        )
+        if (canonical === EmptyPoiRepository) return canonical
         val merged = EnrichingPoiRepository(
             canonical = canonical,
             enrichments = enrichments,
