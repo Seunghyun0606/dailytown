@@ -347,6 +347,9 @@ dependencies {
     implementation("com.caverock:androidsvg:1.4")
 
     testImplementation("junit:junit:4.13.2")
+    // Production uses Android's org.json. Plain JVM tests need the real implementation instead of
+    // android.jar's non-functional framework stubs so the gateway parser is exercised faithfully.
+    testImplementation("org.json:json:20260814")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test:core-ktx:1.7.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
