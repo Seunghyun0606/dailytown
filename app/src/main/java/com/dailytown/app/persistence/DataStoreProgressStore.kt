@@ -26,6 +26,9 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
             resolvedEncounterIds = prefs[Keys.resolvedEncounterIds].orEmpty(),
             encounterVisitedPoiIds = prefs[Keys.encounterVisitedPoiIds].orEmpty(),
             recentPoiIds = decodeList(prefs[Keys.recentPoiIds]),
+            // Older installs do not have this key. decodeList(null) intentionally yields an empty
+            // list; UI then falls back to fixture/generic labels while preserving prior progress.
+            recentPoiTitles = decodeList(prefs[Keys.recentPoiTitles]),
             recentTemplateIds = decodeList(prefs[Keys.recentTemplateIds]),
             recentPairKeys = decodeList(prefs[Keys.recentPairKeys]),
             companionMemoryKeys = prefs[Keys.companionMemoryKeys].orEmpty(),
@@ -62,6 +65,7 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
             prefs[Keys.resolvedEncounterIds] = progress.resolvedEncounterIds
             prefs[Keys.encounterVisitedPoiIds] = progress.encounterVisitedPoiIds
             prefs[Keys.recentPoiIds] = encodeList(progress.recentPoiIds)
+            prefs[Keys.recentPoiTitles] = encodeList(progress.recentPoiTitles)
             prefs[Keys.recentTemplateIds] = encodeList(progress.recentTemplateIds)
             prefs[Keys.recentPairKeys] = encodeList(progress.recentPairKeys)
             prefs[Keys.companionMemoryKeys] = progress.companionMemoryKeys
@@ -109,6 +113,7 @@ class DataStoreProgressStore(context: Context) : ProgressStore {
         val resolvedEncounterIds = stringSetPreferencesKey("resolved_encounter_ids")
         val encounterVisitedPoiIds = stringSetPreferencesKey("encounter_visited_poi_ids")
         val recentPoiIds = stringPreferencesKey("recent_poi_ids")
+        val recentPoiTitles = stringPreferencesKey("recent_poi_titles")
         val recentTemplateIds = stringPreferencesKey("recent_template_ids")
         val recentPairKeys = stringPreferencesKey("recent_pair_keys")
         val companionMemoryKeys = stringSetPreferencesKey("companion_memory_keys")
