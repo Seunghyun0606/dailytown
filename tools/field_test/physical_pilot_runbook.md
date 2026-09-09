@@ -4,7 +4,9 @@
 
 This runbook is for the initial four-session Android MVP pilot. It uses the approved provisional baseline in `mvp_baseline.env` and must be revisited after the pilot.
 
-The physical pilot now validates both layers in one debug APK:
+For the exact files to return after testing, see `docs/validation/PHYSICAL_VALIDATION_HANDOFF.md`.
+
+The physical pilot validates both layers in one debug APK:
 
 - production nearby POIs from the configured 한국관광공사 TourAPI canonical feed;
 - fixed Seoul/Jungwon QA anchors used to make the route repeatable.
@@ -105,6 +107,16 @@ For POI behavior, note only meaningful defects such as stale POIs that remain fa
 - Export structured JSON before app termination.
 - Keep exported JSON outside the Git repository.
 - Record only a short usability note for anything that felt confusing, annoying, invisible, or unexpectedly delightful.
+- Keep each export as a safety snapshot, but remember that later snapshots can include sessions already present in earlier exports.
+
+Suggested local names:
+
+- `01-seoul-new.json`
+- `02-seoul-repeat.json`
+- `03-jungwon-new.json`
+- `04-jungwon-repeat-final.json`
+
+The fourth export is the canonical handoff when it contains the complete four-session comparison history. Do not aggregate the four sequential snapshots as independent batches because that can double-count overlapping sessions.
 
 ## Provisional acceptance baseline
 
@@ -129,11 +141,13 @@ The four-session pilot requires two NEW_AREA and two REPEAT_AREA sessions, one p
 
 ## Final one-command review
 
-After the final session, validate the exported JSON and generate the Markdown review/collection plan with:
+After the final session, validate the final cumulative export and generate the Markdown review/collection plan with:
 
 ```bash
-bash tools/field_test/review_physical_export.sh <export.json>
+bash tools/field_test/review_physical_export.sh 04-jungwon-repeat-final.json
 ```
+
+Return the final cumulative JSON, generated review/collection-plan files, and the short session notes. Earlier snapshots are only needed for debugging if the final export is incomplete.
 
 ## Usability review after the pilot
 
