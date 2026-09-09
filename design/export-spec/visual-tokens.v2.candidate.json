@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "visual_pack": "daily-town-parity-v2",
+  "status": "candidate_review",
+  "inherits": "design/export-spec/visual-tokens.v1.json",
+  "intent": "real-neighborhood botanical expedition + stable paper memory system",
+  "color": {
+    "ink.primary": "#1A1F1C",
+    "ink.botanical": "#214F3B",
+    "ink.muted": "#66756D",
+    "leaf.primary": "#6B8F7A",
+    "leaf.soft": "#A7C7A5",
+    "paper.base": "#F4F0E6",
+    "paper.raised": "#FFFDF7",
+    "paper.warm": "#F7F3E8",
+    "surface.cool": "#EEF3F5",
+    "accent.discovery": "#FFD36B",
+    "accent.sunset": "#FFB184",
+    "accent.sky": "#9CC9FF",
+    "night.base": "#1E2A44"
+  },
+  "spacing_dp": {
+    "micro": 4,
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 20,
+    "xl": 24,
+    "xxl": 32
+  },
+  "shape_dp": {
+    "chip": 12,
+    "compact_card": 16,
+    "paper_card": 18,
+    "hero_card": 24,
+    "sheet": 28,
+    "phone_preview": 32
+  },
+  "stroke_dp": {
+    "hairline": 1,
+    "paper_edge": 2,
+    "selected": 3
+  },
+  "type_roles": {
+    "display": {"weight": 700, "usage": "memory hero or rare emotional title only"},
+    "screen_title": {"weight": 700, "usage": "one per screen"},
+    "section": {"weight": 700, "usage": "botanical ink section anchor"},
+    "body": {"weight": 400, "usage": "dark neutral ink, never leaf green for long copy"},
+    "meta": {"weight": 400, "usage": "muted metadata and timestamps"},
+    "stamp": {"weight": 700, "usage": "short semantic completion/state label"}
+  },
+  "surface_roles": {
+    "explore.map_truth": "provider map remains visually dominant and unfiltered",
+    "explore.hud": "translucent raised neutral with botanical semantic accents",
+    "companion.notebook": "warm paper portrait plus keepsake strips",
+    "records.artifact": "A3 paper is the native content surface",
+    "goals.expedition_board": "warm paper checklist, not KPI dashboard",
+    "settings.utility": "quiet neutral surface with plain legal/provider text"
+  },
+  "navigation": {
+    "count": 5,
+    "destinations": ["EXPLORE", "COMPANION", "RECORDS", "GOALS", "SETTINGS"],
+    "selected_indicator": "soft_leaf_or_rounded_shape_plus_weight",
+    "emoji_as_final_icon": false,
+    "content_must_outweigh_nav": true
+  },
+  "moru_v2": {
+    "status": "candidate_rebaseline",
+    "candidate_ids": ["MR-A", "MR-B", "MR-C"],
+    "recommended_first_review": "MR-A",
+    "head_units_min": 2.0,
+    "head_units_max": 2.3,
+    "require_separate_head_torso": true,
+    "require_visible_limb_cues": true,
+    "require_explorer_silhouette_cue": true,
+    "require_asymmetric_botanical_cue": true,
+    "motion_before_canonical_approval": false
+  },
+  "accessibility": {
+    "gameplay_state_color_only_forbidden": true,
+    "locked_state_requires_pattern_or_icon": true,
+    "selected_state_requires_non_color_cue": true,
+    "reduced_motion_fallback_required": true,
+    "provider_attribution_must_remain_unobscured": true
+  },
+  "promotion_gate": [
+    "human_select_moru_v2_family",
+    "human_approve_five_tab_parity_composition",
+    "48dp_moru_silhouette_qa",
+    "six_expression_fit_qa",
+    "light_dusk_dark_identity_qa",
+    "runtime_implementation_separate_human_gate"
+  ]
+}
