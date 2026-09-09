@@ -10,6 +10,14 @@ class PhysicalEvidenceRunnerContractTest(unittest.TestCase):
     def test_runner_shell_syntax_is_valid(self):
         subprocess.run(["bash", "-n", str(RUNNER)], check=True)
 
+    def test_runner_uses_working_python_fallback(self):
+        text = RUNNER.read_text(encoding="utf-8")
+        self.assertIn("for candidate in python3 python", text)
+        self.assertIn("PYTHON_CMD=(py -3)", text)
+        self.assertIn('"${PYTHON_CMD[@]}" tools/visual/package_marker_physical_evidence.py', text)
+        self.assertIn('"${PYTHON_CMD[@]}" tools/visual/verify_marker_physical_evidence_bundle.py', text)
+        self.assertNotIn("\npython3 tools/visual/", text)
+
     def test_runner_verifies_directory_and_zip_after_packaging(self):
         text = RUNNER.read_text(encoding="utf-8")
         package_at = text.index("package_marker_physical_evidence.py")
