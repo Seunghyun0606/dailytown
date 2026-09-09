@@ -1,14 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+resolve_python() {
+  local candidate
+
+  # Git Bash on Windows can expose Microsoft Store/App Execution Alias shims as
+  # python3/python. Verify that a candidate can actually execute Python 3.9+.
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 && \
+       "$candidate" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+      PYTHON_CMD=("$candidate")
+      return 0
+    fi
+  done
+
+  if command -v py >/dev/null 2>&1 && \
+     py -3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+    PYTHON_CMD=(py -3)
+    return 0
+  fi
+
+  echo "Python 3.9+ is required to validate and package marker evidence, but no working interpreter was found." >&2
+  echo "Install Python or make python/python3/py available on PATH." >&2
+  exit 2
+}
+
 if ! command -v adb >/dev/null 2>&1; then
   echo "adb is required. Install Android platform-tools first." >&2
   exit 2
 fi
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "python3 is required to validate and package marker evidence." >&2
-  exit 2
-fi
+resolve_python
 if [[ -z "${NAVER_MAP_NCP_KEY_ID:-}" ]]; then
   echo "NAVER_MAP_NCP_KEY_ID must be supplied through the environment." >&2
   exit 2
@@ -29,7 +50,9 @@ fi
 
 MODEL="$(adb -s "$SERIAL" shell getprop ro.product.model 2>/dev/null | tr -d '\r')"
 ANDROID_RELEASE="$(adb -s "$SERIAL" shell getprop ro.build.version.release 2>/dev/null | tr -d '\r')"
+PYTHON_LABEL="$("${PYTHON_CMD[@]}" -c 'import sys; print(f"Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")')"
 echo "NAVER physical evidence target detected: ${MODEL:-unknown-model}, Android ${ANDROID_RELEASE:-unknown}."
+echo "Python runtime: $PYTHON_LABEL"
 echo "Credential wiring is present; credential value will not be printed."
 
 if [[ -x ./gradlew ]]; then
@@ -81,15 +104,15 @@ OUTPUT_ROOT="${DAILYTOWN_MARKER_EVIDENCE_DIR:-app/build/marker-physical-evidence
 BUNDLE_DIR="${OUTPUT_ROOT%/}/physical-${RUN_STAMP}"
 BUNDLE_ZIP="$BUNDLE_DIR.zip"
 
-python3 tools/visual/package_marker_physical_evidence.py \
+"${PYTHON_CMD[@]}" tools/visual/package_marker_physical_evidence.py \
   --session "${SESSIONS[0]}" \
   --output-dir "$BUNDLE_DIR"
 
 # The packager creates both a directory and matching ZIP. Verify both independently
 # before reporting success so a corrupt or unsafe review bundle cannot be handed off.
-python3 tools/visual/verify_marker_physical_evidence_bundle.py \
+"${PYTHON_CMD[@]}" tools/visual/verify_marker_physical_evidence_bundle.py \
   --bundle "$BUNDLE_DIR"
-python3 tools/visual/verify_marker_physical_evidence_bundle.py \
+"${PYTHON_CMD[@]}" tools/visual/verify_marker_physical_evidence_bundle.py \
   --bundle "$BUNDLE_ZIP"
 
 echo ""
