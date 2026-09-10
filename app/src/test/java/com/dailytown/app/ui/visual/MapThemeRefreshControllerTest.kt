@@ -11,6 +11,7 @@ import com.dailytown.app.map.MapProviderId
 import com.dailytown.app.map.MapThemeSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
+import com.dailytown.app.visual.DayPhase
 import com.dailytown.app.visual.MapOverlaySemanticState
 import java.time.LocalTime
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,6 +84,60 @@ class MapThemeRefreshControllerTest {
         assertEquals(1, scheduler.scheduleCount)
     }
 
+    @Test
+    fun appShellRefreshUsesSameMinuteCadenceAndTracksPhaseChanges() {
+        val scheduler = RecordingAppThemeScheduler()
+        val phases = mutableListOf<DayPhase>()
+        var now = LocalTime.of(8, 15, 30)
+        val resolver = MapRuntimeThemeResolver()
+        val controller = DailyTownThemeRefreshController(
+            onPhase = { phases += it },
+            themeResolver = resolver,
+            clock = { now },
+            scheduler = scheduler,
+        )
+
+        controller.start()
+        controller.start()
+
+        assertEquals(listOf(resolver.resolve(now).profile.phase), phases)
+        assertEquals(1, scheduler.scheduleCount)
+        assertEquals(30_000L, scheduler.delayMillis)
+
+        now = LocalTime.of(22, 0)
+        scheduler.runScheduled()
+
+        assertEquals(2, phases.size)
+        assertEquals(resolver.resolve(now).profile.phase, phases.last())
+        assertEquals(DayPhase.NIGHT, phases.last())
+        assertEquals(2, scheduler.scheduleCount)
+    }
+
+    @Test
+    fun appShellRefreshStopsCleanlyAndRejectsLateCallbacks() {
+        val scheduler = RecordingAppThemeScheduler()
+        val phases = mutableListOf<DayPhase>()
+        var now = LocalTime.of(12, 0)
+        val controller = DailyTownThemeRefreshController(
+            onPhase = { phases += it },
+            clock = { now },
+            scheduler = scheduler,
+        )
+
+        controller.start()
+        val pending = scheduler.task
+        controller.stop()
+
+        assertEquals(1, scheduler.cancelCount)
+        assertNull(scheduler.task)
+
+        now = LocalTime.of(23, 0)
+        pending?.run()
+
+        assertEquals(1, phases.size)
+        assertEquals(1, scheduler.scheduleCount)
+    }
+
     private class RecordingScheduler : MapThemeRefreshScheduler {
         var task: Runnable? = null
         var delayMillis: Long? = null
@@ -102,6 +157,30 @@ class MapThemeRefreshControllerTest {
 
         fun runScheduled() {
             val pending = task ?: error("No scheduled theme refresh")
+            task = null
+            pending.run()
+        }
+    }
+
+    private class RecordingAppThemeScheduler : DailyTownThemeRefreshScheduler {
+        var task: Runnable? = null
+        var delayMillis: Long? = null
+        var scheduleCount = 0
+        var cancelCount = 0
+
+        override fun schedule(task: Runnable, delayMillis: Long) {
+            this.task = task
+            this.delayMillis = delayMillis
+            scheduleCount += 1
+        }
+
+        override fun cancel(task: Runnable) {
+            cancelCount += 1
+            if (this.task === task) this.task = null
+        }
+
+        fun runScheduled() {
+            val pending = task ?: error("No scheduled app-theme refresh")
             task = null
             pending.run()
         }
