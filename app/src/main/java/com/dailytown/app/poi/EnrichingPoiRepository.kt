@@ -2,6 +2,7 @@ package com.dailytown.app.poi
 
 import com.dailytown.app.domain.ExplorationEngine
 import com.dailytown.app.domain.GeoPoint
+import kotlinx.coroutines.CancellationException
 
 /**
  * Keeps the canonical POI source authoritative while allowing optional live providers to fill
@@ -19,7 +20,13 @@ class EnrichingPoiRepository(
         val merged = canonicalItems.toMutableList()
 
         enrichments.forEach { enrichment ->
-            val extra = runCatching { enrichment.nearby(center, radiusMeters) }.getOrDefault(emptyList())
+            val extra = try {
+                enrichment.nearby(center, radiusMeters)
+            } catch (error: CancellationException) {
+                throw error
+            } catch (_: Exception) {
+                emptyList()
+            }
             extra.forEach { candidate ->
                 if (merged.none { existing -> isDuplicate(existing, candidate) }) {
                     merged += candidate
@@ -51,8 +58,13 @@ class EnrichingPoiRepository(
 class DegradingPoiRepository(
     private val delegate: PoiRepository,
 ) : PoiRepository {
-    override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> =
-        runCatching { delegate.nearby(center, radiusMeters) }.getOrDefault(emptyList())
+    override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> = try {
+        delegate.nearby(center, radiusMeters)
+    } catch (error: CancellationException) {
+        throw error
+    } catch (_: Exception) {
+        emptyList()
+    }
 
     override fun sourceMetadata(): List<PoiSourceMetadata> = delegate.sourceMetadata()
 }
