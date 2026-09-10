@@ -2,6 +2,7 @@ package com.dailytown.app.poi
 
 import com.dailytown.app.domain.ExplorationEngine
 import com.dailytown.app.domain.GeoPoint
+import kotlinx.coroutines.CancellationException
 
 /**
  * Provider-neutral POI cache. It deliberately caches a padded search area and filters the result
@@ -48,7 +49,11 @@ class CachingPoiRepository(
                 ),
             )
             filter(fetched, center, radiusMeters)
-        } catch (error: Throwable) {
+        } catch (error: CancellationException) {
+            // Cancellation is lifecycle/control flow, not a provider outage. Returning stale data here
+            // would keep abandoned searches alive after navigation/session shutdown.
+            throw error
+        } catch (error: Exception) {
             val fallback = findCovering(center, radiusMeters, now, freshOnly = false)
             if (fallback != null) filter(fallback.pois, center, radiusMeters) else throw error
         }
