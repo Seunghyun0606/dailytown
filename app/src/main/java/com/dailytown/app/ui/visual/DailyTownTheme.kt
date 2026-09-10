@@ -1,12 +1,18 @@
 package com.dailytown.app.ui.visual
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.visual.DayPhase
@@ -73,13 +79,83 @@ private val DarkDailyTownScheme = darkColorScheme(
 
 @Composable
 fun DailyTownTheme(content: @Composable () -> Unit) {
-    val phase = remember {
-        MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.phase
+    val resolver = remember { MapRuntimeThemeResolver() }
+    var phase by remember {
+        mutableStateOf(resolver.resolve(LocalTime.now()).profile.phase)
     }
+
+    // The map already refreshes its provider-neutral theme at minute boundaries. Keep the
+    // Compose shell on the same clock so a long-running exploration cannot cross into EV-1/night
+    // with stale app chrome. This changes only theme state; gameplay/location state is untouched.
+    DisposableEffect(resolver) {
+        val controller = DailyTownThemeRefreshController(
+            onPhase = { phase = it },
+            themeResolver = resolver,
+        )
+        controller.start()
+        onDispose { controller.stop() }
+    }
+
     val dark = phase == DayPhase.NIGHT
     MaterialTheme(
         colorScheme = if (dark) DarkDailyTownScheme else LightDailyTownScheme,
         shapes = DailyTownShapes,
         content = content,
     )
+}
+
+/**
+ * Minute-boundary clock bridge for the Compose app shell.
+ *
+ * Kept separate from visual token values so the design session can replace palette/components
+ * without reimplementing time-of-day lifecycle behavior.
+ */
+internal class DailyTownThemeRefreshController(
+    private val onPhase: (DayPhase) -> Unit,
+    private val themeResolver: MapRuntimeThemeResolver = MapRuntimeThemeResolver(),
+    private val clock: () -> LocalTime = LocalTime::now,
+    private val scheduler: DailyTownThemeRefreshScheduler = MainThreadDailyTownThemeRefreshScheduler(),
+) {
+    private var started = false
+
+    private val tick = object : Runnable {
+        override fun run() {
+            if (!started) return
+            val now = clock()
+            onPhase(themeResolver.resolve(now).profile.phase)
+            scheduler.schedule(this, MapThemeRefreshCadence.millisUntilNextMinute(now))
+        }
+    }
+
+    fun start() {
+        if (started) return
+        started = true
+        tick.run()
+    }
+
+    fun stop() {
+        if (!started) return
+        started = false
+        scheduler.cancel(tick)
+    }
+
+    fun close() = stop()
+}
+
+internal fun interface DailyTownThemeRefreshScheduler {
+    fun schedule(task: Runnable, delayMillis: Long)
+
+    fun cancel(task: Runnable) = Unit
+}
+
+private class MainThreadDailyTownThemeRefreshScheduler(
+    private val handler: Handler = Handler(Looper.getMainLooper()),
+) : DailyTownThemeRefreshScheduler {
+    override fun schedule(task: Runnable, delayMillis: Long) {
+        handler.postDelayed(task, delayMillis)
+    }
+
+    override fun cancel(task: Runnable) {
+        handler.removeCallbacks(task)
+    }
 }
