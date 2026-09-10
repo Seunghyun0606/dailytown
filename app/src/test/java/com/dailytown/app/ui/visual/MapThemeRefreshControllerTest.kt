@@ -11,8 +11,10 @@ import com.dailytown.app.map.MapProviderId
 import com.dailytown.app.map.MapThemeSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
+import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.DayPhase
 import com.dailytown.app.visual.MapOverlaySemanticState
+import com.dailytown.app.visual.VisualThemeProfile
 import java.time.LocalTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -87,11 +89,11 @@ class MapThemeRefreshControllerTest {
     @Test
     fun appShellRefreshUsesSameMinuteCadenceAndTracksPhaseChanges() {
         val scheduler = RecordingAppThemeScheduler()
-        val phases = mutableListOf<DayPhase>()
+        val profiles = mutableListOf<VisualThemeProfile>()
         var now = LocalTime.of(8, 15, 30)
         val resolver = MapRuntimeThemeResolver()
         val controller = DailyTownThemeRefreshController(
-            onPhase = { phases += it },
+            onProfile = { profiles += it },
             themeResolver = resolver,
             clock = { now },
             scheduler = scheduler,
@@ -100,26 +102,50 @@ class MapThemeRefreshControllerTest {
         controller.start()
         controller.start()
 
-        assertEquals(listOf(resolver.resolve(now).profile.phase), phases)
+        assertEquals(listOf(resolver.resolve(now).profile), profiles)
         assertEquals(1, scheduler.scheduleCount)
         assertEquals(30_000L, scheduler.delayMillis)
 
         now = LocalTime.of(22, 0)
         scheduler.runScheduled()
 
-        assertEquals(2, phases.size)
-        assertEquals(resolver.resolve(now).profile.phase, phases.last())
-        assertEquals(DayPhase.NIGHT, phases.last())
+        assertEquals(2, profiles.size)
+        assertEquals(resolver.resolve(now).profile, profiles.last())
+        assertEquals(DayPhase.NIGHT, profiles.last().phase)
+        assertEquals(2, scheduler.scheduleCount)
+    }
+
+    @Test
+    fun appShellRefreshPublishesEv1ProfileChangesInsideSameEveningPhase() {
+        val scheduler = RecordingAppThemeScheduler()
+        val profiles = mutableListOf<VisualThemeProfile>()
+        var now = LocalTime.of(20, 0)
+        val controller = DailyTownThemeRefreshController(
+            onProfile = { profiles += it },
+            clock = { now },
+            scheduler = scheduler,
+        )
+
+        controller.start()
+        assertEquals(DayPhase.EVENING, profiles.single().phase)
+        assertEquals(CompanionLightingFamily.WARM_DUSK, profiles.single().companionLighting)
+
+        now = LocalTime.of(20, 1)
+        scheduler.runScheduled()
+
+        assertEquals(2, profiles.size)
+        assertEquals(DayPhase.EVENING, profiles.last().phase)
+        assertEquals(CompanionLightingFamily.DARK, profiles.last().companionLighting)
         assertEquals(2, scheduler.scheduleCount)
     }
 
     @Test
     fun appShellRefreshStopsCleanlyAndRejectsLateCallbacks() {
         val scheduler = RecordingAppThemeScheduler()
-        val phases = mutableListOf<DayPhase>()
+        val profiles = mutableListOf<VisualThemeProfile>()
         var now = LocalTime.of(12, 0)
         val controller = DailyTownThemeRefreshController(
-            onPhase = { phases += it },
+            onProfile = { profiles += it },
             clock = { now },
             scheduler = scheduler,
         )
@@ -134,7 +160,7 @@ class MapThemeRefreshControllerTest {
         now = LocalTime.of(23, 0)
         pending?.run()
 
-        assertEquals(1, phases.size)
+        assertEquals(1, profiles.size)
         assertEquals(1, scheduler.scheduleCount)
     }
 
