@@ -8,13 +8,16 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.DayPhase
 import java.time.LocalTime
 
@@ -33,6 +36,11 @@ object DailyTownTokens {
     val Ink = Color(0xFF1A1F1C)
     val OnDark = Color(0xFFF7FAF5)
     val SoftStroke = Color(0xFFD8D3C3)
+}
+
+/** Live semantic lighting supplied by the app theme to companion surfaces. */
+internal val LocalDailyTownCompanionLighting = staticCompositionLocalOf {
+    CompanionLightingFamily.LIGHT
 }
 
 private val DailyTownShapes = Shapes(
@@ -97,11 +105,18 @@ fun DailyTownTheme(content: @Composable () -> Unit) {
     }
 
     val dark = phase == DayPhase.NIGHT
+    // Re-resolve the profile whenever the phase state changes. Companion surfaces consume only the
+    // semantic lighting family, so design assets can change independently of the lifecycle clock.
+    val companionLighting = resolver.resolve(LocalTime.now()).profile.companionLighting
     MaterialTheme(
         colorScheme = if (dark) DarkDailyTownScheme else LightDailyTownScheme,
         shapes = DailyTownShapes,
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalDailyTownCompanionLighting provides companionLighting,
+            content = content,
+        )
+    }
 }
 
 /**
