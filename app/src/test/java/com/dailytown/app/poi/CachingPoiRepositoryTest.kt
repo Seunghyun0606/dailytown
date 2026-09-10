@@ -1,6 +1,7 @@
 package com.dailytown.app.poi
 
 import com.dailytown.app.domain.GeoPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -88,6 +89,32 @@ class CachingPoiRepositoryTest {
         shouldFail = true
 
         assertEquals(listOf("nearby"), cache.nearby(center, 100.0).map { it.id })
+    }
+
+    @Test
+    fun `coroutine cancellation is never converted to stale fallback`() {
+        var now = 1_000L
+        var shouldCancel = false
+        val delegate = object : PoiRepository {
+            override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
+                if (shouldCancel) throw CancellationException("search abandoned")
+                return listOf(nearby)
+            }
+        }
+        val cache = CachingPoiRepository(
+            delegate = delegate,
+            clockMillis = { now },
+            freshTtlMillis = 100L,
+            staleFallbackMillis = 1_000L,
+        )
+
+        runBlocking { cache.nearby(center, 100.0) }
+        now += 200L
+        shouldCancel = true
+
+        assertThrows(CancellationException::class.java) {
+            runBlocking { cache.nearby(center, 100.0) }
+        }
     }
 
     @Test
