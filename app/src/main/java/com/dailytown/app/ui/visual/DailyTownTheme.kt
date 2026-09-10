@@ -17,6 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.DayPhase
 import com.dailytown.app.visual.VisualThemeProfile
@@ -89,6 +92,7 @@ private val DarkDailyTownScheme = darkColorScheme(
 @Composable
 fun DailyTownTheme(content: @Composable () -> Unit) {
     val resolver = remember { MapRuntimeThemeResolver() }
+    val lifecycleOwner = LocalLifecycleOwner.current
     var profile by remember {
         mutableStateOf(resolver.resolve(LocalTime.now()).profile)
     }
@@ -96,13 +100,28 @@ fun DailyTownTheme(content: @Composable () -> Unit) {
     // Refresh the full semantic profile rather than only DayPhase. EV-1 deliberately changes route,
     // marker family, ambient weights and companion lighting while remaining inside EVENING, so a
     // phase-only state would miss those minute-boundary transitions during long-running sessions.
-    DisposableEffect(resolver) {
+    // Keep the minute clock lifecycle-bound as well: background UI does not need visual ticks, and
+    // start() emits the latest profile immediately when the app returns to the foreground.
+    DisposableEffect(lifecycleOwner, resolver) {
         val controller = DailyTownThemeRefreshController(
             onProfile = { profile = it },
             themeResolver = resolver,
         )
-        controller.start()
-        onDispose { controller.stop() }
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> controller.start()
+                Lifecycle.Event.ON_STOP -> controller.stop()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            controller.start()
+        }
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            controller.stop()
+        }
     }
 
     val dark = profile.phase == DayPhase.NIGHT
