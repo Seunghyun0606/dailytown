@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.DayPhase
+import com.dailytown.app.visual.VisualThemeProfile
 import java.time.LocalTime
 
 /** Approved Option A / A-3 tokens expressed as Compose theme primitives. */
@@ -88,45 +89,42 @@ private val DarkDailyTownScheme = darkColorScheme(
 @Composable
 fun DailyTownTheme(content: @Composable () -> Unit) {
     val resolver = remember { MapRuntimeThemeResolver() }
-    var phase by remember {
-        mutableStateOf(resolver.resolve(LocalTime.now()).profile.phase)
+    var profile by remember {
+        mutableStateOf(resolver.resolve(LocalTime.now()).profile)
     }
 
-    // The map already refreshes its provider-neutral theme at minute boundaries. Keep the
-    // Compose shell on the same clock so a long-running exploration cannot cross into EV-1/night
-    // with stale app chrome. This changes only theme state; gameplay/location state is untouched.
+    // Refresh the full semantic profile rather than only DayPhase. EV-1 deliberately changes route,
+    // marker family, ambient weights and companion lighting while remaining inside EVENING, so a
+    // phase-only state would miss those minute-boundary transitions during long-running sessions.
     DisposableEffect(resolver) {
         val controller = DailyTownThemeRefreshController(
-            onPhase = { phase = it },
+            onProfile = { profile = it },
             themeResolver = resolver,
         )
         controller.start()
         onDispose { controller.stop() }
     }
 
-    val dark = phase == DayPhase.NIGHT
-    // Re-resolve the profile whenever the phase state changes. Companion surfaces consume only the
-    // semantic lighting family, so design assets can change independently of the lifecycle clock.
-    val companionLighting = resolver.resolve(LocalTime.now()).profile.companionLighting
+    val dark = profile.phase == DayPhase.NIGHT
     MaterialTheme(
         colorScheme = if (dark) DarkDailyTownScheme else LightDailyTownScheme,
         shapes = DailyTownShapes,
     ) {
         CompositionLocalProvider(
-            LocalDailyTownCompanionLighting provides companionLighting,
+            LocalDailyTownCompanionLighting provides profile.companionLighting,
             content = content,
         )
     }
 }
 
 /**
- * Minute-boundary clock bridge for the Compose app shell.
+ * Minute-boundary clock bridge for the Compose app shell and semantic companion lighting.
  *
  * Kept separate from visual token values so the design session can replace palette/components
  * without reimplementing time-of-day lifecycle behavior.
  */
 internal class DailyTownThemeRefreshController(
-    private val onPhase: (DayPhase) -> Unit,
+    private val onProfile: (VisualThemeProfile) -> Unit,
     private val themeResolver: MapRuntimeThemeResolver = MapRuntimeThemeResolver(),
     private val clock: () -> LocalTime = LocalTime::now,
     private val scheduler: DailyTownThemeRefreshScheduler = MainThreadDailyTownThemeRefreshScheduler(),
@@ -137,7 +135,7 @@ internal class DailyTownThemeRefreshController(
         override fun run() {
             if (!started) return
             val now = clock()
-            onPhase(themeResolver.resolve(now).profile.phase)
+            onProfile(themeResolver.resolve(now).profile)
             scheduler.schedule(this, MapThemeRefreshCadence.millisUntilNextMinute(now))
         }
     }
