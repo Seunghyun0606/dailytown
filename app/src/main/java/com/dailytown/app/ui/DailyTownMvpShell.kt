@@ -59,7 +59,7 @@ import com.dailytown.app.ui.visual.A3CompanionStamp
 import com.dailytown.app.ui.visual.A3PaperSurface
 import com.dailytown.app.ui.visual.DailyTownTheme
 import com.dailytown.app.ui.visual.DailyTownTokens
-import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
+import com.dailytown.app.ui.visual.LocalDailyTownCompanionLighting
 import com.dailytown.app.ui.visual.ProductionCompanionVisual
 import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
 import com.dailytown.app.visual.A3Screen
@@ -68,7 +68,6 @@ import com.dailytown.app.visual.CompanionExpression
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
 import java.time.LocalDate
-import java.time.LocalTime
 
 private enum class MvpSection(val label: String, val symbol: String, val testTag: String) {
     EXPLORE("탐험", "⌖", "nav-explore"),
@@ -193,9 +192,7 @@ private fun BoxScope.SectionLayer(
 @Composable
 private fun CompanionScreen(progress: ExplorationProgress?) {
     val bond = progress?.companionBond?.takeIf { it > 0 } ?: 12
-    val lighting = remember {
-        MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
-    }
+    val lighting = LocalDailyTownCompanionLighting.current
     val a3AssetRenderer = rememberProductionA3AssetRenderer()
     A3PaperSurface(
         screen = A3Screen.MEMORY_DETAIL,
