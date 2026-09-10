@@ -31,8 +31,8 @@ class CachingPoiRepository(
 
     override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
         require(radiusMeters > 0.0) { "radiusMeters must be positive" }
-        val now = clockMillis()
-        findCovering(center, radiusMeters, now, freshOnly = true)?.let { entry ->
+        val lookupAt = clockMillis()
+        findCovering(center, radiusMeters, lookupAt, freshOnly = true)?.let { entry ->
             return filter(entry.pois, center, radiusMeters)
         }
 
@@ -40,11 +40,14 @@ class CachingPoiRepository(
         return try {
             val fetched = delegate.nearby(center, upstreamRadius)
                 .distinctBy { it.id }
+            // Cache freshness starts when the upstream result actually completed, not when a possibly
+            // slow request began. This keeps the configured TTL meaningful under poor connectivity.
+            val fetchedAt = clockMillis()
             remember(
                 CacheEntry(
                     center = center,
                     coverageRadiusMeters = upstreamRadius,
-                    fetchedAtMillis = now,
+                    fetchedAtMillis = fetchedAt,
                     pois = fetched,
                 ),
             )
@@ -54,7 +57,10 @@ class CachingPoiRepository(
             // would keep abandoned searches alive after navigation/session shutdown.
             throw error
         } catch (error: Exception) {
-            val fallback = findCovering(center, radiusMeters, now, freshOnly = false)
+            // Re-check age after the failed call. A slow timeout may itself cross the stale grace
+            // boundary, so using the pre-request timestamp could serve evidence older than policy.
+            val failedAt = clockMillis()
+            val fallback = findCovering(center, radiusMeters, failedAt, freshOnly = false)
             if (fallback != null) filter(fallback.pois, center, radiusMeters) else throw error
         }
     }
