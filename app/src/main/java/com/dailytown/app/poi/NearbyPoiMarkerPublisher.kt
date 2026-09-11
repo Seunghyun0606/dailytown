@@ -6,22 +6,21 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.visual.MarkerSemantic
 
 /**
- * Publishes a bounded, distance-sorted view of nearby POIs for the map while preserving the full
- * repository result for encounter selection. Publishing is intentionally throttled by walking
- * distance and POI identity so high-frequency GPS samples do not churn map markers.
+ * Projects a nearby POI snapshot into the bounded marker layer consumed by the map.
+ *
+ * This class deliberately has no data-source responsibility. It only throttles presentation updates
+ * by movement and POI identity so high-frequency accepted location samples do not churn map markers.
  */
-class MapPublishingPoiRepository(
-    private val delegate: PoiRepository,
+class NearbyPoiMarkerPublisher(
     private val publish: (List<MapMarkerSpec>) -> Unit,
     private val minPublishMovementMeters: Double = 60.0,
     private val maxPublishedMarkers: Int = 24,
     private val distance: ExplorationEngine = ExplorationEngine(),
-) : PoiRepository {
+) {
     private var lastPublishedCenter: GeoPoint? = null
     private var lastPublishedIds: List<String> = emptyList()
 
-    override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
-        val pois = delegate.nearby(center, radiusMeters)
+    fun publish(center: GeoPoint, pois: List<Poi>) {
         val visible = selectVisiblePoiMarkers(
             center = center,
             pois = pois,
@@ -37,10 +36,7 @@ class MapPublishingPoiRepository(
             lastPublishedCenter = center
             lastPublishedIds = ids
         }
-        return pois
     }
-
-    override fun sourceMetadata(): List<PoiSourceMetadata> = delegate.sourceMetadata()
 }
 
 internal fun selectVisiblePoiMarkers(

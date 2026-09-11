@@ -14,7 +14,8 @@ import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.NaverMapAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.persistence.DataStoreProgressStore
-import com.dailytown.app.poi.MapPublishingPoiRepository
+import com.dailytown.app.poi.NearbyPoiCoordinator
+import com.dailytown.app.poi.NearbyPoiMarkerPublisher
 import com.dailytown.app.poi.ProductionPoiRepositoryFactory
 import com.dailytown.app.poi.defaultFixturePois
 import com.dailytown.app.reminder.LocalReminderManager
@@ -23,6 +24,7 @@ import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.MapThemeRefreshController
 import com.dailytown.app.ui.visual.ProductionMarkerSvgVisualSource
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -66,19 +68,23 @@ class MainActivity : ComponentActivity() {
             proxyBaseUrl = BuildConfig.DAILYTOWN_POI_API_BASE_URL.takeIf { BuildConfig.DAILYTOWN_POI_API_CONFIGURED },
             allowFixtureFallback = BuildConfig.DEBUG,
         )
-        val poiRepository = MapPublishingPoiRepository(
-            delegate = basePoiRepository,
-            publish = mapAdapter::setNearbyPoiMarkers,
-        )
-        // Keep the visual POI feed independent from encounter lifetime. An active mystery can stay
-        // selected for many minutes while the tester keeps walking; accepted user-location updates
-        // therefore refresh the nearby repository even when encounter selection no longer queries it.
-        // Only one refresh coroutine is allowed at once. The repository cache/padded coverage handles
-        // high-frequency samples and network outages without churning provider requests or markers.
+        val poiCoordinator = NearbyPoiCoordinator(basePoiRepository)
+        val poiMarkerPublisher = NearbyPoiMarkerPublisher(mapAdapter::setNearbyPoiMarkers)
+        lifecycleScope.launch {
+            poiCoordinator.snapshots.collect { snapshot ->
+                if (snapshot != null) {
+                    poiMarkerPublisher.publish(snapshot.center, snapshot.pois)
+                }
+            }
+        }
+
+        // Keep the visual POI feed independent from encounter lifetime. Both this map refresh and
+        // encounter selection share one NearbyPoiCoordinator, which serializes mutable cache/provider
+        // access and coalesces an identical request that completed while another caller was waiting.
         mapAdapter.setUserLocationListener { point ->
             if (poiRefreshJob?.isActive == true) return@setUserLocationListener
             poiRefreshJob = lifecycleScope.launch {
-                poiRepository.nearby(point, radiusMeters = 900.0)
+                poiCoordinator.nearby(point, radiusMeters = 900.0)
             }
         }
         val reminderManager = LocalReminderManager(applicationContext).also { it.restoreIfEnabled() }
@@ -86,7 +92,7 @@ class MainActivity : ComponentActivity() {
             DailyTownMvpShell(
                 mapAdapter = mapAdapter,
                 progressStore = progressStore,
-                poiRepository = poiRepository,
+                poiRepository = poiCoordinator,
                 reminderManager = reminderManager,
             )
         }
