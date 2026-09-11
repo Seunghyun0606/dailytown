@@ -9,6 +9,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.persistence.ExplorationProgress
+import com.dailytown.app.persistence.PeriodProgress
 import com.dailytown.app.ui.DailyTownRecordsScreen
 import com.dailytown.app.ui.visual.DailyTownTheme
 import org.junit.Rule
@@ -27,46 +28,46 @@ class ProductFlowVisualQaTest {
         encounterVisitedPoiIds = setOf("tourapi:1001", "tourapi:1002", "tourapi:1003"),
         recentPoiIds = listOf("tourapi:1001", "tourapi:1002", "tourapi:1003"),
         recentPoiTitles = listOf("서울광장", "덕수궁", "인사동 문화거리"),
-        companionMemoryKeys = setOf("poi:tourapi:1001", "poi:tourapi:1002"),
+        companionMemoryKeys = setOf("poi:tourapi:1001", "poi:tourapi:1002", "mechanic:TRACE_CHAIN"),
+        daily = PeriodProgress(
+            periodKey = "2026-09-11",
+            discoveredPoiIds = setOf("tourapi:1001"),
+            clueIds = setOf("clue-a"),
+            resolvedEncounterIds = setOf("encounter-a"),
+        ),
     )
 
     @Test
-    fun actualProductRecordFlowRendersAllFiveA3Destinations() {
+    fun recordsRendersApprovedFivePartJournalHierarchyAndDetails() {
         composeRule.setContent {
             DailyTownTheme {
                 DailyTownRecordsScreen(progress)
             }
         }
 
-        capture("record-journal-home", "journal-home")
+        capture("record-journal-home", "records-home")
+        composeRule.onNodeWithTag("records-today").assert(hasTestTag("records-today"))
+        composeRule.onNodeWithTag("records-places").assert(hasTestTag("records-places"))
+        composeRule.onNodeWithTag("records-mysteries").performScrollTo().assert(hasTestTag("records-mysteries"))
+        composeRule.onNodeWithTag("records-clues").performScrollTo().assert(hasTestTag("records-clues"))
+        composeRule.onNodeWithTag("records-memories").performScrollTo().assert(hasTestTag("records-memories"))
 
-        composeRule.onNodeWithTag("journal-entry-0").performClick()
-        capture("record-discovery-detail", "discovery-detail")
+        composeRule.onNodeWithTag("journal-entry-0").performScrollTo().performClick()
+        capture("record-discovery-detail", "place-detail")
 
-        // On shorter managed-device viewports the clue action sits below the initial discovery
-        // viewport. Compose's performClick does not implicitly scroll a lazy/scrollable ancestor,
-        // so explicitly bring the actual product action into view before clicking it.
         composeRule.onNodeWithTag("discovery-open-clue").performScrollTo().performClick()
-        capture("record-clue-note", "clue-note")
+        capture("record-clue-note", "clue-detail")
 
         composeRule.onNodeWithTag("clue-back").performClick()
-        composeRule.onNodeWithTag("discovery-back").performClick()
-        composeRule.onNodeWithTag("record-tab-collection").performClick()
-        capture("record-collection-grid", "collection-grid")
-
-        composeRule.onNodeWithTag("record-tab-memory").performClick()
+        composeRule.onNodeWithTag("records-memories").performScrollTo().performClick()
         capture("record-memory-detail", "memory-detail")
     }
 
     private fun capture(tag: String, name: String) {
         composeRule.waitForIdle()
-        // Keep navigation verification separate from capture. Scrollable product destinations can
-        // exceed the viewport and are therefore not valid node-level captureToImage targets. The
-        // tag assertion proves the intended destination is active; the device screenshot records
-        // exactly what a field tester sees on screen.
         composeRule.onNodeWithTag(tag).assert(hasTestTag(tag))
         val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
             ?: error("Device screenshot unavailable for $tag")
-        bitmap.writeToTestStorage("visual/product-a3/$name")
+        bitmap.writeToTestStorage("visual/product-records-v2/$name")
     }
 }
