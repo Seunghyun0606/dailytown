@@ -1,0 +1,22 @@
+{
+  "version": "old-ginkgo-isolation-refs-v1",
+  "status": "reference_extraction_complete",
+  "source_board": "design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp",
+  "runtime_ready": false,
+  "rule": "Exact crop references only. Do not treat as transparent masters or alter the locked visual direction.",
+  "assets": [
+    {"file":"place_old_ginkgo_scene_ref_v1.webp","role":"reference_isolation_only","runtime_ready":false},
+    {"file":"clue_folded_note_ref_v1.webp","role":"reference_isolation_only","runtime_ready":false},
+    {"file":"clue_ginkgo_leaf_ref_v1.webp","role":"reference_isolation_only","runtime_ready":false},
+    {"file":"memory_keepsake_photo_ref_v1.webp","role":"reference_isolation_only","runtime_ready":false}
+  ],
+  "qa_board":"isolation_reference_board_v1.webp",
+  "next_required": [
+    "transparent/layer-safe master for folded note",
+    "transparent/layer-safe master for ginkgo leaf",
+    "clean place scene master without accidental UI/text",
+    "keepsake crop master derived from the same approved scene",
+    "48/64/96/144dp clue-size QA",
+    "map/journal light-dark edge QA"
+  ]
+}
