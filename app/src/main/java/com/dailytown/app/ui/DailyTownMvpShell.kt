@@ -56,6 +56,11 @@ fun DailyTownMvpShell(
     val weeklyGoals = progressRuntime.weeklyGoals
     val poiSources = remember(poiRepository) { poiRepository.sourceMetadata() }
 
+    fun openExplore() {
+        qaMode = false
+        selectedSection = MvpSection.EXPLORE
+    }
+
     DailyTownTheme {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.background,
@@ -101,6 +106,10 @@ fun DailyTownMvpShell(
                         progressCoordinator = progressCoordinator,
                         poiRepository = poiRepository,
                         showQaTools = qaMode,
+                        onOpenRecords = {
+                            qaMode = false
+                            selectedSection = MvpSection.RECORDS
+                        },
                     )
                 }
                 SectionLayer(active = selectedSection == MvpSection.COMPANION) {
@@ -110,7 +119,7 @@ fun DailyTownMvpShell(
                     DailyTownRecordsScreen(progress)
                 }
                 SectionLayer(active = selectedSection == MvpSection.GOALS) {
-                    GoalsScreen(progress, dailyGoals, weeklyGoals)
+                    GoalsScreen(progress, dailyGoals, weeklyGoals, onOpenExplore = ::openExplore)
                 }
                 SectionLayer(active = selectedSection == MvpSection.SETTINGS) {
                     SettingsScreen(

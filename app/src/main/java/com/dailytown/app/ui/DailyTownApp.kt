@@ -4,11 +4,36 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,24 +47,35 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dailytown.app.companion.CompanionMoment
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
-import com.dailytown.app.domain.*
-import com.dailytown.app.location.*
+import com.dailytown.app.domain.Companion
+import com.dailytown.app.domain.ExplorationSession
+import com.dailytown.app.domain.ExplorationState
+import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.domain.MysterySpot
+import com.dailytown.app.location.FusedDeviceLocationSource
+import com.dailytown.app.location.LocationQualityPolicy
+import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.location.ReplayLocationSource
+import com.dailytown.app.location.TrackingMode
+import com.dailytown.app.location.TrackingSessionCoordinator
 import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
-import com.dailytown.app.mystery.*
+import com.dailytown.app.mystery.EncounterCoordinator
+import com.dailytown.app.mystery.EncounterRuntimeContext
+import com.dailytown.app.mystery.EncounterSelection
+import com.dailytown.app.mystery.EncounterTransition
+import com.dailytown.app.mystery.MysteryReducer
+import com.dailytown.app.mystery.MysteryTemplateCatalog
 import com.dailytown.app.persistence.toState
 import com.dailytown.app.poi.PoiRepository
-import com.dailytown.app.progress.*
-import com.dailytown.app.ui.visual.A3ClueCard
+import com.dailytown.app.progress.ProgressRuntimeCoordinator
+import com.dailytown.app.ui.presentation.ExploreEncounterPresentationMapper
 import com.dailytown.app.ui.visual.CompanionHudVisualResolver
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
 import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
 import com.dailytown.app.ui.visual.ProductionCompanionVisual
-import com.dailytown.app.ui.visual.SemanticAssetRenderer
-import com.dailytown.app.ui.visual.rememberProductionA3AssetRenderer
-import com.dailytown.app.visual.A3ClueState
 import com.dailytown.app.visual.AppearanceProfile
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
@@ -54,6 +90,7 @@ fun DailyTownApp(
     progressCoordinator: ProgressRuntimeCoordinator,
     poiRepository: PoiRepository,
     showQaTools: Boolean = false,
+    onOpenRecords: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val mapHealth by mapAdapter.health.collectAsState()
@@ -72,19 +109,15 @@ fun DailyTownApp(
     val reducer = remember { MysteryReducer(templates.associateBy { it.id }) }
     val encounterCoordinator = remember { EncounterCoordinator(templates = templates) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
-    val goalEvaluator = remember { GoalProgressEvaluator() }
     val trackingCoordinator = remember { TrackingSessionCoordinator() }
     val fieldTestRuntime = remember(context) { BuildVariantFieldTestRuntime(context.applicationContext) }
     val mapVisualBinder = remember(mapAdapter) { MapGameplayVisualBinder(mapAdapter) }
-    val a3AssetRenderer = rememberProductionA3AssetRenderer()
 
     val trackingRuntime by trackingCoordinator.state.collectAsState()
     val progressRuntime by progressCoordinator.state.collectAsState()
     val trackingMode = trackingRuntime.mode
     val trackingPreset = trackingRuntime.preset
     val gameProgress = progressRuntime.progress
-    val dailyGoals = progressRuntime.dailyGoals
-    val weeklyGoals = progressRuntime.weeklyGoals
     val persistenceReady = progressRuntime.ready
 
     var snapshot by remember { mutableStateOf(session.current()) }
@@ -256,6 +289,7 @@ fun DailyTownApp(
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
         activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
+    val presentation = ExploreEncounterPresentationMapper.map(activeEncounter, distanceToEncounter)
     val companionExpression = CompanionHudVisualResolver.expression(lastCompanionMoment)
     val companionLighting = MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
 
@@ -304,7 +338,7 @@ fun DailyTownApp(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(360.dp)
+                        .height(390.dp)
                         .clip(MaterialTheme.shapes.large)
                         .testTag("explore-map-hero"),
                 ) {
@@ -313,6 +347,7 @@ fun DailyTownApp(
                         modifier = Modifier.fillMaxSize(),
                     )
 
+                    // Keep transient HUD only at the top edge so provider attribution remains visible.
                     Surface(
                         modifier = Modifier
                             .align(Alignment.TopStart)
@@ -345,46 +380,29 @@ fun DailyTownApp(
                             )
                         }
                     }
-
-                    ElevatedCard(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(10.dp)
-                            .fillMaxWidth(0.82f)
-                            .testTag("explore-companion-hud"),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 9.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        ) {
-                            ProductionCompanionVisual(
-                                request = CompanionVisualRequest(
-                                    companionId = snapshot.state.companion.id,
-                                    expression = companionExpression,
-                                    lightingFamily = companionLighting,
-                                    appearanceProfile = AppearanceProfile.BASE,
-                                    usageContext = CompanionUsageContext.HUD_PORTRAIT,
-                                ),
-                                modifier = Modifier.size(76.dp),
-                                contentDescription = "동행 캐릭터 ${snapshot.state.companion.name}",
-                                rasterTargetPx = 192,
-                            )
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(2.dp),
-                            ) {
-                                Text(snapshot.state.companion.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                                Text("호감도 ${snapshot.state.companion.bond}", style = MaterialTheme.typography.labelSmall)
-                                Text(
-                                    lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
-                                        ?: "주변을 천천히 둘러보자.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
-                            }
-                        }
-                    }
                 }
+
+                CompanionExploreHud(
+                    name = snapshot.state.companion.name,
+                    bond = snapshot.state.companion.bond,
+                    line = presentation.moruLine
+                        ?: lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
+                        ?: "주변을 천천히 둘러보자.",
+                    visual = {
+                        ProductionCompanionVisual(
+                            request = CompanionVisualRequest(
+                                companionId = snapshot.state.companion.id,
+                                expression = companionExpression,
+                                lightingFamily = companionLighting,
+                                appearanceProfile = AppearanceProfile.BASE,
+                                usageContext = CompanionUsageContext.HUD_PORTRAIT,
+                            ),
+                            modifier = Modifier.size(72.dp),
+                            contentDescription = "동행 캐릭터 ${snapshot.state.companion.name}",
+                            rasterTargetPx = 192,
+                        )
+                    },
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -401,7 +419,7 @@ fun DailyTownApp(
                             )
                         },
                         modifier = Modifier.weight(1f),
-                    ) { Text(if (trackingMode == TrackingMode.DEVICE) "위치 다시 시작" else "내 위치로 탐험") }
+                    ) { Text(if (trackingMode == TrackingMode.DEVICE) "위치 다시 시작" else "탐험 시작") }
 
                     if (showQaTools) {
                         OutlinedButton(
@@ -421,11 +439,12 @@ fun DailyTownApp(
                     memories = gameProgress.companionMemoryKeys.size,
                 )
 
-                EncounterCard(
+                ExploreEncounterSurface(
                     selection = activeEncounter,
+                    presentation = presentation,
                     reducer = reducer,
-                    distanceMeters = distanceToEncounter,
-                    assetRenderer = a3AssetRenderer,
+                    progress = gameProgress,
+                    companionBond = snapshot.state.companion.bond,
                     showQaTools = showQaTools,
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
@@ -451,6 +470,7 @@ fun DailyTownApp(
                         }
                         applyReaction(CompanionMoment.MYSTERY_RESOLVED)
                     },
+                    onOpenRecords = onOpenRecords,
                     onContinue = {
                         activeEncounter = null
                         lastCompanionMoment = null
@@ -500,6 +520,33 @@ fun DailyTownApp(
 }
 
 @Composable
+private fun CompanionExploreHud(
+    name: String,
+    bond: Int,
+    line: String,
+    visual: @Composable () -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().testTag("explore-companion-hud"),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            visual()
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                Text(line, style = MaterialTheme.typography.bodySmall)
+                Text("관계 $bond", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+@Composable
 private fun ExplorationSummaryStrip(
     distanceMeters: Int,
     discoveries: Int,
@@ -527,90 +574,6 @@ private fun SummaryMetric(label: String, value: String) {
     }
 }
 
-@Composable
-private fun EncounterCard(
-    selection: EncounterSelection?,
-    reducer: MysteryReducer,
-    distanceMeters: Int?,
-    assetRenderer: SemanticAssetRenderer,
-    showQaTools: Boolean,
-    onCollectClue: (String, MysteryEncounter) -> Unit,
-    onResolve: (MysteryEncounter) -> Unit,
-    onContinue: () -> Unit,
-) {
-    ElevatedCard(Modifier.fillMaxWidth().testTag("explore-encounter-card")) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("주변의 이야기", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
-            if (selection == null) {
-                Text("걸음을 시작하면 모루가 가까운 장소의 작은 신호를 알려줄 거예요.")
-                return@Column
-            }
-
-            val encounter = selection.encounter
-            Text(selection.poi.name, style = MaterialTheme.typography.titleMedium)
-            Text(mechanicLabel(selection.template.mechanic), style = MaterialTheme.typography.bodyMedium)
-            distanceMeters?.let { Text("현재 위치에서 약 ${it}m", style = MaterialTheme.typography.bodySmall) }
-
-            if (showQaTools) {
-                Text("${rarityLabel(selection.rarity)} · ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}", style = MaterialTheme.typography.bodySmall)
-                Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}", style = MaterialTheme.typography.bodySmall)
-            }
-
-            if (encounter.phase == EncounterPhase.DISCOVERED || encounter.phase == EncounterPhase.RESOLVED) {
-                A3ClueCard(
-                    state = if (encounter.phase == EncounterPhase.RESOLVED) A3ClueState.RESOLVED else A3ClueState.UNRESOLVED,
-                    assetRenderer = assetRenderer,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(250f / 190f)
-                        .testTag("a3-clue-card"),
-                )
-            }
-
-            when (encounter.phase) {
-                EncounterPhase.HIDDEN -> Text("조금 더 걸어보면 신호가 또렷해져요.")
-                EncounterPhase.HINTED -> Text("모루가 신호를 찾았어요. 가까이 가면 조사할 수 있어요.")
-                EncounterPhase.DISCOVERED -> {
-                    Text("이곳에서 단서를 살펴보세요.")
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (encounter.clueIds.size < selection.template.requiredClues) {
-                            Button(onClick = {
-                                val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
-                                val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
-                                onCollectClue(clueId, updated)
-                            }) { Text("단서 살펴보기") }
-                        }
-                        Button(
-                            enabled = encounter.clueIds.size >= selection.template.requiredClues,
-                            onClick = {
-                                val resolved = reducer.reduce(encounter, EncounterEvent.Resolve)
-                                if (resolved.phase == EncounterPhase.RESOLVED) onResolve(resolved)
-                            },
-                        ) { Text("이야기 해결") }
-                    }
-                }
-                EncounterPhase.RESOLVED -> {
-                    Text("해결한 이야기가 모루와의 기억에 남았어요.")
-                    Button(onClick = onContinue) { Text("다음 신호 찾기") }
-                }
-            }
-        }
-    }
-}
-
-private fun rarityLabel(rarity: EncounterRarity) = when (rarity) {
-    EncounterRarity.COMMON -> "일반"
-    EncounterRarity.UNCOMMON -> "특별"
-    EncounterRarity.RARE -> "희귀"
-}
-
-private fun timeBandLabel(timeBand: TimeBand) = when (timeBand) {
-    TimeBand.DAWN -> "새벽/아침"
-    TimeBand.DAY -> "낮"
-    TimeBand.EVENING -> "저녁"
-    TimeBand.NIGHT -> "밤"
-}
-
 private fun trackingPresetLabel(preset: LocationTrackingPreset) = when (preset) {
     LocationTrackingPreset.BATTERY_SAVER -> "절약"
     LocationTrackingPreset.BALANCED -> "균형"
@@ -624,24 +587,6 @@ private fun mapHealthLabel(status: MapHealthStatus) = when (status) {
     MapHealthStatus.AUTH_ERROR -> "지도 인증 오류"
     MapHealthStatus.ERROR -> "지도 오류"
     MapHealthStatus.DESTROYED -> "지도 종료"
-}
-
-private fun phaseLabel(phase: EncounterPhase) = when (phase) {
-    EncounterPhase.HIDDEN -> "잠김"
-    EncounterPhase.HINTED -> "신호 포착"
-    EncounterPhase.DISCOVERED -> "조사 가능"
-    EncounterPhase.RESOLVED -> "해결 완료"
-}
-
-private fun mechanicLabel(mechanic: MysteryMechanic) = when (mechanic) {
-    MysteryMechanic.TRACE_CHAIN -> "흔적 이어보기"
-    MysteryMechanic.SOUND_PATTERN -> "소리 패턴"
-    MysteryMechanic.TIME_LAYER -> "시간의 겹"
-    MysteryMechanic.SYMBOL_MATCH -> "상징 맞추기"
-    MysteryMechanic.LOST_OBJECT -> "잃어버린 물건"
-    MysteryMechanic.PHOTO_ANGLE -> "시점 비교"
-    MysteryMechanic.LOCAL_MEMORY -> "동네의 기억"
-    MysteryMechanic.COMPANION_SENSE -> "동행의 감각"
 }
 
 private fun companionMomentLabel(name: String, moment: CompanionMoment) = when (moment) {
