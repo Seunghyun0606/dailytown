@@ -2,11 +2,12 @@
   "version": "ux-v2-polish-2026-09-11",
   "baseline": "approved",
   "visual_polish": "in_progress",
-  "moru_direction": "candidate_3_approved",
+  "moru_direction": "candidate_3_approved_and_locked",
   "source_of_truth": [
     "docs/product/EXPLORATION_EXPERIENCE_SCENARIO_V2.md",
     "docs/design/MORU_CANONICAL_V2.md",
-    "design/reference/ux-v2/index.html"
+    "design/reference/ux-v2/index.html",
+    "design/reference/moru-v2/PRODUCTION_QA.md"
   ],
   "reference_artifacts": [
     {
@@ -22,14 +23,6 @@
       "height": 1024,
       "sha256": "a668d178513ad901533b74678bd2f13ce205ed3cb25245e0bfd67cfdbae3ce15",
       "role": "cross-screen tone/detail reference for Explore, Companion and Records"
-    },
-    {
-      "file": "ux-art-family-polish-v3-board.png",
-      "width": 1536,
-      "height": 1024,
-      "sha256": "1ce6ed97b7bb74628c54d28cec88ec4821c5322674386f5e53916d0988e27ce6",
-      "role": "background, discovery-item illustration, UI-detail and cross-screen polish reference",
-      "note": "Any embedded alternate Moru mini-concepts in this composite are exploratory board content only. The canonical Moru direction remains Candidate 3 from docs/design/MORU_CANONICAL_V2.md."
     }
   ],
   "locked": [
@@ -38,6 +31,12 @@
     "companion_relationship_notebook_hierarchy",
     "records_journal_hierarchy",
     "moru_candidate_3_character_direction"
+  ],
+  "guardrails": [
+    "do_not_generate_or_adopt_new_moru_character_direction_candidates",
+    "do_not_change_screen_information_architecture_during_visual_polish",
+    "use_candidate_3_only_for_moru_production_derivatives",
+    "treat_any_untracked_composite_board_as_noncanonical_review_material"
   ],
   "continue_refining": [
     "background_and_ambient_framing",
@@ -48,7 +47,8 @@
     "companion_notebook_material_detail",
     "records_a3_artifact_detail",
     "goals_and_settings_tone",
+    "moru_usage_context_exports",
     "motion_prototype"
   ],
-  "runtime_note": "Concept boards are reference composites, not single runtime bitmaps. Separate raster game-art assets from Compose UI implementation and verify binary checksums before repository promotion."
+  "runtime_note": "Concept/polish boards are reference composites, not single runtime bitmaps. Separate raster game-art assets from Compose UI implementation. Moru runtime promotion follows design/reference/moru-v2/export-manifest.v2.json and PRODUCTION_QA.md."
 }
