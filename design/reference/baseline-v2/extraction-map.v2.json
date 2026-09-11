@@ -1,0 +1,40 @@
+{
+  "version": "baseline-v2-reference-extraction-2026-09-11",
+  "rule": "Exact pixel regions from the approved composite boards. These are framing/reference crops only, not transparent runtime exports and not alternate designs.",
+  "moru_baseline": {
+    "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "dimensions": [1122, 1402],
+    "regions_xyxy": {
+      "turnaround_front": [125, 120, 465, 660],
+      "turnaround_walk_3q": [430, 100, 760, 665],
+      "turnaround_back": [730, 115, 1045, 660],
+      "expression_neutral": [28, 690, 190, 905],
+      "expression_happy": [195, 690, 365, 905],
+      "expression_curious": [365, 690, 535, 905],
+      "expression_surprised": [535, 690, 705, 905],
+      "expression_clue_found": [705, 690, 885, 905],
+      "expression_resolved": [885, 690, 1085, 905],
+      "lighting_LIGHT": [27, 950, 198, 1142],
+      "lighting_WARM_DUSK": [202, 950, 379, 1142],
+      "lighting_DARK": [382, 950, 555, 1142],
+      "affinity_base": [563, 952, 684, 1128],
+      "affinity_familiar": [688, 952, 809, 1128],
+      "affinity_trusted": [812, 952, 940, 1128],
+      "affinity_best_friend": [944, 952, 1088, 1128],
+      "readtest_48dp_strip": [25, 1196, 744, 1368]
+    }
+  },
+  "ux_baseline": {
+    "semantic_target": "design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png",
+    "sha256": "f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515",
+    "dimensions": [1448, 1086],
+    "regions_xyxy": {
+      "explore_prepare": [30, 135, 350, 812],
+      "explore_detect": [372, 135, 692, 812],
+      "explore_discover": [718, 135, 1042, 812],
+      "explore_resolved": [1060, 135, 1386, 812]
+    }
+  },
+  "production_note": "Do not use these composite-board crops as final game-art binaries. They establish exact framing and visual-reference regions for transparent master extraction, Compose parity work and QA comparison."
+}
