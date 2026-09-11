@@ -1,0 +1,18 @@
+{
+  "version": "moru-mobile-qa-v2-2026-09-11",
+  "status": "reference_precheck_complete",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "board": "design/reference/moru-v2/qa/moru_mobile_qa_v2.webp",
+  "runtime_asset": false,
+  "checks": {
+    "48dp_silhouette_reference": "PASS",
+    "expression_family_reference": "PASS",
+    "lighting_family_reference": "PASS",
+    "affinity_anatomy_invariance_reference": "PASS",
+    "transparent_edge_halo": "BLOCKED_TRANSPARENT_MASTER_PENDING",
+    "actual_android_usage_context_sizes": "BLOCKED_TRANSPARENT_MASTER_PENDING",
+    "outdoor_readability": "HUMAN_GATE_PENDING"
+  },
+  "semantic_fallback": "neutral / LIGHT / base / static",
+  "runtime_v2_promotion": "blocked"
+}
