@@ -1,0 +1,46 @@
+{
+  "version": "ux-v2-polish-2026-09-11",
+  "baseline": "approved",
+  "visual_polish": "in_progress",
+  "moru_direction": "candidate_3_approved",
+  "source_of_truth": [
+    "docs/product/EXPLORATION_EXPERIENCE_SCENARIO_V2.md",
+    "docs/design/MORU_CANONICAL_V2.md",
+    "design/reference/ux-v2/index.html"
+  ],
+  "reference_artifacts": [
+    {
+      "file": "explore-polish-v1-board.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "a509e2690cf96ca8cb2f13b642c4de535f93552ae170ad7db1199e746106e441",
+      "role": "Explore prepare/detect/discover/resolved art-direction and surface-polish reference"
+    },
+    {
+      "file": "ux-polish-v2-board.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "a668d178513ad901533b74678bd2f13ce205ed3cb25245e0bfd67cfdbae3ce15",
+      "role": "cross-screen tone/detail reference for Explore, Companion and Records"
+    }
+  ],
+  "locked": [
+    "five_tab_information_architecture",
+    "explore_prepare_detect_discover_resolved_hierarchy",
+    "companion_relationship_notebook_hierarchy",
+    "records_journal_hierarchy",
+    "moru_candidate_3_character_direction"
+  ],
+  "continue_refining": [
+    "background_and_ambient_framing",
+    "discovery_and_place_raster_illustration",
+    "surface_edge_shadow_stroke_finish",
+    "spacing_and_typographic_rhythm",
+    "outdoor_map_hud_contrast",
+    "companion_notebook_material_detail",
+    "records_a3_artifact_detail",
+    "goals_and_settings_tone",
+    "motion_prototype"
+  ],
+  "runtime_note": "Concept boards are reference composites, not single runtime bitmaps. Separate raster game-art assets from Compose UI implementation and verify binary checksums before repository promotion."
+}
