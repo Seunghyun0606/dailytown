@@ -48,7 +48,7 @@ jobs:
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.enableAdditionalTestOutput=true
-          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.ProductShellVisualQaTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionMarkerRuntimeBoundaryTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.ProductShellVisualQaTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.OldGinkgoClueAssetQaTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionMarkerRuntimeBoundaryTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
       - name: Verify actual five-tab product shell captures
         shell: bash
