@@ -22,6 +22,14 @@
       "height": 1024,
       "sha256": "a668d178513ad901533b74678bd2f13ce205ed3cb25245e0bfd67cfdbae3ce15",
       "role": "cross-screen tone/detail reference for Explore, Companion and Records"
+    },
+    {
+      "file": "ux-art-family-polish-v3-board.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "1ce6ed97b7bb74628c54d28cec88ec4821c5322674386f5e53916d0988e27ce6",
+      "role": "background, discovery-item illustration, UI-detail and cross-screen polish reference",
+      "note": "Any embedded alternate Moru mini-concepts in this composite are exploratory board content only. The canonical Moru direction remains Candidate 3 from docs/design/MORU_CANONICAL_V2.md."
     }
   ],
   "locked": [
