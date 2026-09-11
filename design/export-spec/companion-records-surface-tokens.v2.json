@@ -1,0 +1,104 @@
+{
+  "version": "companion-records-surface-v2",
+  "status": "approved_baseline_derivation",
+  "visualAuthority": "docs/design/DESIGN_BASELINE_V2.md",
+  "referenceImage": "design/reference/ux-v2/raster/companion_records_finish_pass_v1.webp",
+  "colors": {
+    "paperCanvas": "#F4EBDD",
+    "paperCard": "#FFF8EB",
+    "paperInset": "#EFE3CF",
+    "paperEdge": "#D8C8AE",
+    "inkPrimary": "#453B30",
+    "inkMuted": "#74685B",
+    "botanicalMoss": "#68704E",
+    "botanicalLeaf": "#87906A",
+    "accentOchre": "#B18B45",
+    "accentTerracotta": "#B87358"
+  },
+  "spacingDp": [4, 6, 8, 12, 14, 16, 18, 20, 24, 32],
+  "screen": {
+    "horizontalInsetDp": 18,
+    "sectionGapDp": 14
+  },
+  "shape": {
+    "paperLargeRadiusDp": 22,
+    "memoryCardRadiusDp": 18,
+    "smallControlRadiusDp": 14,
+    "pillRadiusDp": 20
+  },
+  "stroke": {
+    "standardDp": 1,
+    "color": "paperEdge"
+  },
+  "shadow": {
+    "policy": "warm_soft_tonal_only",
+    "heroEquivalent": {
+      "yDp": 6,
+      "blurDp": 20,
+      "blackAlpha": 0.08
+    },
+    "avoid": ["hard_card_stack", "material_default_elevation_as_primary_style"]
+  },
+  "typographySp": {
+    "screenTitle": {"min": 26, "max": 30, "weight": "semibold_or_bold"},
+    "sectionTitle": {"min": 19, "max": 21, "weight": "semibold"},
+    "cardTitle": {"min": 16, "max": 18, "weight": "semibold"},
+    "body": {"min": 14, "max": 15, "weight": "regular"},
+    "meta": {"min": 11, "max": 12, "weight": "regular_or_medium"}
+  },
+  "components": {
+    "DTCompanionNotebookHero": {
+      "moruVisualHeightDp": {"min": 220, "max": 260},
+      "surface": "paperCard",
+      "paddingDp": 20,
+      "gameArt": "raster_only"
+    },
+    "DTAffinityNote": {
+      "meterHeightDp": {"min": 8, "max": 10},
+      "tierPrimary": true,
+      "rawBondSecondary": true,
+      "surface": "paperInset"
+    },
+    "DTRecentMemoryCard": {
+      "thumbnailAspectRatios": ["16:9", "4:3"],
+      "surface": "paperCard",
+      "singleDominantArtifact": true
+    },
+    "DTJournalCanvas": {
+      "surface": "paperCanvas",
+      "texture": {"type": "optional_raster", "opacityMax": 0.06}
+    },
+    "DTJournalTabs": {
+      "items": ["today", "places", "mysteries", "clues", "moruMemories"],
+      "forbidDefaultMaterialFilterChipLook": true
+    },
+    "DTRecordArtifact": {
+      "surface": "paperCard",
+      "radiusDp": 22,
+      "paddingDp": 16,
+      "singleDominantArtifact": true
+    },
+    "DTClueArtifact": {
+      "rasterDisplayTargetsDp": [48, 64, 96],
+      "gameArt": "raster_only"
+    }
+  },
+  "decoration": {
+    "allowedRaster": ["masking_tape", "pressed_flower", "leaf_accent", "paper_scrap", "handwritten_motif", "botanical_corner_flourish"],
+    "maxAccentsPerViewportRegion": 2,
+    "neverObscure": ["body_text", "touch_target"],
+    "avoid": ["scrapbook_clutter_wall", "random_rotation_on_every_card", "inconsistent_ai_motif_style"]
+  },
+  "accessibility": {
+    "minTouchTargetDp": 48,
+    "paperTextureMustPreserveTextContrast": true,
+    "talkBackContentDescriptionsRequired": true
+  },
+  "implementation": {
+    "uiLayout": "Jetpack Compose",
+    "uiSymbols": "vector_allowed",
+    "charactersCluesPlacesMemoryArt": "raster_required",
+    "preserveExistingTestTagsAndBehavior": true,
+    "preservePersistedDataTruth": true
+  }
+}
