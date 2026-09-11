@@ -49,7 +49,6 @@ internal fun ExploreEncounterSurface(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("explore-encounter-surface")
             .testTag(stateTag),
         shape = MaterialTheme.shapes.large,
         color = when (presentation.step) {
@@ -70,7 +69,12 @@ internal fun ExploreEncounterSurface(
                 ExploreExperienceStep.PREPARE -> PrepareContent()
                 ExploreExperienceStep.DETECT -> SignalContent(presentation, near = false)
                 ExploreExperienceStep.APPROACH -> SignalContent(presentation, near = true)
-                ExploreExperienceStep.DISCOVER -> DiscoveryContent(presentation)
+                ExploreExperienceStep.DISCOVER -> DiscoveryContent(
+                    selection = requireNotNull(selection),
+                    presentation = presentation,
+                    reducer = reducer,
+                    onCollectClue = onCollectClue,
+                )
                 ExploreExperienceStep.INVESTIGATE -> InvestigationContent(
                     selection = requireNotNull(selection),
                     presentation = presentation,
@@ -130,17 +134,27 @@ private fun SignalContent(presentation: ExploreEncounterPresentation, near: Bool
 }
 
 @Composable
-private fun DiscoveryContent(presentation: ExploreEncounterPresentation) {
+private fun DiscoveryContent(
+    selection: EncounterSelection,
+    presentation: ExploreEncounterPresentation,
+    reducer: MysteryReducer,
+    onCollectClue: (String, MysteryEncounter) -> Unit,
+) {
+    val encounter = selection.encounter
     Text("발견", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
     Text(presentation.title.orEmpty(), style = MaterialTheme.typography.headlineSmall)
     presentation.premise?.let { Text(it) }
     presentation.moruLine?.let { MoruLine(it) }
-    Text(
-        "장소·미스터리 일러스트는 승인된 raster asset이 연결될 때 표시됩니다.",
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text("아래에서 단서를 살펴보세요.", style = MaterialTheme.typography.bodySmall)
+    Button(
+        onClick = {
+            val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
+            val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
+            if (updated != encounter) onCollectClue(clueId, updated)
+        },
+        modifier = Modifier.testTag("encounter-start-investigation"),
+    ) {
+        Text("메모 살펴보기")
+    }
 }
 
 @Composable
@@ -166,11 +180,11 @@ private fun InvestigationContent(
                 onClick = {
                     val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
                     val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
-                    onCollectClue(clueId, updated)
+                    if (updated != encounter) onCollectClue(clueId, updated)
                 },
                 modifier = Modifier.testTag("encounter-collect-clue"),
             ) {
-                Text("단서 살펴보기")
+                Text("단서 더 살펴보기")
             }
         }
         Button(
