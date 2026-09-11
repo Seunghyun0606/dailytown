@@ -31,9 +31,16 @@ Definition of Done:
 
 ### DT-DES-OG-02 · Folded-note clean transparent master
 
-Status: **NEXT**
+Status: **IN PROGRESS — transparent extraction candidate created; edge/source-quality/Android QA pending**
 
 Target semantic key: `clue.old_ginkgo.folded_note`
+
+Current checkpoint:
+- 768×768 transparent candidate extracted from the locked production reference without redesign
+- candidate PNG SHA-256: `c9b44fd1d89326a3b85c0086aee9f649dd2a3c96780a3c3f6d19692f1f7dedc8`
+- 48 / 64 / 96 / 144 px QA derivatives prepared and checksummed in `runtime-candidate-sizes.v1.json`
+- candidate metadata recorded in `transparent-candidate-manifest.v1.json`
+- not runtime-ready because the source is a composite-board extraction and upscaling does not restore original illustration detail
 
 Required output:
 - transparent PNG master, minimum 768×768 canvas
@@ -42,30 +49,40 @@ Required output:
 - runtime WebP derivatives for 48 / 64 / 96 / 144 dp use contexts
 - no new seal, iconography, lettering system, or alternate prop design unless already present in the approved reference family
 
-QA:
-- transparent-edge halo on cream paper, dark surface, and map-heavy surface
+QA still required:
+- inspect and clean fringe/edge pixels on cream, dark, and map-heavy surfaces
+- confirm source-resolution quality at actual Android display sizes
 - recognizable folded-paper silhouette at 48 dp
 - no vector/flat-icon treatment
+- persist an inspectable alpha-capable raster candidate in GitHub before closing this item
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
-Status: **QUEUED**
+Status: **IN PROGRESS — transparent extraction candidate created; edge/source-quality/Android QA pending**
 
 Target semantic key: `clue.old_ginkgo.ginkgo_leaf`
+
+Current checkpoint:
+- 512×512 transparent candidate extracted from the locked production reference without redesign
+- candidate PNG SHA-256: `647a2fec78c70bcbb05efde0be800722c8db754d9c880aa0d697d341a4a2186b`
+- 32 / 48 / 64 / 96 px QA derivatives prepared and checksummed in `runtime-candidate-sizes.v1.json`
+- candidate metadata recorded in `transparent-candidate-manifest.v1.json`
+- not runtime-ready because source-resolution/edge review is still required
 
 Required output:
 - transparent PNG master, minimum 512×512 canvas
 - single warm-yellow ginkgo silhouette matching the approved discovery family
 - runtime WebP derivatives for 32 / 48 / 64 / 96 dp
 
-QA:
+QA still required:
 - leaf fan shape remains identifiable at 32–48 dp
 - material/light treatment remains raster-illustrated, not UI-vector-like
 - edge contrast works on cream and live-map backgrounds
+- persist an inspectable alpha-capable raster candidate in GitHub before closing this item
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
-Status: **QUEUED**
+Status: **QUEUED — next after OG-02/03 QA**
 
 Target semantic key: `place.old_ginkgo.main`
 
@@ -189,6 +206,8 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-Proceed with **DT-DES-OG-02 Folded-note clean transparent master**, then `OG-03 → OG-04 → OG-05 → OG-06`.
+1. Complete **DT-DES-OG-02 / OG-03** edge/source-quality/Android-size QA and persist inspectable alpha-capable refs.
+2. If the composite-derived source quality is insufficient for high-density Android display, recreate only the same locked folded-note/leaf assets at higher native resolution; do not redesign them.
+3. Proceed to **DT-DES-OG-04** clean place scene master, then `OG-05 → OG-06`.
 
 Do not start a new concept-board exploration while these production items remain open.
