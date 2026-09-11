@@ -6,6 +6,8 @@
   "isolation_reference_dir": "design/reference/discovery/old-ginkgo-note/isolation/",
   "production_reference_dir": "design/reference/discovery/old-ginkgo-note/production/",
   "transparent_candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/transparent-candidate-manifest.v1.json",
+  "runtime_candidate_v2_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/",
+  "runtime_candidate_v2_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/runtime-candidate-manifest.v2.json",
   "work_items": "docs/design/PRODUCTION_WORK_ITEMS_V2.md",
   "scenario": "오래된 가로수의 메모/쪽지",
   "rules": {
@@ -15,6 +17,7 @@
     "composite_board_is_runtime_asset": false,
     "isolated_reference_is_runtime_asset": false,
     "transparent_extraction_candidate_is_runtime_asset": false,
+    "runtime_candidate_v2_is_runtime_active": false,
     "domain_behavior_change": false
   },
   "required_first_scenario_assets": [
@@ -35,9 +38,11 @@
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/clue_folded_note_ref_v1.webp",
       "master": {"format": "PNG", "min_px": [768, 768], "alpha": true},
       "runtime": {"format": "WebP", "targets_dp": [48, 64, 96, 144]},
-      "status": "transparent_extraction_candidate_created_qa_pending",
-      "candidate_sha256": "c9b44fd1d89326a3b85c0086aee9f649dd2a3c96780a3c3f6d19692f1f7dedc8",
-      "candidate_limit": "derived from composite reference; source-resolution and edge/Android-size QA still required",
+      "status": "runtime_candidate_v2_static_qa_pass_android_qa_pending",
+      "candidate_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
+      "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/folded_note_runtime_candidate_v2_ref.webp",
+      "qa": ["edge_cleanup_pass_static", "cream_pass_static", "dark_pass_static", "map_heavy_pass_static", "target_size_preview_pass_static", "android_runtime_pending", "physical_device_pending"],
+      "candidate_limit": "derived from composite reference; static cleanup passed but actual Android/source-quality acceptance is still required",
       "lock": "warm handmade paper, subtle botanical mark, readable folded-paper silhouette"
     },
     {
@@ -47,9 +52,11 @@
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/clue_ginkgo_leaf_ref_v1.webp",
       "master": {"format": "PNG", "min_px": [512, 512], "alpha": true},
       "runtime": {"format": "WebP", "targets_dp": [32, 48, 64, 96]},
-      "status": "transparent_extraction_candidate_created_qa_pending",
-      "candidate_sha256": "647a2fec78c70bcbb05efde0be800722c8db754d9c880aa0d697d341a4a2186b",
-      "candidate_limit": "derived from composite reference; source-resolution and edge/Android-size QA still required",
+      "status": "runtime_candidate_v2_static_qa_pass_android_qa_pending",
+      "candidate_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+      "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/ginkgo_leaf_runtime_candidate_v2_ref.webp",
+      "qa": ["edge_cleanup_pass_static", "cream_pass_static", "dark_pass_static", "map_heavy_pass_static", "target_size_preview_pass_static", "android_runtime_pending", "physical_device_pending"],
+      "candidate_limit": "derived from composite reference; static cleanup passed but actual Android/source-quality acceptance is still required",
       "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment"
     },
     {
@@ -69,29 +76,16 @@
     {"id": "near_wall", "role": "future_reuse_reference", "status": "reference_only"},
     {"id": "among_fallen_leaves", "role": "future_reuse_reference", "status": "reference_only"}
   ],
-  "family_extension_references": [
-    "acorn",
-    "pressed_flower",
-    "map_scrap",
-    "brass_key",
-    "feather",
-    "keepsake_photo"
-  ],
+  "family_extension_references": ["acorn", "pressed_flower", "map_scrap", "brass_key", "feather", "keepsake_photo"],
   "family_extension_rule": "These objects are visual-family references only and do not imply implemented clues, rewards, inventory items, or mystery-domain rules.",
-  "surface_detail_references": [
-    "leaf_clusters",
-    "masking_tape",
-    "paper_scraps",
-    "handwritten_motifs",
-    "decorative_flourishes"
-  ],
+  "surface_detail_references": ["leaf_clusters", "masking_tape", "paper_scraps", "handwritten_motifs", "decorative_flourishes"],
   "qa": [
     "compare every isolated export against the locked reference board and DESIGN_BASELINE_V2",
     "verify place art does not overpower map/UI hierarchy",
     "verify clue silhouettes at intended mobile sizes",
     "verify paper/leaf colors against both cream journal surfaces and map-heavy contexts",
-    "do not promote transparent extraction candidates until edge/source-resolution/actual Android-size QA passes",
-    "do not promote to runtime before transparent-edge/crop/mobile QA",
+    "static edge/context QA may advance a design candidate but does not replace actual Android usage-context QA",
+    "do not promote to runtime before transparent-edge/crop/mobile QA and semantic wiring checks",
     "outdoor readability remains a human physical-device gate"
   ]
 }
