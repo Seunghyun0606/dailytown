@@ -24,65 +24,49 @@ Deliverables:
 - registry entry with reference-only role
 - production manifest links to the isolated-reference and clean-master workflow
 
-Definition of Done:
-- reference is inspectable in GitHub
-- it cannot be mistaken for a runtime asset
-- baseline lock is documented next to it
-
 ### DT-DES-OG-02 · Folded-note clean transparent master
 
-Status: **IN PROGRESS — transparent extraction candidate created; edge/source-quality/Android QA pending**
+Status: **IN PROGRESS — technical edge cleanup + static context/mobile-size QA PASS; actual Android QA pending**
 
 Target semantic key: `clue.old_ginkgo.folded_note`
 
 Current checkpoint:
-- 768×768 transparent candidate extracted from the locked production reference without redesign
-- candidate PNG SHA-256: `c9b44fd1d89326a3b85c0086aee9f649dd2a3c96780a3c3f6d19692f1f7dedc8`
-- 48 / 64 / 96 / 144 px QA derivatives prepared and checksummed in `runtime-candidate-sizes.v1.json`
-- candidate metadata recorded in `transparent-candidate-manifest.v1.json`
-- not runtime-ready because the source is a composite-board extraction and upscaling does not restore original illustration detail
+- 768×768 transparent runtime-candidate v2 produced without redesign
+- PNG candidate SHA-256: `59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92`
+- 48 / 64 / 96 / 144 px previews plus 432 px high-density preview prepared
+- semi-transparent edge RGB decontaminated toward nearby solid interior color; extremely faint extraction noise removed without silhouette shrink
+- cream / dark / map-heavy static QA: PASS
+- inspectable alpha-capable GitHub reference persisted under `design/reference/discovery/old-ginkgo-note/production/runtime-v2/`
+- runtime activation remains blocked until actual Android usage-context/source-quality QA
 
-Required output:
+Required output remains:
 - transparent PNG master, minimum 768×768 canvas
-- no checkerboard baked into pixels
 - warm handmade paper, subtle botanical mark, folded-paper silhouette from the locked reference
-- runtime WebP derivatives for 48 / 64 / 96 / 144 dp use contexts
-- no new seal, iconography, lettering system, or alternate prop design unless already present in the approved reference family
-
-QA still required:
-- inspect and clean fringe/edge pixels on cream, dark, and map-heavy surfaces
-- confirm source-resolution quality at actual Android display sizes
-- recognizable folded-paper silhouette at 48 dp
-- no vector/flat-icon treatment
-- persist an inspectable alpha-capable raster candidate in GitHub before closing this item
+- no new seal, iconography, lettering system, or alternate prop design
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
-Status: **IN PROGRESS — transparent extraction candidate created; edge/source-quality/Android QA pending**
+Status: **IN PROGRESS — technical edge cleanup + static context/mobile-size QA PASS; actual Android QA pending**
 
 Target semantic key: `clue.old_ginkgo.ginkgo_leaf`
 
 Current checkpoint:
-- 512×512 transparent candidate extracted from the locked production reference without redesign
-- candidate PNG SHA-256: `647a2fec78c70bcbb05efde0be800722c8db754d9c880aa0d697d341a4a2186b`
-- 32 / 48 / 64 / 96 px QA derivatives prepared and checksummed in `runtime-candidate-sizes.v1.json`
-- candidate metadata recorded in `transparent-candidate-manifest.v1.json`
-- not runtime-ready because source-resolution/edge review is still required
+- 512×512 transparent runtime-candidate v2 produced without redesign
+- PNG candidate SHA-256: `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
+- 32 / 48 / 64 / 96 px previews plus 288 px high-density preview prepared
+- semi-transparent edge RGB decontaminated without changing fan silhouette/material language
+- cream / dark / map-heavy static QA: PASS
+- inspectable alpha-capable GitHub reference persisted under `design/reference/discovery/old-ginkgo-note/production/runtime-v2/`
+- runtime activation remains blocked until actual Android usage-context/source-quality QA
 
-Required output:
+Required output remains:
 - transparent PNG master, minimum 512×512 canvas
 - single warm-yellow ginkgo silhouette matching the approved discovery family
-- runtime WebP derivatives for 32 / 48 / 64 / 96 dp
-
-QA still required:
-- leaf fan shape remains identifiable at 32–48 dp
-- material/light treatment remains raster-illustrated, not UI-vector-like
-- edge contrast works on cream and live-map backgrounds
-- persist an inspectable alpha-capable raster candidate in GitHub before closing this item
+- no UI-vector flattening
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
-Status: **QUEUED — next after OG-02/03 QA**
+Status: **NEXT — start clean scene derivation while OG-02/03 Android QA remains pending**
 
 Target semantic key: `place.old_ginkgo.main`
 
@@ -113,10 +97,10 @@ QA:
 
 ### DT-DES-OG-06 · First-scenario asset QA and runtime-candidate promotion
 
-Status: **BLOCKED by OG-02…05**
+Status: **BLOCKED by OG-02…05 final QA**
 
 Checks:
-- target-size readability
+- actual target-size Android readability
 - transparent edge / crop QA
 - light/dark/map-heavy context QA
 - semantic naming and manifest paths
@@ -165,24 +149,13 @@ Checks:
 
 Status: **QUEUED**
 
-Keep hierarchy locked. Refine only:
-- paper/material depth
-- memory mounting treatment
-- contextual-line surface
-- relationship progress treatment
-- spacing/type rhythm
-- true UI icon cleanup
+Keep hierarchy locked. Refine only paper/material depth, memory mounting, contextual-line surface, relationship progress, spacing/type rhythm, and true UI icon cleanup.
 
 ### DT-DES-CR-02 · Records A3 journal surface polish
 
 Status: **QUEUED**
 
-Keep hierarchy locked. Refine only:
-- journal paper/inset hierarchy
-- clue/memory mounting
-- tape/stamp/sticker accents
-- section rhythm and artifact density
-- small-size legibility
+Keep hierarchy locked. Refine only journal paper/inset hierarchy, clue/memory mounting, tape/stamp/sticker accents, section rhythm, artifact density, and small-size legibility.
 
 ## P2 — Final QA / Human Gates
 
@@ -206,8 +179,8 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-1. Complete **DT-DES-OG-02 / OG-03** edge/source-quality/Android-size QA and persist inspectable alpha-capable refs.
-2. If the composite-derived source quality is insufficient for high-density Android display, recreate only the same locked folded-note/leaf assets at higher native resolution; do not redesign them.
-3. Proceed to **DT-DES-OG-04** clean place scene master, then `OG-05 → OG-06`.
+1. Start **DT-DES-OG-04** clean place scene master from the locked Old Ginkgo reference; do not introduce a new environment style.
+2. In parallel, hand OG-02 / OG-03 runtime-candidate v2 to Android usage-context QA; do not activate them yet.
+3. Then proceed `OG-05 → OG-06`.
 
 Do not start a new concept-board exploration while these production items remain open.
