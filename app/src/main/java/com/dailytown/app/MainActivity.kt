@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
         )
         mapAdapter = FixturePoiOverlayMapAdapter(
             delegate = providerMapAdapter,
-            fixtureMarkers = if (BuildConfig.DEBUG) {
+            fixtureMarkers = if (BuildVariantPolicy.showFixturePoiMarkers) {
                 defaultFixturePois().map { poi ->
                     MapMarkerSpec(
                         id = "fixture:${poi.id}",
@@ -55,10 +55,9 @@ class MainActivity : ComponentActivity() {
             } else {
                 emptyList()
             },
-            // Internal/debug builds intentionally retain known Seoul/Jungwon anchors so one APK can
-            // validate the production POI feed and the repeatable physical field-test route together.
-            // Release builds neither construct nor expose these fixed marker records.
-            showFixtureMarkers = BuildConfig.DEBUG,
+            // Build-variant policy, rather than scattered DEBUG checks, owns whether fixed field-test
+            // anchors are visible. Release selects the fail-closed policy from src/release.
+            showFixtureMarkers = BuildVariantPolicy.showFixturePoiMarkers,
             suppressLegacyDemoMarkers = true,
         )
         mapThemeRefreshController = MapThemeRefreshController(mapAdapter)
@@ -66,7 +65,7 @@ class MainActivity : ComponentActivity() {
         val basePoiRepository = ProductionPoiRepositoryFactory.create(
             tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf { BuildConfig.TOUR_API_CONFIGURED },
             proxyBaseUrl = BuildConfig.DAILYTOWN_POI_API_BASE_URL.takeIf { BuildConfig.DAILYTOWN_POI_API_CONFIGURED },
-            allowFixtureFallback = BuildConfig.DEBUG,
+            allowFixtureFallback = BuildVariantPolicy.allowFixturePoiFallback,
         )
         val poiCoordinator = NearbyPoiCoordinator(basePoiRepository)
         val poiMarkerPublisher = NearbyPoiMarkerPublisher(mapAdapter::setNearbyPoiMarkers)
