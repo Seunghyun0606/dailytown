@@ -1,0 +1,37 @@
+{
+  "version": "old-ginkgo-transparent-candidate-v1",
+  "status": "candidate_extracted_not_runtime_ready",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "source_board": "design/reference/discovery/old-ginkgo-note/production/old_ginkgo_production_board_ref_v2.webp",
+  "assets": [
+    {
+      "semantic_key": "clue.old_ginkgo.folded_note",
+      "canonical_master_candidate": "clue_old_ginkgo_folded_note_transparent_candidate_v1.png",
+      "canonical_master_candidate_sha256": "c9b44fd1d89326a3b85c0086aee9f649dd2a3c96780a3c3f6d19692f1f7dedc8",
+      "github_reference": "design/reference/discovery/old-ginkgo-note/production/clue_old_ginkgo_folded_note_transparent_candidate_v1_ref.webp",
+      "github_reference_sha256": "98bd0b2fbbbee5e56ecfe6f07606f82ee147d89fa2a61f4d04a5fa18cd487bb9",
+      "canvas_px": [768, 768],
+      "alpha": true,
+      "targets_px": [48, 64, 96, 144],
+      "source_quality_note": "technical extraction from the composite production reference; upscale does not add original detail",
+      "next_gate": "edge/source-resolution/Android-size QA"
+    },
+    {
+      "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+      "canonical_master_candidate": "clue_old_ginkgo_ginkgo_leaf_transparent_candidate_v1.png",
+      "canonical_master_candidate_sha256": "647a2fec78c70bcbb05efde0be800722c8db754d9c880aa0d697d341a4a2186b",
+      "github_reference": "design/reference/discovery/old-ginkgo-note/production/clue_old_ginkgo_ginkgo_leaf_transparent_candidate_v1_ref.webp",
+      "github_reference_sha256": "7e4922d551eb5c0792df1c48051e6a2ea280524aa14f5a8c9820ba2f995ae8d1",
+      "canvas_px": [512, 512],
+      "alpha": true,
+      "targets_px": [32, 48, 64, 96],
+      "source_quality_note": "technical extraction from the composite production reference; upscale does not add original detail",
+      "next_gate": "edge/source-resolution/Android-size QA"
+    }
+  ],
+  "qa_reference": {
+    "file": "design/reference/discovery/old-ginkgo-note/production/transparent_candidate_qa_v1.webp",
+    "sha256": "ef7d6ddd21dae7e6c2a7792a788eb5f207486f9cd0e01cc79d79cff586b8640b"
+  },
+  "promotion_rule": "Do not mark production/runtime until edge/context/mobile QA and source-quality acceptance pass. Do not redesign the locked assets during cleanup."
+}
