@@ -63,7 +63,11 @@ class MainActivity : ComponentActivity() {
         mapThemeRefreshController = MapThemeRefreshController(mapAdapter)
         val progressStore = DataStoreProgressStore(applicationContext)
         val basePoiRepository = ProductionPoiRepositoryFactory.create(
-            tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf { BuildConfig.TOUR_API_CONFIGURED },
+            // Direct upstream credentials are an internal/debug diagnostic path only. Release may
+            // consume production POIs only through the app-owned HTTPS gateway.
+            tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf {
+                BuildVariantPolicy.allowDirectPoiProvider && BuildConfig.TOUR_API_CONFIGURED
+            },
             proxyBaseUrl = BuildConfig.DAILYTOWN_POI_API_BASE_URL.takeIf { BuildConfig.DAILYTOWN_POI_API_CONFIGURED },
             allowFixtureFallback = BuildVariantPolicy.allowFixturePoiFallback,
         )

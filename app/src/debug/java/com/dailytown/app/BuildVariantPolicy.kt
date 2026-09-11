@@ -5,4 +5,5 @@ internal object BuildVariantPolicy {
     const val allowFixturePoiFallback: Boolean = true
     const val showFixturePoiMarkers: Boolean = true
     const val exposeFieldTestTools: Boolean = true
+    const val allowDirectPoiProvider: Boolean = true
 }
