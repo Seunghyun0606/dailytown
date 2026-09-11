@@ -1,1 +1,0 @@
-Binary preview upload is being handled through the Git data API; this marker prevents treating concept-board hashes alone as the visual source. The canonical character direction remains Candidate 3 and runtime promotion still requires transparent raster exports and QA.
