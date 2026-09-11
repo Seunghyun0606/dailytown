@@ -1,7 +1,6 @@
 package com.dailytown.app.ui
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,13 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.dailytown.app.BuildConfig
 import com.dailytown.app.companion.CompanionMoment
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
-import com.dailytown.app.diagnostics.AndroidBatterySnapshotSource
-import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
-import com.dailytown.app.diagnostics.FieldTestSessionMonitor
-import com.dailytown.app.diagnostics.GameplaySessionMonitor
 import com.dailytown.app.domain.*
 import com.dailytown.app.location.*
 import com.dailytown.app.map.MapHealthStatus
@@ -80,10 +74,7 @@ fun DailyTownApp(
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
     val trackingCoordinator = remember { TrackingSessionCoordinator() }
-    val fieldTestSessionMonitor = remember {
-        FieldTestSessionMonitor(AndroidBatterySnapshotSource(context.applicationContext))
-    }
-    val gameplaySessionMonitor = remember { GameplaySessionMonitor() }
+    val fieldTestRuntime = remember(context) { BuildVariantFieldTestRuntime(context.applicationContext) }
     val mapVisualBinder = remember(mapAdapter) { MapGameplayVisualBinder(mapAdapter) }
     val a3AssetRenderer = rememberProductionA3AssetRenderer()
 
@@ -100,8 +91,6 @@ fun DailyTownApp(
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
-    var referenceDistanceText by remember { mutableStateOf("") }
-    var sessionToken by remember { mutableIntStateOf(0) }
 
     val deviceSource = remember(trackingPreset) {
         FusedDeviceLocationSource(
@@ -150,15 +139,9 @@ fun DailyTownApp(
     }
 
     fun start(mode: TrackingMode) {
-        sessionToken += 1
         session.restartTracking()
         encounterCoordinator.reset()
-        gameplaySessionMonitor.reset()
-        if (mode == TrackingMode.DEVICE) {
-            fieldTestSessionMonitor.begin()
-        } else {
-            fieldTestSessionMonitor.reset()
-        }
+        fieldTestRuntime.onTrackingStart(mode)
         snapshot = session.current()
         activeEncounter = null
         lastCompanionMoment = null
@@ -167,9 +150,7 @@ fun DailyTownApp(
     }
 
     fun stopTracking() {
-        if (trackingMode == TrackingMode.DEVICE) {
-            fieldTestSessionMonitor.end()
-        }
+        fieldTestRuntime.onTrackingStop(trackingMode)
         trackingCoordinator.stop()
         mapAdapter.setUserLocation(null)
     }
@@ -232,18 +213,18 @@ fun DailyTownApp(
             time = LocalTime.now(),
         )
         if (previousEncounter == null) {
-            step.selection?.let { gameplaySessionMonitor.recordEncounterOffered(it.isRevisit) }
+            step.selection?.let { fieldTestRuntime.recordEncounterOffered(it.isRevisit) }
         }
         activeEncounter = step.selection
 
         when (step.transition) {
             EncounterTransition.HINTED -> {
-                gameplaySessionMonitor.recordHinted()
+                fieldTestRuntime.recordHinted()
                 applyReaction(CompanionMoment.HINT_APPEARED)
             }
             EncounterTransition.DISCOVERED -> {
                 val selection = step.selection ?: return@LaunchedEffect
-                gameplaySessionMonitor.recordDiscovered(selection.isRevisit)
+                fieldTestRuntime.recordDiscovered(selection.isRevisit)
                 progressCoordinator.mutate(LocalDate.now()) { progress ->
                     progress
                         .recordEncounterVisit(
@@ -272,11 +253,9 @@ fun DailyTownApp(
         }
     }
 
-    val normalizedProgress = gameProgress.normalizePeriods(currentDate)
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
         activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
-    val gameplayMetrics = gameplaySessionMonitor.snapshot()
     val companionExpression = CompanionHudVisualResolver.expression(lastCompanionMoment)
     val companionLighting = MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
 
@@ -451,7 +430,7 @@ fun DailyTownApp(
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
-                            gameplaySessionMonitor.recordClueCollected()
+                            fieldTestRuntime.recordClueCollected()
                             progressCoordinator.mutate(LocalDate.now()) { progress ->
                                 progress.recordClue(clueId, LocalDate.now())
                             }
@@ -461,7 +440,7 @@ fun DailyTownApp(
                     onResolve = { resolved ->
                         val resolvingSelection = activeEncounter
                         activeEncounter = resolvingSelection?.copy(encounter = resolved)
-                        resolvingSelection?.let { gameplaySessionMonitor.recordResolved(it.isRevisit) }
+                        resolvingSelection?.let { fieldTestRuntime.recordResolved(it.isRevisit) }
                         val mechanic = resolvingSelection?.template?.mechanic
                         progressCoordinator.mutate(LocalDate.now()) { progress ->
                             var updated = progress.recordResolution(resolved, LocalDate.now())
@@ -479,114 +458,24 @@ fun DailyTownApp(
                 )
 
                 if (showQaTools) {
-                    ElevatedCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("위치 추적 모드", style = MaterialTheme.typography.titleMedium)
-                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                LocationTrackingPreset.entries.forEach { preset ->
-                                    FilterChip(
-                                        selected = trackingPreset == preset,
-                                        onClick = {
-                                            if (trackingMode == TrackingMode.DEVICE) {
-                                                fieldTestSessionMonitor.end()
-                                            }
-                                            trackingCoordinator.selectPreset(preset)
-                                        },
-                                        label = { Text(trackingPresetLabel(preset)) },
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    ElevatedCard(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                "패키지/빌드/파생 통계만 공유하며 좌표·이벤트 ID·지도 API 키는 제외합니다.",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            Text(
-                                "패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "주입" else "없음"} · 지도 ${mapHealthLabel(mapHealth.status)}",
-                            )
-                            Text(
-                                if (progressRuntime.persistenceEnabled) "진행도 저장 정상" else if (persistenceReady) "진행도 임시 모드 · 저장 비활성" else "진행도 복원 중",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            if (snapshot.totalLocationSampleCount > 0) {
-                                Text(
-                                    "추적 ${snapshot.trackingDurationSeconds}초 · GPS 수락 ${snapshot.acceptedLocationCount} · 제외 ${snapshot.rejectedLocationCount} · 제외율 ${snapshot.rejectedLocationRatePercent}%",
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
-                            }
-                            if (gameplayMetrics.encounterOfferedCount > 0) {
-                                val resolutionRate = gameplayMetrics.encounterResolutionRatePercent?.let { "$it%" } ?: "-"
-                                Text(
-                                    "세션 발견 ${gameplayMetrics.discoveredEncounterCount} · 해결 ${gameplayMetrics.resolvedEncounterCount} · 해결률 $resolutionRate · 단서 ${gameplayMetrics.cluesCollectedCount}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
-                                gameplayMetrics.repeatAreaFatigueProxyPercent?.let { fatigue ->
-                                    Text("재방문 ${gameplayMetrics.revisitOfferedCount}건 · 반복 피로 proxy ${fatigue}%", style = MaterialTheme.typography.bodySmall)
-                                }
-                            }
-                            OutlinedTextField(
-                                value = referenceDistanceText,
-                                onValueChange = { value -> if (value.all(Char::isDigit)) referenceDistanceText = value },
-                                label = { Text("기준 경로 거리(m, 선택)") },
-                                supportingText = { Text("좌표 대신 미리 확인한 총 거리 숫자만 입력합니다.") },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                            OutlinedButton(onClick = {
-                                val sessionMetrics = fieldTestSessionMonitor.metrics(
-                                    sessionDistanceMeters = snapshot.sessionDistanceMeters,
-                                    sessionDurationSeconds = snapshot.trackingDurationSeconds,
-                                    referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
-                                )
-                                val report = FieldTestDiagnosticBuilder.build(
-                                    progress = normalizedProgress,
-                                    acceptedLocationCount = snapshot.acceptedLocationCount,
-                                    rejectedLocationCount = snapshot.rejectedLocationCount,
-                                    trackingDurationSeconds = snapshot.trackingDurationSeconds,
-                                    sessionMetrics = sessionMetrics,
-                                    gameplayMetrics = gameplayMetrics,
-                                    appVersion = BuildConfig.VERSION_NAME,
-                                    mapProvider = mapAdapter.providerId.name,
-                                    mapHealth = mapHealth,
-                                    trackingPreset = trackingPreset,
-                                ).render()
-                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/plain"
-                                    putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test diagnostic")
-                                    putExtra(Intent.EXTRA_TEXT, report)
-                                }
-                                context.startActivity(Intent.createChooser(shareIntent, "진단 리포트 공유"))
-                            }) { Text("진단 리포트 공유") }
-                        }
-                    }
-
-                    FieldTestComparisonCard(
-                        sessionToken = sessionToken,
-                        canRecordCurrentSession = trackingMode == TrackingMode.OFF && snapshot.totalLocationSampleCount > 0,
-                        buildDiagnostic = {
-                            val sessionMetrics = fieldTestSessionMonitor.metrics(
-                                sessionDistanceMeters = snapshot.sessionDistanceMeters,
-                                sessionDurationSeconds = snapshot.trackingDurationSeconds,
-                                referenceDistanceMeters = referenceDistanceText.toIntOrNull(),
-                            )
-                            FieldTestDiagnosticBuilder.build(
-                                progress = normalizedProgress,
-                                acceptedLocationCount = snapshot.acceptedLocationCount,
-                                rejectedLocationCount = snapshot.rejectedLocationCount,
-                                trackingDurationSeconds = snapshot.trackingDurationSeconds,
-                                sessionMetrics = sessionMetrics,
-                                gameplayMetrics = gameplayMetrics,
-                                appVersion = BuildConfig.VERSION_NAME,
-                                mapProvider = mapAdapter.providerId.name,
-                                mapHealth = mapHealth,
-                                trackingPreset = trackingPreset,
-                            )
+                    fieldTestRuntime.Content(
+                        trackingMode = trackingMode,
+                        trackingPreset = trackingPreset,
+                        onSelectTrackingPreset = { preset ->
+                            fieldTestRuntime.beforeTrackingPresetChange(trackingMode)
+                            trackingCoordinator.selectPreset(preset)
                         },
+                        progress = gameProgress,
+                        persistenceReady = persistenceReady,
+                        persistenceEnabled = progressRuntime.persistenceEnabled,
+                        acceptedLocationCount = snapshot.acceptedLocationCount,
+                        rejectedLocationCount = snapshot.rejectedLocationCount,
+                        rejectedLocationRatePercent = snapshot.rejectedLocationRatePercent,
+                        totalLocationSampleCount = snapshot.totalLocationSampleCount,
+                        trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                        sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                        mapProvider = mapAdapter.providerId.name,
+                        mapHealth = mapHealth,
                     )
                 }
 
