@@ -16,16 +16,16 @@ The approved Design Baseline v2 and Old Ginkgo isolation references remain the v
 3. The selected 1448×1086 generated raster source was exported to a 2048×1536 PNG master with Lanczos resampling so the production master meets the required 4:3 canvas. Runtime crops are all downscaled from that master.
 4. The keepsake master and both Records/Companion derivatives are exact crops from the same scene pixels. No new scene was generated for OG-05.
 
-The full source, masters, runtime crops, and QA board are preserved as named Work artifacts with exact dimensions/checksums. GitHub stores inspectable WebP derivatives plus this manifest because the authenticated repository path cannot transfer the multi-megabyte local binaries directly.
+The full source, masters, runtime crops, and QA board are persisted as binary files in GitHub with exact dimensions/checksums. The smaller `ref/` WebP derivatives remain available for lightweight inspection and review.
 
 ## Files
 
-- Work master `place_old_ginkgo_main_generation_source_v3.png` — native generated source; production source evidence
-- Work master `place_old_ginkgo_main_master_v3.png` — 2048×1536 clean scene master
-- Work master `memory_old_ginkgo_keepsake_master_v3.png` — 1536×1152 same-scene keepsake master
-- Work crops `place_old_ginkgo_main_discovery_card_v3.webp`, `place_old_ginkgo_main_records_header_v3.webp`, `place_old_ginkgo_main_memory_thumbnail_v3.webp`
-- Work crops `memory_old_ginkgo_keepsake_records_card_v3.webp`, `memory_old_ginkgo_keepsake_companion_recent_memory_v3.webp`
-- Work QA board `old_ginkgo_scene_crop_qa_board_v3.webp`
+- `master/place_old_ginkgo_main_generation_source_v3.png` — native generated source; production source evidence
+- `master/place_old_ginkgo_main_master_v3.png` — 2048×1536 clean scene master
+- `master/memory_old_ginkgo_keepsake_master_v3.png` — 1536×1152 same-scene keepsake master
+- `crops/place_old_ginkgo_main_discovery_card_v3.webp`, `crops/place_old_ginkgo_main_records_header_v3.webp`, `crops/place_old_ginkgo_main_memory_thumbnail_v3.webp`
+- `crops/memory_old_ginkgo_keepsake_records_card_v3.webp`, `crops/memory_old_ginkgo_keepsake_companion_recent_memory_v3.webp`
+- `qa/old_ginkgo_scene_crop_qa_board_v3.webp`
 - `ref/*_ref.webp` — inspectable GitHub derivatives for every master/crop/QA role
 - `qa/OLD_GINKGO_SCENE_MEMORY_QA_V3.md`
 - `scene-memory-manifest.v3.json`

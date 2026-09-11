@@ -87,7 +87,7 @@ QA:
 - no alternate environment art direction
 
 Current checkpoint:
-- native 1448×1086 generated source and auditable 2048×1536 PNG master preserved as named Work artifacts; exact checksums and inspectable WebP refs are in GitHub
+- native 1448×1086 generated source and auditable 2048×1536 PNG master persisted as GitHub binaries with exact checksums and inspectable WebP refs
 - clean scene contains no UI/text/frame/character; the established folded-note discovery locus remains at the tree base
 - `discovery_card` 1600×900, `records_header` 1600×600, `memory_thumbnail` 640×480 WebP crops preserved
 - static place identity / palette / lighting / material / crop readability QA: PASS
@@ -110,7 +110,7 @@ QA:
 - compatible with A3 paper/journal treatment
 
 Current checkpoint:
-- 1536×1152 PNG master is an exact crop from the OG-04 master; no separate scene generation; full master/crops are named Work artifacts with GitHub checksum/refs
+- 1536×1152 PNG master is an exact crop from the OG-04 master; no separate scene generation; full master/crops are persisted as GitHub binaries with checksum/refs
 - Records 1024×768 and Companion recent-memory 1280×720 WebP crops preserved
 - same-event continuity / crop / cream A3 journal-mount static QA: PASS
 - manifest/QA: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/`
