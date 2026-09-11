@@ -14,7 +14,8 @@ For a design-related task, first read:
 5. `/docs/design/ASSET_PRODUCTION.md` — production/output rules
 6. `/docs/design/QUALITY_GATE.md` — review criteria
 7. `/docs/design/DESIGN_BASELINE_V2.md` — current approved visual baseline and no-redesign lock
-8. Relevant implementation/domain files for the screen/feature being designed
+8. Relevant approved derivation spec (`MORU_PRODUCTION_EXPORT_V2.md`, `EXPLORE_VISUAL_PARITY_V2.md`) when the task touches those surfaces
+9. Relevant implementation/domain files for the screen/feature being designed
 
 Do not rely on chat memory alone for substantive design work. Read the latest `main` branch.
 
@@ -40,6 +41,8 @@ The art direction must support the actual current product rather than assuming a
 - `QUALITY_GATE.md` — mandatory QA checklist before accepting an asset or screen
 - `DESIGN_BASELINE_V2.md` — approved visual baseline, exact-reference lock, and allowed production derivations
 - `MORU_CANONICAL_V2.md` — detailed Moru semantic/visual contract under the approved baseline
+- `MORU_PRODUCTION_EXPORT_V2.md` — approved-baseline production crop/export/versioning contract; no new character direction
+- `EXPLORE_VISUAL_PARITY_V2.md` — approved-baseline Explore state composition/surface parity contract; domain behavior remains authoritative
 - `CHATGPT_PROJECT_MASTER_PROMPT.md` — deprecated compatibility path that redirects to `DESIGN_SESSION_INSTRUCTIONS.md`
 
 ## Change policy
