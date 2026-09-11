@@ -28,10 +28,28 @@ This registry preserves design-review imagery in GitHub so accepted/reference bo
 | `design/reference/ux-v2/raster/explore_detail_parity_v1.webp` | 1448×1086 | `959b79223970132b23f2d8b6f9d19056eace5f5176c213d997bc59154b0d37fb` | Explore Prepare/Detect/Discover/Resolved detail parity reference |
 | `design/reference/ux-v2/raster/mobile_readability_qa_v2.webp` | 1800×1350 | `32b330c6e4a39ca2c154953cb326310b60dc1d4ed9d3fb7fee0278d237201c74` | reduced-size QA board made from locked baseline crops |
 
+## Isolated scenario references
+
+The following are inspectable low-resolution reference crops extracted from the locked `오래된 가로수의 쪽지` board. They are intentionally **not** production masters or runtime assets.
+
+- `design/reference/discovery/old-ginkgo-note/isolation/isolation_reference_board_v1.webp`
+- `design/reference/discovery/old-ginkgo-note/isolation/place_old_ginkgo_scene_ref_v1.webp`
+- `design/reference/discovery/old-ginkgo-note/isolation/clue_folded_note_ref_v1.webp`
+- `design/reference/discovery/old-ginkgo-note/isolation/clue_ginkgo_leaf_ref_v1.webp`
+- `design/reference/discovery/old-ginkgo-note/isolation/memory_keepsake_photo_ref_v1.webp`
+- crop-role manifest: `design/reference/discovery/old-ginkgo-note/isolation/reference-crops.v1.json`
+
+Moru reference-level mobile QA is preserved at:
+
+- `design/reference/moru-v2/qa/moru_mobile_qa_v2.webp`
+- `design/reference/moru-v2/qa/moru-mobile-qa.v2.json`
+- QA interpretation: `docs/design/MORU_MOBILE_QA_V2.md`
+
 ## Production status
 
 - Moru transparent master/export: **pending**.
-- Discovery/place isolated runtime assets: **pending**.
+- Discovery/place isolated runtime assets: **pending**; exact crop references now preserved in GitHub.
+- Moru 48dp/expression/lighting/affinity reference precheck: **PASS**, while transparent-edge and actual Android usage-size QA remain blocked until clean masters exist.
 - Companion/Records UI implementation may use the hierarchy and surface treatment as reference, but must not embed these composite boards as runtime screenshots.
 - Explore implementation must preserve current domain behavior; decorative numbers visible in concept art do not replace the authoritative runtime hint/discovery thresholds.
 - Outdoor readability and M-B motion timing remain Human Gates.
