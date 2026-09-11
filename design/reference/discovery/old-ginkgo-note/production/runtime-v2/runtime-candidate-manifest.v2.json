@@ -1,0 +1,46 @@
+{
+  "version": "old-ginkgo-runtime-candidate-v2",
+  "status": "technical_cleanup_and_static_mobile_qa_complete",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "redesign": false,
+  "runtime_activation": false,
+  "masters": [
+    {
+      "semantic_key": "clue.old_ginkgo.folded_note",
+      "local_master": "clue_old_ginkgo_folded_note_runtime_candidate_v2.png",
+      "local_master_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
+      "canvas_px": [768, 768],
+      "alpha": true,
+      "github_reference": "folded_note_runtime_candidate_v2_ref.webp",
+      "github_reference_sha256": "baad86cef05a94d17442fe34ec49d5ec18a1d48968c86273f0aceae12bf0c52c",
+      "preview_targets_px": [48, 64, 96, 144],
+      "max_density_preview_px": 432,
+      "status": "design_runtime_candidate_only"
+    },
+    {
+      "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+      "local_master": "clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2.png",
+      "local_master_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+      "canvas_px": [512, 512],
+      "alpha": true,
+      "github_reference": "ginkgo_leaf_runtime_candidate_v2_ref.webp",
+      "github_reference_sha256": "584fc61494627fb82ee7f6dab88c0b82bfbc47d9a935ffe5111b4d19c794787f",
+      "preview_targets_px": [32, 48, 64, 96],
+      "max_density_preview_px": 288,
+      "status": "design_runtime_candidate_only"
+    }
+  ],
+  "qa": {
+    "edge_cleanup": "PASS_STATIC",
+    "cream_context": "PASS_STATIC",
+    "dark_context": "PASS_STATIC",
+    "map_heavy_context": "PASS_STATIC",
+    "target_size_preview": "PASS_STATIC",
+    "qa_reference": "runtime_candidate_qa_v2.webp",
+    "qa_reference_sha256": "738a34c61d6092be135fe123b37f90a93809dcdce1e2fb868e1f8c2dd5c29089",
+    "android_runtime_integration": "PENDING",
+    "physical_device_outdoor": "PENDING"
+  },
+  "rule": "Technical matte/edge cleanup only. Do not alter shape, motif, palette, material treatment, or the locked discovery art direction during later QA.",
+  "promotion_rule": "Do not mark production/runtime until actual Android usage-context QA passes; physical outdoor readability remains a separate Human Gate."
+}
