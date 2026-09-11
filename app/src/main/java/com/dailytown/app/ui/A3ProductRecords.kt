@@ -97,22 +97,16 @@ private fun RecordsHome(
             Text("산책에서 실제로 남은 장소, 미스터리, 단서와 모루의 기억을 모아봅니다.")
         }
 
-        RecordSection(
-            title = "오늘의 기록",
-            modifier = Modifier.testTag("records-today"),
-        ) {
+        RecordSection(title = "오늘의 기록", modifier = Modifier.testTag("records-today")) {
             val daily = progress?.daily
             StatLine("발견", "${daily?.discoveredPoiIds?.size ?: 0}곳")
             StatLine("단서", "${daily?.clueIds?.size ?: 0}개")
             StatLine("해결", "${daily?.resolvedEncounterIds?.size ?: 0}건")
         }
 
-        RecordSection(
-            title = "장소",
-            modifier = Modifier.testTag("records-places"),
-        ) {
+        RecordSection(title = "장소", modifier = Modifier.testTag("records-places")) {
             if (recentPoiIds.isEmpty()) {
-                Text("아직 기록된 장소가 없어요.", style = MaterialTheme.typography.bodyMedium)
+                Text("아직 기록된 장소가 없어요.")
             } else {
                 recentPoiIds.take(6).forEachIndexed { index, poiId ->
                     val title = recentPoiTitle(index, poiId, recentPoiTitles, fixtureNames)
@@ -127,10 +121,7 @@ private fun RecordsHome(
                     ) {
                         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(title, style = MaterialTheme.typography.titleSmall)
-                            Text(
-                                if (remembered) "모루와 공유한 기억 있음" else "발견 기록",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
+                            Text(if (remembered) "모루와 공유한 기억 있음" else "발견 기록", style = MaterialTheme.typography.bodySmall)
                         }
                         Text("보기 ›", style = MaterialTheme.typography.labelMedium)
                     }
@@ -138,10 +129,7 @@ private fun RecordsHome(
             }
         }
 
-        RecordSection(
-            title = "미스터리",
-            modifier = Modifier.testTag("records-mysteries"),
-        ) {
+        RecordSection(title = "미스터리", modifier = Modifier.testTag("records-mysteries")) {
             Text("해결한 동네 이야기 ${progress?.resolvedEncounterIds?.size ?: 0}건")
             Text(
                 "여러 조각을 1/4→4/4로 모으는 장기 미스터리는 아직 만들지 않습니다.",
@@ -152,9 +140,7 @@ private fun RecordsHome(
 
         RecordSection(
             title = "단서",
-            modifier = Modifier
-                .clickable(onClick = onOpenClues)
-                .testTag("records-clues"),
+            modifier = Modifier.clickable(onClick = onOpenClues).testTag("records-clues"),
         ) {
             Text("관찰한 단서 ${progress?.inventoryClueIds?.size ?: 0}개")
             Text("단서 기록 보기 ›", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
@@ -162,9 +148,7 @@ private fun RecordsHome(
 
         RecordSection(
             title = "Moru와의 기억",
-            modifier = Modifier
-                .clickable(onClick = onOpenMemories)
-                .testTag("records-memories"),
+            modifier = Modifier.clickable(onClick = onOpenMemories).testTag("records-memories"),
         ) {
             Text("함께 남긴 기억 ${progress?.companionMemoryKeys?.size ?: 0}개")
             Text("함께한 기억 보기 ›", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
@@ -185,15 +169,12 @@ private fun PlaceRecordDetail(
     DetailPage(tag = "record-discovery-detail", title = "장소 기록", onBack = onBack, backTag = "discovery-back") {
         RecordSection(title = title) {
             Text("이 장소에서 탐험 신호를 발견해 기록했습니다.")
-            Text(
-                if (remembered) "모루와 공유한 장소 기억이 저장되어 있어요."
-                else "현재 저장된 공유 기억은 아직 없어요.",
-            )
+            Text(if (remembered) "모루와 공유한 장소 기억이 저장되어 있어요." else "현재 저장된 공유 기억은 아직 없어요.")
         }
         RecordSection(title = "연결된 진행") {
             Text("전체 단서 ${progress?.inventoryClueIds?.size ?: 0}개 · 해결 ${progress?.resolvedEncounterIds?.size ?: 0}건")
             Text(
-                "현재 persistence는 장소와 각 단서/해결 결과의 세부 1:1 문장을 별도 필드로 저장하지 않으므로 없는 연결을 만들어 표시하지 않습니다.",
+                "현재 저장 구조에 없는 장소↔단서/해결의 1:1 연결은 만들어 표시하지 않습니다.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -205,24 +186,21 @@ private fun PlaceRecordDetail(
                 TextButton(onClick = onOpenMemories, modifier = Modifier.testTag("discovery-open-memory")) { Text("Moru와의 기억 보기") }
             }
         }
-        Text(
-            "재방문 시 기존 방문·memory 이력은 encounter rotation/weighting에 활용될 수 있습니다.",
-            style = MaterialTheme.typography.bodySmall,
-        )
+        Text("재방문 시 기존 방문·memory 이력은 encounter rotation/weighting에 활용될 수 있습니다.", style = MaterialTheme.typography.bodySmall)
     }
 }
 
 @Composable
-private fun ClueRecordDetail(
-    progress: ExplorationProgress?,
-    onBack: () -> Unit,
-) {
+private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit) {
     DetailPage(tag = "record-clue-note", title = "단서", onBack = onBack, backTag = "clue-back") {
         RecordSection(title = "관찰한 단서") {
             val count = progress?.inventoryClueIds?.size ?: 0
-            Text("지금까지 실제 encounter에서 수집한 단서 $count개가 저장되어 있어요.")
+            Text("지금까지 실제 encounter에서 수집한 단서 ${count}개가 저장되어 있어요.")
             if (count > 0) {
-                Text("첫 UX validation에서는 ‘오래된 가로수의 메모’의 표시를 authored copy로 보여주되, 저장 ID는 기존 encounter clue contract를 그대로 사용합니다.", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    "첫 UX validation의 authored copy는 기존 encounter clue ID를 바꾸지 않고 표현 계층에서만 연결됩니다.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
         RecordSection(title = "해결 상태") {
@@ -256,7 +234,7 @@ private fun MemoryRecordDetail(
             }
             val mechanicMemoryCount = memories.count { it.startsWith("mechanic:") }
             RecordSection(title = "함께 해결한 방식") {
-                Text("미스터리 해결에서 남은 semantic memory $mechanicMemoryCount개")
+                Text("미스터리 해결에서 남은 semantic memory ${mechanicMemoryCount}개")
             }
         }
     }
@@ -287,11 +265,7 @@ private fun DetailPage(
 }
 
 @Composable
-private fun RecordSection(
-    title: String,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
+private fun RecordSection(title: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
