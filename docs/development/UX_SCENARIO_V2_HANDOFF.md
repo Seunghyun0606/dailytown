@@ -2,7 +2,11 @@
 
 > Product/UX baseline: `docs/product/EXPLORATION_EXPERIENCE_SCENARIO_V2.md`
 >
+> Visual implementation reference: `design/reference/ux-v2/index.html` + `design/reference/ux-v2/manifest.json`
+>
 > Status: approved for presentation/state integration. Remaining character-art/motion/outdoor/identity Human Gates still apply.
+
+The visual reference is repository-owned and Figma-independent. Use it for screen hierarchy, map-HUD density, discovery/result surfaces, Companion relationship-notebook treatment, and Records journal treatment. Areas labeled `RASTER ART SLOT` intentionally represent pending non-UI raster game art and must not be replaced by SVG/VectorDrawable/Compose-Canvas approximations presented as final art.
 
 ## 1. Source and branch context
 
@@ -113,7 +117,7 @@ Candidate semantic clue key from product spec: `leaf_mark_note`. If the current 
 
 ## 4. Design implementation rules
 
-Before changing visual implementation, read the latest `docs/design/` rules.
+Before changing visual implementation, read the latest `docs/design/` rules and the repository visual reference under `design/reference/ux-v2/`.
 
 - Compose implements layout/components.
 - True UI controls/symbols may use vector assets.
@@ -121,6 +125,7 @@ Before changing visual implementation, read the latest `docs/design/` rules.
 - Do not recreate missing Moru/discovery art with Compose Canvas, VectorDrawable, SVG body parts, or geometric placeholders presented as final art.
 - Until Moru v2 canonical art is approved, preserve a semantic/fallback asset path and do not overwrite the current production pack.
 - Avoid exposing generic Material 3 card/navigation styling as the final visual language where the approved design specifies map HUD / paper journal / relationship notebook surfaces.
+- The schematic map in the reference source is not a replacement map asset; real NAVER/provider map truth and attribution remain authoritative at runtime.
 
 ## 5. Do not change in this implementation pass
 
@@ -193,6 +198,7 @@ The development pass is ready for design/product review when:
 - a resolved encounter becomes a readable Records artifact
 - Companion visibly reflects a shared memory/relationship consequence
 - Goals points back toward exploration
+- the implementation visibly follows `design/reference/ux-v2/index.html` for hierarchy/surface intent without treating placeholder game-art slots as production art
 - no deferred feature is silently implemented
 - no remaining Human Gate is falsely marked approved
 - tests/build verification for the touched surface passes
