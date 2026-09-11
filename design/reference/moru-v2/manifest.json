@@ -1,45 +1,33 @@
 {
-  "version": "moru-v2-canonical-direction-2026-09-11",
+  "version": "moru-v2-canonical-baseline-2026-09-11",
   "status": {
     "character_direction": "approved",
     "selected_candidate": "candidate_3",
-    "production_fit_reference": "generated",
+    "canonical_visual_baseline": "locked",
     "runtime_production_export": "pending",
     "mobile_qa": "pending",
     "motion_final": "pending"
   },
   "source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
+  "design_baseline": "docs/design/DESIGN_BASELINE_V2.md",
   "production_qa": "design/reference/moru-v2/PRODUCTION_QA.md",
   "export_manifest": "design/reference/moru-v2/export-manifest.v2.json",
   "asset_policy": "raster_only_for_game_art",
-  "reference_artifacts": [
-    {
-      "file": "moru-candidate3-selected.png",
-      "width": 1122,
-      "height": 1402,
-      "sha256": "de2a1cc940c8b0228001b5599c231a1ea23e60f6062e7eb9fc8b74e3e156ff9e",
-      "role": "human-gate selection source",
-      "status": "approved character direction"
-    },
-    {
-      "file": "moru-canonical-v2-sheet.png",
-      "width": 1122,
-      "height": 1402,
-      "sha256": "059480c4ee6bdff288b7021b22f8aff2952dac9786dcbf7efa1ead806e9cd8d5",
-      "role": "canonical derivation and fit reference",
-      "status": "reference master; runtime export pending"
-    },
-    {
-      "file": "moru-candidate3-production-fit-board-preview.webp",
-      "repository_payload": "moru-candidate3-production-fit-board-preview.webp.base64",
-      "width": 512,
-      "height": 341,
-      "sha256": "5c6aef62e290c6824d4962c2cb74f4fe976a6e5af7e983efacc679ac3b6a4327",
-      "role": "production-fit visual review preview; Candidate 3 identity across pose/expression/usage-context placement",
-      "status": "reference only; not a runtime atlas",
-      "binary_note": "BINARY_ASSET_NOTE.md"
-    }
-  ],
+  "canonical_reference": {
+    "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+    "width": 1122,
+    "height": 1402,
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "role": "user-confirmed Moru Candidate 3 canonical visual baseline",
+    "status": "approved baseline; runtime export pending"
+  },
+  "integrated_visual_reference": {
+    "semantic_target": "design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png",
+    "width": 1448,
+    "height": 1086,
+    "sha256": "f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515",
+    "role": "approved Moru-in-product visual context"
+  },
   "semantic_contract": {
     "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
     "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
@@ -47,7 +35,7 @@
     "usage_contexts": ["map_avatar", "hud_portrait", "encounter_halfbody", "result_large", "companion_portrait", "journal_crop"]
   },
   "promotion_gate": [
-    "transparent raster production exports",
+    "transparent raster production exports derived from the locked baseline",
     "six-expression identity QA",
     "LIGHT/WARM_DUSK/DARK readability QA",
     "affinity anatomy-invariant QA",
@@ -55,5 +43,6 @@
     "semantic resolver/fallback verification",
     "physical-device outdoor readability gate"
   ],
-  "production_note": "Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack. Add v2 as a versioned profile and promote only after the production QA gate passes."
+  "superseded_reference_note": "Earlier generated comparison, fit or alternate composite boards are historical/reference-only and must not override the exact user-confirmed baseline hashes above.",
+  "production_note": "Do not generate another Moru design. Derive transparent raster exports and usage-context crops only from this locked baseline. Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack before QA passes."
 }
