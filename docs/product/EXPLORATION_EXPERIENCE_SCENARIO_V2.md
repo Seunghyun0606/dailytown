@@ -2,7 +2,7 @@
 
 > Status: **APPROVED — 2026-09-11**
 >
-> Scope of approval: product/UX hierarchy and first UX-validation scenario. This approval does **not** approve Moru canonical v2 art, final motion timing, outdoor visual acceptance, or app identity lockup.
+> Scope of approval: product/UX hierarchy and first UX-validation scenario. Moru v2 Candidate 3 character direction was subsequently approved on 2026-09-11; production-export/mobile-QA, final motion timing, outdoor visual acceptance, and app identity lockup remain separate gates.
 
 This document is the approved baseline derived from `EXPLORATION_EXPERIENCE_SCENARIO_V2_CANDIDATE.md` after Human Gate review.
 
@@ -176,7 +176,7 @@ The following are explicitly deferred and must not be presented as implemented M
 - required Camera/AR capture
 - selectable-companion onboarding
 - 3–4 fragment authored mystery chains leading to a secret location
-- production Moru v2 asset replacement before the character-art Human Gate
+- Moru v2 runtime production replacement until transparent raster export/crop, 48 dp/mobile QA, semantic asset manifest versioning and fallback verification are complete
 
 Photo capture remains a **P1 optional journal enhancement**. It must never block encounter completion.
 
@@ -184,6 +184,7 @@ Photo capture remains a **P1 optional journal enhancement**. It must never block
 
 - Explore stays map-first.
 - Characters, discoveries, places, collectibles, mystery/reward art use raster PNG/WebP according to `docs/design/`.
+- Moru visual direction follows `docs/design/MORU_CANONICAL_V2.md` (Candidate 3 approved).
 - Vector is reserved for true UI symbols.
 - Provider map truth, attribution, touch targets, and outdoor readability take precedence over decorative treatment.
 - Companion/Records use warm field-notebook / paper language rather than visible generic `ElevatedCard` stacks as the final product language.
@@ -204,12 +205,12 @@ Photo capture remains a **P1 optional journal enhancement**. It must never block
 
 ## 10. Remaining Human Gates
 
-This UX approval does not close:
+Moru Candidate 3 character direction is closed/approved. The remaining gates are:
 
-- Moru canonical v2 raster illustration approval
+- Moru v2 production export/crop + mobile-size QA before runtime promotion
 - M-B final motion timing/intensity
 - outdoor final visual/readability approval
 - ID-A icon/logo final lock
 - production POI/content/licensing/release decisions
 
-Development may proceed on the approved presentation/state hierarchy while respecting those remaining gates.
+Development may proceed on the approved presentation/state hierarchy and Moru character direction while respecting those remaining gates.
