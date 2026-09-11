@@ -19,35 +19,92 @@
     "accent.sky": "#9CC9FF",
     "night.base": "#1E2A44"
   },
-  "spacing_dp": {
-    "micro": 4,
-    "xs": 8,
-    "sm": 12,
-    "md": 16,
-    "lg": 20,
-    "xl": 24,
-    "xxl": 32
+  "typography": {
+    "display": {"size_sp": 32, "line_height_sp": 40, "weight": 700, "usage": "rare memory hero only"},
+    "screen_title": {"size_sp": 22, "line_height_sp": 30, "weight": 700, "usage": "one per screen"},
+    "section": {"size_sp": 16, "line_height_sp": 22, "weight": 600, "usage": "botanical section anchor"},
+    "body": {"size_sp": 14, "line_height_sp": 20, "weight": 400, "usage": "primary reading copy"},
+    "meta": {"size_sp": 11, "line_height_sp": 16, "weight": 500, "usage": "metadata and timestamps"},
+    "stamp": {"size_sp": 11, "line_height_sp": 14, "weight": 700, "usage": "short semantic state label"},
+    "font_policy": "platform sans with Korean-capable fallback; type role and metrics are canonical, not a specific font file"
   },
-  "shape_dp": {
-    "chip": 12,
-    "compact_card": 16,
-    "paper_card": 18,
-    "hero_card": 24,
-    "sheet": 28,
-    "phone_preview": 32
+  "spacing_dp": {"micro": 4, "xs": 8, "sm": 12, "md": 16, "lg": 20, "xl": 24, "xxl": 32, "hero": 40},
+  "shape_dp": {"micro": 12, "chip": 18, "compact_card": 20, "paper_card": 22, "hero_card": 28, "sheet": 28, "navigation": 28, "hud": 28, "phone_preview": 32},
+  "stroke_dp": {"hairline": 1, "interactive": 1.5, "paper_edge": 1.5, "character_critical": 2, "selected": 2},
+  "elevation": {
+    "base": {"strategy": "none", "usage": "screen canvas and paper body"},
+    "paper": {"strategy": "warm_edge_plus_tonal_separation", "shadow_alpha_max": 0.06},
+    "map_hud": {"strategy": "soft_shadow", "shadow_y_dp": 4, "shadow_blur_dp": 16, "shadow_alpha_max": 0.10},
+    "rule": "avoid generic Material tonal elevation stacks"
   },
-  "stroke_dp": {
-    "hairline": 1,
-    "paper_edge": 2,
-    "selected": 3
+  "surface": {
+    "canvas": "warm/cool low-contrast app background",
+    "map_float": "raised neutral surface over provider map; opacity must preserve legibility",
+    "paper": "A3 stable warm paper surface",
+    "paper_inset": "clue/note/stamp mounting surface",
+    "quiet_utility": "settings/legal/provider surface with minimal decoration"
   },
-  "type_roles": {
-    "display": {"weight": 700, "usage": "memory hero or rare emotional title only"},
-    "screen_title": {"weight": 700, "usage": "one per screen"},
-    "section": {"weight": 700, "usage": "botanical ink section anchor"},
-    "body": {"weight": 400, "usage": "dark neutral ink, never leaf green for long copy"},
-    "meta": {"weight": 400, "usage": "muted metadata and timestamps"},
-    "stamp": {"weight": 700, "usage": "short semantic completion/state label"}
+  "icon": {
+    "style": "rounded botanical field-symbol line icons",
+    "stroke_dp": 1.75,
+    "sizes_dp": [16, 20, 24],
+    "selected_rule": "icon shape + indicator + weight; never color only",
+    "emoji_as_final_icon": false
+  },
+  "navigation": {
+    "count": 5,
+    "destinations": ["EXPLORE", "COMPANION", "RECORDS", "GOALS", "SETTINGS"],
+    "height_dp": 74,
+    "horizontal_inset_dp": 16,
+    "selected_indicator": "soft_leaf_or_rounded_shape_plus_weight",
+    "selected_indicator_min_dp": [48, 40],
+    "label_size_sp": 10,
+    "content_must_outweigh_nav": true,
+    "material_default_visuals_forbidden": true
+  },
+  "map_overlay": {
+    "route_width_dp": {"min": 4, "preferred": 5, "max": 6},
+    "route_semantics": ["idle", "following", "completed"],
+    "halo_diameter_dp": {"idle": 32, "active": 48, "strong": 64},
+    "marker_min_touch_target_dp": 48,
+    "provider_map_filtering": "none_or_minimal; time-of-day belongs to route/halo/HUD/companion/surrounding UI",
+    "state_color_only_forbidden": true,
+    "provider_attribution_must_remain_unobscured": true
+  },
+  "companion_hud": {
+    "portrait_dp": {"compact": 56, "standard": 64, "reaction": 72},
+    "padding_dp": 16,
+    "corner_radius_dp": 28,
+    "max_primary_lines": 2,
+    "max_secondary_lines": 1,
+    "required_slots": ["companion_portrait", "reaction_copy", "distance_or_context", "one_primary_action"],
+    "rule": "map-edge vignette, never dashboard card wall"
+  },
+  "a3_paper": {
+    "surface": "paper.raised",
+    "edge": "paper.base",
+    "artifact_radius_dp": 22,
+    "inset_radius_dp": 16,
+    "decorative_density": "restrained",
+    "allowed_artifacts": ["stamp", "clue_note", "discovery_sticker", "collection_mount", "memory_seal"],
+    "locked_state": "pattern_or_icon_plus_text",
+    "time_of_day_independent": true
+  },
+  "motion": {
+    "direction": "M-B",
+    "intensity_candidate": "calm_reactive",
+    "ui_micro_ms": [140, 180],
+    "ui_state_ms": [220, 320],
+    "companion": {
+      "idle_breathe": {"duration_ms": 2400, "loop": true, "body_scale_peak": 1.015, "sprout_lag_ms": 80},
+      "clue_react": {"duration_ms": 480, "head_tilt_deg": 6, "body_lean_percent": 4, "bag_swing_deg": 10},
+      "resolved_settle": {"duration_ms": 640, "body_drop_percent": 2.5, "scarf_lag_ms": 70},
+      "investigate": {"duration_ms": 580, "status": "follow_up"},
+      "happy_bounce": {"duration_ms": 520, "vertical_percent": 5, "max_squash_percent": 3, "status": "follow_up"},
+      "walk": {"status": "experimental"}
+    },
+    "easing": {"standard": "ease-out", "reactive": "soft_overshoot_once", "loop": "ease-in-out"},
+    "reduced_motion": "static semantic pose + opacity/halo transition <=160ms; no repeated bounce or map-scale pulse"
   },
   "surface_roles": {
     "explore.map_truth": "provider map remains visually dominant and unfiltered",
@@ -57,12 +114,16 @@
     "goals.expedition_board": "warm paper checklist, not KPI dashboard",
     "settings.utility": "quiet neutral surface with plain legal/provider text"
   },
-  "navigation": {
-    "count": 5,
-    "destinations": ["EXPLORE", "COMPANION", "RECORDS", "GOALS", "SETTINGS"],
-    "selected_indicator": "soft_leaf_or_rounded_shape_plus_weight",
-    "emoji_as_final_icon": false,
-    "content_must_outweigh_nav": true
+  "components": {
+    "DTBottomNav": "five-destination DailyTown navigation replacing visible Material default",
+    "DTMapHUD": "single compact companion/reaction/objective HUD over Explore map",
+    "DTFieldNote": "compact contextual field-note surface",
+    "DTPaperCard": "A3 tactile record artifact; no generic elevated-card look",
+    "DTExpeditionChecklist": "daily/weekly neighborhood goal row or group",
+    "DTCompanionNotebook": "portrait + relationship + keepsakes + memory composition",
+    "DTClueBadge": "semantic icon/text badge with non-color state cue",
+    "DTSectionHeader": "small botanical field-label heading",
+    "DTPrimaryCTA": "high-contrast rounded action with 48dp minimum touch target"
   },
   "moru_v2": {
     "status": "candidate_rebaseline",
@@ -80,6 +141,8 @@
     "gameplay_state_color_only_forbidden": true,
     "locked_state_requires_pattern_or_icon": true,
     "selected_state_requires_non_color_cue": true,
+    "min_touch_target_dp": 48,
+    "critical_outdoor_text_min_sp": 12,
     "reduced_motion_fallback_required": true,
     "provider_attribution_must_remain_unobscured": true
   },
@@ -89,6 +152,8 @@
     "48dp_moru_silhouette_qa",
     "six_expression_fit_qa",
     "light_dusk_dark_identity_qa",
+    "motion_intensity_human_approval",
+    "outdoor_readability_human_approval",
     "runtime_implementation_separate_human_gate"
   ]
 }
