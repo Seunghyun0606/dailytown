@@ -1,7 +1,8 @@
 package com.dailytown.app.poi
 
-import com.dailytown.app.domain.ExplorationEngine
+import com.dailytown.app.domain.GeoDistance
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.domain.HaversineGeoDistance
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.visual.MarkerSemantic
 
@@ -15,7 +16,7 @@ class NearbyPoiMarkerPublisher(
     private val publish: (List<MapMarkerSpec>) -> Unit,
     private val minPublishMovementMeters: Double = 60.0,
     private val maxPublishedMarkers: Int = 24,
-    private val distance: ExplorationEngine = ExplorationEngine(),
+    private val distance: GeoDistance = HaversineGeoDistance,
 ) {
     private var lastPublishedCenter: GeoPoint? = null
     private var lastPublishedIds: List<String> = emptyList()
@@ -29,7 +30,7 @@ class NearbyPoiMarkerPublisher(
         )
         val ids = visible.map { it.id }
         val movedEnough = lastPublishedCenter?.let {
-            distance.distanceMeters(it, center) >= minPublishMovementMeters
+            distance.meters(it, center) >= minPublishMovementMeters
         } ?: true
         if (movedEnough || ids != lastPublishedIds) {
             publish(visible)
@@ -43,10 +44,10 @@ internal fun selectVisiblePoiMarkers(
     center: GeoPoint,
     pois: List<Poi>,
     maxMarkers: Int = 24,
-    distance: ExplorationEngine = ExplorationEngine(),
+    distance: GeoDistance = HaversineGeoDistance,
 ): List<MapMarkerSpec> = pois
     .distinctBy { it.id }
-    .sortedBy { distance.distanceMeters(center, it.position) }
+    .sortedBy { distance.meters(center, it.position) }
     .take(maxMarkers.coerceAtLeast(0))
     .map(Poi::toMapMarkerSpec)
 

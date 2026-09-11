@@ -1,7 +1,8 @@
 package com.dailytown.app.poi
 
-import com.dailytown.app.domain.ExplorationEngine
+import com.dailytown.app.domain.GeoDistance
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.domain.HaversineGeoDistance
 
 enum class PoiCategory { PARK, CULTURE, LANDMARK, STREET, PUBLIC_SPACE, OTHER }
 
@@ -40,10 +41,10 @@ interface PoiRepository {
  */
 class FixturePoiRepository(
     private val items: List<Poi> = defaultFixturePois(),
-    private val distance: ExplorationEngine = ExplorationEngine(),
+    private val distance: GeoDistance = HaversineGeoDistance,
 ) : PoiRepository {
     override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> =
-        items.filter { distance.distanceMeters(center, it.position) <= radiusMeters }
+        items.filter { distance.meters(center, it.position) <= radiusMeters }
 
     override fun sourceMetadata(): List<PoiSourceMetadata> = if (items.isEmpty()) {
         emptyList()
