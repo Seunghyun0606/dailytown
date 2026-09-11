@@ -1,19 +1,13 @@
 package com.dailytown.app.poi
 
 import com.dailytown.app.domain.GeoPoint
-import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import kotlin.math.round
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
 private const val TOUR_API_BASE_URL = "https://apis.data.go.kr/B551011/KorService2"
 private const val TOUR_API_MAX_RADIUS_METERS = 20_000
-private const val TOUR_API_QUERY_GRID_DEGREES = 0.02
 private const val TOUR_API_QUERY_PADDING_METERS = 1_600.0
 
 internal data class TourApiNearbyItem(
@@ -78,40 +72,32 @@ internal class HttpTourApiNearbySource(
     private val mobileApp: String = "DailyTown",
     private val mobileOs: String = "AND",
     private val baseUrl: String = TOUR_API_BASE_URL,
-    private val connectTimeoutMillis: Int = 5_000,
-    private val readTimeoutMillis: Int = 7_000,
+    connectTimeoutMillis: Int = 5_000,
+    readTimeoutMillis: Int = 7_000,
+    private val httpTransport: PoiHttpTransport = UrlConnectionPoiHttpTransport(
+        connectTimeoutMillis = connectTimeoutMillis,
+        readTimeoutMillis = readTimeoutMillis,
+    ),
 ) : TourApiNearbySource {
     init {
         require(serviceKey.isNotBlank()) { "TourAPI service key is required." }
     }
 
-    override suspend fun fetch(center: GeoPoint, radiusMeters: Double): List<TourApiNearbyItem> =
-        withContext(Dispatchers.IO) {
-            val url = buildTourApiLocationUrl(
-                baseUrl = baseUrl,
-                serviceKey = serviceKey,
-                mobileApp = mobileApp,
-                mobileOs = mobileOs,
-                center = center,
-                radiusMeters = radiusMeters,
-            )
-            val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-                requestMethod = "GET"
-                connectTimeout = connectTimeoutMillis
-                readTimeout = readTimeoutMillis
-                setRequestProperty("Accept", "application/json")
-            }
-            try {
-                val code = connection.responseCode
-                if (code !in 200..299) {
-                    error("TourAPI HTTP $code")
-                }
-                val payload = connection.inputStream.bufferedReader().use { it.readText() }
-                parseTourApiNearbyResponse(payload)
-            } finally {
-                connection.disconnect()
-            }
+    override suspend fun fetch(center: GeoPoint, radiusMeters: Double): List<TourApiNearbyItem> {
+        val url = buildTourApiLocationUrl(
+            baseUrl = baseUrl,
+            serviceKey = serviceKey,
+            mobileApp = mobileApp,
+            mobileOs = mobileOs,
+            center = center,
+            radiusMeters = radiusMeters,
+        )
+        val response = httpTransport.get(url)
+        if (response.statusCode !in 200..299) {
+            error("TourAPI HTTP ${response.statusCode}")
         }
+        return parseTourApiNearbyResponse(response.body)
+    }
 }
 
 /**
@@ -127,10 +113,12 @@ internal fun buildTourApiLocationUrl(
     center: GeoPoint,
     radiusMeters: Double,
 ): String {
-    val providerCenter = snapTourApiQueryCenter(center)
-    val radius = (radiusMeters + TOUR_API_QUERY_PADDING_METERS)
-        .toInt()
-        .coerceIn(1, TOUR_API_MAX_RADIUS_METERS)
+    val providerCenter = PoiQueryPrivacyPolicy.snapCenter(center)
+    val radius = PoiQueryPrivacyPolicy.paddedRadiusMeters(
+        requestedRadiusMeters = radiusMeters,
+        paddingMeters = TOUR_API_QUERY_PADDING_METERS,
+        maximumRadiusMeters = TOUR_API_MAX_RADIUS_METERS,
+    )
     val query = linkedMapOf(
         "serviceKey" to serviceKey,
         "MobileOS" to mobileOs,
@@ -148,13 +136,9 @@ internal fun buildTourApiLocationUrl(
     return "${baseUrl.trimEnd('/')}/locationBasedList2?$query"
 }
 
-internal fun snapTourApiQueryCenter(center: GeoPoint): GeoPoint = GeoPoint(
-    latitude = snapToGrid(center.latitude),
-    longitude = snapToGrid(center.longitude),
-)
-
-private fun snapToGrid(value: Double): Double =
-    round(value / TOUR_API_QUERY_GRID_DEGREES) * TOUR_API_QUERY_GRID_DEGREES
+/** Compatibility helper retained for existing tests/callers while policy ownership moves generic. */
+internal fun snapTourApiQueryCenter(center: GeoPoint): GeoPoint =
+    PoiQueryPrivacyPolicy.snapCenter(center)
 
 private fun encodeQuery(value: String): String =
     URLEncoder.encode(value, StandardCharsets.UTF_8.name())

@@ -1,12 +1,8 @@
 package com.dailytown.app.poi
 
 import com.dailytown.app.domain.GeoPoint
-import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -53,8 +49,12 @@ internal fun interface DailyTownPoiProxySource {
 
 internal class HttpDailyTownPoiProxySource(
     baseUrl: String,
-    private val connectTimeoutMillis: Int = 5_000,
-    private val readTimeoutMillis: Int = 7_000,
+    connectTimeoutMillis: Int = 5_000,
+    readTimeoutMillis: Int = 7_000,
+    private val httpTransport: PoiHttpTransport = UrlConnectionPoiHttpTransport(
+        connectTimeoutMillis = connectTimeoutMillis,
+        readTimeoutMillis = readTimeoutMillis,
+    ),
 ) : DailyTownPoiProxySource {
     private val baseUrl = baseUrl.trim().trimEnd('/').also { normalized ->
         require(normalized.startsWith("https://")) {
@@ -62,25 +62,14 @@ internal class HttpDailyTownPoiProxySource(
         }
     }
 
-    override suspend fun fetch(center: GeoPoint, radiusMeters: Double): List<Poi> =
-        withContext(Dispatchers.IO) {
-            require(radiusMeters > 0.0) { "radiusMeters must be positive" }
-            val url = buildDailyTownPoiProxyUrl(baseUrl, center, radiusMeters)
-            val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-                requestMethod = "GET"
-                connectTimeout = connectTimeoutMillis
-                readTimeout = readTimeoutMillis
-                setRequestProperty("Accept", "application/json")
-            }
-            try {
-                val code = connection.responseCode
-                if (code !in 200..299) error("Daily Town POI gateway HTTP $code")
-                val payload = connection.inputStream.bufferedReader().use { it.readText() }
-                parseDailyTownPoiProxyResponse(payload)
-            } finally {
-                connection.disconnect()
-            }
+    override suspend fun fetch(center: GeoPoint, radiusMeters: Double): List<Poi> {
+        require(radiusMeters > 0.0) { "radiusMeters must be positive" }
+        val response = httpTransport.get(buildDailyTownPoiProxyUrl(baseUrl, center, radiusMeters))
+        if (response.statusCode !in 200..299) {
+            error("Daily Town POI gateway HTTP ${response.statusCode}")
         }
+        return parseDailyTownPoiProxyResponse(response.body)
+    }
 }
 
 internal fun buildDailyTownPoiProxyUrl(
@@ -89,12 +78,12 @@ internal fun buildDailyTownPoiProxyUrl(
     radiusMeters: Double,
 ): String {
     require(baseUrl.trim().startsWith("https://")) { "Daily Town POI gateway must use HTTPS." }
-    require(radiusMeters > 0.0) { "radiusMeters must be positive" }
-    // Reuse the same approved neighborhood-scale minimization as the internal TourAPI bridge.
-    val outboundCenter = snapTourApiQueryCenter(center)
-    val outboundRadius = (radiusMeters + PROXY_QUERY_PADDING_METERS)
-        .toInt()
-        .coerceIn(1, PROXY_MAX_RADIUS_METERS)
+    val outboundCenter = PoiQueryPrivacyPolicy.snapCenter(center)
+    val outboundRadius = PoiQueryPrivacyPolicy.paddedRadiusMeters(
+        requestedRadiusMeters = radiusMeters,
+        paddingMeters = PROXY_QUERY_PADDING_METERS,
+        maximumRadiusMeters = PROXY_MAX_RADIUS_METERS,
+    )
     val query = linkedMapOf(
         "latitude" to outboundCenter.latitude.toString(),
         "longitude" to outboundCenter.longitude.toString(),
