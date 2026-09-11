@@ -1,0 +1,93 @@
+{
+  "version": "companion.moru.canonical.v2",
+  "status": {
+    "character_direction": "approved",
+    "reference_extraction": "complete",
+    "transparent_master_export": "pending",
+    "mobile_qa": "pending",
+    "runtime_promotion": "blocked"
+  },
+  "source_of_truth": [
+    "docs/design/DESIGN_BASELINE_V2.md",
+    "docs/design/MORU_CANONICAL_V2.md",
+    "docs/design/MORU_PRODUCTION_EXPORT_V2.md"
+  ],
+  "canonical_baseline": {
+    "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "width": 1122,
+    "height": 1402
+  },
+  "semantic_contract": {
+    "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
+    "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
+    "affinity": ["base", "familiar", "trusted", "best_friend"],
+    "fallback": {
+      "expression": "neutral",
+      "lighting": "LIGHT",
+      "affinity": "base",
+      "motion": "static"
+    }
+  },
+  "usage_contexts": {
+    "map_avatar": {
+      "master_px": [512, 512],
+      "runtime_targets_dp": [48, 56, 64],
+      "anchor": "bottom_center",
+      "crop_rule": "Preserve asymmetric sprout, hood silhouette, face/hood negative space, warm scarf accent and boot/base read."
+    },
+    "hud_portrait": {
+      "master_px": [768, 768],
+      "runtime_targets_dp": [56, 64, 72],
+      "anchor": "face_center",
+      "crop_rule": "Head plus upper torso; retain sprout, hood contour and scarf diagonal."
+    },
+    "encounter_halfbody": {
+      "master_px": [1024, 1280],
+      "anchor": "bottom_center",
+      "crop_rule": "Head to mid-thigh; satchel strap and expression pose remain legible."
+    },
+    "result_large": {
+      "master_px": [1280, 1600],
+      "anchor": "bottom_center",
+      "crop_rule": "Full expressive pose; never crop sprout or boots."
+    },
+    "companion_portrait": {
+      "master_px": [1024, 1280],
+      "anchor": "face_center",
+      "crop_rule": "Portrait-biased current-mood pose while preserving hood/sprout identity."
+    },
+    "journal_crop": {
+      "master_px": [768, 768],
+      "anchor": "face_center",
+      "crop_rule": "Warm paper artifact crop; simplify micro-detail at small sizes rather than sharpening."
+    }
+  },
+  "naming": {
+    "pattern": "companion_moru_v2_<usage>_<expression>_<lighting>_<affinity>.<ext>",
+    "master_format": "PNG",
+    "runtime_format": "WebP"
+  },
+  "affinity_rule": {
+    "base": "canonical outfit; no extra keepsake emphasis",
+    "familiar": "small shared-travel accent such as leaf tag or stitching",
+    "trusted": "route charm / compass / richer satchel keepsake while anatomy remains unchanged",
+    "best_friend": "BF-B restrained personal keepsake cluster; no species, anatomy, crown or major costume transformation"
+  },
+  "qa_required_before_runtime_promotion": [
+    "48dp silhouette recognizability",
+    "face and eye readability across LIGHT/WARM_DUSK/DARK",
+    "no anatomy/costume drift from approved Candidate 3",
+    "affinity progression uses keepsake/patch/charm treatment only",
+    "transparent edge and halo check on light/dark/map backgrounds",
+    "usage-context crops preserve semantic identity",
+    "semantic fallback resolves to neutral/LIGHT/base/static",
+    "v1 rollback/fallback pack remains available until v2 activation passes"
+  ],
+  "human_gates": {
+    "outdoor_readability": "pending",
+    "motion_timing_intensity": "pending",
+    "identity_lock": "pending"
+  },
+  "promotion_rule": "Do not overwrite or silently repoint the existing runtime Moru pack. Add v2 as a new semantic profile/version and promote only after transparent raster exports and mobile QA pass."
+}
