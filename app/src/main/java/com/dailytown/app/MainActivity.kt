@@ -64,11 +64,13 @@ class MainActivity : ComponentActivity() {
         val progressStore = DataStoreProgressStore(applicationContext)
         val basePoiRepository = ProductionPoiRepositoryFactory.create(
             // Direct upstream credentials are an internal/debug diagnostic path only. Release may
-            // consume production POIs only through the app-owned HTTPS gateway.
+            // consume production POIs only through the app-owned HTTPS gateway. Both this caller
+            // and the factory enforce the same build-variant policy so future call sites fail closed.
             tourApiServiceKey = BuildConfig.TOUR_API_SERVICE_KEY.takeIf {
                 BuildVariantPolicy.allowDirectPoiProvider && BuildConfig.TOUR_API_CONFIGURED
             },
             proxyBaseUrl = BuildConfig.DAILYTOWN_POI_API_BASE_URL.takeIf { BuildConfig.DAILYTOWN_POI_API_CONFIGURED },
+            allowDirectProvider = BuildVariantPolicy.allowDirectPoiProvider,
             allowFixtureFallback = BuildVariantPolicy.allowFixturePoiFallback,
         )
         val poiCoordinator = NearbyPoiCoordinator(basePoiRepository)

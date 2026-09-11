@@ -31,10 +31,23 @@ class ProductionPoiRepositoryFactoryTest {
     }
 
     @Test
+    fun `direct provider credential is ignored when caller disables direct provider`() = runBlocking {
+        val repository = ProductionPoiRepositoryFactory.create(
+            tourApiServiceKey = "unit-test-key",
+            allowDirectProvider = false,
+            allowFixtureFallback = false,
+        )
+
+        assertTrue(repository.nearby(seoul, 900.0).isEmpty())
+        assertTrue(repository.sourceMetadata().isEmpty())
+    }
+
+    @Test
     fun `https app owned gateway becomes canonical without provider credential`() {
         val repository = ProductionPoiRepositoryFactory.create(
             tourApiServiceKey = null,
             proxyBaseUrl = "https://poi.dailytown.example",
+            allowDirectProvider = false,
             allowFixtureFallback = false,
         )
 
@@ -47,6 +60,7 @@ class ProductionPoiRepositoryFactoryTest {
         ProductionPoiRepositoryFactory.create(
             tourApiServiceKey = null,
             proxyBaseUrl = "http://poi.dailytown.example",
+            allowDirectProvider = false,
             allowFixtureFallback = false,
         )
     }

@@ -3,7 +3,7 @@ package com.dailytown.app.poi
 /**
  * Runtime POI composition for the adopted production direction:
  * - Release prefers the app-owned HTTPS POI gateway, keeping upstream credentials off-device.
- * - Internal/debug may call TourAPI directly when a service key is configured.
+ * - Internal/debug may call TourAPI directly only when the caller explicitly allows it.
  * - Optional live enrichment providers can be injected without replacing canonical records.
  * - Field-test fixtures are permitted only when the caller explicitly allows development fallback.
  */
@@ -12,6 +12,7 @@ object ProductionPoiRepositoryFactory {
         tourApiServiceKey: String?,
         proxyBaseUrl: String? = null,
         enrichments: List<PoiRepository> = emptyList(),
+        allowDirectProvider: Boolean = true,
         allowFixtureFallback: Boolean = true,
     ): PoiRepository {
         val proxyUrl = proxyBaseUrl.orEmpty().trim().trimEnd('/')
@@ -24,7 +25,7 @@ object ProductionPoiRepositoryFactory {
                 }
                 DailyTownPoiProxyRepository(HttpDailyTownPoiProxySource(proxyUrl))
             }
-            directKey.isNotBlank() && !directKey.startsWith("TODO_") -> {
+            allowDirectProvider && directKey.isNotBlank() && !directKey.startsWith("TODO_") -> {
                 TourApiPoiRepository(HttpTourApiNearbySource(serviceKey = directKey))
             }
             allowFixtureFallback -> FixturePoiRepository()
