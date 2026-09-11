@@ -3,11 +3,14 @@
   "status": {
     "character_direction": "approved",
     "selected_candidate": "candidate_3",
+    "production_fit_reference": "generated",
     "runtime_production_export": "pending",
     "mobile_qa": "pending",
     "motion_final": "pending"
   },
   "source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
+  "production_qa": "design/reference/moru-v2/PRODUCTION_QA.md",
+  "export_manifest": "design/reference/moru-v2/export-manifest.v2.json",
   "asset_policy": "raster_only_for_game_art",
   "reference_artifacts": [
     {
@@ -25,6 +28,16 @@
       "sha256": "059480c4ee6bdff288b7021b22f8aff2952dac9786dcbf7efa1ead806e9cd8d5",
       "role": "canonical derivation and fit reference",
       "status": "reference master; runtime export pending"
+    },
+    {
+      "file": "moru-candidate3-production-fit-board-preview.webp",
+      "repository_payload": "moru-candidate3-production-fit-board-preview.webp.base64",
+      "width": 512,
+      "height": 341,
+      "sha256": "5c6aef62e290c6824d4962c2cb74f4fe976a6e5af7e983efacc679ac3b6a4327",
+      "role": "production-fit visual review preview; Candidate 3 identity across pose/expression/usage-context placement",
+      "status": "reference only; not a runtime atlas",
+      "binary_note": "BINARY_ASSET_NOTE.md"
     }
   ],
   "semantic_contract": {
@@ -33,5 +46,14 @@
     "affinity": ["base", "familiar", "trusted", "best_friend"],
     "usage_contexts": ["map_avatar", "hud_portrait", "encounter_halfbody", "result_large", "companion_portrait", "journal_crop"]
   },
-  "production_note": "Binary raster masters are checksum-locked here. Do not silently substitute SVG/vector or overwrite the existing runtime v1 pack. Promote only after transparent export, mobile-size QA, semantic manifest versioning and fallback verification."
+  "promotion_gate": [
+    "transparent raster production exports",
+    "six-expression identity QA",
+    "LIGHT/WARM_DUSK/DARK readability QA",
+    "affinity anatomy-invariant QA",
+    "48dp and usage-context mobile QA",
+    "semantic resolver/fallback verification",
+    "physical-device outdoor readability gate"
+  ],
+  "production_note": "Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack. Add v2 as a versioned profile and promote only after the production QA gate passes."
 }
