@@ -14,13 +14,24 @@ Daily Town is a location-based exploration game prototype focused on real-world 
 - Content rotation rules for novelty/affinity/proximity
 - Unit tests and Android CI
 
+## Project working context
+
+Repository-owned session guidance is indexed in [`docs/README.md`](docs/README.md).
+The ChatGPT Project master instructions handle project-wide routing, Notion Personal Project OS integration, Human Gate, deduplication, and session reporting.
+
+Use discipline-specific repository instructions only when relevant:
+
+- Design → [`docs/design/DESIGN_SESSION_INSTRUCTIONS.md`](docs/design/DESIGN_SESSION_INSTRUCTIONS.md)
+- Development → [`docs/development/DEVELOPMENT_SESSION_INSTRUCTIONS.md`](docs/development/DEVELOPMENT_SESSION_INSTRUCTIONS.md)
+- Product / Planning → [`docs/product/PRODUCT_SESSION_INSTRUCTIONS.md`](docs/product/PRODUCT_SESSION_INSTRUCTIONS.md)
+
+Mixed sessions should combine only the required disciplines rather than loading all instructions by default.
+
 ## Design system
 
 Daily Town visual-design rules are managed as a single source of truth under [`docs/design/`](docs/design/README.md).
 
-Design sessions and agents should re-read the latest design documents from `main` instead of relying only on previous chat/session memory. The design guide explicitly keeps SVG/vector production limited to true UI symbols; characters, companions, backgrounds, collectibles, rewards, mystery/place illustrations, and other game-world art use raster-oriented game art.
-
-See [`docs/design/CHATGPT_PROJECT_MASTER_PROMPT.md`](docs/design/CHATGPT_PROJECT_MASTER_PROMPT.md) for the GitHub-first master prompt used by ChatGPT design sessions.
+Design sessions should re-read the latest design documents from `main` rather than relying only on previous chat/session memory. SVG/vector production is limited to true UI symbols; characters, companions, backgrounds, collectibles, rewards, mystery/place illustrations, and other game-world art use raster-oriented game art.
 
 ## Running without a map key
 
@@ -50,5 +61,6 @@ gradle assembleDebug
 - `map/MapProvider.kt`: provider-neutral rendering contract
 - `map/NaverMapAdapter.kt`: only NAVER Maps SDK integration
 - `ui/`: Compose exploration UI consuming provider-neutral contracts
+- `docs/ARCHITECTURE.md`: architecture and product/technical constraints
 - `docs/MAP_PROVIDER_CONTRACT.md`: Google Maps replacement boundary
 - `docs/HUMAN_ACTIONS.md`: credentials, device validation, release/privacy TODOs
