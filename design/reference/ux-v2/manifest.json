@@ -2,12 +2,15 @@
   "version": "ux-v2-reference-2026-09-11",
   "status": {
     "ux_hierarchy": "approved",
-    "visual_treatment": "candidate_review",
-    "moru_canonical_v2_art": "human_gate_pending",
+    "visual_structure_baseline": "approved",
+    "visual_treatment": "polish_in_progress",
+    "moru_canonical_v2_art": "candidate_3_character_direction_approved",
+    "moru_runtime_export": "pending_production_qa",
     "game_art_policy": "raster_only"
   },
   "source_of_truth": "docs/product/EXPLORATION_EXPERIENCE_SCENARIO_V2.md",
   "repository_visual_source": "design/reference/ux-v2/index.html",
+  "moru_source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
   "screens": [
     {"id":"explore.prepare","render":"01_explore_prepare.webp","size":[1080,2160],"role":"ready-to-go map-first state"},
     {"id":"explore.detect","render":"02_explore_signal.webp","size":[1080,2160],"role":"hinted / unknown signal state"},
@@ -17,11 +20,15 @@
     {"id":"records.journal","render":"06_records_journal.webp","size":[1080,2160],"role":"journal hierarchy"}
   ],
   "review_board": "00_ux_v2_reference_board.webp",
-  "binary_render_status": "generated_and_sha256_locked; repository source is index.html; large binary transfer must be checksum-verified before commit",
+  "polish_manifest": "design/reference/ux-v2/polish-manifest.json",
+  "moru_reference": "design/reference/moru-v2/manifest.json",
+  "binary_render_status": "reference renders are checksum-tracked; repository-owned editable layout source is index.html; Moru production derivatives are separately versioned under design/reference/moru-v2",
   "notes": [
-    "All visible character/discovery areas marked RASTER ART SLOT are intentional placeholders, not final game art.",
-    "Do not replace pending Moru/discovery art with SVG, VectorDrawable, Compose Canvas, or geometric game-art approximations.",
-    "UI shapes/icons in the mockup are presentation references; actual runtime implementation remains Jetpack Compose.",
-    "NAVER provider map should stay truthful/readable; the source uses a schematic map only as a design-reference stand-in."
+    "The six-screen composition and information hierarchy are approved as the implementation baseline.",
+    "Background art, discovery/place illustration, material finish, spacing/typographic rhythm, outdoor contrast and other visual polish remain active design work.",
+    "Moru Candidate 3 character direction is approved; runtime production replacement remains gated by transparent export/crop, mobile-size QA, semantic manifest/fallback verification and physical-device readability.",
+    "Do not recreate Moru/discovery game art with SVG, VectorDrawable, Compose Canvas, or geometric approximations.",
+    "UI shapes/icons are presentation references; actual runtime implementation remains Jetpack Compose.",
+    "NAVER/provider map truth and attribution stay authoritative; schematic maps in references are layout stand-ins only."
   ]
 }
