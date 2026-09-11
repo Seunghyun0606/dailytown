@@ -14,6 +14,14 @@ Daily Town is a location-based exploration game prototype focused on real-world 
 - Content rotation rules for novelty/affinity/proximity
 - Unit tests and Android CI
 
+## Design system
+
+Daily Town visual-design rules are managed as a single source of truth under [`docs/design/`](docs/design/README.md).
+
+Design sessions and agents should re-read the latest design documents from `main` instead of relying only on previous chat/session memory. The design guide explicitly keeps SVG/vector production limited to true UI symbols; characters, companions, backgrounds, collectibles, rewards, mystery/place illustrations, and other game-world art use raster-oriented game art.
+
+See [`docs/design/CHATGPT_PROJECT_MASTER_PROMPT.md`](docs/design/CHATGPT_PROJECT_MASTER_PROMPT.md) for the GitHub-first master prompt used by ChatGPT design sessions.
+
 ## Running without a map key
 
 The app builds and the exploration replay remains usable without NAVER credentials. The map area displays a configuration placeholder.
