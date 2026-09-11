@@ -24,6 +24,7 @@ This registry preserves design-review imagery in GitHub so accepted/reference bo
 | --- | ---: | --- | --- |
 | `design/reference/environment/environment_asset_family_v1.webp` | 1536×1024 | `ecc00d72934245afad6416a8fdb7a2f512f3259c11035b6fe5e3c10d840b5c95` | neighborhood environment/place family reference |
 | `design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp` | 1448×1086 | `32aa7cb81a28074b063cdb9a61b4930a0491c6c19da59b01a9895be20c9435b0` | `오래된 가로수의 쪽지` discovery/place/item family reference |
+| `design/reference/discovery/old-ginkgo-note/production/old_ginkgo_production_board_ref_v2.webp` | 1536×1024 | `550352f37a4d541b5e70523e5472e263ef6dff2e07ad5b6abe1d2525a6f7f9f2` | production-derivation review board only; non-canonical, cannot override locked Moru/UX baseline or imply extra domain items |
 | `design/reference/ux-v2/raster/companion_records_finish_pass_v1.webp` | 1448×1086 | `d9b4279da298ea9dbc1e151818ae82de59fcaa7a022528497185208581a56f88` | Companion relationship notebook + Records A3 finish reference |
 | `design/reference/ux-v2/raster/explore_detail_parity_v1.webp` | 1448×1086 | `959b79223970132b23f2d8b6f9d19056eace5f5176c213d997bc59154b0d37fb` | Explore Prepare/Detect/Discover/Resolved detail parity reference |
 | `design/reference/ux-v2/raster/mobile_readability_qa_v2.webp` | 1800×1350 | `32b330c6e4a39ca2c154953cb326310b60dc1d4ed9d3fb7fee0278d237201c74` | reduced-size QA board made from locked baseline crops |
