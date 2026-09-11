@@ -1,0 +1,87 @@
+{
+  "version": "old-ginkgo-first-scenario-pack-qa-v3",
+  "status": "partial_runtime_candidate_pack_og04_og05_only",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "redesign": false,
+  "runtime_activation": false,
+  "assets": [
+    {
+      "work_item": "DT-DES-OG-02",
+      "semantic_key": "clue.old_ginkgo.folded_note",
+      "github_reference": "../runtime-v2/folded_note_runtime_candidate_v2_ref.webp",
+      "github_reference_dimensions_px": [128, 128],
+      "github_reference_sha256": "baad86cef05a94d17442fe34ec49d5ec18a1d48968c86273f0aceae12bf0c52c",
+      "declared_master_dimensions_px": [768, 768],
+      "declared_master_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
+      "target_dp": [48, 64, 96, 144],
+      "static_context_qa": "PASS",
+      "android_managed_device_render": "PASS_API30_DENSITY_2_625",
+      "android_capture": "../runtime-v2/android-qa/folded_note_android_density_qa_v2.png",
+      "android_capture_sha256": "0562c1b8056f0f8ef7b7a4a7ffc406b8900f72fe91ff66f645546ad0a89d06a0",
+      "android_source_quality": "BLOCKED_MASTER_BYTES_NOT_PERSISTED",
+      "promotion": "NOT_PROMOTED"
+    },
+    {
+      "work_item": "DT-DES-OG-03",
+      "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+      "github_reference": "../runtime-v2/ginkgo_leaf_runtime_candidate_v2_ref.webp",
+      "github_reference_dimensions_px": [96, 96],
+      "github_reference_sha256": "584fc61494627fb82ee7f6dab88c0b82bfbc47d9a935ffe5111b4d19c794787f",
+      "declared_master_dimensions_px": [512, 512],
+      "declared_master_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+      "target_dp": [32, 48, 64, 96],
+      "static_context_qa": "PASS",
+      "android_managed_device_render": "PASS_API30_DENSITY_2_625",
+      "android_capture": "../runtime-v2/android-qa/ginkgo_leaf_android_density_qa_v2.png",
+      "android_capture_sha256": "e4cb1f896ceaa1eb48513902b2e986d162f0d72fa097a5b6c81cd8db1dfeae31",
+      "android_source_quality": "BLOCKED_MASTER_BYTES_NOT_PERSISTED",
+      "promotion": "NOT_PROMOTED"
+    },
+    {
+      "work_item": "DT-DES-OG-04",
+      "semantic_key": "place.old_ginkgo.main",
+      "manifest": "scene-memory-manifest.v3.json",
+      "crop_set": ["discovery_card", "records_header", "memory_thumbnail"],
+      "identity_palette_lighting_material": "PASS_STATIC",
+      "crop_readability": "PASS_STATIC",
+      "promotion": "DESIGN_RUNTIME_CANDIDATE_NOT_ACTIVATED"
+    },
+    {
+      "work_item": "DT-DES-OG-05",
+      "semantic_key": "memory.old_ginkgo.keepsake",
+      "manifest": "scene-memory-manifest.v3.json",
+      "crop_set": ["records_card", "companion_recent_memory"],
+      "same_scene_derivation": "PASS_STATIC",
+      "a3_journal_compatibility": "PASS_STATIC",
+      "promotion": "DESIGN_RUNTIME_CANDIDATE_NOT_ACTIVATED"
+    }
+  ],
+  "pack_checks": {
+    "semantic_naming": "PASS",
+    "versioned_paths": "PASS",
+    "checksum_registry": "PASS",
+    "place_memory_crop_qa": "PASS_STATIC",
+    "clue_target_size_static_qa": "PASS",
+    "clue_android_context_qa": "PASS_API30_DENSITY_2_625",
+    "clue_high_density_source_quality": "BLOCKED",
+    "light_dark_map_context": "PASS_STATIC_AND_ANDROID_CAPTURE",
+    "reference_registry": "PASS",
+    "manifest_status": "PASS"
+  },
+  "android_qa": {
+    "branch": "feat/emulator-test-harness",
+    "test_commit": "f013c910dd5ac4f070ac4ac7026eb49e50b356fc",
+    "workflow_commit": "ed5bed4b54d9185aec51efe8bad15b8609006c5e",
+    "compile_compatibility_commit": "c77487c576a37a2cf75445caf0d6a88bb20bd66f",
+    "test_source": "app/src/androidTest/java/com/dailytown/app/visualqa/OldGinkgoClueAssetQaTest.kt",
+    "runtime_asset_packaging": false,
+    "android_ci_run": 34623925965,
+    "visual_qa_run": 34623925977,
+    "android_ci_result": "PASS_RUN_758",
+    "relevant_visual_job_result": "PASS_REPLAY_AND_STATIC_VISUAL_SMOKE",
+    "workflow_result_note": "The overall visual workflow includes unrelated A3 and NAVER jobs; the relevant replay-and-static-visual-smoke job passed and emitted both Old Ginkgo captures.",
+    "result": "ANDROID_CONTEXT_PASS_SOURCE_QUALITY_BLOCKED"
+  },
+  "blocker": "The exact 768x768 folded-note and 512x512 leaf master bytes named by runtime-v2 are not persisted in GitHub or the available Work artifacts. The inspectable 128x128 and 96x96 refs cannot satisfy high-density source-quality acceptance. Reproduce only the locked designs at native resolution or recover the exact masters, then rerun the same matrix.",
+  "promotion_rule": "OG-04 and OG-05 remain design-side runtime candidates. OG-02 and OG-03 remain unpromoted until exact native masters pass Android high-density QA. Android runtime activation is a separate development task."
+}

@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-runtime-candidate-v2",
-  "status": "technical_cleanup_and_static_mobile_qa_complete",
+  "status": "static_and_android_context_qa_complete_source_bytes_blocked_not_promoted",
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "redesign": false,
   "runtime_activation": false,
@@ -12,10 +12,12 @@
       "canvas_px": [768, 768],
       "alpha": true,
       "github_reference": "folded_note_runtime_candidate_v2_ref.webp",
+      "github_reference_canvas_px": [128, 128],
       "github_reference_sha256": "baad86cef05a94d17442fe34ec49d5ec18a1d48968c86273f0aceae12bf0c52c",
       "preview_targets_px": [48, 64, 96, 144],
       "max_density_preview_px": 432,
-      "status": "design_runtime_candidate_only"
+      "source_bytes_available": false,
+      "status": "design_candidate_not_promoted_source_quality_blocked"
     },
     {
       "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
@@ -24,10 +26,12 @@
       "canvas_px": [512, 512],
       "alpha": true,
       "github_reference": "ginkgo_leaf_runtime_candidate_v2_ref.webp",
+      "github_reference_canvas_px": [96, 96],
       "github_reference_sha256": "584fc61494627fb82ee7f6dab88c0b82bfbc47d9a935ffe5111b4d19c794787f",
       "preview_targets_px": [32, 48, 64, 96],
       "max_density_preview_px": 288,
-      "status": "design_runtime_candidate_only"
+      "source_bytes_available": false,
+      "status": "design_candidate_not_promoted_source_quality_blocked"
     }
   ],
   "qa": {
@@ -38,9 +42,24 @@
     "target_size_preview": "PASS_STATIC",
     "qa_reference": "runtime_candidate_qa_v2.webp",
     "qa_reference_sha256": "08305d83b83adebe128ca65850bf7589339cd0a2472850f1a639b83fa1b8b4d1",
-    "android_runtime_integration": "PENDING",
-    "physical_device_outdoor": "PENDING"
+    "android_test_harness": "PR10 app/src/androidTest/java/com/dailytown/app/visualqa/OldGinkgoClueAssetQaTest.kt",
+    "android_ci_run": 34623925965,
+    "android_visual_qa_run": 34623925977,
+    "android_density": 2.625,
+    "android_managed_device_render": "PASS_API30",
+    "android_context_readability": "PASS_WITH_UPSCALE_SOFTNESS",
+    "android_alpha_transparent_corners": "PASS",
+    "android_edge_halo": "PASS_NO_OPAQUE_MATTE_OR_STRONG_LIGHT_HALO",
+    "folded_note_android_capture": "android-qa/folded_note_android_density_qa_v2.png",
+    "folded_note_android_capture_dimensions_px": [1079, 1874],
+    "folded_note_android_capture_sha256": "0562c1b8056f0f8ef7b7a4a7ffc406b8900f72fe91ff66f645546ad0a89d06a0",
+    "ginkgo_leaf_android_capture": "android-qa/ginkgo_leaf_android_density_qa_v2.png",
+    "ginkgo_leaf_android_capture_dimensions_px": [1079, 1496],
+    "ginkgo_leaf_android_capture_sha256": "e4cb1f896ceaa1eb48513902b2e986d162f0d72fa097a5b6c81cd8db1dfeae31",
+    "android_runtime_integration": "NOT_PERFORMED",
+    "high_density_source_quality": "BLOCKED_EXACT_MASTER_BYTES_NOT_PERSISTED",
+    "physical_device_outdoor": "PENDING_HUMAN_GATE"
   },
   "rule": "Technical matte/edge cleanup only. Do not alter shape, motif, palette, material treatment, or the locked discovery art direction during later QA.",
-  "promotion_rule": "Do not mark production/runtime until actual Android usage-context QA passes; physical outdoor readability remains a separate Human Gate."
+  "promotion_rule": "Do not promote OG-02/03 until the exact native masters are recovered or the same locked designs are reproduced as native high-resolution raster and pass Android high-density usage-context QA. Physical outdoor readability remains a separate Human Gate."
 }
