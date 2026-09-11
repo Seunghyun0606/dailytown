@@ -1,0 +1,116 @@
+{
+  "version": "old-ginkgo-place-memory-v3",
+  "status": "design_runtime_candidate_full_binary_persisted_not_activated",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "redesign": false,
+  "runtime_activation": false,
+  "inputs": [
+    "design/reference/discovery/old-ginkgo-note/isolation/place_old_ginkgo_scene_ref_v1.webp",
+    "design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp",
+    "design/reference/baseline-v2/raster/dailytown_ux_visual_baseline_v2_ref.webp"
+  ],
+  "source": {
+    "work_artifact": "place_old_ginkgo_main_generation_source_v3.png",
+    "github_asset": "master/place_old_ginkgo_main_generation_source_v3.png",
+    "github_reference": "ref/place_old_ginkgo_main_master_v3_ref.webp",
+    "github_reference_sha256": "7066e5b36b3c6b007484ad089d8d52eeea967ebcd1865a3fa02d6a7937fd2c4a",
+    "dimensions_px": [1448, 1086],
+    "sha256": "ea7108cc2e0c6a09a5feb377442226489e02eef19ed1fe0942ef3d5b7c108d81",
+    "role": "production_generation_source",
+    "generation_mode": "built_in_imagegen_reference_reconstruction_and_style_correction"
+  },
+  "assets": [
+    {
+      "semantic_key": "place.old_ginkgo.main",
+      "role": "design_runtime_candidate",
+      "master": {
+        "work_artifact": "place_old_ginkgo_main_master_v3.png",
+        "github_asset": "master/place_old_ginkgo_main_master_v3.png",
+        "github_reference": "ref/place_old_ginkgo_main_master_v3_ref.webp",
+        "github_reference_sha256": "7066e5b36b3c6b007484ad089d8d52eeea967ebcd1865a3fa02d6a7937fd2c4a",
+        "dimensions_px": [2048, 1536],
+        "sha256": "81a9e87bb0bd4cc97b0bd024280c27bf93b0eb0ec2ea0f03d10e94cfa45f0273",
+        "alpha": false,
+        "processing": "1448x1086 native source to 2048x1536 Lanczos export"
+      },
+      "crops": [
+        {
+          "usage": "discovery_card",
+          "work_artifact": "place_old_ginkgo_main_discovery_card_v3.webp",
+          "github_asset": "crops/place_old_ginkgo_main_discovery_card_v3.webp",
+          "github_reference": "ref/place_old_ginkgo_main_discovery_card_v3_ref.webp",
+          "github_reference_sha256": "d7e1b6d71227df559990559d27b276f28ecfd511b6cc83193590291a9fb29da8",
+          "dimensions_px": [1600, 900],
+          "sha256": "fde285964928825dc77018efe00ae43b7f243fcb5682ce359bf752a8277bfe41"
+        },
+        {
+          "usage": "records_header",
+          "work_artifact": "place_old_ginkgo_main_records_header_v3.webp",
+          "github_asset": "crops/place_old_ginkgo_main_records_header_v3.webp",
+          "github_reference": "ref/place_old_ginkgo_main_records_header_v3_ref.webp",
+          "github_reference_sha256": "d2e61e270031b66b8c4033f9639d7460ae83218f24c9bb9a5e30b6e6355f2d6c",
+          "dimensions_px": [1600, 600],
+          "sha256": "97f8d772e62bc6da9d08023c5daec6db903c7eeab0d02b27427cde65938a0920"
+        },
+        {
+          "usage": "memory_thumbnail",
+          "work_artifact": "place_old_ginkgo_main_memory_thumbnail_v3.webp",
+          "github_asset": "crops/place_old_ginkgo_main_memory_thumbnail_v3.webp",
+          "github_reference": "ref/place_old_ginkgo_main_memory_thumbnail_v3_ref.webp",
+          "github_reference_sha256": "f9793caa87848e36749822f7017e0a606e1e4f745a503b3beb45730cd37c8e3d",
+          "dimensions_px": [640, 480],
+          "sha256": "7dda466c3e1182897a8e09eee63978f4a16ad82bb2942e4d2e71c6582561fdd2"
+        }
+      ]
+    },
+    {
+      "semantic_key": "memory.old_ginkgo.keepsake",
+      "role": "design_runtime_candidate",
+      "derivation": "exact crop from place.old_ginkgo.main v3 master; no separately generated scene",
+      "master": {
+        "work_artifact": "memory_old_ginkgo_keepsake_master_v3.png",
+        "github_asset": "master/memory_old_ginkgo_keepsake_master_v3.png",
+        "github_reference": "ref/memory_old_ginkgo_keepsake_master_v3_ref.webp",
+        "github_reference_sha256": "2c3dccfa62bdcb88e0b1e8763a74d79a13f9b0fdd7b652693ced08558fc03b10",
+        "dimensions_px": [1536, 1152],
+        "sha256": "018b861cdcd1d1629e4b53690b3ac18dda3b28e8f9bfba21ac6c5cd94bf07784",
+        "alpha": false
+      },
+      "crops": [
+        {
+          "usage": "records_card",
+          "work_artifact": "memory_old_ginkgo_keepsake_records_card_v3.webp",
+          "github_asset": "crops/memory_old_ginkgo_keepsake_records_card_v3.webp",
+          "github_reference": "ref/memory_old_ginkgo_keepsake_records_card_v3_ref.webp",
+          "github_reference_sha256": "79a79fc9eb56ebec564e04de09f98feb9a13c94769e7f9c61f274cda7e9c5dcd",
+          "dimensions_px": [1024, 768],
+          "sha256": "4ee1dab4fa9de7f3edfa34f424afcb575d399b0354644c52411e39418733e146"
+        },
+        {
+          "usage": "companion_recent_memory",
+          "work_artifact": "memory_old_ginkgo_keepsake_companion_recent_memory_v3.webp",
+          "github_asset": "crops/memory_old_ginkgo_keepsake_companion_recent_memory_v3.webp",
+          "github_reference": "ref/memory_old_ginkgo_keepsake_companion_recent_memory_v3_ref.webp",
+          "github_reference_sha256": "3a2c86770ee008808a20f090104b58baa4d2fb4d67237a5a59cfc3dead974c2e",
+          "dimensions_px": [1280, 720],
+          "sha256": "01d9dd9679b66ec66ae6f79991a54bd5863096afafbf893d07693e03d120b73a"
+        }
+      ]
+    }
+  ],
+  "qa": {
+    "baseline_identity": "PASS_STATIC",
+    "palette_lighting_material": "PASS_STATIC",
+    "ui_hierarchy_subordination": "PASS_STATIC",
+    "crop_readability": "PASS_STATIC",
+    "same_scene_memory_derivation": "PASS_STATIC",
+    "a3_journal_compatibility": "PASS_STATIC",
+    "qa_board_work_artifact": "old_ginkgo_scene_crop_qa_board_v3.webp",
+    "qa_board_github_asset": "qa/old_ginkgo_scene_crop_qa_board_v3.webp",
+    "qa_board_github_reference": "ref/old_ginkgo_scene_crop_qa_board_v3_ref.webp",
+    "qa_board_github_reference_sha256": "78083708fc6e28c6d4e124baf0fbf0906cc3dd0078abd200d7dc743c30da4826",
+    "qa_board_sha256": "e48f5206cea26d052a84966f42a7199a49ab77cf7f39d03c62d56a8f3f5b4c24",
+    "android_runtime_integration": "NOT_PERFORMED",
+    "physical_device_outdoor": "PENDING_HUMAN_GATE"
+  }
+}

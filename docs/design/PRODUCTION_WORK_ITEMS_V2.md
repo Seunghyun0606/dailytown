@@ -26,7 +26,7 @@ Deliverables:
 
 ### DT-DES-OG-02 · Folded-note clean transparent master
 
-Status: **IN PROGRESS — technical edge cleanup + static context/mobile-size QA PASS; actual Android QA pending**
+Status: **BLOCKED — static + Android context QA PASS; high-density source quality blocked by missing native master bytes**
 
 Target semantic key: `clue.old_ginkgo.folded_note`
 
@@ -37,7 +37,10 @@ Current checkpoint:
 - semi-transparent edge RGB decontaminated toward nearby solid interior color; extremely faint extraction noise removed without silhouette shrink
 - cream / dark / map-heavy static QA: PASS
 - inspectable alpha-capable GitHub reference persisted under `design/reference/discovery/old-ginkgo-note/production/runtime-v2/`
-- runtime activation remains blocked until actual Android usage-context/source-quality QA
+- repository audit found the inspectable 128×128 reference but not the exact 768×768 master bytes named by the manifest
+- PR #10 Android API 30 / 2.625× test-only matrix PASS at 48 / 64 / 96 / 144 dp on cream, dark, and map-heavy surfaces; alpha/transparent corners PASS
+- no opaque rectangular matte or strong light halo in the capture; visible upscale softness remains at larger targets
+- high-density source quality cannot pass from the 128×128 reference and requires exact-master recovery or same-design native raster reproduction
 
 Required output remains:
 - transparent PNG master, minimum 768×768 canvas
@@ -46,7 +49,7 @@ Required output remains:
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
-Status: **IN PROGRESS — technical edge cleanup + static context/mobile-size QA PASS; actual Android QA pending**
+Status: **BLOCKED — static + Android context QA PASS; high-density source quality blocked by missing native master bytes**
 
 Target semantic key: `clue.old_ginkgo.ginkgo_leaf`
 
@@ -57,7 +60,10 @@ Current checkpoint:
 - semi-transparent edge RGB decontaminated without changing fan silhouette/material language
 - cream / dark / map-heavy static QA: PASS
 - inspectable alpha-capable GitHub reference persisted under `design/reference/discovery/old-ginkgo-note/production/runtime-v2/`
-- runtime activation remains blocked until actual Android usage-context/source-quality QA
+- repository audit found the inspectable 96×96 reference but not the exact 512×512 master bytes named by the manifest
+- PR #10 Android API 30 / 2.625× test-only matrix PASS at 32 / 48 / 64 / 96 dp on cream, dark, and map-heavy surfaces; alpha/transparent corners PASS
+- no opaque rectangular matte or strong light halo in the capture; visible upscale softness remains at larger targets
+- high-density source quality cannot pass from the 96×96 reference and requires exact-master recovery or same-design native raster reproduction
 
 Required output remains:
 - transparent PNG master, minimum 512×512 canvas
@@ -66,7 +72,7 @@ Required output remains:
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
-Status: **NEXT — start clean scene derivation while OG-02/03 Android QA remains pending**
+Status: **DESIGN RUNTIME CANDIDATE — static identity/crop/style QA PASS; not activated**
 
 Target semantic key: `place.old_ginkgo.main`
 
@@ -80,9 +86,17 @@ QA:
 - preserves the approved place identity and warm neighborhood mood
 - no alternate environment art direction
 
+Current checkpoint:
+- native 1448×1086 generated source and auditable 2048×1536 PNG master persisted as GitHub binaries with exact checksums and inspectable WebP refs
+- clean scene contains no UI/text/frame/character; the established folded-note discovery locus remains at the tree base
+- `discovery_card` 1600×900, `records_header` 1600×600, `memory_thumbnail` 640×480 WebP crops preserved
+- static place identity / palette / lighting / material / crop readability QA: PASS
+- manifest/QA: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/`
+- Android runtime binding/activation: not performed
+
 ### DT-DES-OG-05 · Keepsake / shared-memory master
 
-Status: **QUEUED**
+Status: **DESIGN RUNTIME CANDIDATE — same-scene/A3/crop static QA PASS; not activated**
 
 Target semantic key: `memory.old_ginkgo.keepsake`
 
@@ -95,9 +109,16 @@ QA:
 - looks like a memory artifact from the same event, not a newly invented scene
 - compatible with A3 paper/journal treatment
 
+Current checkpoint:
+- 1536×1152 PNG master is an exact crop from the OG-04 master; no separate scene generation; full master/crops are persisted as GitHub binaries with checksum/refs
+- Records 1024×768 and Companion recent-memory 1280×720 WebP crops preserved
+- same-event continuity / crop / cream A3 journal-mount static QA: PASS
+- manifest/QA: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/`
+- Android runtime binding/activation: not performed
+
 ### DT-DES-OG-06 · First-scenario asset QA and runtime-candidate promotion
 
-Status: **BLOCKED by OG-02…05 final QA**
+Status: **PARTIAL — OG-04/05 design candidates PASS; OG-02/03 Android context PASS but high-density source-quality BLOCKED**
 
 Checks:
 - actual target-size Android readability
@@ -109,6 +130,12 @@ Checks:
 Promotion rule:
 - assets may become `runtime_candidate` only after these checks pass
 - runtime activation remains separate from this design checklist
+
+Current checkpoint:
+- integrated QA manifest: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/first-scenario-pack-qa.v3.json`
+- semantic names, versioned paths, committed-reference checksums, manifests, registry, and OG-04/05 crop QA: PASS
+- PR #10 Android API 30 / 2.625× test-only matrix passed the required dp targets, alpha assertions, and cream/dark/map-heavy contexts without packaging the refs into the runtime APK
+- OG-02/03 are not promoted because their exact full-resolution master bytes are unavailable
 
 ## P1 — Moru Candidate 3 production export
 
@@ -179,8 +206,8 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-1. Start **DT-DES-OG-04** clean place scene master from the locked Old Ginkgo reference; do not introduce a new environment style.
-2. In parallel, hand OG-02 / OG-03 runtime-candidate v2 to Android usage-context QA; do not activate them yet.
-3. Then proceed `OG-05 → OG-06`.
+1. Recover the exact v2 PNG masters or reproduce only the locked designs as native high-resolution raster.
+2. Rerun the same Android API 30 / high-density matrix and close the blocked OG-02/03 subset of OG-06.
+3. Keep outdoor readability as a physical-device Human Gate; do not activate assets during design production.
 
 Do not start a new concept-board exploration while these production items remain open.
