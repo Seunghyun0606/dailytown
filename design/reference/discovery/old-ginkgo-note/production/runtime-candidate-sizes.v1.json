@@ -1,0 +1,24 @@
+{
+  "version": "old-ginkgo-target-size-candidates-v1",
+  "status": "design_qa_candidate",
+  "source": "transparent-candidate-manifest.v1.json",
+  "folded_note": {
+    "targets_px": [48, 64, 96, 144],
+    "local_derivative_sha256": {
+      "48": "135722a84eb1f90578daac5b8c1720efa5a5849e783e16fa80a5971cae2a4b4f",
+      "64": "233495f32e904f1c9fac6e8832ca0270a8f765875f6419090b3645e58b3b18c7",
+      "96": "cab078b3c5140dd231da404f66ddd41d80b8f6fff9f45ceb192ac0cef41fb2d9",
+      "144": "48f0e474336527363d497d94d23d6e2a9a7c88719aae5ee51b94acc1cf1982ee"
+    }
+  },
+  "ginkgo_leaf": {
+    "targets_px": [32, 48, 64, 96],
+    "local_derivative_sha256": {
+      "32": "1b7d7795299fa22ca6f9df6ea4976fe287da5e73ba21e7dbffbcf48739b89dc2",
+      "48": "5901a164c2e8c28f505e568c97c232edb2d982e88b6325c1022446aa18dcd9f7",
+      "64": "4c0e559ab982f849bbc258f098af8d7d70af2c0e77dff7c89d092a30fd891ef6",
+      "96": "419066f5bc559de179d0de701532a0012e85b4a4f76e6cbc831d8b5cf91293a2"
+    }
+  },
+  "rule": "These sizes are design-QA derivatives only. They are not Android runtime resources until the transparent candidate passes edge/source-quality/actual-device review."
+}
