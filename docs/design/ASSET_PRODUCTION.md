@@ -143,3 +143,17 @@ When format rules conflict, classification wins:
 - game-world/story/character/collection/reward content → raster required
 
 Where an asset appears on screen does not change its category.
+
+## 9. Reference-image persistence
+
+Design-review imagery must not exist only in chat, temporary sandbox storage, or an external design tool.
+
+When a design task creates, accepts, or materially relies on a raster board/reference:
+
+1. Commit an inspectable raster reference under `design/reference/` before treating the design task as repository-complete.
+2. Mark the file explicitly as one of: `approved baseline`, `reference-only`, or `production/runtime`.
+3. For approved baseline/master imagery, record the original dimensions and SHA-256 even when GitHub stores a smaller review-quality WebP derivative.
+4. A reference derivative must never silently replace the full-resolution canonical/master source or be promoted to runtime art without the normal export and QA process.
+5. Generated follow-up boards must preserve the locked design baseline; storing them in GitHub does not grant permission to reopen the visual direction.
+
+Use `design/reference/REFERENCE_IMAGE_REGISTRY_V2.md` as the current registry for DailyTown baseline and derived raster review imagery.
