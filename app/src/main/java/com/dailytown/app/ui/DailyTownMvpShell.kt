@@ -1,5 +1,6 @@
 package com.dailytown.app.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,6 +60,10 @@ fun DailyTownMvpShell(
     fun openExplore() {
         qaMode = false
         selectedSection = MvpSection.EXPLORE
+    }
+
+    BackHandler(enabled = selectedSection != MvpSection.EXPLORE) {
+        openExplore()
     }
 
     DailyTownTheme {
