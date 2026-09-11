@@ -92,6 +92,27 @@ For non-UI art, use polished raster-oriented 2D mobile game art and target PNG/W
 Do not generate SVG first and convert it to PNG as a workaround.
 Do not use Android VectorDrawable, Compose Canvas primitives, or code-drawn geometric shapes as substitutes for game art.
 
+### Binary asset persistence and GitHub routing
+
+PNG, JPG/JPEG, WebP, sprite sheets, and other binary production assets must be persisted through a binary-capable repository workspace. For ChatGPT Work sessions, use `@ai-remote-viral-pjt-01` when it is available for Daily Town binary asset persistence.
+
+Do not treat the text-oriented GitHub connector `create_file` / `update_file` path as a binary upload mechanism. The GitHub connector may still be used for repository inspection, text/document operations, PR/status checks, and verification that do not require transmitting binary bytes.
+
+For every production binary asset that is meant to land in the repository:
+
+1. Generate or obtain the actual binary output; a rendered preview in chat is not repository persistence.
+2. Materialize the exact bytes into the repository working tree with a binary-capable tool such as `@ai-remote-viral-pjt-01`.
+3. Place the file at the canonical repository asset path; do not create an arbitrary chat-only or temporary replacement path.
+4. Validate the materialized file before commit: confirm file type, expected dimensions/format where relevant, and that Git recognizes the intended binary change.
+5. Reuse the task's existing working branch when one exists. Otherwise create an appropriately scoped branch unless the user explicitly authorizes another branch strategy. Never merge an unrelated open PR as a side effect of asset persistence.
+6. Commit and push the binary file with normal Git operations.
+7. Verify remote persistence after push. Prefer a remote fetch/object read plus checksum comparison when practical; at minimum confirm the pushed ref and path resolve remotely.
+8. Report the asset as `PERSISTED` only after remote verification succeeds. If materialization, push, or remote verification fails, report it as `NOT PERSISTED` and state the failing stage.
+
+A binary-delivery failure must not cause silent fallback to SVG, VectorDrawable, Compose-drawn geometry, base64 text committed as a source file, or documentation-only placeholders for non-UI game art. Fix the binary delivery path or leave the asset explicitly unpersisted.
+
+Do not commit disposable E2E validation assets to `main`. Temporary binary-pipeline tests must use an isolated test branch and must be removed after verification unless the test artifact itself is an approved project asset.
+
 ## 5. Visual target
 
 Non-UI game art should be:
