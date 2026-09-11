@@ -1,16 +1,18 @@
 # Daily Town — Moru Canonical v2
 
-> Status: **APPROVED CHARACTER DIRECTION — 2026-09-11**
+> Status: **APPROVED CHARACTER BASELINE — 2026-09-11**
 >
 > Scope: character art direction, silhouette/anatomy/gear, expression family, lighting family, affinity treatment and usage guidance. Runtime production replacement is still gated by export/crop/mobile QA.
 
 ## 1. Human Gate result
 
-The user selected **Candidate 3** from the raster illustration comparison set as the Moru v2 canonical direction.
+The user selected **Candidate 3** from the raster illustration comparison set as the Moru v2 canonical direction and subsequently confirmed the exact raster baseline tracked by `docs/design/DESIGN_BASELINE_V2.md`.
 
-This supersedes the earlier MR-A/MR-B/MR-C vector-family selection problem as the current visual answer. Earlier SVG/vector Moru boards remain historical/reference material only and must not be promoted as canonical game art.
+This supersedes the earlier MR-A/MR-B/MR-C vector-family selection problem as the current visual answer. Earlier SVG/vector Moru boards and later exploratory/generated composite boards remain historical/reference material only and must not be promoted over the approved baseline.
 
 The selected direction restores the initial DailyTown intent: Moru should read as a **small everyday explorer who happens to carry a gentle botanical identity**, not as a plant monster, forest spirit blob, or generic flat app mascot.
+
+Do not generate another Moru character direction unless the user explicitly reopens this decision.
 
 ## 2. Canonical visual read
 
@@ -35,7 +37,7 @@ The botanical identity should come mainly from hood, sprout, leaf layering, keep
 
 ## 3. Rendering language
 
-Moru is non-UI game art and follows `ART_DIRECTION.md`, `ASSET_PRODUCTION.md`, and `QUALITY_GATE.md`.
+Moru is non-UI game art and follows `ART_DIRECTION.md`, `ASSET_PRODUCTION.md`, `QUALITY_GATE.md`, and `DESIGN_BASELINE_V2.md`.
 
 Required:
 
@@ -131,22 +133,31 @@ The canonical direction must support at least:
 
 Do not use one identical crop for every context. Derive context-specific raster crops from the same canonical character identity.
 
-## 9. Approved source references
+## 9. Approved source reference
 
-The selected/generated raster sheets are tracked in `design/reference/moru-v2/manifest.json` by dimensions and SHA-256.
+The exact approved Moru visual baseline is tracked in `design/reference/baseline-v2/manifest.json`.
 
-The approved visual direction reference set is:
+Canonical semantic target:
 
-- `moru-candidate3-selected.png` — Human Gate selection source
-- `moru-canonical-v2-sheet.png` — canonical derivation/reference sheet with front/3-4/back, expression, lighting, affinity and small-size studies
+- `design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png`
+- dimensions: `1122 × 1402`
+- SHA-256: `541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500`
 
-These are **design reference/master artifacts**, not automatically runtime-ready production exports.
+The approved in-product context reference is:
+
+- `design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png`
+- dimensions: `1448 × 1086`
+- SHA-256: `f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515`
+
+When any earlier generated sheet or wording conflicts with these exact references, the baseline references above win.
+
+These are **design baseline artifacts**, not automatically runtime-ready production exports.
 
 ## 10. Runtime promotion gate
 
 Before replacing the existing production Moru pack:
 
-1. derive clean transparent-background crops/masters from the selected direction
+1. derive clean transparent-background crops/masters from the exact approved baseline
 2. verify all six expressions against the canonical silhouette
 3. verify LIGHT/WARM_DUSK/DARK variants
 4. verify affinity decorations without anatomy drift
@@ -159,13 +170,13 @@ Until that gate passes, keep the existing semantic fallback/rollback pack availa
 
 ## 11. Next design work
 
-With Moru direction locked, design work proceeds to:
+With the visual baseline locked, design work proceeds without new concept-family generation:
 
-- Explore visual polish using the selected Moru direction
-- Companion relationship-notebook polish
-- Records A3 journal polish
-- discovery/place illustration family
-- background/ambient framing
-- M-B motion prototype
+- Moru transparent production extraction / crop spec
+- Explore detail parity against the approved visual baseline
+- discovery/place/background raster illustration family in the same locked style
+- Companion relationship-notebook surface polish
+- Records A3 journal surface polish
+- M-B motion prototype using the same Moru design
 - outdoor readability QA
 - ID-A identity lock
