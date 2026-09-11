@@ -57,7 +57,7 @@ import kotlin.math.roundToInt
 @Composable
 fun DailyTownApp(
     mapAdapter: MapViewAdapter,
-    progressStore: com.dailytown.app.persistence.ProgressStore,
+    progressCoordinator: ProgressRuntimeCoordinator,
     poiRepository: PoiRepository,
     showQaTools: Boolean = false,
 ) {
@@ -80,7 +80,6 @@ fun DailyTownApp(
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
     val goalEvaluator = remember { GoalProgressEvaluator() }
     val trackingCoordinator = remember { TrackingSessionCoordinator() }
-    val progressCoordinator = remember(progressStore) { ProgressRuntimeCoordinator(progressStore) }
     val fieldTestSessionMonitor = remember {
         FieldTestSessionMonitor(AndroidBatterySnapshotSource(context.applicationContext))
     }

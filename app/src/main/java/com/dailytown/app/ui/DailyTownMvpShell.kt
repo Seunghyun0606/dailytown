@@ -29,7 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +53,7 @@ import com.dailytown.app.poi.PoiSourceMetadata
 import com.dailytown.app.progress.GoalDefinition
 import com.dailytown.app.progress.GoalMetric
 import com.dailytown.app.progress.GoalProgressEvaluator
-import com.dailytown.app.progress.GoalRotationCoordinator
+import com.dailytown.app.progress.ProgressRuntimeCoordinator
 import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.visual.A3CompanionStamp
 import com.dailytown.app.ui.visual.A3PaperSurface
@@ -86,20 +86,12 @@ fun DailyTownMvpShell(
 ) {
     var selectedSection by rememberSaveable { mutableStateOf(MvpSection.EXPLORE) }
     var qaMode by rememberSaveable { mutableStateOf(false) }
-    var progress by remember { mutableStateOf<ExplorationProgress?>(null) }
-    var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
-    var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
+    val progressCoordinator = remember(progressStore) { ProgressRuntimeCoordinator(progressStore) }
+    val progressRuntime by progressCoordinator.state.collectAsState()
+    val progress = progressRuntime.progress.takeIf { progressRuntime.ready }
+    val dailyGoals = progressRuntime.dailyGoals
+    val weeklyGoals = progressRuntime.weeklyGoals
     val poiSources = remember(poiRepository) { poiRepository.sourceMetadata() }
-
-    LaunchedEffect(selectedSection, progressStore) {
-        if (selectedSection == MvpSection.EXPLORE) return@LaunchedEffect
-        val loaded = progressStore.load()
-        val rotation = GoalRotationCoordinator().ensure(loaded, LocalDate.now())
-        progress = rotation.progress
-        dailyGoals = rotation.dailyGoals
-        weeklyGoals = rotation.weeklyGoals
-        if (rotation.progress != loaded) progressStore.save(rotation.progress)
-    }
 
     DailyTownTheme {
         Scaffold(
@@ -143,7 +135,7 @@ fun DailyTownMvpShell(
                 SectionLayer(active = selectedSection == MvpSection.EXPLORE) {
                     DailyTownApp(
                         mapAdapter = mapAdapter,
-                        progressStore = progressStore,
+                        progressCoordinator = progressCoordinator,
                         poiRepository = poiRepository,
                         showQaTools = qaMode,
                     )
