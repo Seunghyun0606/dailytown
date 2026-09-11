@@ -13,7 +13,8 @@ For a design-related task, first read:
 4. `/docs/design/ART_DIRECTION.md` — visual language and asset-category policy
 5. `/docs/design/ASSET_PRODUCTION.md` — production/output rules
 6. `/docs/design/QUALITY_GATE.md` — review criteria
-7. Relevant implementation/domain files for the screen/feature being designed
+7. `/docs/design/DESIGN_BASELINE_V2.md` — current approved visual baseline and no-redesign lock
+8. Relevant implementation/domain files for the screen/feature being designed
 
 Do not rely on chat memory alone for substantive design work. Read the latest `main` branch.
 
@@ -21,6 +22,7 @@ Do not rely on chat memory alone for substantive design work. Read the latest `m
 
 - GitHub `main` is authoritative for the visual design system and repository-owned product implementation.
 - Re-read the latest design docs at the start of a new design session and before a substantial art-direction decision.
+- `DESIGN_BASELINE_V2.md` is the current visual answer for Moru and the approved overall visual direction. Do not reopen alternate concept generation unless the user explicitly asks to change the baseline.
 - If a design document changed since a previous session, the newest GitHub version wins.
 - If GitHub cannot be read, state that clearly instead of reconstructing the current design rules from memory.
 
@@ -36,6 +38,8 @@ The art direction must support the actual current product rather than assuming a
 - `ART_DIRECTION.md` — stable visual principles and asset classification
 - `ASSET_PRODUCTION.md` — file formats, technical production rules, and asset handoff
 - `QUALITY_GATE.md` — mandatory QA checklist before accepting an asset or screen
+- `DESIGN_BASELINE_V2.md` — approved visual baseline, exact-reference lock, and allowed production derivations
+- `MORU_CANONICAL_V2.md` — detailed Moru semantic/visual contract under the approved baseline
 - `CHATGPT_PROJECT_MASTER_PROMPT.md` — deprecated compatibility path that redirects to `DESIGN_SESSION_INSTRUCTIONS.md`
 
 ## Change policy
@@ -46,5 +50,6 @@ When a durable design decision is explicitly accepted and repository modificatio
 2. Prefer changing the rule in GitHub rather than leaving it only in chat.
 3. Keep temporary exploration notes out of the core guide until a direction is accepted.
 4. If a new rule conflicts with an existing rule, resolve the conflict in the documents instead of preserving both.
+5. Once the baseline is locked, treat follow-up work as derivation/polish/production unless the user explicitly reopens the visual direction.
 
 The goal is for a future design session to reconstruct the current design system from this directory without depending on previous chat history.
