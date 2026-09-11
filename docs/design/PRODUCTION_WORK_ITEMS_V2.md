@@ -66,7 +66,7 @@ Required output remains:
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
-Status: **NEXT — start clean scene derivation while OG-02/03 Android QA remains pending**
+Status: **DESIGN RUNTIME CANDIDATE — static identity/crop/style QA PASS; not activated**
 
 Target semantic key: `place.old_ginkgo.main`
 
@@ -80,9 +80,17 @@ QA:
 - preserves the approved place identity and warm neighborhood mood
 - no alternate environment art direction
 
+Current checkpoint:
+- native 1448×1086 generated source and auditable 2048×1536 PNG master preserved as named Work artifacts; exact checksums and inspectable WebP refs are in GitHub
+- clean scene contains no UI/text/frame/character; the established folded-note discovery locus remains at the tree base
+- `discovery_card` 1600×900, `records_header` 1600×600, `memory_thumbnail` 640×480 WebP crops preserved
+- static place identity / palette / lighting / material / crop readability QA: PASS
+- manifest/QA: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/`
+- Android runtime binding/activation: not performed
+
 ### DT-DES-OG-05 · Keepsake / shared-memory master
 
-Status: **QUEUED**
+Status: **DESIGN RUNTIME CANDIDATE — same-scene/A3/crop static QA PASS; not activated**
 
 Target semantic key: `memory.old_ginkgo.keepsake`
 
@@ -95,9 +103,16 @@ QA:
 - looks like a memory artifact from the same event, not a newly invented scene
 - compatible with A3 paper/journal treatment
 
+Current checkpoint:
+- 1536×1152 PNG master is an exact crop from the OG-04 master; no separate scene generation; full master/crops are named Work artifacts with GitHub checksum/refs
+- Records 1024×768 and Companion recent-memory 1280×720 WebP crops preserved
+- same-event continuity / crop / cream A3 journal-mount static QA: PASS
+- manifest/QA: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/`
+- Android runtime binding/activation: not performed
+
 ### DT-DES-OG-06 · First-scenario asset QA and runtime-candidate promotion
 
-Status: **BLOCKED by OG-02…05 final QA**
+Status: **IN PROGRESS — OG-04/05 design candidates prepared; OG-02/03 Android source-quality QA still gates integrated closeout**
 
 Checks:
 - actual target-size Android readability
@@ -179,8 +194,8 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-1. Start **DT-DES-OG-04** clean place scene master from the locked Old Ginkgo reference; do not introduce a new environment style.
-2. In parallel, hand OG-02 / OG-03 runtime-candidate v2 to Android usage-context QA; do not activate them yet.
-3. Then proceed `OG-05 → OG-06`.
+1. Complete OG-02 / OG-03 Android high-density usage-context/source-quality QA without activating either asset.
+2. Run OG-02…05 checksum/path/semantic/crop integrated verification and close only the passing subset of OG-06.
+3. Keep outdoor readability as a physical-device Human Gate.
 
 Do not start a new concept-board exploration while these production items remain open.

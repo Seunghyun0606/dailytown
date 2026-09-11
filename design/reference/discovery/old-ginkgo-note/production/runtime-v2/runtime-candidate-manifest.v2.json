@@ -37,7 +37,7 @@
     "map_heavy_context": "PASS_STATIC",
     "target_size_preview": "PASS_STATIC",
     "qa_reference": "runtime_candidate_qa_v2.webp",
-    "qa_reference_sha256": "738a34c61d6092be135fe123b37f90a93809dcdce1e2fb868e1f8c2dd5c29089",
+    "qa_reference_sha256": "08305d83b83adebe128ca65850bf7589339cd0a2472850f1a639b83fa1b8b4d1",
     "android_runtime_integration": "PENDING",
     "physical_device_outdoor": "PENDING"
   },

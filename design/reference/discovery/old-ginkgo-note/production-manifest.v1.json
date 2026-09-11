@@ -8,6 +8,8 @@
   "transparent_candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/transparent-candidate-manifest.v1.json",
   "runtime_candidate_v2_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/",
   "runtime_candidate_v2_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/runtime-candidate-manifest.v2.json",
+  "scene_memory_runtime_candidate_v3_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/",
+  "scene_memory_runtime_candidate_v3_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/scene-memory-manifest.v3.json",
   "work_items": "docs/design/PRODUCTION_WORK_ITEMS_V2.md",
   "scenario": "오래된 가로수의 메모/쪽지",
   "rules": {
@@ -28,7 +30,11 @@
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/place_old_ginkgo_scene_ref_v1.webp",
       "master": {"format": "PNG", "min_px": [1600, 1200], "alpha": false},
       "runtime": {"format": "WebP", "crops": ["discovery_card", "records_header", "memory_thumbnail"]},
-      "status": "reference_extracted_clean_master_pending",
+      "status": "design_runtime_candidate_v3_static_qa_pass_not_activated",
+      "candidate_master_work_artifact": "place_old_ginkgo_main_master_v3.png",
+      "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/place_old_ginkgo_main_master_v3_ref.webp",
+      "candidate_master_sha256": "81a9e87bb0bd4cc97b0bd024280c27bf93b0eb0ec2ea0f03d10e94cfa45f0273",
+      "candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/scene-memory-manifest.v3.json",
       "lock": "match the approved warm neighborhood/ginkgo lighting and perspective; no alternate environment style"
     },
     {
@@ -66,7 +72,11 @@
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/memory_keepsake_photo_ref_v1.webp",
       "master": {"format": "PNG", "min_px": [1024, 768], "alpha": false},
       "runtime": {"format": "WebP", "crops": ["records_card", "companion_recent_memory"]},
-      "status": "reference_extracted_clean_master_pending",
+      "status": "design_runtime_candidate_v3_static_qa_pass_not_activated",
+      "candidate_master_work_artifact": "memory_old_ginkgo_keepsake_master_v3.png",
+      "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/memory_old_ginkgo_keepsake_master_v3_ref.webp",
+      "candidate_master_sha256": "018b861cdcd1d1629e4b53690b3ac18dda3b28e8f9bfba21ac6c5cd94bf07784",
+      "candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/scene-memory-manifest.v3.json",
       "lock": "derive from the same place/note scene; no new character or environment interpretation"
     }
   ],
