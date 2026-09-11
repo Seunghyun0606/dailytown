@@ -30,12 +30,28 @@
     "moru_lighting_family",
     "moru_affinity_visual_progression"
   ],
+  "production_derivation": {
+    "moru_export_spec": "ready",
+    "moru_reference_extraction_map": "ready",
+    "moru_transparent_master_exports": "pending",
+    "explore_visual_parity_spec": "ready",
+    "discovery_place_background_family": "next",
+    "companion_records_surface_refinement": "queued",
+    "mobile_outdoor_qa": "pending_human_gate",
+    "motion_prototype": "pending_human_gate",
+    "identity_lock": "pending_human_gate"
+  },
+  "derived_sources": [
+    "docs/design/MORU_PRODUCTION_EXPORT_V2.md",
+    "design/export-spec/moru-production-manifest.v2.json",
+    "design/reference/baseline-v2/extraction-map.v2.json",
+    "docs/design/EXPLORE_VISUAL_PARITY_V2.md"
+  ],
   "next_work": [
-    "moru_production_extraction_and_export_spec",
-    "explore_screen_detail_parity",
     "matching_discovery_place_background_raster_family",
     "companion_records_surface_refinement",
-    "mobile_and_outdoor_qa",
+    "moru_transparent_master_export_and_mobile_qa",
+    "outdoor_readability_qa",
     "motion_prototype",
     "identity_lock"
   ]
