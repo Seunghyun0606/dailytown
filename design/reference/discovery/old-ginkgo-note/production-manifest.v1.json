@@ -4,6 +4,9 @@
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "reference_board": "design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp",
   "isolation_reference_dir": "design/reference/discovery/old-ginkgo-note/isolation/",
+  "production_reference_dir": "design/reference/discovery/old-ginkgo-note/production/",
+  "transparent_candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/transparent-candidate-manifest.v1.json",
+  "work_items": "docs/design/PRODUCTION_WORK_ITEMS_V2.md",
   "scenario": "오래된 가로수의 메모/쪽지",
   "rules": {
     "new_art_direction": false,
@@ -11,6 +14,7 @@
     "runtime_ready": false,
     "composite_board_is_runtime_asset": false,
     "isolated_reference_is_runtime_asset": false,
+    "transparent_extraction_candidate_is_runtime_asset": false,
     "domain_behavior_change": false
   },
   "required_first_scenario_assets": [
@@ -31,7 +35,9 @@
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/clue_folded_note_ref_v1.webp",
       "master": {"format": "PNG", "min_px": [768, 768], "alpha": true},
       "runtime": {"format": "WebP", "targets_dp": [48, 64, 96, 144]},
-      "status": "reference_extracted_transparent_master_pending",
+      "status": "transparent_extraction_candidate_created_qa_pending",
+      "candidate_sha256": "c9b44fd1d89326a3b85c0086aee9f649dd2a3c96780a3c3f6d19692f1f7dedc8",
+      "candidate_limit": "derived from composite reference; source-resolution and edge/Android-size QA still required",
       "lock": "warm handmade paper, subtle botanical mark, readable folded-paper silhouette"
     },
     {
@@ -41,7 +47,9 @@
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/clue_ginkgo_leaf_ref_v1.webp",
       "master": {"format": "PNG", "min_px": [512, 512], "alpha": true},
       "runtime": {"format": "WebP", "targets_dp": [32, 48, 64, 96]},
-      "status": "reference_extracted_transparent_master_pending",
+      "status": "transparent_extraction_candidate_created_qa_pending",
+      "candidate_sha256": "647a2fec78c70bcbb05efde0be800722c8db754d9c880aa0d697d341a4a2186b",
+      "candidate_limit": "derived from composite reference; source-resolution and edge/Android-size QA still required",
       "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment"
     },
     {
@@ -82,6 +90,7 @@
     "verify place art does not overpower map/UI hierarchy",
     "verify clue silhouettes at intended mobile sizes",
     "verify paper/leaf colors against both cream journal surfaces and map-heavy contexts",
+    "do not promote transparent extraction candidates until edge/source-resolution/actual Android-size QA passes",
     "do not promote to runtime before transparent-edge/crop/mobile QA",
     "outdoor readability remains a human physical-device gate"
   ]
