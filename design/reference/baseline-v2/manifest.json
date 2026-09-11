@@ -1,0 +1,42 @@
+{
+  "baseline_id": "dailytown-design-baseline-v2-2026-09-11",
+  "status": "APPROVED_BASELINE",
+  "source_of_truth": "docs/design/DESIGN_BASELINE_V2.md",
+  "lock_rule": "Use only the exact user-confirmed visual references below. Do not generate alternate Moru/UI/art-direction concepts unless the user explicitly reopens the decision.",
+  "binary_transfer_status": "exact source bytes are checksum-locked; connector path does not currently provide direct local binary upload, so repository promotion must verify these hashes before treating any binary copy as authoritative",
+  "references": [
+    {
+      "semantic_target": "design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515",
+      "role": "approved overall UX / visual / art-direction baseline"
+    },
+    {
+      "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+      "width": 1122,
+      "height": 1402,
+      "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+      "role": "approved Moru Candidate 3 canonical raster baseline"
+    }
+  ],
+  "locked": [
+    "explore_prepare_detect_discover_resolved_visual_direction",
+    "warm_botanical_storybook_raster_tone",
+    "cream_paper_surface_language",
+    "real_map_first_composition",
+    "moru_candidate_3_character_direction",
+    "moru_semantic_expression_family",
+    "moru_lighting_family",
+    "moru_affinity_visual_progression"
+  ],
+  "next_work": [
+    "moru_production_extraction_and_export_spec",
+    "explore_screen_detail_parity",
+    "matching_discovery_place_background_raster_family",
+    "companion_records_surface_refinement",
+    "mobile_and_outdoor_qa",
+    "motion_prototype",
+    "identity_lock"
+  ]
+}
