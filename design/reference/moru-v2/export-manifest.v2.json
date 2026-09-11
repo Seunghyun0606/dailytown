@@ -1,0 +1,55 @@
+{
+  "profile": "companion.moru.canonical.v2",
+  "status": "production_candidate_not_runtime_promoted",
+  "character_direction": "candidate_3_approved",
+  "source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
+  "qa": "design/reference/moru-v2/PRODUCTION_QA.md",
+  "format_policy": {
+    "game_art": "raster_only",
+    "master": "PNG with alpha when composited",
+    "android_runtime": "lossless/near-lossless WebP or PNG according to QA",
+    "forbidden": ["SVG character", "VectorDrawable character", "Compose Canvas character"]
+  },
+  "resolver_dimensions": [
+    "companion_id",
+    "expression",
+    "lighting",
+    "affinity",
+    "usage_context"
+  ],
+  "companion_id": "moru",
+  "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
+  "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
+  "affinity": ["base", "familiar", "trusted", "best_friend"],
+  "usage_contexts": [
+    "map_avatar",
+    "hud_portrait",
+    "encounter_halfbody",
+    "result_large",
+    "companion_portrait",
+    "journal_crop"
+  ],
+  "semantic_key_template": "companion/moru/v2/{usage_context}/{expression}/{lighting}/{affinity}",
+  "fallback_order": [
+    "exact",
+    "same_context_expression_LIGHT_base",
+    "same_context_neutral_LIGHT_base",
+    "legacy_v1_static_semantic_fallback"
+  ],
+  "runtime_promotion_requirements": [
+    "transparent production crops generated",
+    "six expressions pass identity lock",
+    "three lighting families pass face readability",
+    "affinity cues pass anatomy-invariant rule",
+    "48dp and usage-context mobile QA pass",
+    "fallback resolver verification passes",
+    "binary dimensions and SHA-256 recorded",
+    "physical-device outdoor readability remains separately approved"
+  ],
+  "naming_examples": {
+    "map_avatar": "companion_moru_v2_map_avatar_neutral_light_base.webp",
+    "hud_portrait": "companion_moru_v2_hud_portrait_curiosity_light_base.webp",
+    "result_large": "companion_moru_v2_result_large_resolved_warm_dusk_trusted.webp"
+  },
+  "promotion_rule": "Do not overwrite or silently repoint the v1 profile. Add v2 as a separately versioned profile and promote only after QA evidence is complete."
+}
