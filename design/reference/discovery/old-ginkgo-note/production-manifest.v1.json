@@ -1,0 +1,82 @@
+{
+  "version": "old-ginkgo-note-production-v1",
+  "status": "production_derivation_spec",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "reference_board": "design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp",
+  "scenario": "오래된 가로수의 메모/쪽지",
+  "rules": {
+    "new_art_direction": false,
+    "game_art_format": "raster",
+    "runtime_ready": false,
+    "composite_board_is_runtime_asset": false,
+    "domain_behavior_change": false
+  },
+  "required_first_scenario_assets": [
+    {
+      "semantic_key": "place.old_ginkgo.main",
+      "subject": "오래된 은행나무 장소",
+      "category": "place_background",
+      "master": {"format": "PNG", "min_px": [1600, 1200], "alpha": false},
+      "runtime": {"format": "WebP", "crops": ["discovery_card", "records_header", "memory_thumbnail"]},
+      "status": "isolated_master_pending",
+      "lock": "match the approved warm neighborhood/ginkgo lighting and perspective; no alternate environment style"
+    },
+    {
+      "semantic_key": "clue.old_ginkgo.folded_note",
+      "subject": "접힌 쪽지",
+      "category": "clue_item",
+      "master": {"format": "PNG", "min_px": [768, 768], "alpha": true},
+      "runtime": {"format": "WebP", "targets_dp": [48, 64, 96, 144]},
+      "status": "isolated_master_pending",
+      "lock": "warm handmade paper, subtle botanical mark, readable folded-paper silhouette"
+    },
+    {
+      "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+      "subject": "은행잎 표식/단서",
+      "category": "clue_item",
+      "master": {"format": "PNG", "min_px": [512, 512], "alpha": true},
+      "runtime": {"format": "WebP", "targets_dp": [32, 48, 64, 96]},
+      "status": "isolated_master_pending",
+      "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment"
+    },
+    {
+      "semantic_key": "memory.old_ginkgo.keepsake",
+      "subject": "발견 기억 이미지",
+      "category": "memory_artifact",
+      "master": {"format": "PNG", "min_px": [1024, 768], "alpha": false},
+      "runtime": {"format": "WebP", "crops": ["records_card", "companion_recent_memory"]},
+      "status": "isolated_master_pending",
+      "lock": "derive from the same place/note scene; no new character or environment interpretation"
+    }
+  ],
+  "scene_variant_references": [
+    {"id": "under_tree", "role": "primary_discovery_scene", "status": "reference_only"},
+    {"id": "on_bench", "role": "future_reuse_reference", "status": "reference_only"},
+    {"id": "near_wall", "role": "future_reuse_reference", "status": "reference_only"},
+    {"id": "among_fallen_leaves", "role": "future_reuse_reference", "status": "reference_only"}
+  ],
+  "family_extension_references": [
+    "acorn",
+    "pressed_flower",
+    "map_scrap",
+    "brass_key",
+    "feather",
+    "keepsake_photo"
+  ],
+  "family_extension_rule": "These objects are visual-family references only and do not imply implemented clues, rewards, inventory items, or mystery-domain rules.",
+  "surface_detail_references": [
+    "leaf_clusters",
+    "masking_tape",
+    "paper_scraps",
+    "handwritten_motifs",
+    "decorative_flourishes"
+  ],
+  "qa": [
+    "compare every isolated export against the locked reference board and DESIGN_BASELINE_V2",
+    "verify place art does not overpower map/UI hierarchy",
+    "verify clue silhouettes at intended mobile sizes",
+    "verify paper/leaf colors against both cream journal surfaces and map-heavy contexts",
+    "do not promote to runtime before transparent-edge/crop/mobile QA",
+    "outdoor readability remains a human physical-device gate"
+  ]
+}
