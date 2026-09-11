@@ -1,11 +1,14 @@
 package com.dailytown.app
 
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -53,6 +56,73 @@ class DailyTownReplaySmokeTest {
 
         composeRule.onNodeWithTag("tracking-status")
             .assert(hasText("서울시청 → 덕수궁 테스트 경로 재생 중"))
+    }
+
+    @Test
+    fun replayUxV2TransitionsPersistAndSurviveTabBackContinue() {
+        openQaTools()
+        composeRule.onNodeWithTag("tracking-replay")
+            .performScrollTo()
+            .performClick()
+
+        waitForTag("explore-state-detect")
+        composeRule.onNodeWithTag("explore-domain-state")
+            .performScrollTo()
+            .assert(hasText("HINTED", substring = true))
+
+        // Explore remains composed and replay keeps running behind another tab.
+        composeRule.onNodeWithTag("nav-companion").performClick()
+        composeRule.onNodeWithTag("companion-product-screen").assert(hasTestTag("companion-product-screen"))
+        composeRule.onNodeWithTag("nav-explore").performClick()
+
+        waitForTag("explore-state-discover", timeoutMillis = 10_000L)
+        composeRule.onNodeWithTag("encounter-start-investigation")
+            .performScrollTo()
+            .performClick()
+        waitForTag("explore-state-investigate")
+
+        // Existing templates require two or three clues. The discovery CTA already collected clue 1.
+        repeat(3) {
+            composeRule.waitForIdle()
+            if (tagExists("encounter-collect-clue")) {
+                composeRule.onNodeWithTag("encounter-collect-clue")
+                    .performScrollTo()
+                    .performClick()
+            }
+        }
+        composeRule.onNodeWithTag("encounter-resolve")
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+
+        waitForTag("explore-state-record")
+        composeRule.onNodeWithText("오늘의 기록이 생겼어요").assert(hasText("오늘의 기록이 생겼어요"))
+
+        // Companion reads the same persisted bond/memory state, then system Back returns to live Explore.
+        composeRule.onNodeWithTag("nav-companion").performClick()
+        composeRule.onNodeWithTag("companion-recent-memory").performScrollTo().assert(hasTestTag("companion-recent-memory"))
+        composeRule.onNodeWithText("아직 이름이 남은 장소 기억은 없어요.").assertDoesNotExist()
+        composeRule.runOnUiThread {
+            composeRule.activity.onBackPressedDispatcher.onBackPressed()
+        }
+        waitForTag("explore-state-record")
+
+        // Completion routes to Records without clearing the resolved encounter.
+        composeRule.onNodeWithTag("encounter-open-records")
+            .performScrollTo()
+            .performClick()
+        composeRule.onNodeWithTag("records-today").assert(hasTestTag("records-today"))
+        composeRule.onNodeWithTag("records-places").assert(hasTestTag("records-places"))
+        composeRule.onNodeWithText("모루와 공유한 기억 있음").assert(hasText("모루와 공유한 기억 있음"))
+        composeRule.onNodeWithText("관찰한 단서 0개").assertDoesNotExist()
+
+        composeRule.onNodeWithTag("nav-explore").performClick()
+        waitForTag("explore-state-record")
+        composeRule.onNodeWithTag("encounter-continue")
+            .performScrollTo()
+            .performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000L) { !tagExists("explore-state-record") }
+        composeRule.onNodeWithTag("nav-explore").assertIsSelected()
     }
 
     @Test
@@ -181,4 +251,12 @@ class DailyTownReplaySmokeTest {
             .performScrollTo()
             .assert(hasText(expectedCompletedPlan))
     }
+
+    private fun waitForTag(tag: String, timeoutMillis: Long = 6_000L) {
+        composeRule.waitUntil(timeoutMillis = timeoutMillis) { tagExists(tag) }
+        composeRule.onNodeWithTag(tag).assert(hasTestTag(tag))
+    }
+
+    private fun tagExists(tag: String): Boolean =
+        composeRule.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
 }
