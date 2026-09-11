@@ -2,11 +2,13 @@
 
 > Product/UX baseline: `docs/product/EXPLORATION_EXPERIENCE_SCENARIO_V2.md`
 >
-> Visual implementation reference: `design/reference/ux-v2/index.html` + `design/reference/ux-v2/manifest.json`
+> Visual implementation reference: `design/reference/ux-v2/index.html` + `design/reference/ux-v2/manifest.json` + `design/reference/ux-v2/polish-manifest.json`
 >
-> Status: approved for presentation/state integration. Remaining character-art/motion/outdoor/identity Human Gates still apply.
+> Moru character direction: `docs/design/MORU_CANONICAL_V2.md`
+>
+> Status: approved for presentation/state integration. Moru Candidate 3 character direction is approved; production-export/mobile-QA, motion, outdoor and identity gates still apply.
 
-The visual reference is repository-owned and Figma-independent. Use it for screen hierarchy, map-HUD density, discovery/result surfaces, Companion relationship-notebook treatment, and Records journal treatment. Areas labeled `RASTER ART SLOT` intentionally represent pending non-UI raster game art and must not be replaced by SVG/VectorDrawable/Compose-Canvas approximations presented as final art.
+The visual reference is repository-owned and Figma-independent. Use it for screen hierarchy, map-HUD density, discovery/result surfaces, Companion relationship-notebook treatment, Records journal treatment and the current warm raster-art tone. Moru v2 Candidate 3 is the approved character direction, but concept-board art must not be cropped directly into runtime production without the export/QA gate below.
 
 ## 1. Source and branch context
 
@@ -117,25 +119,26 @@ Candidate semantic clue key from product spec: `leaf_mark_note`. If the current 
 
 ## 4. Design implementation rules
 
-Before changing visual implementation, read the latest `docs/design/` rules and the repository visual reference under `design/reference/ux-v2/`.
+Before changing visual implementation, read the latest `docs/design/` rules, `docs/design/MORU_CANONICAL_V2.md`, and the repository visual references under `design/reference/ux-v2/` and `design/reference/moru-v2/`.
 
 - Compose implements layout/components.
 - True UI controls/symbols may use vector assets.
 - Moru, discovery art, place art, collectible/reward/mystery artwork must remain raster game art (PNG/WebP).
 - Do not recreate missing Moru/discovery art with Compose Canvas, VectorDrawable, SVG body parts, or geometric placeholders presented as final art.
-- Until Moru v2 canonical art is approved, preserve a semantic/fallback asset path and do not overwrite the current production pack.
+- Moru Candidate 3 defines the approved silhouette/anatomy/gear/tone. Do not re-open alternate character families during T5 implementation.
+- The current generated character sheets are design references, not automatically runtime-ready crops. Preserve the existing semantic/fallback path until transparent raster production exports and their manifest pass mobile QA.
 - Avoid exposing generic Material 3 card/navigation styling as the final visual language where the approved design specifies map HUD / paper journal / relationship notebook surfaces.
 - The schematic map in the reference source is not a replacement map asset; real NAVER/provider map truth and attribution remain authoritative at runtime.
 
 ## 5. Do not change in this implementation pass
 
-Do **not** implement or promote the following without a new explicit decision:
+Do **not** implement or promote the following without a new explicit production decision/evidence gate:
 
 - Camera/AR capture
 - selectable-companion onboarding
 - multi-fragment mystery-chain domain model
 - new 120 m gameplay threshold
-- Moru v2 production asset replacement/promotion
+- Moru v2 runtime production replacement before transparent export/crop + 48 dp/mobile QA + semantic manifest/fallback verification
 - final M-B motion constants or new animation dependency
 - provider/map architecture
 - production POI source/licensing behavior
@@ -170,7 +173,7 @@ Minimum verification for changed presentation/state code:
 5. Records/Companion reflect persisted results after encounter resolution
 6. reduced-motion state conveys the same information without required animation
 7. map attribution and primary map controls are not obscured
-8. semantic asset fallback still works when v2 raster assets are not yet approved/present
+8. existing semantic asset fallback still works until the Moru v2 production raster family is explicitly promoted
 9. existing privacy/diagnostic tests remain unchanged/passing
 
 Do not claim outdoor readability is final from emulator evidence; that remains a physical-device Human Gate.
@@ -198,9 +201,9 @@ The development pass is ready for design/product review when:
 - a resolved encounter becomes a readable Records artifact
 - Companion visibly reflects a shared memory/relationship consequence
 - Goals points back toward exploration
-- the implementation visibly follows `design/reference/ux-v2/index.html` for hierarchy/surface intent without treating placeholder game-art slots as production art
+- the implementation visibly follows `design/reference/ux-v2/index.html` for hierarchy/surface intent and uses Candidate 3 as the Moru character direction without inventing a new vector mascot
 - no deferred feature is silently implemented
 - no remaining Human Gate is falsely marked approved
 - tests/build verification for the touched surface passes
 
-After this pass, return to design/product review for visual parity and physical-device validation rather than expanding scope automatically.
+After this pass, return to design/product review for visual parity, production-art export QA and physical-device validation rather than expanding scope automatically.
