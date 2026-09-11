@@ -19,6 +19,7 @@ Status: **PARTIAL PASS — OG-04/05 DESIGN RUNTIME CANDIDATE; OG-02/03 SOURCE-QU
 - The refs live only under `app/src/androidTest/assets/`; they are not packaged into the runtime APK and do not activate either semantic key.
 - Android CI run #758: PASS, including instrumented-test compilation.
 - Managed-device workflow run #549, relevant `replay-and-static-visual-smoke` job: PASS; 19 tests completed with no failures and both clue boards emitted.
+- Workflow #549 is red overall because its separate A3 capture-verification job failed; that unrelated job did not run or gate the Old Ginkgo clue test. The relevant managed-device job and both preserved captures are PASS evidence.
 - Captured density: 2.625×. Folded-note targets rendered at 126/168/252/378 px; leaf targets at 84/126/168/252 px.
 - Alpha/decode/transparent-corner assertions: PASS. No opaque rectangular matte or strong light halo is visible on the dark capture; silhouette and object identity remain recognizable in every requested context.
 - Source-quality: BLOCKED. The 128 px note ref and 96 px leaf ref are upscaled for every requested target on this device, producing visible softness at larger sizes.

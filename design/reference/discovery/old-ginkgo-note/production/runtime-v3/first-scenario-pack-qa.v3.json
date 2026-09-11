@@ -78,6 +78,7 @@
     "android_ci_run": 34623925965,
     "visual_qa_run": 34623925977,
     "android_ci_result": "PASS_RUN_758",
+    "visual_workflow_result": "FAILURE_UNRELATED_A3_CAPTURE_VERIFICATION_JOB",
     "relevant_visual_job_result": "PASS_REPLAY_AND_STATIC_VISUAL_SMOKE",
     "workflow_result_note": "The overall visual workflow includes unrelated A3 and NAVER jobs; the relevant replay-and-static-visual-smoke job passed and emitted both Old Ginkgo captures.",
     "result": "ANDROID_CONTEXT_PASS_SOURCE_QUALITY_BLOCKED"
