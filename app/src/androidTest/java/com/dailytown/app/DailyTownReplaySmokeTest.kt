@@ -1,7 +1,7 @@
 package com.dailytown.app
 
 import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertDoesNotExist
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsSelected
@@ -101,7 +101,7 @@ class DailyTownReplaySmokeTest {
         // Companion reads the same persisted bond/memory state, then system Back returns to live Explore.
         composeRule.onNodeWithTag("nav-companion").performClick()
         composeRule.onNodeWithTag("companion-recent-memory").performScrollTo().assert(hasTestTag("companion-recent-memory"))
-        composeRule.onNodeWithText("아직 이름이 남은 장소 기억은 없어요.").assertDoesNotExist()
+        composeRule.onAllNodesWithText("아직 이름이 남은 장소 기억은 없어요.").assertCountEquals(0)
         composeRule.runOnUiThread {
             composeRule.activity.onBackPressedDispatcher.onBackPressed()
         }
@@ -114,7 +114,7 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("records-today").assert(hasTestTag("records-today"))
         composeRule.onNodeWithTag("records-places").assert(hasTestTag("records-places"))
         composeRule.onNodeWithText("모루와 공유한 기억 있음").assert(hasText("모루와 공유한 기억 있음"))
-        composeRule.onNodeWithText("관찰한 단서 0개").assertDoesNotExist()
+        composeRule.onAllNodesWithText("관찰한 단서 0개").assertCountEquals(0)
 
         composeRule.onNodeWithTag("nav-explore").performClick()
         waitForTag("explore-state-record")
@@ -258,5 +258,3 @@ class DailyTownReplaySmokeTest {
     }
 
     private fun tagExists(tag: String): Boolean =
-        composeRule.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
-}
