@@ -132,3 +132,11 @@ against the locked reference measured mean 9.401, p95 24.857 and max 92.980
 on an 8-bit channel scale. The model also sharpened botanical veins, cord and
 fold shading relative to the soft 128×128 authority; no new text, mark, seal,
 cord, leaf, fold or motif was introduced.
+
+Decision: **OG02_RESTORATION_NOT_READY / REJECT**.
+
+- candidate binary: temporary only, not committed
+- canonical/reference/runtime paths: unchanged
+- OG-03 and Moru: not started
+- next minimum work: manual raster repaint constrained to the locked silhouette,
+  or a different alpha-aware restoration/matting tool that constrains RGB at
