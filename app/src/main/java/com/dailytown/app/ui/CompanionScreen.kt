@@ -52,7 +52,8 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
         }
         .firstOrNull()
     val hasTodayDiscovery = (progress?.daily?.discoveredPoiIds?.size ?: 0) > 0
-    val hasResolvedMemory = !progress?.resolvedEncounterIds.isNullOrEmpty() && !progress?.companionMemoryKeys.isNullOrEmpty()
+    val hasOldGinkgoSessionEvidence = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty() &&
+        !progress?.companionMemoryKeys.isNullOrEmpty()
     val mood = if (hasTodayDiscovery) "호기심 가득" else "산책 준비 중"
     val contextualLine = when {
         recentRememberedPlace != null -> "$recentRememberedPlace 이야기가 아직 기억나. 다음에는 뭐가 달라졌는지 보고 싶어."
@@ -122,7 +123,7 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("최근 함께한 기억", style = MaterialTheme.typography.titleMedium)
-                if (hasResolvedMemory) {
+                if (hasOldGinkgoSessionEvidence) {
                     ProductionScenarioRasterAsset(
                         semanticKey = OldGinkgoVisualAssets.Keepsake,
                         usage = ScenarioAssetUsage.COMPANION_RECENT_MEMORY,
