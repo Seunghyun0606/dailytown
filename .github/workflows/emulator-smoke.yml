@@ -6,6 +6,7 @@ on:
     paths:
       - "app/build.gradle.kts"
       - "app/src/androidTest/**"
+      - "app/src/main/assets/**"
       - "app/src/main/java/com/dailytown/app/MainActivity.kt"
       - "app/src/main/java/com/dailytown/app/ui/**"
       - "app/src/main/java/com/dailytown/app/visual/**"
@@ -48,7 +49,7 @@ jobs:
         run: >-
           gradle pixel2Api30AtdDebugAndroidTest
           -Pandroid.enableAdditionalTestOutput=true
-          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.OldGinkgoRuntimeFlowTest,com.dailytown.app.visualqa.ProductShellVisualQaTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.OldGinkgoClueAssetQaTest,com.dailytown.app.visualqa.OldGinkgoProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionMarkerRuntimeBoundaryTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
+          -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.DailyTownReplaySmokeTest,com.dailytown.app.visualqa.ProductShellVisualQaTest,com.dailytown.app.visualqa.VisualCandidateQaTest,com.dailytown.app.visualqa.OldGinkgoClueAssetQaTest,com.dailytown.app.visualqa.OldGinkgoProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionVisualAssetBindingTest,com.dailytown.app.visualqa.ProductionMarkerRuntimeBoundaryTest,com.dailytown.app.visualqa.MapOverlayQaContractInstrumentedTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
       - name: Verify actual five-tab product shell captures
         shell: bash
@@ -201,26 +202,26 @@ jobs:
           -Pandroid.enableAdditionalTestOutput=true
           -Pandroid.testInstrumentationRunnerArguments.class=com.dailytown.app.visualqa.A3VisualQaTest,com.dailytown.app.visualqa.ProductFlowVisualQaTest
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
-      - name: Verify actual product A-3 captures
+      - name: Verify actual product Records V2 captures
         shell: bash
         run: |
           set -euo pipefail
-          for name in journal-home discovery-detail clue-note collection-grid memory-detail; do
-            if ! find app/build -type f -path "*/visual/product-a3/$name.png" -print -quit | grep -q .; then
-              echo "::error::Missing actual product A-3 capture: $name"
+          for name in records-home place-detail clue-detail memory-detail; do
+            if ! find app/build -type f -path "*/visual/product-records-v2/$name.png" -print -quit | grep -q .; then
+              echo "::error::Missing actual product Records V2 capture: $name"
               exit 1
             fi
           done
-          echo "Actual product A-3 five-screen capture gate PASS"
+          echo "Actual product Records V2 four-screen capture gate PASS"
       - name: Locate A-3 visual QA captures
         if: always()
         shell: bash
         run: find app/build -type f \( -path '*managed_device_android_test_additional_output*' -o -path '*additional_test_output*' \) -print || true
-      - name: Upload A-3 visual QA artifacts
+      - name: Upload A-3 and Records V2 visual QA artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dailytown-a3-five-screen-visual-qa
+          name: dailytown-a3-records-v2-visual-qa
           path: |
             app/build/reports/androidTests/**
             app/build/outputs/androidTest-results/**
