@@ -8,19 +8,28 @@
   "exact_source_boards": [
     {
       "path": "design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_0.png",
-      "dimensions": [1536, 1024],
+      "dimensions": [
+        1536,
+        1024
+      ],
       "sha256": "ed9a4d1b20dec0c5d6f72b5e31a5dd2a8e7eb819b1f7c880cb98e666b0ba523d",
       "status": "production_reference_remote_reverified"
     },
     {
       "path": "design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_1.png",
-      "dimensions": [1536, 1024],
+      "dimensions": [
+        1536,
+        1024
+      ],
       "sha256": "0f3f3ed101a3476c74dd9674d3dc98e2e53ad901d898cbf02be7cdb88d67d312",
       "status": "production_reference_remote_reverified"
     },
     {
       "path": "design/reference/session-2026-09-12/attachments/old_ginkgo_discovery_asset_family.png",
-      "dimensions": [1448, 1086],
+      "dimensions": [
+        1448,
+        1086
+      ],
       "sha256": "49dfe9d94916a3ff9e6fbfcb9d843c0036e11015a9db3472087d6e7c8e6102e8",
       "status": "production_reference_exact_session_source_not_native_master"
     }
@@ -41,7 +50,8 @@
     "isolated_reference_is_runtime_asset": false,
     "transparent_extraction_candidate_is_runtime_asset": false,
     "runtime_candidate_v2_is_runtime_active": false,
-    "domain_behavior_change": false
+    "domain_behavior_change": false,
+    "runtime_candidate_v4_is_runtime_active": false
   },
   "required_first_scenario_assets": [
     {
@@ -49,8 +59,22 @@
       "subject": "오래된 은행나무 장소",
       "category": "place_background",
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/place_old_ginkgo_scene_ref_v1.webp",
-      "master": {"format": "PNG", "min_px": [1600, 1200], "alpha": false},
-      "runtime": {"format": "WebP", "crops": ["discovery_card", "records_header", "memory_thumbnail"]},
+      "master": {
+        "format": "PNG",
+        "min_px": [
+          1600,
+          1200
+        ],
+        "alpha": false
+      },
+      "runtime": {
+        "format": "WebP",
+        "crops": [
+          "discovery_card",
+          "records_header",
+          "memory_thumbnail"
+        ]
+      },
       "status": "design_runtime_candidate_v3_static_qa_pass_not_activated",
       "candidate_master_github_asset": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/master/place_old_ginkgo_main_master_v3.png",
       "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/place_old_ginkgo_main_master_v3_ref.webp",
@@ -63,26 +87,83 @@
       "subject": "접힌 쪽지",
       "category": "clue_item",
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/clue_folded_note_ref_v1.webp",
-      "master": {"format": "PNG", "min_px": [768, 768], "alpha": true},
-      "runtime": {"format": "WebP", "targets_dp": [48, 64, 96, 144]},
-      "status": "static_and_android_context_qa_pass_source_quality_blocked_not_promoted",
+      "master": {
+        "format": "PNG",
+        "min_px": [
+          768,
+          768
+        ],
+        "alpha": true
+      },
+      "runtime": {
+        "format": "WebP",
+        "targets_dp": [
+          48,
+          64,
+          96,
+          144
+        ]
+      },
+      "status": "edge_reconstruction_static_qa_pass_runtime_candidate_v4_not_activated",
       "candidate_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
       "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/folded_note_runtime_candidate_v2_ref.webp",
-      "qa": ["edge_cleanup_pass_static", "cream_pass_android", "dark_pass_android", "map_heavy_pass_android", "target_size_android_readability_pass_with_upscale_softness", "alpha_transparent_corners_pass", "high_density_source_quality_blocked", "physical_device_human_gate"],
-      "candidate_limit": "the declared 768x768 PNG checksum is retained, but the exact master bytes are not persisted; the committed 128x128 reference cannot pass high-density source-quality acceptance",
-      "lock": "warm handmade paper, subtle botanical mark, readable folded-paper silhouette"
+      "qa": [
+        "exact_source_sha_verified",
+        "alpha_immutable",
+        "silhouette_iou_1",
+        "opaque_interior_rgb_unchanged",
+        "edge_reconstruction_pass",
+        "cream_pass_static",
+        "dark_pass_static",
+        "map_heavy_pass_static",
+        "target_size_pass_static",
+        "runtime_activation_not_performed",
+        "physical_device_human_gate"
+      ],
+      "candidate_limit": "Exact 768x768 source and edge-corrected v4 candidate are persisted. The v4 candidate is design-side only and is not Android runtime-active; physical-device outdoor readability remains a Human Gate.",
+      "lock": "warm handmade paper, subtle botanical mark, readable folded-paper silhouette",
+      "exact_source_github_asset": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/source/clue_old_ginkgo_folded_note_runtime_candidate_v2_exact.png",
+      "exact_source_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
+      "corrected_candidate_github_asset": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/candidate/clue_old_ginkgo_folded_note_edge_corrected_runtime_candidate_v4.png",
+      "corrected_candidate_sha256": "2adc914f6ca2e5648339943bc02afe62059948d52a672e382fad69b5e6c08869",
+      "candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/runtime-candidate-manifest.v4.json",
+      "qa_metrics": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/qa/og02/og02_edge_reconstruction_metrics.v4.json"
     },
     {
       "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
       "subject": "은행잎 표식/단서",
       "category": "clue_item",
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/clue_ginkgo_leaf_ref_v1.webp",
-      "master": {"format": "PNG", "min_px": [512, 512], "alpha": true},
-      "runtime": {"format": "WebP", "targets_dp": [32, 48, 64, 96]},
+      "master": {
+        "format": "PNG",
+        "min_px": [
+          512,
+          512
+        ],
+        "alpha": true
+      },
+      "runtime": {
+        "format": "WebP",
+        "targets_dp": [
+          32,
+          48,
+          64,
+          96
+        ]
+      },
       "status": "static_and_android_context_qa_pass_source_quality_blocked_not_promoted",
       "candidate_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
       "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/ginkgo_leaf_runtime_candidate_v2_ref.webp",
-      "qa": ["edge_cleanup_pass_static", "cream_pass_android", "dark_pass_android", "map_heavy_pass_android", "target_size_android_readability_pass_with_upscale_softness", "alpha_transparent_corners_pass", "high_density_source_quality_blocked", "physical_device_human_gate"],
+      "qa": [
+        "edge_cleanup_pass_static",
+        "cream_pass_android",
+        "dark_pass_android",
+        "map_heavy_pass_android",
+        "target_size_android_readability_pass_with_upscale_softness",
+        "alpha_transparent_corners_pass",
+        "high_density_source_quality_blocked",
+        "physical_device_human_gate"
+      ],
       "candidate_limit": "the declared 512x512 PNG checksum is retained, but the exact master bytes are not persisted; the committed 96x96 reference cannot pass high-density source-quality acceptance",
       "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment"
     },
@@ -91,8 +172,21 @@
       "subject": "발견 기억 이미지",
       "category": "memory_artifact",
       "reference": "design/reference/discovery/old-ginkgo-note/isolation/memory_keepsake_photo_ref_v1.webp",
-      "master": {"format": "PNG", "min_px": [1024, 768], "alpha": false},
-      "runtime": {"format": "WebP", "crops": ["records_card", "companion_recent_memory"]},
+      "master": {
+        "format": "PNG",
+        "min_px": [
+          1024,
+          768
+        ],
+        "alpha": false
+      },
+      "runtime": {
+        "format": "WebP",
+        "crops": [
+          "records_card",
+          "companion_recent_memory"
+        ]
+      },
       "status": "design_runtime_candidate_v3_static_qa_pass_not_activated",
       "candidate_master_github_asset": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/master/memory_old_ginkgo_keepsake_master_v3.png",
       "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/memory_old_ginkgo_keepsake_master_v3_ref.webp",
@@ -102,14 +196,43 @@
     }
   ],
   "scene_variant_references": [
-    {"id": "under_tree", "role": "primary_discovery_scene", "status": "reference_only"},
-    {"id": "on_bench", "role": "future_reuse_reference", "status": "reference_only"},
-    {"id": "near_wall", "role": "future_reuse_reference", "status": "reference_only"},
-    {"id": "among_fallen_leaves", "role": "future_reuse_reference", "status": "reference_only"}
+    {
+      "id": "under_tree",
+      "role": "primary_discovery_scene",
+      "status": "reference_only"
+    },
+    {
+      "id": "on_bench",
+      "role": "future_reuse_reference",
+      "status": "reference_only"
+    },
+    {
+      "id": "near_wall",
+      "role": "future_reuse_reference",
+      "status": "reference_only"
+    },
+    {
+      "id": "among_fallen_leaves",
+      "role": "future_reuse_reference",
+      "status": "reference_only"
+    }
   ],
-  "family_extension_references": ["acorn", "pressed_flower", "map_scrap", "brass_key", "feather", "keepsake_photo"],
+  "family_extension_references": [
+    "acorn",
+    "pressed_flower",
+    "map_scrap",
+    "brass_key",
+    "feather",
+    "keepsake_photo"
+  ],
   "family_extension_rule": "These objects are visual-family references only and do not imply implemented clues, rewards, inventory items, or mystery-domain rules.",
-  "surface_detail_references": ["leaf_clusters", "masking_tape", "paper_scraps", "handwritten_motifs", "decorative_flourishes"],
+  "surface_detail_references": [
+    "leaf_clusters",
+    "masking_tape",
+    "paper_scraps",
+    "handwritten_motifs",
+    "decorative_flourishes"
+  ],
   "qa": [
     "compare every isolated export against the locked reference board and DESIGN_BASELINE_V2",
     "verify place art does not overpower map/UI hierarchy",
@@ -118,5 +241,7 @@
     "static edge/context QA may advance a design candidate but does not replace actual Android usage-context QA",
     "do not promote to runtime before transparent-edge/crop/mobile QA and semantic wiring checks",
     "outdoor readability remains a human physical-device gate"
-  ]
+  ],
+  "runtime_candidate_v4_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/",
+  "runtime_candidate_v4_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/runtime-candidate-manifest.v4.json"
 }

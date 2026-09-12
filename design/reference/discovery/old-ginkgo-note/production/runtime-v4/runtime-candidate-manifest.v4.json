@@ -1,0 +1,88 @@
+{
+  "version": "old-ginkgo-runtime-candidate-v4",
+  "status": "partial_og02_pass_og03_pending",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "provenance": "exact_attached_candidate_bytes_plus_source_derived_edge_reconstruction",
+  "redesign": false,
+  "generative_processing": false,
+  "upscale_processing": false,
+  "runtime_activation": false,
+  "tools": [
+    {
+      "name": "Pillow",
+      "version": "11.3.0",
+      "license": "HPND",
+      "usage": "RGBA PNG decode/encode and QA board assembly"
+    },
+    {
+      "name": "NumPy",
+      "version": "2.1.3",
+      "license": "BSD-3-Clause",
+      "usage": "deterministic channel and metric operations"
+    },
+    {
+      "name": "OpenCV contrib",
+      "version": "4.12.0",
+      "license": "Apache-2.0",
+      "usage": "distance transforms, nearest-pixel labels, resize and QA rendering"
+    }
+  ],
+  "method": {
+    "name": "alpha-first nearest-opaque RGB propagation with controlled transparent-side color bleed",
+    "alpha_policy": "authoritative immutable mask",
+    "visible_fractional_edge_band_px": 20,
+    "transparent_bleed_ring_px": 12,
+    "opaque_interior_rgb_policy": "immutable",
+    "deep_fractional_rgb_policy": "immutable outside the exterior edge band"
+  },
+  "assets": [
+    {
+      "work_item": "DT-DES-OG-02",
+      "semantic_key": "clue.old_ginkgo.folded_note",
+      "exact_source": "source/clue_old_ginkgo_folded_note_runtime_candidate_v2_exact.png",
+      "exact_source_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
+      "exact_source_role": "immutable_exact_source",
+      "corrected_candidate": "candidate/clue_old_ginkgo_folded_note_edge_corrected_runtime_candidate_v4.png",
+      "corrected_candidate_sha256": "2adc914f6ca2e5648339943bc02afe62059948d52a672e382fad69b5e6c08869",
+      "corrected_candidate_role": "design_runtime_candidate_not_activated",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "four_corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "changed_alpha_pixels": 0,
+      "silhouette_iou": 1,
+      "opaque_interior_rgb_changed_pixels": 0,
+      "qa_status": "PASS_EDGE_RECONSTRUCTION",
+      "qa_dir": "qa/og02/",
+      "target_sizes_px": [
+        48,
+        64,
+        96,
+        144
+      ],
+      "runtime_activation": false
+    },
+    {
+      "work_item": "DT-DES-OG-03",
+      "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+      "expected_exact_source_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+      "status": "PENDING_AFTER_OG02_PERSISTENCE"
+    }
+  ],
+  "og06_status": "OPEN_OG03_PENDING",
+  "human_gates": [
+    "Android runtime activation",
+    "physical-device outdoor readability"
+  ]
+}

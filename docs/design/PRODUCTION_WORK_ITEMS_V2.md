@@ -26,18 +26,19 @@ Deliverables:
 
 ### DT-DES-OG-02 · Folded-note clean transparent master
 
-Status: **BLOCKED — static + Android context QA PASS; high-density source quality blocked by missing native master bytes**
+Status: **CLOSED — exact source persisted; immutable-alpha edge reconstruction QA PASS; runtime candidate v4 not activated**
 
 Target semantic key: `clue.old_ginkgo.folded_note`
 
 Current checkpoint:
-- 768×768 transparent runtime-candidate v2 produced without redesign
-- PNG candidate SHA-256: `59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92`
-- 48 / 64 / 96 / 144 px previews plus 432 px high-density preview prepared
-- cream / dark / map-heavy static QA: PASS
-- PR #10 Android API 30 / 2.625× context QA: PASS at required dp targets, including alpha/transparent corners
-- inspectable GitHub reference exists, but the exact 768×768 master bytes are not persisted
-- high-density source quality remains blocked until exact-master recovery or same-design native raster reproduction
+- exact 768×768 RGBA source persisted byte-for-byte; SHA-256 `59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92`
+- alpha-first correction changed only exterior fractional-edge RGB and a transparent-side bleed ring
+- alpha changed pixels 0; silhouette IoU 1.0; opaque-interior/deep-fractional RGB changed pixels 0
+- corrected v4 SHA-256: `2adc914f6ca2e5648339943bc02afe62059948d52a672e382fad69b5e6c08869`
+- cream / dark / map-heavy and 48 / 64 / 96 / 144 px static QA: PASS
+- source, candidate, metrics, difference/overlay/edge-close-up boards: `design/reference/discovery/old-ginkgo-note/production/runtime-v4/`
+- Android runtime activation: NOT PERFORMED
+- physical-device outdoor readability: Human Gate
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
