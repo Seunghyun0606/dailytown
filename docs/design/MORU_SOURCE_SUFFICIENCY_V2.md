@@ -1,0 +1,147 @@
+# Daily Town — Moru Source Sufficiency v2
+
+> Status: **AUDITED — baseline source is sufficient for identity/reference QA, insufficient for full native production export**
+>
+> Visual authority: `docs/design/DESIGN_BASELINE_V2.md`
+>
+> Canonical source SHA-256: `541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500`
+
+## 1. Purpose
+
+This document answers one production question only: how far can the approved Moru Candidate 3 composite board be taken into runtime assets without inventing a new design?
+
+The answer is:
+
+- the board is strong enough to lock identity, proportions, expression intent, lighting intent, affinity decoration direction and 48dp recognizability;
+- it is **not** a native-resolution transparent master pack;
+- small/medium usage-context candidates can be technically derived for QA, but large production contexts require same-design native raster reproduction rather than simple upscaling.
+
+No alternate Moru family or style is introduced here.
+
+## 2. Exact board crop inventory
+
+The approved `1122×1402` board currently exposes these approximate production-reference regions:
+
+| Reference | Crop size |
+| --- | ---: |
+| front turnaround | 340×540 px |
+| 3/4 walking | 330×565 px |
+| back turnaround | 315×545 px |
+| neutral expression | 162×215 px |
+| happy expression | 170×215 px |
+| curious expression | 170×215 px |
+| surprised expression | 170×215 px |
+| clue_found expression | 180×215 px |
+| resolved expression | 200×215 px |
+| LIGHT reference | 171×192 px |
+| WARM_DUSK reference | 177×192 px |
+| DARK reference | 173×192 px |
+| affinity base | 121×176 px |
+| affinity familiar | 121×176 px |
+| affinity trusted | 128×176 px |
+| affinity best_friend | 144×176 px |
+| 48dp read-test strip | 719×172 px |
+
+These regions are framing/reference material, not equivalent to the master canvases required by `MORU_PRODUCTION_EXPORT_V2.md`.
+
+## 3. Usage-context sufficiency
+
+### `map_avatar`
+
+Target: 512×512 master, runtime review at 48 / 56 / 64dp.
+
+Assessment: **reference-derived QA candidate feasible**.
+
+The canonical front/3-quarter artwork has enough source information to evaluate silhouette, sprout, hood, scarf and compact body mass at small display size. A technically isolated candidate may be used for mobile QA, but it must remain `reference_candidate` until transparent edge quality is checked.
+
+### `hud_portrait`
+
+Target: 768×768 master, 56 / 64 / 72dp presentation.
+
+Assessment: **reference-derived QA candidate feasible with source-quality caution**.
+
+A head/upper-torso crop is visually large enough for layout and expression-read QA, but native detail is still below the required master size. Do not claim an upscaled board crop is a native 768×768 master.
+
+### `journal_crop`
+
+Target: 768×768 or lossless crop master.
+
+Assessment: **reference-derived QA candidate feasible** for small paper-artifact usage.
+
+This context tolerates tighter crops and lower visual size, but transparent edge and A3 paper contrast must still be checked.
+
+### `encounter_halfbody`
+
+Target: 1024×1280 transparent PNG.
+
+Assessment: **native same-design raster reproduction required**.
+
+The board crop does not contain enough native pixel information for a high-quality encounter master. Upscaling is allowed only as a temporary review aid, not as production completion.
+
+### `result_large`
+
+Target: 1280×1600 transparent PNG.
+
+Assessment: **native same-design raster reproduction required**.
+
+This is the strongest source-quality blocker. The approved front/3-quarter reference must be reproduced at native production resolution while keeping anatomy, costume, pose language and rendering family unchanged.
+
+### `companion_portrait`
+
+Target: 1024×1280 transparent PNG.
+
+Assessment: **native same-design raster reproduction preferred/required before production activation**.
+
+A reference crop can validate layout; a final relationship-notebook portrait should be authored at native resolution from the locked Candidate 3 design.
+
+## 4. Expression / lighting / affinity interpretation
+
+The six expression thumbnails, three lighting samples and four affinity close-ups are **semantic visual references**.
+
+They are sufficient to lock:
+
+- eye/mouth/posture intent;
+- LIGHT / WARM_DUSK / DARK color and readability intent;
+- AF-1 + restrained AF-3 progression;
+- BF-B keepsake density;
+- anatomy/costume invariance.
+
+They are not sufficiently large to serve as final production masters by simple extraction.
+
+Therefore the production rule is:
+
+1. reproduce the same Candidate 3 design at native target resolution;
+2. compare every produced asset back to the exact board;
+3. reject silhouette, costume, sprout, hood, scarf, satchel, boot or face-proportion drift;
+4. do not add new evolution/costume concepts during reproduction.
+
+## 5. Current production decision
+
+Moru production is no longer blocked by design uncertainty. It is blocked by **source/master resolution and clean transparency**.
+
+The next valid work is native-resolution production reproduction of the locked design, not concept exploration.
+
+Recommended order:
+
+1. `map_avatar` + `hud_portrait` candidate masters for early Android QA;
+2. `companion_portrait` + `journal_crop`;
+3. `encounter_halfbody` + `result_large`;
+4. six expressions;
+5. lighting derivatives;
+6. affinity decoration variants;
+7. resolver/fallback readiness.
+
+## 6. QA gate
+
+Do not mark `DT-DES-MORU-01` complete until the following exist as persisted binary assets:
+
+- transparent master family at required native canvas sizes;
+- no paper/background residue or strong edge halo;
+- actual 48 / 56 / 64dp map/HUD test;
+- expression consistency;
+- LIGHT / WARM_DUSK / DARK consistency;
+- base / familiar / trusted / best_friend invariance;
+- checksum + semantic manifest;
+- previous v1 pack retained as rollback.
+
+Outdoor readability and M-B final motion remain Human Gates.
