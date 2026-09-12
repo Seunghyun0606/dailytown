@@ -10,6 +10,7 @@ import com.dailytown.app.mystery.MysteryTemplate
 import com.dailytown.app.mystery.TimeBand
 import com.dailytown.app.poi.Poi
 import com.dailytown.app.poi.PoiCategory
+import com.dailytown.app.visual.OldGinkgoVisualAssets
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -17,19 +18,18 @@ import org.junit.Test
 
 class ExploreEncounterPresentationTest {
     @Test
-    fun hiddenOrMissingEncounterMapsToPrepare() {
-        assertEquals(
-            ExploreExperienceStep.PREPARE,
-            ExploreEncounterPresentationMapper.map(null, null).step,
-        )
-        assertEquals(
-            ExploreExperienceStep.PREPARE,
-            ExploreEncounterPresentationMapper.map(selection(EncounterPhase.HIDDEN), 170).step,
-        )
+    fun hiddenOrMissingEncounterMapsToPrepareWithoutScenarioArt() {
+        val missing = ExploreEncounterPresentationMapper.map(null, null)
+        val hidden = ExploreEncounterPresentationMapper.map(selection(EncounterPhase.HIDDEN), 170)
+
+        assertEquals(ExploreExperienceStep.PREPARE, missing.step)
+        assertEquals(ExploreExperienceStep.PREPARE, hidden.step)
+        assertNull(missing.placeAssetKey)
+        assertNull(hidden.noteAssetKey)
     }
 
     @Test
-    fun hintedEncounterUsesUiOnlyNearBoundaryWithoutChangingDomainPhase() {
+    fun hintedEncounterUsesUiOnlyNearBoundaryWithoutChangingDomainPhaseOrRevealingArt() {
         val hinted = selection(EncounterPhase.HINTED)
 
         val detect = ExploreEncounterPresentationMapper.map(hinted, 121)
@@ -42,10 +42,14 @@ class ExploreEncounterPresentationTest {
         assertEquals(EncounterPhase.HINTED, hinted.encounter.phase)
         assertEquals("알 수 없는 신호", detect.signalLabel)
         assertTrue(detect.hint!!.contains("오래된 나무"))
+        assertNull(detect.placeAssetKey)
+        assertNull(detect.noteAssetKey)
+        assertNull(detect.clueAssetKey)
+        assertNull(detect.memoryAssetKey)
     }
 
     @Test
-    fun discoveredEncounterMovesFromRevealToInvestigationByExistingClueState() {
+    fun discoveredEncounterBindsApprovedOldGinkgoPlaceAndClueSemantics() {
         val reveal = ExploreEncounterPresentationMapper.map(selection(EncounterPhase.DISCOVERED), 58)
         val investigation = ExploreEncounterPresentationMapper.map(
             selection(EncounterPhase.DISCOVERED, clueIds = setOf("enc-0:poi:trace-chain:clue-1")),
@@ -56,15 +60,23 @@ class ExploreEncounterPresentationTest {
         assertEquals(ExploreExperienceStep.INVESTIGATE, investigation.step)
         assertEquals("leaf_mark_note", reveal.clueSemanticKey)
         assertEquals("잎자국이 남은 메모", reveal.clueLabel)
+        assertEquals(OldGinkgoVisualAssets.PlaceMain, reveal.placeAssetKey)
+        assertEquals(OldGinkgoVisualAssets.FoldedNote, reveal.noteAssetKey)
+        assertEquals(OldGinkgoVisualAssets.GinkgoLeaf, reveal.clueAssetKey)
+        assertNull(reveal.memoryAssetKey)
+        assertEquals(reveal.placeAssetKey, investigation.placeAssetKey)
+        assertEquals(reveal.noteAssetKey, investigation.noteAssetKey)
+        assertEquals(reveal.clueAssetKey, investigation.clueAssetKey)
     }
 
     @Test
-    fun resolvedEncounterMapsToRecordWithApprovedCompletionCopy() {
+    fun resolvedEncounterBindsKeepsakeWithoutChangingCompletionSemantics() {
         val result = ExploreEncounterPresentationMapper.map(selection(EncounterPhase.RESOLVED), 30)
 
         assertEquals(ExploreExperienceStep.RECORD, result.step)
         assertEquals("오래된 가로수의 메모", result.title)
         assertTrue(result.moruLine!!.contains("우리도 기억해두자"))
+        assertEquals(OldGinkgoVisualAssets.Keepsake, result.memoryAssetKey)
     }
 
     @Test
@@ -77,6 +89,7 @@ class ExploreEncounterPresentationTest {
         assertTrue(result.isRevisit)
         assertTrue(result.hint!!.contains("다시"))
         assertNull(result.clueSemanticKey)
+        assertNull(result.memoryAssetKey)
     }
 
     private fun selection(

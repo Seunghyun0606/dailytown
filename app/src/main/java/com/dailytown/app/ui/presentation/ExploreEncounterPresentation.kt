@@ -2,6 +2,8 @@ package com.dailytown.app.ui.presentation
 
 import com.dailytown.app.mystery.EncounterPhase
 import com.dailytown.app.mystery.EncounterSelection
+import com.dailytown.app.visual.OldGinkgoVisualAssets
+import com.dailytown.app.visual.SemanticAssetKey
 
 enum class ExploreExperienceStep {
     PREPARE,
@@ -21,6 +23,10 @@ data class ExploreEncounterPresentation(
     val premise: String? = null,
     val clueLabel: String? = null,
     val clueSemanticKey: String? = null,
+    val placeAssetKey: SemanticAssetKey? = null,
+    val noteAssetKey: SemanticAssetKey? = null,
+    val clueAssetKey: SemanticAssetKey? = null,
+    val memoryAssetKey: SemanticAssetKey? = null,
     val moruLine: String? = null,
     val isRevisit: Boolean = false,
 )
@@ -31,6 +37,9 @@ data class ExploreEncounterPresentation(
  * Domain proximity semantics remain owned by EncounterProximityController (180 m / 60 m).
  * The 120 m value below is intentionally a UI-only anticipation boundary while an encounter is
  * already HINTED; it must never be fed back into encounter progression.
+ *
+ * Old Ginkgo raster keys are also presentation-only. PREPARE/DETECT/APPROACH intentionally expose
+ * no scenario art so an unknown signal is not visually spoiled before discovery.
  */
 object ExploreEncounterPresentationMapper {
     const val NEAR_PRESENTATION_METERS = 120
@@ -72,6 +81,9 @@ object ExploreEncounterPresentationMapper {
                     premise = authored.premise,
                     clueLabel = authored.clueLabel,
                     clueSemanticKey = VALIDATION_CLUE_SEMANTIC_KEY,
+                    placeAssetKey = OldGinkgoVisualAssets.PlaceMain,
+                    noteAssetKey = OldGinkgoVisualAssets.FoldedNote,
+                    clueAssetKey = OldGinkgoVisualAssets.GinkgoLeaf,
                     moruLine = if (investigating) authored.investigateMoruLine else authored.discoverMoruLine,
                     isRevisit = selection.isRevisit,
                 )
@@ -83,6 +95,10 @@ object ExploreEncounterPresentationMapper {
                 premise = authored.resolution,
                 clueLabel = authored.clueLabel,
                 clueSemanticKey = VALIDATION_CLUE_SEMANTIC_KEY,
+                placeAssetKey = OldGinkgoVisualAssets.PlaceMain,
+                noteAssetKey = OldGinkgoVisualAssets.FoldedNote,
+                clueAssetKey = OldGinkgoVisualAssets.GinkgoLeaf,
+                memoryAssetKey = OldGinkgoVisualAssets.Keepsake,
                 moruLine = authored.resolveMoruLine,
                 isRevisit = selection.isRevisit,
             )
