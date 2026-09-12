@@ -4,10 +4,12 @@ import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
+import com.dailytown.app.ui.visual.AndroidProductionScenarioAssetCatalog
 import com.dailytown.app.ui.visual.AndroidProductionVisualAssetCatalog
 import com.dailytown.app.ui.visual.ProductionA3SvgRenderer
 import com.dailytown.app.ui.visual.ProductionCompanionCanvasRenderer
 import com.dailytown.app.ui.visual.ProductionMarkerAssetRegistry
+import com.dailytown.app.ui.visual.ProductionScenarioAssetRegistry
 import com.dailytown.app.ui.visual.ProductionVisualAssetRegistry
 import com.dailytown.app.visual.A3AssetResolver
 import com.dailytown.app.visual.A3MotionTreatment
@@ -19,6 +21,7 @@ import com.dailytown.app.visual.CompanionLightingFamily
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualFallback
 import com.dailytown.app.visual.CompanionVisualRequest
+import com.dailytown.app.visual.OldGinkgoVisualAssets
 import java.io.IOException
 import java.security.MessageDigest
 import org.junit.Assert.assertEquals
@@ -36,6 +39,7 @@ class ProductionVisualAssetBindingTest {
     private val candidateCatalog by lazy { CandidateAssetCatalog(instrumentation.context.assets) }
     private val productionCatalog by lazy { AndroidProductionVisualAssetCatalog(targetAssets) }
     private val productionMarkerCatalog by lazy { AndroidProductionMarkerAssetCatalog(targetAssets) }
+    private val productionScenarioCatalog by lazy { AndroidProductionScenarioAssetCatalog(targetAssets) }
 
     @Test
     fun promotedCompanionAndA3AssetsArePackagedWithAuthoritativeChecksums() {
@@ -63,6 +67,34 @@ class ProductionVisualAssetBindingTest {
             assertEquals("Checksum mismatch for ${record.semanticKey.value}", expected.sha256, sha256(bytes))
             val svg = bytes.toString(Charsets.UTF_8)
             assertTrue("Semantic metadata missing from packaged SVG: ${record.semanticKey.value}", svg.contains(record.semanticKey.value))
+        }
+    }
+
+    @Test
+    fun oldGinkgoScenarioPackUsesDedicatedRasterRegistryWithExactPackagedChecksums() {
+        val records = ProductionScenarioAssetRegistry.records()
+        assertEquals(ProductionScenarioAssetRegistry.PROMOTED_OLD_GINKGO_ASSET_COUNT, records.size)
+        assertEquals(
+            setOf(
+                OldGinkgoVisualAssets.FoldedNote,
+                OldGinkgoVisualAssets.GinkgoLeaf,
+                OldGinkgoVisualAssets.PlaceMain,
+                OldGinkgoVisualAssets.Keepsake,
+            ),
+            records.map { it.semanticKey }.toSet(),
+        )
+
+        records.forEach { record ->
+            assertFalse(
+                "Raster scenario art must stay out of the SVG/canvas production registry: ${record.semanticKey.value}",
+                ProductionVisualAssetRegistry.contains(record.semanticKey),
+            )
+            val bytes = productionScenarioCatalog.open(record).use { it.readBytes() }
+            assertEquals(
+                "Old Ginkgo packaged checksum mismatch for ${record.semanticKey.value}/${record.usage}",
+                record.expectedSha256,
+                sha256(bytes),
+            )
         }
     }
 
