@@ -151,21 +151,26 @@
           96
         ]
       },
-      "status": "static_and_android_context_qa_pass_source_quality_blocked_not_promoted",
+      "status": "exact_attachment_verified_edge_reconstruction_visual_fail_not_promoted",
       "candidate_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
       "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/ginkgo_leaf_runtime_candidate_v2_ref.webp",
       "qa": [
-        "edge_cleanup_pass_static",
-        "cream_pass_android",
-        "dark_pass_android",
-        "map_heavy_pass_android",
-        "target_size_android_readability_pass_with_upscale_softness",
-        "alpha_transparent_corners_pass",
-        "high_density_source_quality_blocked",
-        "physical_device_human_gate"
+        "exact_source_sha_verified",
+        "alpha_immutable",
+        "silhouette_iou_1",
+        "opaque_interior_rgb_unchanged",
+        "cream_visual_fail_bright_yellow_jagged_edge",
+        "map_heavy_visual_fail",
+        "high_density_visual_fail",
+        "runtime_activation_not_performed"
       ],
-      "candidate_limit": "the declared 512x512 PNG checksum is retained, but the exact master bytes are not persisted; the committed 96x96 reference cannot pass high-density source-quality acceptance",
-      "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment"
+      "candidate_limit": "The exact 512x512 attachment was verified but is not persisted because the single edge-reconstruction candidate failed visual QA. No generated or upscaled fallback is allowed.",
+      "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment",
+      "latest_exact_attachment_sha256_verified": true,
+      "edge_reconstruction_status": "FAIL_EDGE_RECONSTRUCTION",
+      "rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+      "rejected_candidate_persisted": false,
+      "next_minimum_work": "Locked-alpha manual edge retouch preserving the warm-brown perimeter, fan silhouette, stem proportion, veins, highlights and material."
     },
     {
       "semantic_key": "memory.old_ginkgo.keepsake",

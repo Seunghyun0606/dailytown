@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-runtime-candidate-v2",
-  "status": "og02_exact_source_recovered_edge_corrected_v4_og03_source_pending",
+  "status": "og02_v4_pass_og03_edge_reconstruction_visual_fail",
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "redesign": false,
   "runtime_activation": false,
@@ -58,7 +58,11 @@
       ],
       "max_density_preview_px": 288,
       "source_bytes_available": false,
-      "status": "design_candidate_not_promoted_source_quality_blocked"
+      "status": "exact_attachment_verified_edge_reconstruction_visual_fail",
+      "latest_exact_attachment_sha256_verified": true,
+      "latest_edge_reconstruction_status": "FAIL_EDGE_RECONSTRUCTION",
+      "latest_rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+      "rejected_candidate_persisted": false
     }
   ],
   "qa": {
@@ -90,7 +94,7 @@
     ],
     "ginkgo_leaf_android_capture_sha256": "e4cb1f896ceaa1eb48513902b2e986d162f0d72fa097a5b6c81cd8db1dfeae31",
     "android_runtime_integration": "NOT_PERFORMED",
-    "high_density_source_quality": "OG02_PASS_OG03_BLOCKED",
+    "high_density_source_quality": "OG02_PASS_OG03_FAIL_EDGE_RECONSTRUCTION",
     "physical_device_outdoor": "PENDING_HUMAN_GATE"
   },
   "rule": "Technical matte/edge cleanup only. Do not alter shape, motif, palette, material treatment, or the locked discovery art direction during later QA.",

@@ -42,18 +42,18 @@ Current checkpoint:
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
-Status: **BLOCKED — static + Android context QA PASS; high-density source quality blocked by missing native master bytes**
+Status: **BLOCKED — exact attachment verified; single immutable-alpha edge reconstruction failed visual QA**
 
 Target semantic key: `clue.old_ginkgo.ginkgo_leaf`
 
 Current checkpoint:
-- 512×512 transparent runtime-candidate v2 produced without redesign
-- PNG candidate SHA-256: `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
-- 32 / 48 / 64 / 96 px previews plus 288 px high-density preview prepared
-- cream / dark / map-heavy static QA: PASS
-- PR #10 Android API 30 / 2.625× context QA: PASS at required dp targets, including alpha/transparent corners
-- inspectable GitHub reference exists, but the exact 512×512 master bytes are not persisted
-- high-density source quality remains blocked until exact-master recovery or same-design native raster reproduction
+- exact 512×512 RGBA attachment verified; SHA-256 `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
+- alpha changed pixels 0; silhouette IoU 1.0; fan/stem geometry unchanged
+- single nearest-opaque edge reconstruction temporary SHA-256: `ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360`
+- visual gate: FAIL — the warm-brown perimeter was removed in places and replaced by a bright yellow jagged edge on cream, map-heavy and high-density views
+- rejected source/candidate/QA binaries: NOT COMMITTED
+- runtime activation: NOT PERFORMED
+- next minimum work: locked-alpha manual edge retouch using the existing boundary palette; no new fan shape, stem, vein, highlight or material detail
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
@@ -85,16 +85,16 @@ Current checkpoint:
 
 ### DT-DES-OG-06 · First-scenario asset QA and runtime-candidate promotion
 
-Status: **PARTIAL — OG-04/05 design candidates PASS; OG-02/03 Android context PASS but high-density source-quality BLOCKED**
+Status: **PARTIAL — OG-02/04/05 design candidates PASS; OG-03 edge reconstruction visual gate FAIL**
 
 Current checkpoint:
 - integrated QA manifest: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/first-scenario-pack-qa.v3.json`
 - semantic names, versioned paths, committed-reference checksums, manifests, registry, and OG-04/05 crop QA: PASS
 - PR #10 Android API 30 / 2.625× test-only matrix passed the required dp targets, alpha assertions, and cream/dark/map-heavy contexts without packaging refs into the runtime APK
-- OG-02/03 are not promoted because their exact full-resolution master bytes are unavailable
+- OG-02 is a persisted design-side runtime candidate v4; OG-03 is not promoted because its single immutable-alpha edge reconstruction failed visual QA
 
 Promotion rule:
-- design-side `runtime_candidate` promotion only after source-quality checks pass
+- design-side `runtime_candidate` promotion only after source-quality checks pass; OG-03 remains blocked
 - Android runtime activation remains separate from this design checklist
 
 ## P1 — Moru Candidate 3 production export

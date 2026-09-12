@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-runtime-candidate-v4",
-  "status": "partial_og02_pass_og03_pending",
+  "status": "og02_pass_og03_edge_reconstruction_visual_fail",
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "provenance": "exact_attached_candidate_bytes_plus_source_derived_edge_reconstruction",
   "redesign": false,
@@ -77,10 +77,23 @@
       "work_item": "DT-DES-OG-03",
       "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
       "expected_exact_source_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
-      "status": "PENDING_AFTER_OG02_PERSISTENCE"
+      "attachment_sha_verified": true,
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alpha_changed_pixels": 0,
+      "silhouette_iou": 1,
+      "temporary_corrected_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+      "qa_status": "FAIL_EDGE_RECONSTRUCTION",
+      "failure_reason": "Nearest-opaque propagation removed parts of the legitimate warm-brown perimeter and introduced a bright yellow jagged edge in cream, map-heavy, edge-close-up and high-density review.",
+      "exact_source_persisted": false,
+      "rejected_candidate_persisted": false,
+      "next_minimum_work": "Locked-alpha manual edge retouch using the existing warm-brown boundary palette, with no new vein, highlight, detail or silhouette change."
     }
   ],
-  "og06_status": "OPEN_OG03_PENDING",
+  "og06_status": "OPEN_OG03_EDGE_RECONSTRUCTION_FAIL",
   "human_gates": [
     "Android runtime activation",
     "physical-device outdoor readability"

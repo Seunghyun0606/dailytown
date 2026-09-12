@@ -216,3 +216,59 @@ Decision: **FAIL_EDGE_RECONSTRUCTION / SOURCE_BYTES_UNAVAILABLE**.
 - next minimum work: attach or otherwise place the exact OG-02 PNG bytes in
   the current ai-remote session; verify the stated SHA-256, then run one
   alpha-first edge-RGB reconstruction and QA pass
+
+
+## Exact-candidate alpha-first edge reconstruction — final result
+
+Starting HEAD: `5090462600ad6789c8946ad3a10363f28c997424`.
+
+Both newly attached PNG files were verified before processing:
+
+- OG-02: 768×768 PNG RGBA, SHA-256 `59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92`
+- OG-03: 512×512 PNG RGBA, SHA-256 `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
+
+No repository/workspace source-recovery sweep was repeated. The 128×128 and
+96×96 references, rejected Real-ESRGAN/EDSR candidates, generative tools and
+upscale models were not used.
+
+### OG-02 result
+
+Decision: **PASS_EDGE_RECONSTRUCTION**.
+
+The exact source was processed at 768×768. Alpha was immutable. Exterior
+fractional-edge RGB within 20px was replaced by nearest fully opaque interior
+RGB, and a 12px transparent-side color-bleed ring was added for safe straight-
+alpha filtering. Fully opaque interior RGB and deeper fractional RGB remained
+unchanged.
+
+- corrected SHA-256: `2adc914f6ca2e5648339943bc02afe62059948d52a672e382fad69b5e6c08869`
+- alpha changed pixels: 0
+- silhouette IoU: 1.0
+- opaque/deep-interior RGB changed pixels: 0
+- cream/dark/map-heavy QA: PASS
+- 48/64/96/144px and 432px QA: PASS
+- exact source, corrected v4 candidate and QA: persisted under `production/runtime-v4/`
+- runtime activation: not performed
+
+### OG-03 result
+
+Decision: **FAIL_EDGE_RECONSTRUCTION**.
+
+The exact source was processed once at 512×512 using the same immutable-alpha
+method. Binary invariants passed, but the visual gate failed.
+
+- temporary corrected SHA-256: `ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360`
+- alpha changed pixels: 0
+- silhouette IoU: 1.0
+- opaque/deep-interior RGB changed pixels: 0
+- dark context: fringe reduced
+- cream/map-heavy/high-density: FAIL — legitimate warm-brown perimeter color
+  was removed in places and replaced by a bright yellow jagged edge
+- rejected OG-03 source/candidate/QA binaries: not committed
+- next minimum work: locked-alpha manual edge retouch using the existing
+  boundary palette; no new fan silhouette, stem, vein, highlight or material
+
+### OG-06 gate
+
+OG-06 remains **OPEN** because OG-03 did not pass source-quality visual QA.
+OG-04 and OG-05 were not regenerated. Moru was not touched.
