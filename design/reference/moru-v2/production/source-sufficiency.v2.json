@@ -1,0 +1,45 @@
+{
+  "version": "moru-source-sufficiency-v2-2026-09-12",
+  "status": "audited_reference_sufficient_native_master_insufficient",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "canonical_source": {
+    "file": "moru_candidate3_canonical_baseline_v2.png",
+    "dimensions": [1122, 1402],
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500"
+  },
+  "crop_inventory": {
+    "turnaround_front": {"box": [125,120,465,660], "px": [340,540]},
+    "turnaround_walk_3q": {"box": [430,100,760,665], "px": [330,565]},
+    "turnaround_back": {"box": [730,115,1045,660], "px": [315,545]},
+    "expression_neutral": {"box": [28,690,190,905], "px": [162,215]},
+    "expression_happy": {"box": [195,690,365,905], "px": [170,215]},
+    "expression_curious": {"box": [365,690,535,905], "px": [170,215]},
+    "expression_surprised": {"box": [535,690,705,905], "px": [170,215]},
+    "expression_clue_found": {"box": [705,690,885,905], "px": [180,215]},
+    "expression_resolved": {"box": [885,690,1085,905], "px": [200,215]},
+    "lighting_LIGHT": {"box": [27,950,198,1142], "px": [171,192]},
+    "lighting_WARM_DUSK": {"box": [202,950,379,1142], "px": [177,192]},
+    "lighting_DARK": {"box": [382,950,555,1142], "px": [173,192]},
+    "affinity_base": {"box": [563,952,684,1128], "px": [121,176]},
+    "affinity_familiar": {"box": [688,952,809,1128], "px": [121,176]},
+    "affinity_trusted": {"box": [812,952,940,1128], "px": [128,176]},
+    "affinity_best_friend": {"box": [944,952,1088,1128], "px": [144,176]},
+    "readtest_48dp_strip": {"box": [25,1196,744,1368], "px": [719,172]}
+  },
+  "usage_context_assessment": {
+    "map_avatar": "reference_candidate_feasible_android_qa_required",
+    "hud_portrait": "reference_candidate_feasible_source_quality_caution",
+    "journal_crop": "reference_candidate_feasible_a3_contrast_qa_required",
+    "encounter_halfbody": "native_same_design_raster_reproduction_required",
+    "result_large": "native_same_design_raster_reproduction_required",
+    "companion_portrait": "native_same_design_raster_reproduction_required_before_activation"
+  },
+  "semantic_reference_only": {
+    "expressions": ["neutral","happy","curious","surprised","clue_found","resolved"],
+    "lighting": ["LIGHT","WARM_DUSK","DARK"],
+    "affinity": ["base","familiar","trusted","best_friend"]
+  },
+  "rule": "Do not upscale composite-board crops and call them native production masters. Reproduce only the locked Candidate 3 design at target native resolution, then compare back to the exact baseline and reject visual drift.",
+  "human_gates": ["outdoor_readability", "M-B_motion_timing_intensity"],
+  "runtime_activation": false
+}
