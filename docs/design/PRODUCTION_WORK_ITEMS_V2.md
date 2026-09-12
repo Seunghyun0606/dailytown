@@ -34,18 +34,10 @@ Current checkpoint:
 - 768×768 transparent runtime-candidate v2 produced without redesign
 - PNG candidate SHA-256: `59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92`
 - 48 / 64 / 96 / 144 px previews plus 432 px high-density preview prepared
-- semi-transparent edge RGB decontaminated toward nearby solid interior color; extremely faint extraction noise removed without silhouette shrink
 - cream / dark / map-heavy static QA: PASS
-- inspectable alpha-capable GitHub reference persisted under `design/reference/discovery/old-ginkgo-note/production/runtime-v2/`
-- repository audit found the inspectable 128×128 reference but not the exact 768×768 master bytes named by the manifest
-- PR #10 Android API 30 / 2.625× test-only matrix PASS at 48 / 64 / 96 / 144 dp on cream, dark, and map-heavy surfaces; alpha/transparent corners PASS
-- no opaque rectangular matte or strong light halo in the capture; visible upscale softness remains at larger targets
-- high-density source quality cannot pass from the 128×128 reference and requires exact-master recovery or same-design native raster reproduction
-
-Required output remains:
-- transparent PNG master, minimum 768×768 canvas
-- warm handmade paper, subtle botanical mark, folded-paper silhouette from the locked reference
-- no new seal, iconography, lettering system, or alternate prop design
+- PR #10 Android API 30 / 2.625× context QA: PASS at required dp targets, including alpha/transparent corners
+- inspectable GitHub reference exists, but the exact 768×768 master bytes are not persisted
+- high-density source quality remains blocked until exact-master recovery or same-design native raster reproduction
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
@@ -57,34 +49,16 @@ Current checkpoint:
 - 512×512 transparent runtime-candidate v2 produced without redesign
 - PNG candidate SHA-256: `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
 - 32 / 48 / 64 / 96 px previews plus 288 px high-density preview prepared
-- semi-transparent edge RGB decontaminated without changing fan silhouette/material language
 - cream / dark / map-heavy static QA: PASS
-- inspectable alpha-capable GitHub reference persisted under `design/reference/discovery/old-ginkgo-note/production/runtime-v2/`
-- repository audit found the inspectable 96×96 reference but not the exact 512×512 master bytes named by the manifest
-- PR #10 Android API 30 / 2.625× test-only matrix PASS at 32 / 48 / 64 / 96 dp on cream, dark, and map-heavy surfaces; alpha/transparent corners PASS
-- no opaque rectangular matte or strong light halo in the capture; visible upscale softness remains at larger targets
-- high-density source quality cannot pass from the 96×96 reference and requires exact-master recovery or same-design native raster reproduction
-
-Required output remains:
-- transparent PNG master, minimum 512×512 canvas
-- single warm-yellow ginkgo silhouette matching the approved discovery family
-- no UI-vector flattening
+- PR #10 Android API 30 / 2.625× context QA: PASS at required dp targets, including alpha/transparent corners
+- inspectable GitHub reference exists, but the exact 512×512 master bytes are not persisted
+- high-density source quality remains blocked until exact-master recovery or same-design native raster reproduction
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
 Status: **DESIGN RUNTIME CANDIDATE — static identity/crop/style QA PASS; not activated**
 
 Target semantic key: `place.old_ginkgo.main`
-
-Required output:
-- clean scene master without UI/text overlays, minimum 1600×1200
-- same neighborhood/ginkgo lighting, camera language, and storybook finish as the approved reference
-- runtime crops: `discovery_card`, `records_header`, `memory_thumbnail`
-
-QA:
-- does not compete with player-facing UI
-- preserves the approved place identity and warm neighborhood mood
-- no alternate environment art direction
 
 Current checkpoint:
 - native 1448×1086 generated source and auditable 2048×1536 PNG master persisted as GitHub binaries with exact checksums and inspectable WebP refs
@@ -100,17 +74,9 @@ Status: **DESIGN RUNTIME CANDIDATE — same-scene/A3/crop static QA PASS; not ac
 
 Target semantic key: `memory.old_ginkgo.keepsake`
 
-Required output:
-- derive from the same approved place/note scene
-- minimum 1024×768 source
-- runtime crops for Records and Companion recent-memory surfaces
-
-QA:
-- looks like a memory artifact from the same event, not a newly invented scene
-- compatible with A3 paper/journal treatment
-
 Current checkpoint:
-- 1536×1152 PNG master is an exact crop from the OG-04 master; no separate scene generation; full master/crops are persisted as GitHub binaries with checksum/refs
+- 1536×1152 PNG master is an exact crop from the OG-04 master; no separate scene generation
+- full master/crops are persisted as GitHub binaries with checksums/refs
 - Records 1024×768 and Companion recent-memory 1280×720 WebP crops preserved
 - same-event continuity / crop / cream A3 journal-mount static QA: PASS
 - manifest/QA: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/`
@@ -120,37 +86,40 @@ Current checkpoint:
 
 Status: **PARTIAL — OG-04/05 design candidates PASS; OG-02/03 Android context PASS but high-density source-quality BLOCKED**
 
-Checks:
-- actual target-size Android readability
-- transparent edge / crop QA
-- light/dark/map-heavy context QA
-- semantic naming and manifest paths
-- checksum/reference registry update
-
-Promotion rule:
-- assets may become `runtime_candidate` only after these checks pass
-- runtime activation remains separate from this design checklist
-
 Current checkpoint:
 - integrated QA manifest: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/first-scenario-pack-qa.v3.json`
 - semantic names, versioned paths, committed-reference checksums, manifests, registry, and OG-04/05 crop QA: PASS
-- PR #10 Android API 30 / 2.625× test-only matrix passed the required dp targets, alpha assertions, and cream/dark/map-heavy contexts without packaging the refs into the runtime APK
+- PR #10 Android API 30 / 2.625× test-only matrix passed the required dp targets, alpha assertions, and cream/dark/map-heavy contexts without packaging refs into the runtime APK
 - OG-02/03 are not promoted because their exact full-resolution master bytes are unavailable
+
+Promotion rule:
+- design-side `runtime_candidate` promotion only after source-quality checks pass
+- Android runtime activation remains separate from this design checklist
 
 ## P1 — Moru Candidate 3 production export
 
 ### DT-DES-MORU-01 · Transparent master family
 
-Status: **BLOCKED — clean master derivation pending**
+Status: **IN PROGRESS — source-sufficiency audit complete; native transparent production masters still required**
 
 Outputs:
 - approved Candidate 3 only
 - usage contexts: map avatar, HUD portrait, encounter half-body, result large, Companion portrait, journal crop
 - preserve sprout, hood, scarf diagonal, satchel, boots, anatomy and costume
 
+Current checkpoint:
+- exact Candidate 3 board remains canonical: 1122×1402, SHA-256 `541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500`
+- source audit recorded in `docs/design/MORU_SOURCE_SUFFICIENCY_V2.md`
+- machine-readable crop/source audit recorded in `design/reference/moru-v2/production/source-sufficiency.v2.json`
+- board is sufficient for identity, framing, 48dp reference, expression/lighting/affinity intent
+- board crops are not native production masters: full-body turnaround references are about 315–340×540–565 px; expression refs are about 162–200×215 px
+- `map_avatar`, `hud_portrait`, and `journal_crop` can support reference-derived QA candidates
+- `encounter_halfbody`, `result_large`, and final `companion_portrait` require native same-design raster reproduction rather than simple upscaling
+- this is a source-resolution/clean-transparency blocker, not a design-direction blocker
+
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **BLOCKED by MORU-01**
+Status: **BLOCKED by native/clean MORU-01 masters; reference precheck PASS**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read
@@ -159,7 +128,7 @@ Checks:
 - base / familiar / trusted / best_friend invariance
 - transparent edge/halo
 
-Reference precheck is already PASS; this item is for the real exported asset family.
+Reference precheck is already PASS. Actual runtime-size QA must use the real transparent export family, not composite-board crops presented as final masters.
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 
@@ -169,20 +138,37 @@ Checks:
 - `neutral / LIGHT / base / static` fallback
 - v1 rollback retained until v2 resolver/fallback tests pass
 - no silent repoint of legacy profile
+- semantic profile remains `companion.moru.canonical.v2`
 
 ## P1 — Companion / Records finish
 
 ### DT-DES-CR-01 · Companion relationship-notebook surface polish
 
-Status: **QUEUED**
+Status: **DESIGN SPEC / FINISH REFERENCE READY — Android parity implementation pending**
 
-Keep hierarchy locked. Refine only paper/material depth, memory mounting, contextual-line surface, relationship progress, spacing/type rhythm, and true UI icon cleanup.
+Design-side review:
+- hierarchy remains locked
+- paper/material depth, memory mounting, contextual-line surface, relationship progress, spacing/type rhythm and true UI icon language are defined
+- raster finish reference already exists and no further concept board is required
+- QA decision recorded in `docs/design/COMPANION_RECORDS_FINISH_QA_V2.md`
+
+Runtime follow-up:
+- replace generic Material 3 visual dominance with `DTCompanionNotebookHero`, `DTAffinityNote`, `DTRecentMemoryCard` treatment
+- preserve existing semantic memory/bond data, routing and test tags
 
 ### DT-DES-CR-02 · Records A3 journal surface polish
 
-Status: **QUEUED**
+Status: **DESIGN SPEC / FINISH REFERENCE READY — Android parity implementation pending**
 
-Keep hierarchy locked. Refine only journal paper/inset hierarchy, clue/memory mounting, tape/stamp/sticker accents, section rhythm, artifact density, and small-size legibility.
+Design-side review:
+- journal paper/inset hierarchy, clue/memory mounting, tape/stamp/sticker accents, section rhythm, artifact density and small-size legibility are defined
+- one dominant record artifact per region remains the rule
+- clue/place/memory art remains raster content
+- QA decision recorded in `docs/design/COMPANION_RECORDS_FINISH_QA_V2.md`
+
+Runtime follow-up:
+- use `DTJournalCanvas`, `DTJournalTabs`, `DTRecordArtifact`, `DTClueArtifact`, `DTMemoryStamp`
+- preserve real persisted data and do not decorate unsupported mystery state into existence
 
 ## P2 — Final QA / Human Gates
 
@@ -206,8 +192,10 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-1. Recover the exact v2 PNG masters or reproduce only the locked designs as native high-resolution raster.
-2. Rerun the same Android API 30 / high-density matrix and close the blocked OG-02/03 subset of OG-06.
-3. Keep outdoor readability as a physical-device Human Gate; do not activate assets during design production.
+1. Treat Old Ginkgo P0 as substantially produced on `design/old-ginkgo-production-v3`, but keep OG-02/03 high-density source-quality blocker explicit until native/exact masters are recovered.
+2. Produce **native-resolution transparent Moru Candidate 3 masters** from the locked design; start with map/avatar + HUD for early Android QA, then Companion/journal, then encounter/result-large.
+3. Run MORU-02 Android-size/edge/lighting/affinity QA and only then prepare semantic activation readiness.
+4. Companion/Records design-side finish is closed; next work there belongs to Android visual parity implementation/QA rather than another design exploration.
+5. Keep outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
 
 Do not start a new concept-board exploration while these production items remain open.
