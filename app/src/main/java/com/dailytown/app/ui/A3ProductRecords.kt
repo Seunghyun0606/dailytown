@@ -172,8 +172,9 @@ private fun PlaceRecordDetail(
     onOpenMemories: () -> Unit,
 ) {
     val remembered = poiId != null && "poi:$poiId" in progress?.companionMemoryKeys.orEmpty()
+    val hasOldGinkgoPlaceEvidence = poiId != null && poiId in progress?.daily?.discoveredPoiIds.orEmpty()
     DetailPage(tag = "record-discovery-detail", title = "장소 기록", onBack = onBack, backTag = "discovery-back") {
-        if (poiId != null) {
+        if (hasOldGinkgoPlaceEvidence) {
             ProductionScenarioRasterAsset(
                 semanticKey = OldGinkgoVisualAssets.PlaceMain,
                 usage = ScenarioAssetUsage.RECORDS_HEADER,
@@ -213,8 +214,9 @@ private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit)
     DetailPage(tag = "record-clue-note", title = "단서", onBack = onBack, backTag = "clue-back") {
         RecordSection(title = "관찰한 단서") {
             val count = progress?.inventoryClueIds?.size ?: 0
+            val oldGinkgoClueCount = progress?.daily?.clueIds?.size ?: 0
             Text("지금까지 실제 encounter에서 수집한 단서 ${count}개가 저장되어 있어요.")
-            if (count > 0) {
+            if (oldGinkgoClueCount > 0) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     ProductionScenarioRasterAsset(
                         semanticKey = OldGinkgoVisualAssets.FoldedNote,
@@ -224,7 +226,7 @@ private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit)
                             .size(112.dp)
                             .testTag("old-ginkgo-note-records"),
                     )
-                    if (count > 1) {
+                    if (oldGinkgoClueCount > 1) {
                         ProductionScenarioRasterAsset(
                             semanticKey = OldGinkgoVisualAssets.GinkgoLeaf,
                             usage = ScenarioAssetUsage.CLUE_ART,
@@ -262,7 +264,8 @@ private fun MemoryRecordDetail(
                 Text("함께 탐험을 해결하면 장소와 행동의 semantic memory가 남아요.")
             }
         } else {
-            if (!progress?.resolvedEncounterIds.isNullOrEmpty()) {
+            val hasOldGinkgoSessionEvidence = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty()
+            if (hasOldGinkgoSessionEvidence) {
                 ProductionScenarioRasterAsset(
                     semanticKey = OldGinkgoVisualAssets.Keepsake,
                     usage = ScenarioAssetUsage.RECORDS_CARD,
