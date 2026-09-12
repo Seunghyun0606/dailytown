@@ -4,8 +4,13 @@
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "canonical_source": {
     "file": "moru_candidate3_canonical_baseline_v2.png",
+    "repository_path": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
     "dimensions": [1122, 1402],
-    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500"
+    "byte_size": 3625230,
+    "color_mode": "RGBA",
+    "effective_transparency": false,
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "status": "canonical_exact_source_remote_verified_not_native_transparent_master"
   },
   "crop_inventory": {
     "turnaround_front": {"box": [125,120,465,660], "px": [340,540]},

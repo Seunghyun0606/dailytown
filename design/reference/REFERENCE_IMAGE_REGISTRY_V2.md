@@ -7,23 +7,23 @@ This registry preserves design-review imagery in GitHub so accepted/reference bo
 ## Authority rule
 
 - `docs/design/DESIGN_BASELINE_V2.md` remains the visual authority.
-- Files under the paths below are **reference-only WebP preservation derivatives**, not runtime assets and not permission to redesign the locked baseline.
-- The exact canonical baseline is still identified by the original PNG SHA-256 and dimensions below; the smaller WebP files exist so the visual answer remains inspectable in the repository.
+- Files explicitly labelled as WebP are **reference-only preservation derivatives**, not runtime assets and not permission to redesign the locked baseline.
+- The two exact canonical PNG sources are now committed at the paths below. The smaller WebP files remain inspectable derivatives only.
 - Generated composite boards are art/finish references only. They require production extraction/export before Android runtime use.
 
 ## Locked baseline references
 
 | GitHub reference | Original source | Original dimensions | Original SHA-256 | Role |
 | --- | --- | ---: | --- | --- |
-| `design/reference/baseline-v2/raster/dailytown_ux_visual_baseline_v2_ref.webp` | `dailytown_ux_visual_baseline_v2.png` | 1448×1086 | `f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515` | approved overall UX/visual baseline derivative |
-| `design/reference/baseline-v2/raster/moru_candidate3_canonical_baseline_v2_ref.webp` | `moru_candidate3_canonical_baseline_v2.png` | 1122×1402 | `541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500` | approved Moru Candidate 3 baseline derivative |
+| `design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png` | `ChatGPT Image 2026년 9월 12일 오전 02_06_25 (2)(3).png` | 1448×1086 | `f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515` | `approved_baseline_exact_source`; RGBA, alpha present but fully opaque; inspectable derivative remains under `raster/` |
+| `design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png` | `ChatGPT Image 2026년 9월 12일 오전 02_06_24 (1)(3).png` | 1122×1402 | `541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500` | `canonical_exact_source`; RGBA, alpha present but fully opaque; not a native transparent master |
 
 ## Derived production/reference boards
 
 | GitHub reference | Original dimensions | Original SHA-256 | Role |
 | --- | ---: | --- | --- |
 | `design/reference/environment/environment_asset_family_v1.webp` | 1536×1024 | `ecc00d72934245afad6416a8fdb7a2f512f3259c11035b6fe5e3c10d840b5c95` | neighborhood environment/place family reference |
-| `design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp` | 1448×1086 | `32aa7cb81a28074b063cdb9a61b4930a0491c6c19da59b01a9895be20c9435b0` | `오래된 가로수의 쪽지` discovery/place/item family reference |
+| `design/reference/session-2026-09-12/attachments/old_ginkgo_discovery_asset_family.png` | 1448×1086 | `49dfe9d94916a3ff9e6fbfcb9d843c0036e11015a9db3472087d6e7c8e6102e8` | `production_reference`; RGBA, alpha channel present but fully opaque; exact current session PNG, same board role as `discovery_asset_family_v1.webp` but byte-distinct from earlier declared source `32aa7c…` |
 | `design/reference/discovery/old-ginkgo-note/production/old_ginkgo_production_board_ref_v2.webp` | 1536×1024 | `550352f37a4d541b5e70523e5472e263ef6dff2e07ad5b6abe1d2525a6f7f9f2` | production-derivation review board only; non-canonical, cannot override locked Moru/UX baseline or imply extra domain items |
 | `design/reference/discovery/old-ginkgo-note/production/runtime-v3/master/place_old_ginkgo_main_master_v3.png` | 2048×1536 | `81a9e87bb0bd4cc97b0bd024280c27bf93b0eb0ec2ea0f03d10e94cfa45f0273` | `place.old_ginkgo.main` full production master; design-side runtime candidate; not activated |
 | `design/reference/discovery/old-ginkgo-note/production/runtime-v3/master/memory_old_ginkgo_keepsake_master_v3.png` | 1536×1152 | `018b861cdcd1d1629e4b53690b3ac18dda3b28e8f9bfba21ac6c5cd94bf07784` | `memory.old_ginkgo.keepsake` full same-scene master; design-side runtime candidate; not activated |
@@ -32,10 +32,10 @@ This registry preserves design-review imagery in GitHub so accepted/reference bo
 | `design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/old_ginkgo_scene_crop_qa_board_v3_ref.webp` | QA artifact 1536×1647 | QA artifact `e48f5206cea26d052a84966f42a7199a49ab77cf7f39d03c62d56a8f3f5b4c24`; ref `78083708fc6e28c6d4e124baf0fbf0906cc3dd0078abd200d7dc743c30da4826` | OG-04/05 static crop and journal-mount QA evidence reference |
 | `design/reference/discovery/old-ginkgo-note/production/runtime-v2/android-qa/folded_note_android_density_qa_v2.png` | 1079×1874 | `0562c1b8056f0f8ef7b7a4a7ffc406b8900f72fe91ff66f645546ad0a89d06a0` | OG-02 Android API 30 / 2.625× context QA board; reference only; source-quality blocker is printed in the board |
 | `design/reference/discovery/old-ginkgo-note/production/runtime-v2/android-qa/ginkgo_leaf_android_density_qa_v2.png` | 1079×1496 | `e4cb1f896ceaa1eb48513902b2e986d162f0d72fa097a5b6c81cd8db1dfeae31` | OG-03 Android API 30 / 2.625× context QA board; reference only; source-quality blocker is printed in the board |
-| `design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_0.png` | 1536×1024 | `ed9a4d1b20dec0c5d6f72b5e31a5dd2a8e7eb819b1f7c880cb98e666b0ba523d` | exact attached production-pack board; reference-only, not a runtime asset |
-| `design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_1.png` | 1536×1024 | `0f3f3ed101a3476c74dd9674d3dc98e2e53ad901d898cbf02be7cdb88d67d312` | exact attached production-pack board; reference-only, not a runtime asset |
-| `design/reference/ux-v2/raster/companion_records_finish_pass_v1.webp` | 1448×1086 | `d9b4279da298ea9dbc1e151818ae82de59fcaa7a022528497185208581a56f88` | Companion relationship notebook + Records A3 finish reference |
-| `design/reference/ux-v2/raster/explore_detail_parity_v1.webp` | 1448×1086 | `959b79223970132b23f2d8b6f9d19056eace5f5176c213d997bc59154b0d37fb` | Explore Prepare/Detect/Discover/Resolved detail parity reference |
+| `design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_0.png` | 1536×1024 | `ed9a4d1b20dec0c5d6f72b5e31a5dd2a8e7eb819b1f7c880cb98e666b0ba523d` | `production_reference`; RGBA, alpha range 0–253; exact source board re-verified from the new attachment bytes |
+| `design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_1.png` | 1536×1024 | `0f3f3ed101a3476c74dd9674d3dc98e2e53ad901d898cbf02be7cdb88d67d312` | `production_reference`; RGBA, alpha range 0–253; exact source board re-verified from the new attachment bytes |
+| `design/reference/session-2026-09-12/attachments/companion_records_finish_pass.png` | 1448×1086 | `4132ff65177e86fe8bd360121b02970ad3a7d41df23f7f95ca233f1c43b300f9` | `production_reference`; RGBA, alpha channel present but fully opaque; exact current session PNG, same board role as `companion_records_finish_pass_v1.webp` but byte-distinct from earlier declared source `d9b427…` |
+| `design/reference/session-2026-09-12/attachments/explore_detail_parity.png` | 1448×1086 | `ddfef207ac1725ecc360cb0012446938a705e056b86dfbfe00656034a0a9f20b` | `production_reference`; RGBA, alpha channel present but fully opaque; exact current session PNG, same board role as `explore_detail_parity_v1.webp` but byte-distinct from earlier declared source `959b79…` |
 | `design/reference/ux-v2/raster/mobile_readability_qa_v2.webp` | 1800×1350 | `32b330c6e4a39ca2c154953cb326310b60dc1d4ed9d3fb7fee0278d237201c74` | reduced-size QA board made from locked baseline crops |
 
 ## Isolated scenario references
@@ -57,7 +57,8 @@ Moru reference-level mobile QA is preserved at:
 
 ## Production status
 
-- Moru transparent master/export: **pending**.
+- Exact attachment persistence: **7/7 remote-verified**; provenance and byte/color/alpha metadata are in `design/reference/session-2026-09-12/attachments/manifest.json`.
+- Moru canonical source board: **exact PNG persisted**. Moru native transparent master/export: **pending**.
 - Old Ginkgo OG-04 place and OG-05 same-scene memory families: **design-side runtime candidate / static QA PASS / not activated**; full source/masters/runtime crops/QA board and lightweight refs are persisted in GitHub under `production/runtime-v3/`.
 - Old Ginkgo OG-02/03 clue refs: static and PR #10 Android API 30 / 2.625× context QA PASS, with captures under `production/runtime-v2/android-qa/`. Exact 768×768 / 512×512 master bytes are not persisted, so the committed 128×128 / 96×96 refs cannot pass the high-density source-quality gate and OG-06 remains partial.
 - Historical `old_ginkgo_production_board_ref_v2.webp` is retained, but the committed blob is truncated and is not valid inspectable QA evidence. Runtime-v3 derivation uses the locked baseline, discovery-family board, and isolation crops instead.

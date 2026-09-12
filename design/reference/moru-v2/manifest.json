@@ -17,9 +17,12 @@
     "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
     "width": 1122,
     "height": 1402,
+    "byte_size": 3625230,
+    "color_mode": "RGBA",
+    "effective_transparency": false,
     "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
     "role": "user-confirmed Moru Candidate 3 canonical visual baseline",
-    "status": "approved baseline; runtime export pending"
+    "status": "canonical exact source persisted and remote verified; native transparent runtime export pending"
   },
   "integrated_visual_reference": {
     "semantic_target": "design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png",

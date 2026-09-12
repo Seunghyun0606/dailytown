@@ -5,6 +5,26 @@
   "reference_board": "design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp",
   "isolation_reference_dir": "design/reference/discovery/old-ginkgo-note/isolation/",
   "production_reference_dir": "design/reference/discovery/old-ginkgo-note/production/",
+  "exact_source_boards": [
+    {
+      "path": "design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_0.png",
+      "dimensions": [1536, 1024],
+      "sha256": "ed9a4d1b20dec0c5d6f72b5e31a5dd2a8e7eb819b1f7c880cb98e666b0ba523d",
+      "status": "production_reference_remote_reverified"
+    },
+    {
+      "path": "design/reference/discovery/old-ginkgo-note/production/source-boards/old_ginkgo_asset_production_pack_v1_1.png",
+      "dimensions": [1536, 1024],
+      "sha256": "0f3f3ed101a3476c74dd9674d3dc98e2e53ad901d898cbf02be7cdb88d67d312",
+      "status": "production_reference_remote_reverified"
+    },
+    {
+      "path": "design/reference/session-2026-09-12/attachments/old_ginkgo_discovery_asset_family.png",
+      "dimensions": [1448, 1086],
+      "sha256": "49dfe9d94916a3ff9e6fbfcb9d843c0036e11015a9db3472087d6e7c8e6102e8",
+      "status": "production_reference_exact_session_source_not_native_master"
+    }
+  ],
   "transparent_candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/transparent-candidate-manifest.v1.json",
   "runtime_candidate_v2_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/",
   "runtime_candidate_v2_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/runtime-candidate-manifest.v2.json",
