@@ -3,8 +3,10 @@ package com.dailytown.app.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -13,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +26,8 @@ import com.dailytown.app.mystery.MysteryReducer
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.ui.presentation.ExploreEncounterPresentation
 import com.dailytown.app.ui.presentation.ExploreExperienceStep
+import com.dailytown.app.ui.visual.ProductionScenarioRasterAsset
+import com.dailytown.app.visual.ScenarioAssetUsage
 
 @Composable
 internal fun ExploreEncounterSurface(
@@ -143,7 +148,29 @@ private fun DiscoveryContent(
     val encounter = selection.encounter
     Text("발견", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
     Text(presentation.title.orEmpty(), style = MaterialTheme.typography.headlineSmall)
+    presentation.placeAssetKey?.let { key ->
+        ProductionScenarioRasterAsset(
+            semanticKey = key,
+            usage = ScenarioAssetUsage.DISCOVERY_CARD,
+            contentDescription = "오래된 가로수 발견 장면",
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
+                .testTag("old-ginkgo-place-discovery"),
+            contentScale = ContentScale.Crop,
+        )
+    }
     presentation.premise?.let { Text(it) }
+    presentation.noteAssetKey?.let { key ->
+        ProductionScenarioRasterAsset(
+            semanticKey = key,
+            usage = ScenarioAssetUsage.CLUE_ART,
+            contentDescription = "접힌 메모 단서",
+            modifier = Modifier
+                .size(112.dp)
+                .testTag("old-ginkgo-note-discovery"),
+        )
+    }
     presentation.moruLine?.let { MoruLine(it) }
     Button(
         onClick = {
@@ -168,6 +195,28 @@ private fun InvestigationContent(
     val encounter = selection.encounter
     Text(presentation.title.orEmpty(), style = MaterialTheme.typography.titleLarge)
     Text("살펴보기", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        presentation.noteAssetKey?.let { key ->
+            ProductionScenarioRasterAsset(
+                semanticKey = key,
+                usage = ScenarioAssetUsage.CLUE_ART,
+                contentDescription = "접힌 메모 단서",
+                modifier = Modifier
+                    .size(96.dp)
+                    .testTag("old-ginkgo-note-investigate"),
+            )
+        }
+        presentation.clueAssetKey?.let { key ->
+            ProductionScenarioRasterAsset(
+                semanticKey = key,
+                usage = ScenarioAssetUsage.CLUE_ART,
+                contentDescription = "은행잎 단서",
+                modifier = Modifier
+                    .size(96.dp)
+                    .testTag("old-ginkgo-leaf-investigate"),
+            )
+        }
+    }
     presentation.clueLabel?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
     presentation.moruLine?.let { MoruLine(it) }
     Text(
@@ -210,6 +259,18 @@ private fun CompletionContent(
 ) {
     Text("오늘의 기록이 생겼어요", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
     Text(presentation.title.orEmpty(), style = MaterialTheme.typography.headlineSmall)
+    presentation.memoryAssetKey?.let { key ->
+        ProductionScenarioRasterAsset(
+            semanticKey = key,
+            usage = ScenarioAssetUsage.RECORDS_CARD,
+            contentDescription = "오래된 가로수의 모루와의 기억",
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(4f / 3f)
+                .testTag("old-ginkgo-memory-resolved"),
+            contentScale = ContentScale.Crop,
+        )
+    }
     presentation.premise?.let { Text(it) }
     presentation.clueLabel?.let { Text("단서 · $it", style = MaterialTheme.typography.bodyMedium) }
     presentation.moruLine?.let { MoruLine(it) }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,15 +24,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.ui.visual.LocalDailyTownCompanionLighting
 import com.dailytown.app.ui.visual.ProductionCompanionVisual
+import com.dailytown.app.ui.visual.ProductionScenarioRasterAsset
 import com.dailytown.app.visual.AppearanceProfile
 import com.dailytown.app.visual.CompanionExpression
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
+import com.dailytown.app.visual.OldGinkgoVisualAssets
+import com.dailytown.app.visual.ScenarioAssetUsage
 
 private enum class CompanionPanel { NONE, TALK, MEMORIES, GIFTS }
 
@@ -47,6 +52,7 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
         }
         .firstOrNull()
     val hasTodayDiscovery = (progress?.daily?.discoveredPoiIds?.size ?: 0) > 0
+    val hasResolvedMemory = !progress?.resolvedEncounterIds.isNullOrEmpty() && !progress?.companionMemoryKeys.isNullOrEmpty()
     val mood = if (hasTodayDiscovery) "호기심 가득" else "산책 준비 중"
     val contextualLine = when {
         recentRememberedPlace != null -> "$recentRememberedPlace 이야기가 아직 기억나. 다음에는 뭐가 달라졌는지 보고 싶어."
@@ -114,8 +120,20 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
             shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("최근 함께한 기억", style = MaterialTheme.typography.titleMedium)
+                if (hasResolvedMemory) {
+                    ProductionScenarioRasterAsset(
+                        semanticKey = OldGinkgoVisualAssets.Keepsake,
+                        usage = ScenarioAssetUsage.COMPANION_RECENT_MEMORY,
+                        contentDescription = "오래된 가로수에서 함께한 기억",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
+                            .testTag("old-ginkgo-memory-companion"),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
                 Text(recentRememberedPlace ?: "아직 이름이 남은 장소 기억은 없어요.")
                 Text("함께 남긴 기억 ${progress?.companionMemoryKeys?.size ?: 0}개", style = MaterialTheme.typography.bodySmall)
             }

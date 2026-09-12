@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -20,10 +22,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.poi.defaultFixturePois
+import com.dailytown.app.ui.visual.ProductionScenarioRasterAsset
+import com.dailytown.app.visual.OldGinkgoVisualAssets
+import com.dailytown.app.visual.ScenarioAssetUsage
 
 private enum class RecordsRoute { HOME, PLACE_DETAIL, CLUE_DETAIL, MEMORY_DETAIL }
 
@@ -167,6 +173,18 @@ private fun PlaceRecordDetail(
 ) {
     val remembered = poiId != null && "poi:$poiId" in progress?.companionMemoryKeys.orEmpty()
     DetailPage(tag = "record-discovery-detail", title = "장소 기록", onBack = onBack, backTag = "discovery-back") {
+        if (poiId != null) {
+            ProductionScenarioRasterAsset(
+                semanticKey = OldGinkgoVisualAssets.PlaceMain,
+                usage = ScenarioAssetUsage.RECORDS_HEADER,
+                contentDescription = "오래된 가로수 장소 기록",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(8f / 3f)
+                    .testTag("old-ginkgo-place-records"),
+                contentScale = ContentScale.Crop,
+            )
+        }
         RecordSection(title = title) {
             Text("이 장소에서 탐험 신호를 발견해 기록했습니다.")
             Text(if (remembered) "모루와 공유한 장소 기억이 저장되어 있어요." else "현재 저장된 공유 기억은 아직 없어요.")
@@ -197,6 +215,26 @@ private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit)
             val count = progress?.inventoryClueIds?.size ?: 0
             Text("지금까지 실제 encounter에서 수집한 단서 ${count}개가 저장되어 있어요.")
             if (count > 0) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    ProductionScenarioRasterAsset(
+                        semanticKey = OldGinkgoVisualAssets.FoldedNote,
+                        usage = ScenarioAssetUsage.CLUE_ART,
+                        contentDescription = "접힌 메모 단서",
+                        modifier = Modifier
+                            .size(112.dp)
+                            .testTag("old-ginkgo-note-records"),
+                    )
+                    if (count > 1) {
+                        ProductionScenarioRasterAsset(
+                            semanticKey = OldGinkgoVisualAssets.GinkgoLeaf,
+                            usage = ScenarioAssetUsage.CLUE_ART,
+                            contentDescription = "은행잎 단서",
+                            modifier = Modifier
+                                .size(112.dp)
+                                .testTag("old-ginkgo-leaf-records"),
+                        )
+                    }
+                }
                 Text(
                     "첫 UX validation의 authored copy는 기존 encounter clue ID를 바꾸지 않고 표현 계층에서만 연결됩니다.",
                     style = MaterialTheme.typography.bodySmall,
@@ -224,6 +262,18 @@ private fun MemoryRecordDetail(
                 Text("함께 탐험을 해결하면 장소와 행동의 semantic memory가 남아요.")
             }
         } else {
+            if (!progress?.resolvedEncounterIds.isNullOrEmpty()) {
+                ProductionScenarioRasterAsset(
+                    semanticKey = OldGinkgoVisualAssets.Keepsake,
+                    usage = ScenarioAssetUsage.RECORDS_CARD,
+                    contentDescription = "오래된 가로수의 모루와의 기억",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(4f / 3f)
+                        .testTag("old-ginkgo-memory-records"),
+                    contentScale = ContentScale.Crop,
+                )
+            }
             val rememberedPlaces = recentPoiIds.mapIndexedNotNull { index, poiId ->
                 if ("poi:$poiId" !in memories) null
                 else recentPoiTitle(index, poiId, recentPoiTitles, fixtureNames)
