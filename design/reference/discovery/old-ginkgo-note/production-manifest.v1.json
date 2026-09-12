@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-note-production-v1",
-  "status": "production_derivation_spec",
+  "status": "design_runtime_candidate_pack_ready_not_activated",
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "reference_board": "design/reference/discovery/old-ginkgo-note/discovery_asset_family_v1.webp",
   "isolation_reference_dir": "design/reference/discovery/old-ginkgo-note/isolation/",
@@ -51,7 +51,8 @@
     "transparent_extraction_candidate_is_runtime_asset": false,
     "runtime_candidate_v2_is_runtime_active": false,
     "domain_behavior_change": false,
-    "runtime_candidate_v4_is_runtime_active": false
+    "runtime_candidate_v4_is_runtime_active": false,
+    "runtime_candidate_v5_is_runtime_active": false
   },
   "required_first_scenario_assets": [
     {
@@ -151,26 +152,37 @@
           96
         ]
       },
-      "status": "exact_attachment_verified_edge_reconstruction_visual_fail_not_promoted",
+      "status": "selective_edge_retouch_static_qa_pass_runtime_candidate_v5_not_activated",
       "candidate_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
       "github_reference": "design/reference/discovery/old-ginkgo-note/production/runtime-v2/ginkgo_leaf_runtime_candidate_v2_ref.webp",
       "qa": [
-        "exact_source_sha_verified",
+        "exact_source_sha_verified_and_persisted",
         "alpha_immutable",
         "silhouette_iou_1",
-        "opaque_interior_rgb_unchanged",
-        "cream_visual_fail_bright_yellow_jagged_edge",
-        "map_heavy_visual_fail",
-        "high_density_visual_fail",
-        "runtime_activation_not_performed"
+        "visible_support_rgb_unchanged",
+        "warm_brown_perimeter_preserved",
+        "transparent_side_boundary_color_bleed",
+        "cream_pass_static",
+        "dark_pass_static",
+        "map_heavy_pass_static",
+        "target_size_pass_static",
+        "high_density_pass_static",
+        "runtime_activation_not_performed",
+        "physical_device_human_gate"
       ],
-      "candidate_limit": "The exact 512x512 attachment was verified but is not persisted because the single edge-reconstruction candidate failed visual QA. No generated or upscaled fallback is allowed.",
+      "candidate_limit": "Exact 512x512 source and selective v5 edge candidate are persisted. The v5 candidate changes only alpha-zero transparent-side RGB bleed, is design-side only, and is not Android runtime-active; physical-device outdoor readability remains a Human Gate.",
       "lock": "single warm-yellow ginkgo silhouette; dimensional raster rendering, not UI-vector treatment",
       "latest_exact_attachment_sha256_verified": true,
-      "edge_reconstruction_status": "FAIL_EDGE_RECONSTRUCTION",
-      "rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
-      "rejected_candidate_persisted": false,
-      "next_minimum_work": "Locked-alpha manual edge retouch preserving the warm-brown perimeter, fan silhouette, stem proportion, veins, highlights and material."
+      "edge_reconstruction_status": "PASS_SELECTIVE_EDGE_RETOUCH",
+      "next_minimum_work": "Separate Development task for Android runtime binding/activation, followed by physical-device outdoor readability Human Gate.",
+      "exact_source_github_asset": "design/reference/discovery/old-ginkgo-note/production/runtime-v5/source/clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2_exact.png",
+      "exact_source_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+      "corrected_candidate_github_asset": "design/reference/discovery/old-ginkgo-note/production/runtime-v5/candidate/clue_old_ginkgo_ginkgo_leaf_selective_edge_retouch_v5.png",
+      "corrected_candidate_sha256": "775059cd22db997234e8012534a7e73f9a347d8f1208117c3babee1c9ca1f366",
+      "candidate_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v5/runtime-candidate-manifest.v5.json",
+      "qa_metrics": "design/reference/discovery/old-ginkgo-note/production/runtime-v5/qa/og03/og03_selective_edge_retouch_metrics.v5.json",
+      "previous_rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+      "previous_rejected_candidate_persisted": false
     },
     {
       "semantic_key": "memory.old_ginkgo.keepsake",
@@ -248,5 +260,8 @@
     "outdoor readability remains a human physical-device gate"
   ],
   "runtime_candidate_v4_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/",
-  "runtime_candidate_v4_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/runtime-candidate-manifest.v4.json"
+  "runtime_candidate_v4_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v4/runtime-candidate-manifest.v4.json",
+  "runtime_candidate_v5_dir": "design/reference/discovery/old-ginkgo-note/production/runtime-v5/",
+  "runtime_candidate_v5_manifest": "design/reference/discovery/old-ginkgo-note/production/runtime-v5/runtime-candidate-manifest.v5.json",
+  "og06_status": "CLOSED_DESIGN_RUNTIME_CANDIDATE_PACK_READY"
 }

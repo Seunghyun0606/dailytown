@@ -272,3 +272,47 @@ method. Binary invariants passed, but the visual gate failed.
 
 OG-06 remains **OPEN** because OG-03 did not pass source-quality visual QA.
 OG-04 and OG-05 were not regenerated. Moru was not touched.
+
+## OG-03 exact-source persistence and selective perimeter retouch
+
+Continuation starting remote HEAD:
+`2aa61b3c4a21280b7149e953eb0f9d1a2dcfd24b`.
+
+The newly attached OG-03 PNG was verified before processing as 512×512 PNG
+RGBA with SHA-256
+`ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`,
+alpha range 0–255 and four transparent corners. The bytes were first preserved
+unchanged as the runtime-v5 `immutable_exact_source`; source-persistence
+commit `310f95b0214262693e5550d13a7fdcf56dec33e9` was pushed and the remote
+binary hash was verified.
+
+Exactly one selective candidate was produced. It did not reuse the previous
+rejected candidate as input, did not upscale, and did not use a generative
+model. Local boundary-palette analysis classified and locked 14,148
+warm-brown perimeter pixels and 7,428 warm-yellow transition pixels. No
+visible-support pixel satisfied the conservative contamination-outlier rule,
+so no visible RGB was recolored. A 12px transparent-side RGB bleed ring was
+extended outward from valid local boundary colors to improve straight-alpha
+runtime filtering.
+
+Deterministic result:
+
+- candidate SHA-256:
+  `775059cd22db997234e8012534a7e73f9a347d8f1208117c3babee1c9ca1f366`
+- changed RGB pixels: 19,189, all at alpha 0
+- changed visible-support RGB pixels: 0
+- changed alpha pixels: 0
+- silhouette IoU: 1.0
+- warm-brown/warm-yellow/opaque-interior/vein/highlight/material changed pixels: 0
+- cream, dark and map-heavy QA: PASS
+- 32/48/64/96px and 288px high-density QA: PASS
+- decision: **PASS_SELECTIVE_EDGE_RETOUCH**
+
+The exact source, corrected v5 candidate, metrics and QA boards are persisted
+under `design/reference/discovery/old-ginkgo-note/production/runtime-v5/`.
+The previous nearest-opaque candidate remains rejected and uncommitted.
+
+OG-02/03/04/05 now all pass design-side QA, so OG-06 is
+**CLOSED — DESIGN_RUNTIME_CANDIDATE_PACK_READY**. Android runtime activation
+was not performed; physical-device outdoor readability remains a Human Gate.
+Moru was not touched.

@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-first-scenario-pack-qa-v3",
-  "status": "partial_runtime_candidate_pack_og02_og04_og05_og03_failed",
+  "status": "design_runtime_candidate_pack_ready_og02_og03_og04_og05_pass_not_activated",
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "redesign": false,
   "runtime_activation": false,
@@ -63,15 +63,23 @@
       "android_managed_device_render": "PASS_API30_DENSITY_2_625",
       "android_capture": "../runtime-v2/android-qa/ginkgo_leaf_android_density_qa_v2.png",
       "android_capture_sha256": "e4cb1f896ceaa1eb48513902b2e986d162f0d72fa097a5b6c81cd8db1dfeae31",
-      "android_source_quality": "BLOCKED_OG03_EDGE_RECONSTRUCTION_VISUAL_FAIL",
-      "promotion": "NOT_PROMOTED",
+      "android_source_quality": "PASS_DESIGN_SIDE_STATIC_V5_ANDROID_ACTIVATION_NOT_PERFORMED",
+      "promotion": "DESIGN_RUNTIME_CANDIDATE_V5_NOT_ACTIVATED",
       "exact_attachment_sha256_verified": true,
-      "edge_reconstruction_qa": "FAIL_EDGE_RECONSTRUCTION",
+      "edge_reconstruction_qa": "PASS_SELECTIVE_EDGE_RETOUCH",
       "alpha_immutable": true,
       "silhouette_iou": 1,
-      "rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
-      "rejected_candidate_persisted": false,
-      "visual_failure": "Warm-brown perimeter was lost in places and replaced by a bright yellow jagged edge on cream, map-heavy and high-density review."
+      "exact_source": "../runtime-v5/source/clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2_exact.png",
+      "exact_source_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+      "corrected_candidate": "../runtime-v5/candidate/clue_old_ginkgo_ginkgo_leaf_selective_edge_retouch_v5.png",
+      "corrected_candidate_sha256": "775059cd22db997234e8012534a7e73f9a347d8f1208117c3babee1c9ca1f366",
+      "changed_alpha_pixels": 0,
+      "changed_visible_support_rgb_pixels": 0,
+      "changed_transparent_bleed_pixels": 19189,
+      "warm_brown_perimeter_preserved": true,
+      "previous_rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+      "previous_rejected_candidate_persisted": false,
+      "qa_metrics": "../runtime-v5/qa/og03/og03_selective_edge_retouch_metrics.v5.json"
     },
     {
       "work_item": "DT-DES-OG-04",
@@ -106,10 +114,11 @@
     "place_memory_crop_qa": "PASS_STATIC",
     "clue_target_size_static_qa": "PASS",
     "clue_android_context_qa": "PASS_API30_DENSITY_2_625",
-    "clue_high_density_source_quality": "OG02_PASS_OG03_FAIL_EDGE_RECONSTRUCTION",
+    "clue_high_density_source_quality": "PASS_OG02_V4_OG03_V5",
     "light_dark_map_context": "PASS_STATIC_AND_ANDROID_CAPTURE",
     "reference_registry": "PASS",
-    "manifest_status": "PASS"
+    "manifest_status": "PASS",
+    "og06_design_runtime_candidate_pack": "CLOSED_READY"
   },
   "android_qa": {
     "branch": "feat/emulator-test-harness",
@@ -124,8 +133,9 @@
     "visual_workflow_result": "FAILURE_UNRELATED_A3_CAPTURE_VERIFICATION_JOB",
     "relevant_visual_job_result": "PASS_REPLAY_AND_STATIC_VISUAL_SMOKE",
     "workflow_result_note": "The overall visual workflow includes unrelated A3 and NAVER jobs; the relevant replay-and-static-visual-smoke job passed and emitted both Old Ginkgo captures.",
-    "result": "OG02_V4_DESIGN_STATIC_PASS_OG03_EDGE_RECONSTRUCTION_FAIL"
+    "result": "OG02_V4_OG03_V5_DESIGN_STATIC_PASS_ANDROID_RUNTIME_ACTIVATION_NOT_PERFORMED"
   },
-  "blocker": "OG-03 exact 512x512 RGBA attachment was checksum-verified, but the single immutable-alpha nearest-opaque edge reconstruction failed visual QA and was not persisted. OG-06 remains open. The next minimum work is locked-alpha manual edge retouch; Android runtime activation remains separate.",
-  "promotion_rule": "OG-02, OG-04 and OG-05 are design-side runtime candidates. OG-03 is not promoted after edge visual failure, so OG-06 remains open. Android runtime activation is a separate development task."
+  "blocker": null,
+  "promotion_rule": "OG-02, OG-03, OG-04 and OG-05 all pass design-side source/crop/static QA, so OG-06 is CLOSED as DESIGN_RUNTIME_CANDIDATE_PACK_READY. Android runtime binding/activation is a separate Development task; physical-device outdoor readability remains a Human Gate.",
+  "og06_status": "CLOSED_DESIGN_RUNTIME_CANDIDATE_PACK_READY"
 }

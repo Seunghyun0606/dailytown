@@ -42,18 +42,21 @@ Current checkpoint:
 
 ### DT-DES-OG-03 · Ginkgo-leaf clean transparent master
 
-Status: **BLOCKED — exact attachment verified; single immutable-alpha edge reconstruction failed visual QA**
+Status: **CLOSED — exact source persisted; selective edge-retouch QA PASS; runtime candidate v5 not activated**
 
 Target semantic key: `clue.old_ginkgo.ginkgo_leaf`
 
 Current checkpoint:
-- exact 512×512 RGBA attachment verified; SHA-256 `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
-- alpha changed pixels 0; silhouette IoU 1.0; fan/stem geometry unchanged
-- single nearest-opaque edge reconstruction temporary SHA-256: `ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360`
-- visual gate: FAIL — the warm-brown perimeter was removed in places and replaced by a bright yellow jagged edge on cream, map-heavy and high-density views
-- rejected source/candidate/QA binaries: NOT COMMITTED
-- runtime activation: NOT PERFORMED
-- next minimum work: locked-alpha manual edge retouch using the existing boundary palette; no new fan shape, stem, vein, highlight or material detail
+- exact 512×512 RGBA source persisted byte-for-byte; SHA-256 `ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064`
+- local boundary-palette analysis locked 14,148 warm-brown and 7,428 warm-yellow fractional-edge pixels; no visible-support RGB outlier qualified for retouch
+- v5 changes only a 12px alpha-zero transparent-side RGB bleed ring seeded from valid local boundary colors; changed RGB pixels 19,189
+- alpha changed pixels 0; silhouette IoU 1.0; fan/notch/stem geometry and all visible-support RGB unchanged
+- corrected v5 SHA-256: `775059cd22db997234e8012534a7e73f9a347d8f1208117c3babee1c9ca1f366`
+- cream / dark / map-heavy, 32 / 48 / 64 / 96px and 288px high-density static QA: PASS
+- exact source, candidate, metrics, difference/overlay/palette/edge-close-up boards: `design/reference/discovery/old-ginkgo-note/production/runtime-v5/`
+- previous nearest-opaque candidate remains rejected and uncommitted
+- Android runtime activation: NOT PERFORMED
+- physical-device outdoor readability: Human Gate
 
 ### DT-DES-OG-04 · Old-ginkgo place clean scene master
 
@@ -85,17 +88,18 @@ Current checkpoint:
 
 ### DT-DES-OG-06 · First-scenario asset QA and runtime-candidate promotion
 
-Status: **PARTIAL — OG-02/04/05 design candidates PASS; OG-03 edge reconstruction visual gate FAIL**
+Status: **CLOSED — DESIGN_RUNTIME_CANDIDATE_PACK_READY; not runtime-activated**
 
 Current checkpoint:
 - integrated QA manifest: `design/reference/discovery/old-ginkgo-note/production/runtime-v3/first-scenario-pack-qa.v3.json`
-- semantic names, versioned paths, committed-reference checksums, manifests, registry, and OG-04/05 crop QA: PASS
+- semantic names, versioned paths, committed checksums, manifests, registry, OG-04/05 crop QA and OG-02/03 source-quality QA: PASS
 - PR #10 Android API 30 / 2.625× test-only matrix passed the required dp targets, alpha assertions, and cream/dark/map-heavy contexts without packaging refs into the runtime APK
-- OG-02 is a persisted design-side runtime candidate v4; OG-03 is not promoted because its single immutable-alpha edge reconstruction failed visual QA
+- OG-02 v4 and OG-03 v5 are persisted design-side runtime candidates; OG-04/05 retain their existing design-side PASS
 
 Promotion rule:
-- design-side `runtime_candidate` promotion only after source-quality checks pass; OG-03 remains blocked
-- Android runtime activation remains separate from this design checklist
+- the design-side first-scenario runtime-candidate pack is ready
+- Android runtime binding/activation remains a separate Development task and was not performed
+- physical-device outdoor readability remains a Human Gate
 
 ## P1 — Moru Candidate 3 production export
 
@@ -193,10 +197,9 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-1. Treat Old Ginkgo P0 as substantially produced on `design/old-ginkgo-production-v3`, but keep OG-02/03 high-density source-quality blocker explicit until native/exact masters are recovered.
+1. Keep the Old Ginkgo design-side first-scenario pack closed and unchanged until a separate Development task performs Android runtime binding/activation.
 2. Produce **native-resolution transparent Moru Candidate 3 masters** from the locked design; start with map/avatar + HUD for early Android QA, then Companion/journal, then encounter/result-large.
 3. Run MORU-02 Android-size/edge/lighting/affinity QA and only then prepare semantic activation readiness.
-4. Companion/Records design-side finish is closed; next work there belongs to Android visual parity implementation/QA rather than another design exploration.
-5. Keep outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
+4. Keep physical-device outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
 
 Do not start a new concept-board exploration while these production items remain open.

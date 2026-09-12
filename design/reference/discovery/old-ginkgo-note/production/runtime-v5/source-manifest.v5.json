@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-og03-exact-source-v5",
-  "status": "immutable_exact_source_persisted_pending_selective_retouch",
+  "status": "immutable_exact_source_persisted_selective_retouch_pass",
   "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
   "role": "immutable_exact_source",
   "path": "source/clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2_exact.png",
@@ -22,6 +22,10 @@
     0
   ],
   "byte_policy": "preserved byte-for-byte from the newly attached exact candidate",
+  "successor_candidate": "candidate/clue_old_ginkgo_ginkgo_leaf_selective_edge_retouch_v5.png",
+  "successor_candidate_sha256": "775059cd22db997234e8012534a7e73f9a347d8f1208117c3babee1c9ca1f366",
+  "successor_candidate_role": "design_runtime_candidate_not_activated",
+  "qa_status": "PASS_SELECTIVE_EDGE_RETOUCH",
   "runtime_activation": false,
-  "note": "This is the immutable processing source. It is not the rejected prior retouch candidate and is not itself activated in Android runtime."
+  "note": "This is the immutable processing source. It is not the rejected prior retouch candidate and is not itself activated in Android runtime. The v5 successor changes only alpha-zero transparent-side RGB bleed; all visible-support RGB and alpha bytes remain unchanged."
 }

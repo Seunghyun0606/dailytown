@@ -1,0 +1,93 @@
+{
+  "version": "old-ginkgo-og03-runtime-candidate-v5",
+  "status": "og03_pass_selective_edge_retouch_design_runtime_candidate_not_activated",
+  "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
+  "provenance": "exact_attached_candidate_bytes_plus_source_derived_selective_transparent_edge_rgb_reconstruction",
+  "redesign": false,
+  "generative_processing": false,
+  "upscale_processing": false,
+  "runtime_activation": false,
+  "tools": [
+    {
+      "name": "Pillow",
+      "version": "11.3.0",
+      "license": "HPND",
+      "usage": "RGBA PNG decode/encode, deterministic resampling and QA board assembly"
+    },
+    {
+      "name": "NumPy",
+      "version": "2.1.3",
+      "license": "BSD-3-Clause",
+      "usage": "deterministic channel, palette and metric operations"
+    },
+    {
+      "name": "OpenCV contrib",
+      "version": "4.12.0",
+      "license": "Apache-2.0",
+      "usage": "distance transforms, local boundary analysis and QA rendering"
+    }
+  ],
+  "method": {
+    "name": "local boundary palette selective outlier retouch plus boundary-seeded transparent-side bleed",
+    "alpha_policy": "authoritative immutable mask",
+    "nearest_opaque_propagation_used": false,
+    "outer_fractional_edge_pixels_analyzed": 21886,
+    "warm_brown_locked_pixels": 14148,
+    "warm_yellow_locked_pixels": 7428,
+    "visible_outlier_pixels_corrected": 0,
+    "transparent_bleed_ring_px": 12,
+    "transparent_bleed_seed": "valid local boundary RGB",
+    "visible_support_rgb_policy": "immutable_after_palette_analysis_found_no_contaminated_outlier",
+    "opaque_interior_rgb_policy": "immutable"
+  },
+  "asset": {
+    "work_item": "DT-DES-OG-03",
+    "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+    "exact_source": "source/clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2_exact.png",
+    "exact_source_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+    "exact_source_role": "immutable_exact_source",
+    "corrected_candidate": "candidate/clue_old_ginkgo_ginkgo_leaf_selective_edge_retouch_v5.png",
+    "corrected_candidate_sha256": "775059cd22db997234e8012534a7e73f9a347d8f1208117c3babee1c9ca1f366",
+    "corrected_candidate_role": "design_runtime_candidate_not_activated",
+    "dimensions": [512, 512],
+    "format": "PNG",
+    "mode": "RGBA",
+    "png_color_type": 6,
+    "alpha_range": [0, 255],
+    "four_corner_alpha": [0, 0, 0, 0],
+    "changed_rgb_pixels": 19189,
+    "changed_visible_support_rgb_pixels": 0,
+    "changed_transparent_bleed_pixels": 19189,
+    "changed_alpha_pixels": 0,
+    "silhouette_iou": 1,
+    "warm_brown_perimeter_rgb_changed_pixels": 0,
+    "warm_yellow_transition_rgb_changed_pixels": 0,
+    "opaque_interior_rgb_changed_pixels": 0,
+    "vein_highlight_material_rgb_changed_pixels": 0,
+    "qa_status": "PASS_SELECTIVE_EDGE_RETOUCH",
+    "qa_dir": "qa/og03/",
+    "qa_metrics": "qa/og03/og03_selective_edge_retouch_metrics.v5.json",
+    "target_sizes_px": [32, 48, 64, 96],
+    "high_density_px": 288,
+    "context_qa": {
+      "cream": "PASS",
+      "dark": "PASS",
+      "map_heavy": "PASS",
+      "target_sizes": "PASS",
+      "high_density": "PASS"
+    },
+    "runtime_activation": false,
+    "physical_device_outdoor_readability": "PENDING_HUMAN_GATE"
+  },
+  "previous_rejected_candidate": {
+    "sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+    "persisted": false,
+    "used_as_processing_source": false,
+    "comparison_only": true
+  },
+  "og06_status": "CLOSED_DESIGN_RUNTIME_CANDIDATE_PACK_READY",
+  "human_gates": [
+    "Android runtime activation",
+    "physical-device outdoor readability"
+  ]
+}
