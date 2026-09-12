@@ -1,0 +1,27 @@
+{
+  "version": "old-ginkgo-og03-exact-source-v5",
+  "status": "immutable_exact_source_persisted_pending_selective_retouch",
+  "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
+  "role": "immutable_exact_source",
+  "path": "source/clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2_exact.png",
+  "sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
+  "dimensions": [
+    512,
+    512
+  ],
+  "format": "PNG",
+  "mode": "RGBA",
+  "alpha_range": [
+    0,
+    255
+  ],
+  "four_corner_alpha": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "byte_policy": "preserved byte-for-byte from the newly attached exact candidate",
+  "runtime_activation": false,
+  "note": "This is the immutable processing source. It is not the rejected prior retouch candidate and is not itself activated in Android runtime."
+}
