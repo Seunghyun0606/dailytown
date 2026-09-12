@@ -140,3 +140,43 @@ Decision: **OG02_RESTORATION_NOT_READY / REJECT**.
 - OG-03 and Moru: not started
 - next minimum work: manual raster repaint constrained to the locked silhouette,
   or a different alpha-aware restoration/matting tool that constrains RGB at
+  fractional-alpha edges
+
+## OG-02 EDSR alpha-constrained continuation
+
+Continuation starting HEAD: `a4e500bcb95bc1392616a0be7e290b78a2d9781d`.
+
+One different source-preserving restoration method was attempted after the
+Real-ESRGAN edge failure. The rejected Real-ESRGAN candidate was not used as
+input. The locked 128×128 RGBA WebP was processed directly with the
+`EDSR_x4.pb` model through OpenCV contrib 4.12.0.88 DNN Super Resolution
+(Apache-2.0). RGB was edge-bled outside the alpha support, restored 4×, resized
+to 768×768, then constrained by reprojecting locked-source RGB across a 6–18px
+boundary band. Alpha remained an independent 6× upscale of the locked source
+and was recombined using premultiplied alpha.
+
+Exactly one EDSR alpha-constrained candidate was created outside the
+repository. It retains:
+
+- `native_source_recovered: false`
+- `provenance: source_derived_restoration`
+- `exact_source: false`
+- `preview_only: true`
+
+Binary and silhouette gates passed: 768×768 PNG color type 6, alpha 0–255,
+four corners alpha 0, no checkerboard or opaque matte, silhouette IoU 1.0,
+centroid/bounding-box/orientation change 0, and no new disconnected alpha
+components.
+
+Edge-band premultiplied RGB difference improved from the prior Real-ESRGAN
+mean/p95/max of 9.401/24.857/92.980 to 4.399/14.224/54.678. The visual gate
+still failed: yellow, red and dark pixel specks remain visible around the paper
+and botanical boundary on transparent, dark and map-heavy previews. The
+remaining contamination is present in the low-resolution locked WebP boundary;
+removing it further while preserving the exact low-resolution silhouette would
+require repainting rather than restoration.
+
+Decision: **OG02_RESTORATION_NOT_READY / AUTOMATED RESTORATION EXHAUSTED**.
+
+- EDSR candidate binary and QA artifacts: temporary only, not committed
+- canonical/reference/runtime paths: unchanged
