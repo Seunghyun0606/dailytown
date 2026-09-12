@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "effects": {
+    "route": {
+      "states": ["idle", "following", "completed"],
+      "preferred_runtime": "native_procedural",
+      "sprite_gen_eligible": false,
+      "reduced_motion": "static_state_specific_line_style"
+    },
+    "halo": {
+      "states": ["idle", "active", "strong"],
+      "preferred_runtime": "native_procedural",
+      "sprite_gen_eligible": false,
+      "reduced_motion": "static_ring_count_and_weight"
+    },
+    "discovery": {
+      "states": ["small", "medium", "big"],
+      "preferred_runtime": "native_procedural_shell_plus_optional_owned_particles",
+      "sprite_gen_eligible": false,
+      "reduced_motion": "static_final_accent_short_window",
+      "layers": ["leaf_particles", "sparkle_particles", "center_light_point"]
+    },
+    "a3_sticker_settle": {
+      "preferred_runtime": "native_procedural",
+      "sprite_gen_eligible": false,
+      "reduced_motion": "direct_or_short_opacity_transition"
+    },
+    "a3_completion_stamp": {
+      "preferred_runtime": "native_procedural_or_short_authored_once",
+      "sprite_gen_eligible": false,
+      "reduced_motion": "static_stamp"
+    }
+  },
+  "motion_policy": {
+    "exact_timing_values_human_gated": true,
+    "continuous_bright_flashing_forbidden": true,
+    "map_labels_must_not_be_sustainedly_obscured": true,
+    "geographic_center_must_remain_fixed_for_halo": true
+  }
+}

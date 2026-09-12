@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "motion_personality": "M-B_responsive_soft",
+  "source_storyboard": "../source/motion/moru-m-b-storyboard-v1.svg",
+  "authoring_pipeline": "sprite-gen_optional_offline_only",
+  "runtime_dependency": false,
+  "pilot_states": {
+    "idle_breathe": {"loop": true, "amplitude": "low", "map_avatar_amplitude_scale": 0.35, "reduced_motion": "static_neutral"},
+    "clue_react": {"loop": false, "amplitude": "medium", "map_avatar_amplitude_scale": 0.45, "reduced_motion": "static_clue_found_plus_icon"},
+    "resolved_settle": {"loop": false, "amplitude": "low_to_medium", "map_avatar_amplitude_scale": 0.4, "reduced_motion": "static_resolved_plus_brief_opacity_accent"}
+  },
+  "context_amplitude_order": ["map_avatar","hud_portrait","encounter_halfbody","result_large"],
+  "qa": ["face_geometry_consistency","sprout_continuity","foot_grounding","no_frame_count_errors","loop_seam_for_idle","no_generic_happy_confusion_for_clue","static_fallback_semantics"],
+  "final_human_gate": "timing_easing_intensity_after_visible_prototype",
+  "post_pilot": ["investigate","happy_bounce"],
+  "experimental_only": ["walk"]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "source": "../source/companion/moru/moru-bf-b-final-board-v1.svg",
+  "appearance_profiles": ["appearance.moru.base","appearance.moru.familiar","appearance.moru.trusted","appearance.moru.best_friend"],
+  "contexts": ["map_avatar","hud_portrait","encounter_halfbody","result_large","journal_stamp"],
+  "compact_policy": {
+    "target_dp": 48,
+    "keep": ["canonical_body","neck_or_scarf_style"],
+    "omit_if_unreadable": ["bag_or_carried_item","accessory","tiny_tags"],
+    "canonical_silhouette_priority": true
+  },
+  "jobs": [
+    {"key":"appearance.moru.base","export":"moru-base.svg"},
+    {"key":"appearance.moru.familiar","export":"moru-familiar.svg"},
+    {"key":"appearance.moru.trusted","export":"moru-trusted.svg"},
+    {"key":"appearance.moru.best_friend","export":"moru-best-friend-bf-b.svg"}
+  ],
+  "promotion_requirements": ["48dp_recognition","silhouette_consistency","six_expression_compatibility","three_lighting_compatibility","sha256"],
+  "future_variant_boundary": "BF-C must not reuse these cosmetic keys; use companion.moru.variant.*"
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "surface_family": "A-3_storybook_paper",
+  "reference_width_dp": 360,
+  "supported_review_widths_dp": [360, 412, 600],
+  "shared_layout": {
+    "horizontal_padding_dp": 16,
+    "vertical_section_gap_dp": 16,
+    "component_gap_dp": 12,
+    "minimum_touch_target_dp": 48,
+    "companion_stamp_review_dp": 48,
+    "companion_stamp_supported_dp": [32,64],
+    "paper_time_of_day_recolor": false,
+    "event_time_art_inside_contained_hero_only": true
+  },
+  "component_families": [
+    "A3PaperSurface",
+    "A3RecordCard",
+    "A3DiscoverySticker",
+    "A3ClueCard",
+    "A3CompanionStamp",
+    "A3MemoryStamp",
+    "A3LockedPattern",
+    "A3HeroFrame",
+    "A3MetadataRow"
+  ],
+  "screens": {
+    "journal_home": {
+      "composition": ["surface.journal.paper","date_group","A3RecordCard","sticker.discovery.default","stamp.companion.default","A3MetadataRow"],
+      "fit": {"columns":1,"minimum_visible_consecutive_entries":3,"stamp_slot_dp":48,"featured_decoration_limit_per_viewport":1},
+      "state_requirements": ["neutral","clue_found","resolved"],
+      "acceptance": ["no_horizontal_core_clipping","stamp_does_not_change_card_width","states_not_color_only"]
+    },
+    "discovery_detail": {
+      "composition": ["surface.journal.paper","A3HeroFrame","sticker.discovery.default","title","narrative","A3MetadataRow","stamp.companion.default","follow_up_slot"],
+      "fit": {"hero_aspect_ratio":"4:3","title_max_lines_before_expansion":3,"stamp_slot_dp":48},
+      "acceptance": ["hero_may_preserve_event_lighting","clue_state_survives_hero_removal","long_title_no_stamp_collision"]
+    },
+    "clue_note": {
+      "composition": ["surface.journal.paper","card.clue.unresolved_or_resolved","clue_object_slot","evidence_text","state_label","optional_companion_stamp"],
+      "fit": {"columns":1,"primary_card_full_width":true},
+      "acceptance": ["unresolved_vs_resolved_grayscale_distinguishable","no_critical_text_baked_into_texture","resolved_priority_quieter_than_new_clue"]
+    },
+    "collection_grid": {
+      "composition": ["surface.collection.paper","category_header","filter_area","repeatable_collection_tile","collection.locked.pattern","completed_identity","progress_text"],
+      "fit": {"columns_by_width":{"360":2,"412":2,"600":3},"tile_aspect_ratio":"1:1.15","minimum_gap_dp":12},
+      "acceptance": ["locked_not_dimming_only","completed_survives_sticker_removal","no_unique_card_shape_required_per_category"]
+    },
+    "memory_detail": {
+      "composition": ["surface.memory.paper","A3HeroFrame","stamp.memory.resolved","stamp.companion.default","place_date_metadata","reflective_copy"],
+      "fit": {"hero_aspect_ratio":"4:3","companion_stamp_dp":48,"copy_target_lines":6},
+      "historical_appearance": {"prefer_event_time_profile":true,"fallback":"appearance.moru.base"},
+      "acceptance": ["hero_primary_paper_secondary","resolved_state_survives_hero_hidden","historical_profile_missing_never_breaks_render"]
+    }
+  },
+  "affinity_integration": {
+    "manifest": "affinity-moru-manifest.v1.json",
+    "journal_home": "current_or_event_profile_when_metadata_exists",
+    "discovery_detail": "event_profile_preferred",
+    "clue_note": "current_profile_allowed",
+    "collection_grid": "canonical_or_compact_profile",
+    "memory_detail": "event_profile_preferred_base_fallback"
+  },
+  "motion": {
+    "native_preferred": ["page_card_crossfade","sticker_settle","completion_stamp_once","tiny_companion_idle"],
+    "avoid": ["perpetual_paper_wobble","ambient_reading_particles","large_text_parallax"],
+    "reduced_motion": ["static_placement","brief_opacity_transition","static_resolved_mark"]
+  },
+  "qa_matrix": {
+    "companions": ["moru","one_non_moru_candidate"],
+    "motion_modes": ["normal","reduced"],
+    "surrounding_device_context": ["light","dark"],
+    "paper_surface_remains_stable": true
+  }
+}

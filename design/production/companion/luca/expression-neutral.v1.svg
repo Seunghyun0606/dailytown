@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><title>companion.luca.expression.neutral</title><metadata>source=design/source/companion/luca/luca-canonical-source-master-v1.svg;approval=production_export_candidate;layer=expression</metadata><defs><style>
+.ink{fill:#1A1F1C}.outline{stroke:#24323A;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.fur{fill:#D9E1E5;stroke:#24323A;stroke-width:5}.darkfur{fill:#4A5962;stroke:#24323A;stroke-width:5}
+.cream{fill:#F7E7B8;stroke:#24323A;stroke-width:5}.scarf{fill:#E69A3D;stroke:#24323A;stroke-width:5}
+.cheek{fill:#F1A68A}
+</style></defs><g transform="translate(128 150) scale(.92)"><circle cx="-25" cy="-56" r="7" fill="#1A1F1C"/><circle cx="25" cy="-56" r="7" fill="#1A1F1C"/><path d="M0-42l-7 7h14Z" fill="#1A1F1C"/><path d="M-12-29Q0-20 12-29" fill="none" stroke="#24323A" stroke-width="5" stroke-linecap="round"/></g></svg>

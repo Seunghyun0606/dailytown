@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320">
+<title>companion.luca.canonical.side</title><metadata>source=design/source/companion/luca/luca-canonical-source-master-v1.svg;approval=production_export_candidate;view=side</metadata>
+<defs><style>
+.ink{fill:#1A1F1C}.outline{stroke:#24323A;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.fur{fill:#D9E1E5;stroke:#24323A;stroke-width:5}.darkfur{fill:#4A5962;stroke:#24323A;stroke-width:5}
+.cream{fill:#F7E7B8;stroke:#24323A;stroke-width:5}.scarf{fill:#E69A3D;stroke:#24323A;stroke-width:5}
+</style></defs><g transform="translate(128 170) scale(.78)"><path d="M-20-85L15-170L35-100Z" class="darkfur"/><ellipse cx="10" cy="-50" rx="58" ry="62" class="fur"/>
+<path d="M28-64Q70-54 66-30Q42-12 14-18" class="cream"/><circle cx="42" cy="-50" r="7" class="ink"/>
+<ellipse cx="0" cy="58" rx="48" ry="80" class="darkfur"/><path d="M-46 6Q0 24 46 6L42 36Q0 26-42 36Z" class="scarf"/>
+<ellipse cx="18" cy="132" rx="27" ry="15" class="fur"/><path d="M38 70Q88 85 80 127" fill="none" class="outline"/></g></svg>

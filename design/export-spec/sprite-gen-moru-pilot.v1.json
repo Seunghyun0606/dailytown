@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "tool": "sprite-gen",
+  "usage": "offline_authoring_only",
+  "runtime_dependency": false,
+  "companion_id": "moru",
+  "canonical_profile": "companion.moru.canonical.a2",
+  "source_requirement": {
+    "approval_state": "approved_source",
+    "front_three_quarter_identity_locked": true,
+    "transparent_background_preferred": true,
+    "lighting": "LIGHT",
+    "appearance_stage": "base"
+  },
+  "pilot_states": [
+    {
+      "state": "idle_breathe",
+      "semantic_key": "animation.companion.moru.idle_breathe",
+      "loop": true,
+      "preview_fps": 8,
+      "preview_frame_target": 12,
+      "intensity_band": "very_low",
+      "identity_constraints": ["face_static", "sprout_continuity", "feet_grounded", "minimal_translation"],
+      "static_fallback": "companion.moru.expression.neutral"
+    },
+    {
+      "state": "clue_react",
+      "semantic_key": "animation.companion.moru.clue_react",
+      "loop": false,
+      "preview_fps": 12,
+      "preview_frame_target": 18,
+      "intensity_band": "medium",
+      "identity_constraints": ["face_geometry_locked", "sprout_continuity", "hand_count_consistent", "clue_found_not_generic_happy"],
+      "static_fallback": "companion.moru.expression.clue_found"
+    },
+    {
+      "state": "resolved_settle",
+      "semantic_key": "animation.companion.moru.resolved_settle",
+      "loop": false,
+      "preview_fps": 12,
+      "preview_frame_target": 18,
+      "intensity_band": "low_to_medium",
+      "identity_constraints": ["face_geometry_locked", "stable_end_pose", "no_accessory_teleport", "sprout_continuity"],
+      "static_fallback": "companion.moru.expression.resolved"
+    }
+  ],
+  "next_states_after_pilot": ["investigate", "happy_bounce"],
+  "experimental_only": ["walk"],
+  "output_contract": {
+    "required": ["sprite-sheet-alpha.png", "manifest.json", "qa/contact-sheet.png", "qa/preview.gif"],
+    "design_archive_only": ["curation.json"],
+    "runtime_must_use_explicit_frame_layout": true,
+    "uniform_grid_inference_forbidden": true,
+    "per_frame_duration_preferred_when_available": true
+  },
+  "qa_gates": [
+    "face_geometry_consistency",
+    "eye_spacing_consistency",
+    "sprout_continuity",
+    "hand_foot_count_consistency",
+    "alpha_edge_cleanliness",
+    "grounding_consistency",
+    "compact_silhouette_recognition",
+    "loop_seam_quality_when_looping",
+    "static_fallback_exists",
+    "reduced_motion_fallback_exists"
+  ],
+  "approval_note": "preview_fps/frame counts are authoring defaults, not final product timing; final timing/easing/intensity remains human-gated"
+}

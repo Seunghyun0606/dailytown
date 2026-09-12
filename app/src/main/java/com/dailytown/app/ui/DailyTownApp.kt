@@ -1,57 +1,99 @@
 package com.dailytown.app.ui
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.dailytown.app.BuildConfig
 import com.dailytown.app.companion.CompanionMoment
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
-import com.dailytown.app.diagnostics.FieldTestDiagnosticBuilder
-import com.dailytown.app.domain.*
-import com.dailytown.app.location.*
+import com.dailytown.app.domain.Companion
+import com.dailytown.app.domain.ExplorationSession
+import com.dailytown.app.domain.ExplorationState
+import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.domain.MysterySpot
+import com.dailytown.app.location.FusedDeviceLocationSource
+import com.dailytown.app.location.LocationQualityPolicy
+import com.dailytown.app.location.LocationTrackingPreset
+import com.dailytown.app.location.ReplayLocationSource
+import com.dailytown.app.location.TrackingMode
+import com.dailytown.app.location.TrackingSessionCoordinator
+import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
 import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
-import com.dailytown.app.mystery.*
-import com.dailytown.app.persistence.ExplorationProgress
-import com.dailytown.app.persistence.ProgressStore
-import com.dailytown.app.persistence.dailyPeriodKey
+import com.dailytown.app.mystery.EncounterCoordinator
+import com.dailytown.app.mystery.EncounterRuntimeContext
+import com.dailytown.app.mystery.EncounterSelection
+import com.dailytown.app.mystery.EncounterTransition
+import com.dailytown.app.mystery.MysteryReducer
+import com.dailytown.app.mystery.MysteryTemplateCatalog
 import com.dailytown.app.persistence.toState
-import com.dailytown.app.persistence.weeklyPeriodKey
 import com.dailytown.app.poi.PoiRepository
-import com.dailytown.app.progress.*
-import com.dailytown.app.reminder.LocalReminderManager
+import com.dailytown.app.progress.ProgressRuntimeCoordinator
+import com.dailytown.app.ui.presentation.ExploreEncounterPresentationMapper
+import com.dailytown.app.ui.visual.CompanionHudVisualResolver
+import com.dailytown.app.ui.visual.MapGameplayVisualBinder
+import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
+import com.dailytown.app.ui.visual.ProductionCompanionVisual
+import com.dailytown.app.visual.AppearanceProfile
+import com.dailytown.app.visual.CompanionUsageContext
+import com.dailytown.app.visual.CompanionVisualRequest
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.math.roundToInt
-
-private enum class TrackingMode { OFF, DEVICE, REPLAY }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyTownApp(
     mapAdapter: MapViewAdapter,
-    progressStore: ProgressStore,
+    progressCoordinator: ProgressRuntimeCoordinator,
     poiRepository: PoiRepository,
-    reminderManager: LocalReminderManager,
+    showQaTools: Boolean = false,
+    onOpenRecords: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val mapHealth by mapAdapter.health.collectAsState()
     val spots = remember { demoMysterySpots() }
     val defaultCompanion = remember { Companion("moru", "모루", 12) }
     val initialState = remember { ExplorationState(companion = defaultCompanion) }
@@ -65,27 +107,23 @@ fun DailyTownApp(
 
     val templates = remember { MysteryTemplateCatalog.defaults() }
     val reducer = remember { MysteryReducer(templates.associateBy { it.id }) }
-    val encounterGenerator = remember { EncounterGenerator(templates = templates) }
-    val proximityController = remember { EncounterProximityController(reducer = reducer) }
+    val encounterCoordinator = remember { EncounterCoordinator(templates = templates) }
     val reactionPolicy = remember { DefaultCompanionReactionPolicy() }
-    val goalEvaluator = remember { GoalProgressEvaluator() }
-    val goalRotationCoordinator = remember { GoalRotationCoordinator() }
+    val trackingCoordinator = remember { TrackingSessionCoordinator() }
+    val fieldTestRuntime = remember(context) { BuildVariantFieldTestRuntime(context.applicationContext) }
+    val mapVisualBinder = remember(mapAdapter) { MapGameplayVisualBinder(mapAdapter) }
+
+    val trackingRuntime by trackingCoordinator.state.collectAsState()
+    val progressRuntime by progressCoordinator.state.collectAsState()
+    val trackingMode = trackingRuntime.mode
+    val trackingPreset = trackingRuntime.preset
+    val gameProgress = progressRuntime.progress
+    val persistenceReady = progressRuntime.ready
 
     var snapshot by remember { mutableStateOf(session.current()) }
-    var gameProgress by remember { mutableStateOf(ExplorationProgress()) }
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
-    var encounterSequence by remember { mutableIntStateOf(0) }
-    var trackingMode by remember { mutableStateOf(TrackingMode.OFF) }
-    var trackingPreset by remember { mutableStateOf(LocationTrackingPreset.BALANCED) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
-    var persistenceReady by remember { mutableStateOf(false) }
-    var dailyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
-    var weeklyGoals by remember { mutableStateOf<List<GoalDefinition>>(emptyList()) }
-
-    val reminderPreference = remember { reminderManager.preference() }
-    var reminderEnabled by remember { mutableStateOf(reminderPreference.enabled) }
-    var reminderHour by remember { mutableIntStateOf(reminderPreference.hour) }
 
     val deviceSource = remember(trackingPreset) {
         FusedDeviceLocationSource(
@@ -94,45 +132,35 @@ fun DailyTownApp(
         )
     }
     val replaySource = remember { ReplayLocationSource() }
-
     val currentDate = LocalDate.now()
-    val dayKey = dailyPeriodKey(currentDate)
-    val weekKey = weeklyPeriodKey(currentDate)
 
-    LaunchedEffect(progressStore) {
+    LaunchedEffect(progressCoordinator) {
         try {
-            val restored = progressStore.load()
-            val rotation = goalRotationCoordinator.ensure(restored, LocalDate.now())
-            gameProgress = rotation.progress
-            dailyGoals = rotation.dailyGoals
-            weeklyGoals = rotation.weeklyGoals
-            session.restore(rotation.progress.toState(defaultCompanion))
+            val restored = progressCoordinator.restore(LocalDate.now())
+            session.restore(restored.progress.toState(defaultCompanion))
             snapshot = session.current()
         } catch (error: Throwable) {
             errorMessage = "진행도 불러오기 실패: ${error.message ?: "unknown"}"
-        } finally {
-            persistenceReady = true
+            val fallback = progressCoordinator.activateFallback(LocalDate.now())
+            session.restore(fallback.progress.toState(defaultCompanion))
+            snapshot = session.current()
         }
     }
 
-    LaunchedEffect(dayKey, weekKey, persistenceReady) {
+    LaunchedEffect(currentDate, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        val rotation = goalRotationCoordinator.ensure(gameProgress, LocalDate.now())
-        if (rotation.progress != gameProgress) gameProgress = rotation.progress
-        dailyGoals = rotation.dailyGoals
-        weeklyGoals = rotation.weeklyGoals
+        progressCoordinator.ensureCurrentPeriod(LocalDate.now())
     }
 
     LaunchedEffect(snapshot.state, persistenceReady) {
         if (!persistenceReady) return@LaunchedEffect
-        val synced = gameProgress.syncExploration(snapshot.state, LocalDate.now())
-        if (synced != gameProgress) gameProgress = synced
+        progressCoordinator.syncExploration(snapshot.state, LocalDate.now())
     }
 
-    LaunchedEffect(gameProgress, persistenceReady) {
-        if (!persistenceReady) return@LaunchedEffect
+    LaunchedEffect(gameProgress, persistenceReady, progressRuntime.persistenceEnabled) {
+        if (!persistenceReady || !progressRuntime.persistenceEnabled) return@LaunchedEffect
         try {
-            progressStore.save(gameProgress)
+            progressCoordinator.persist()
         } catch (error: Throwable) {
             errorMessage = "진행도 저장 실패: ${error.message ?: "unknown"}"
         }
@@ -145,11 +173,19 @@ fun DailyTownApp(
 
     fun start(mode: TrackingMode) {
         session.restartTracking()
+        encounterCoordinator.reset()
+        fieldTestRuntime.onTrackingStart(mode)
         snapshot = session.current()
         activeEncounter = null
         lastCompanionMoment = null
         errorMessage = null
-        trackingMode = mode
+        trackingCoordinator.start(mode)
+    }
+
+    fun stopTracking() {
+        fieldTestRuntime.onTrackingStop(trackingMode)
+        trackingCoordinator.stop()
+        mapAdapter.setUserLocation(null)
     }
 
     fun applyReaction(moment: CompanionMoment) {
@@ -165,20 +201,7 @@ fun DailyTownApp(
         val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) start(TrackingMode.DEVICE)
-        else errorMessage = "위치 권한이 필요합니다. 리플레이 모드는 권한 없이 사용할 수 있습니다."
-    }
-
-    val notificationPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { granted ->
-        if (granted) {
-            reminderManager.enable(reminderHour)
-            reminderEnabled = true
-        } else {
-            reminderManager.disable()
-            reminderEnabled = false
-            errorMessage = "알림 권한이 없어 탐험 리마인더를 켤 수 없습니다."
-        }
+        else errorMessage = "위치 권한이 필요합니다."
     }
 
     DisposableEffect(trackingMode, trackingPreset) {
@@ -200,65 +223,62 @@ fun DailyTownApp(
         activeEncounter?.encounter?.phase,
     ) {
         val sample = snapshot.currentLocation ?: return@LaunchedEffect
-        var selection = activeEncounter
+        val previousEncounter = activeEncounter
+        val nearbyPois = if (previousEncounter == null) {
+            poiRepository.nearby(sample.point, radiusMeters = 900.0)
+        } else {
+            emptyList()
+        }
 
-        if (selection == null) {
-            val pois = poiRepository.nearby(sample.point, radiusMeters = 900.0)
-            val history = EncounterHistory(
+        val step = encounterCoordinator.advance(
+            current = previousEncounter,
+            user = sample.point,
+            nearbyPois = nearbyPois,
+            runtime = EncounterRuntimeContext(
+                visitedPoiIds = gameProgress.encounterVisitedPoiIds,
                 recentPoiIds = gameProgress.recentPoiIds.toSet(),
                 recentTemplateIds = gameProgress.recentTemplateIds.toSet(),
                 recentPairKeys = gameProgress.recentPairKeys.toSet(),
-            )
-            val encounterContext = EncounterContextFactory.create(
-                date = LocalDate.now(),
-                time = LocalTime.now(),
                 companionBond = snapshot.state.companion.bond,
                 memoryKeys = gameProgress.companionMemoryKeys,
-            )
-            selection = encounterGenerator.choose(
-                encounterKey = "enc-${encounterSequence++}",
-                center = sample.point,
-                pois = pois,
-                context = encounterContext,
-                visitedPoiIds = gameProgress.encounterVisitedPoiIds,
-                history = history,
-            )
-            activeEncounter = selection
-        }
-
-        val current = selection ?: return@LaunchedEffect
-        if (current.encounter.phase == EncounterPhase.RESOLVED) return@LaunchedEffect
-
-        val advanced = proximityController.advance(
-            encounter = current.encounter,
-            user = sample.point,
-            poi = current.poi.position,
+            ),
+            date = LocalDate.now(),
+            time = LocalTime.now(),
         )
-        if (advanced == current.encounter) return@LaunchedEffect
-
-        val previousPhase = current.encounter.phase
-        activeEncounter = current.copy(encounter = advanced)
-        if (previousPhase == EncounterPhase.HIDDEN && advanced.phase == EncounterPhase.HINTED) {
-            applyReaction(CompanionMoment.HINT_APPEARED)
+        if (previousEncounter == null) {
+            step.selection?.let { fieldTestRuntime.recordEncounterOffered(it.isRevisit) }
         }
-        if (previousPhase != EncounterPhase.DISCOVERED && advanced.phase == EncounterPhase.DISCOVERED) {
-            gameProgress = gameProgress
-                .recordEncounterVisit(current.poi.id, current.template.id, LocalDate.now())
-                .recordMemory("poi:${current.poi.id}")
-            applyReaction(CompanionMoment.SPOT_DISCOVERED)
+        activeEncounter = step.selection
+
+        when (step.transition) {
+            EncounterTransition.HINTED -> {
+                fieldTestRuntime.recordHinted()
+                applyReaction(CompanionMoment.HINT_APPEARED)
+            }
+            EncounterTransition.DISCOVERED -> {
+                val selection = step.selection ?: return@LaunchedEffect
+                fieldTestRuntime.recordDiscovered(selection.isRevisit)
+                progressCoordinator.mutate(LocalDate.now()) { progress ->
+                    progress
+                        .recordEncounterVisit(
+                            poiId = selection.poi.id,
+                            templateId = selection.template.id,
+                            date = LocalDate.now(),
+                            poiTitle = selection.poi.name,
+                        )
+                        .recordMemory("poi:${selection.poi.id}")
+                }
+                applyReaction(CompanionMoment.SPOT_DISCOVERED)
+            }
+            EncounterTransition.NONE -> Unit
         }
     }
 
     LaunchedEffect(snapshot.currentLocation, activeEncounter) {
-        val encounterMarker = activeEncounter?.let { selection ->
-            MapMarkerSpec(
-                id = "active-${selection.encounter.id}",
-                title = encounterMarkerTitle(selection),
-                position = selection.poi.position,
-            )
-        }
-        mapAdapter.setMarkers(
-            spots.map { MapMarkerSpec(it.id, it.title, it.position) } + listOfNotNull(encounterMarker),
+        val persistentMarkers = spots.map { MapMarkerSpec(it.id, it.title, it.position) }
+        mapVisualBinder.applyEncounter(
+            selection = activeEncounter,
+            persistentMarkers = persistentMarkers,
         )
         snapshot.currentLocation?.let { sample ->
             mapAdapter.setUserLocation(UserLocationSpec(sample.point, sample.bearingDegrees))
@@ -266,195 +286,217 @@ fun DailyTownApp(
         }
     }
 
-    val normalizedProgress = gameProgress.normalizePeriods(currentDate)
-    val neighborhood = NeighborhoodProgress(
-        districtKey = activeEncounter?.poi?.districtKey ?: "jung-gu",
-        visitedPoiIds = gameProgress.encounterVisitedPoiIds,
-        resolvedEncounterIds = gameProgress.resolvedEncounterIds,
-        distanceWalkedMeters = snapshot.state.distanceWalkedMeters,
-    )
     val distanceToEncounter = snapshot.currentLocation?.let { sample ->
-        activeEncounter?.let { proximityController.distanceTo(sample.point, it.poi.position).roundToInt() }
+        activeEncounter?.let { selection -> encounterCoordinator.distanceTo(sample.point, selection).roundToInt() }
     }
+    val presentation = ExploreEncounterPresentationMapper.map(activeEncounter, distanceToEncounter)
+    val companionExpression = CompanionHudVisualResolver.expression(lastCompanionMoment)
+    val companionLighting = MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
 
     MaterialTheme {
-        Scaffold(topBar = { TopAppBar(title = { Text("Daily Town") }) }) { padding ->
+        Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text(if (showQaTools) "Daily Town · Field Test" else "Daily Town")
+                            if (!showQaTools) {
+                                Text(
+                                    "모루와 걷는 동네 탐험",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    },
+                )
+            },
+        ) { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 14.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Spacer(Modifier.height(4.dp))
-                Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall)
-                Text("지도: ${mapAdapter.providerId} · 동행: ${snapshot.state.companion.name} · 호감도 ${snapshot.state.companion.bond}")
+                Spacer(Modifier.height(2.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text("오늘의 동네 탐험", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        if (showQaTools) {
+                            "${mapAdapter.providerId} · ${mapHealthLabel(mapHealth.status)} · ${trackingPresetLabel(trackingPreset)}"
+                        } else {
+                            lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
+                                ?: "멀리 갈 필요 없어요. 지금 있는 동네에서 작은 신호부터 찾아보세요."
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
 
-                MapSurface(
-                    mapAdapter = mapAdapter,
-                    modifier = Modifier.fillMaxWidth().height(250.dp),
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(390.dp)
+                        .clip(MaterialTheme.shapes.large)
+                        .testTag("explore-map-hero"),
+                ) {
+                    MapSurface(
+                        mapAdapter = mapAdapter,
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("누적 탐험 거리 ${snapshot.state.distanceWalkedMeters.roundToInt()}m")
-                        Text("미스터리 단서 ${gameProgress.inventoryClueIds.size}개 · 해결 ${gameProgress.resolvedEncounterIds.size}건")
-                        Text("탐험 POI ${gameProgress.encounterVisitedPoiIds.size}곳 · 동행 기억 ${gameProgress.companionMemoryKeys.size}개")
-                        if (snapshot.rejectedLocationCount > 0) {
-                            Text("GPS 품질 필터 제외 ${snapshot.rejectedLocationCount}회")
-                        }
-                        snapshot.newlyDiscovered.firstOrNull()?.let {
-                            Text("주변 발견: ${it.title}", style = MaterialTheme.typography.titleMedium)
+                    // Keep transient HUD only at the top edge so provider attribution remains visible.
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(10.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.93f),
+                        tonalElevation = 4.dp,
+                    ) {
+                        Text(
+                            if (trackingMode == TrackingMode.OFF) "○ 탐험 대기" else "● 탐험 중",
+                            modifier = Modifier.padding(horizontal = 11.dp, vertical = 7.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+
+                    if (distanceToEncounter != null) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(10.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.94f),
+                            tonalElevation = 4.dp,
+                        ) {
+                            Text(
+                                "신호 약 ${distanceToEncounter}m",
+                                modifier = Modifier.padding(horizontal = 11.dp, vertical = 7.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
                         }
                     }
                 }
 
-                EncounterCard(
+                CompanionExploreHud(
+                    name = snapshot.state.companion.name,
+                    bond = snapshot.state.companion.bond,
+                    line = presentation.moruLine
+                        ?: lastCompanionMoment?.let { companionMomentLabel(snapshot.state.companion.name, it) }
+                        ?: "주변을 천천히 둘러보자.",
+                    visual = {
+                        ProductionCompanionVisual(
+                            request = CompanionVisualRequest(
+                                companionId = snapshot.state.companion.id,
+                                expression = companionExpression,
+                                lightingFamily = companionLighting,
+                                appearanceProfile = AppearanceProfile.BASE,
+                                usageContext = CompanionUsageContext.HUD_PORTRAIT,
+                            ),
+                            modifier = Modifier.size(72.dp),
+                            contentDescription = "동행 캐릭터 ${snapshot.state.companion.name}",
+                            rasterTargetPx = 192,
+                        )
+                    },
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Button(
+                        onClick = {
+                            if (hasLocationPermission(context)) start(TrackingMode.DEVICE)
+                            else locationPermissionLauncher.launch(
+                                arrayOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                                ),
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                    ) { Text(if (trackingMode == TrackingMode.DEVICE) "위치 다시 시작" else "탐험 시작") }
+
+                    if (showQaTools) {
+                        OutlinedButton(
+                            onClick = { start(TrackingMode.REPLAY) },
+                            modifier = Modifier.testTag("tracking-replay"),
+                        ) { Text("리플레이") }
+                    }
+                    if (trackingMode != TrackingMode.OFF) {
+                        TextButton(onClick = ::stopTracking) { Text("중지") }
+                    }
+                }
+
+                ExplorationSummaryStrip(
+                    distanceMeters = snapshot.state.distanceWalkedMeters.roundToInt(),
+                    discoveries = gameProgress.encounterVisitedPoiIds.size,
+                    clues = gameProgress.inventoryClueIds.size,
+                    memories = gameProgress.companionMemoryKeys.size,
+                )
+
+                ExploreEncounterSurface(
                     selection = activeEncounter,
+                    presentation = presentation,
                     reducer = reducer,
-                    distanceMeters = distanceToEncounter,
+                    progress = gameProgress,
+                    companionBond = snapshot.state.companion.bond,
+                    showQaTools = showQaTools,
                     onCollectClue = { clueId, updated ->
                         if (updated.clueIds.size > (activeEncounter?.encounter?.clueIds?.size ?: 0)) {
                             activeEncounter = activeEncounter?.copy(encounter = updated)
-                            gameProgress = gameProgress.recordClue(clueId, LocalDate.now())
+                            fieldTestRuntime.recordClueCollected()
+                            progressCoordinator.mutate(LocalDate.now()) { progress ->
+                                progress.recordClue(clueId, LocalDate.now())
+                            }
                             applyReaction(CompanionMoment.CLUE_FOUND)
                         }
                     },
                     onResolve = { resolved ->
-                        activeEncounter = activeEncounter?.copy(encounter = resolved)
-                        val mechanic = activeEncounter?.template?.mechanic
-                        gameProgress = gameProgress.recordResolution(resolved, LocalDate.now())
-                        if (mechanic != null) gameProgress = gameProgress.recordMemory("mechanic:${mechanic.name}")
+                        val resolvingSelection = activeEncounter
+                        activeEncounter = resolvingSelection?.copy(encounter = resolved)
+                        resolvingSelection?.let { fieldTestRuntime.recordResolved(it.isRevisit) }
+                        val mechanic = resolvingSelection?.template?.mechanic
+                        progressCoordinator.mutate(LocalDate.now()) { progress ->
+                            var updated = progress.recordResolution(resolved, LocalDate.now())
+                            if (mechanic != null) {
+                                updated = updated.recordMemory("mechanic:${mechanic.name}")
+                            }
+                            updated
+                        }
                         applyReaction(CompanionMoment.MYSTERY_RESOLVED)
                     },
+                    onOpenRecords = onOpenRecords,
                     onContinue = {
                         activeEncounter = null
                         lastCompanionMoment = null
                     },
                 )
 
-                lastCompanionMoment?.let { moment ->
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(companionMomentLabel(snapshot.state.companion.name, moment)) },
+                if (showQaTools) {
+                    fieldTestRuntime.Content(
+                        trackingMode = trackingMode,
+                        trackingPreset = trackingPreset,
+                        onSelectTrackingPreset = { preset ->
+                            fieldTestRuntime.beforeTrackingPresetChange(trackingMode)
+                            trackingCoordinator.selectPreset(preset)
+                        },
+                        progress = gameProgress,
+                        persistenceReady = persistenceReady,
+                        persistenceEnabled = progressRuntime.persistenceEnabled,
+                        acceptedLocationCount = snapshot.acceptedLocationCount,
+                        rejectedLocationCount = snapshot.rejectedLocationCount,
+                        rejectedLocationRatePercent = snapshot.rejectedLocationRatePercent,
+                        totalLocationSampleCount = snapshot.totalLocationSampleCount,
+                        trackingDurationSeconds = snapshot.trackingDurationSeconds,
+                        sessionDistanceMeters = snapshot.sessionDistanceMeters,
+                        mapProvider = mapAdapter.providerId.name,
+                        mapHealth = mapHealth,
                     )
-                }
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text("동네 컬렉션", style = MaterialTheme.typography.titleMedium)
-                        Text("${neighborhood.districtKey} · 탐험 ${neighborhood.discoveryCount}곳 · 해결 ${neighborhood.resolvedCount}건")
-                    }
-                }
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("회전 목표", style = MaterialTheme.typography.titleMedium)
-                        (dailyGoals + weeklyGoals).forEach { goal ->
-                            val progress = goalEvaluator.evaluate(goal, normalizedProgress, currentDate)
-                            val prefix = if (goal.period == GoalPeriod.DAILY) "오늘" else "이번 주"
-                            Text("${if (progress.isComplete) "✓" else "•"} $prefix ${goalLabel(goal)}: ${progress.current}/${progress.target}")
-                        }
-                    }
-                }
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("위치 추적 모드", style = MaterialTheme.typography.titleMedium)
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            LocationTrackingPreset.entries.forEach { preset ->
-                                FilterChip(
-                                    selected = trackingPreset == preset,
-                                    onClick = {
-                                        if (trackingMode == TrackingMode.DEVICE) trackingMode = TrackingMode.OFF
-                                        trackingPreset = preset
-                                    },
-                                    label = { Text(trackingPresetLabel(preset)) },
-                                )
-                            }
-                        }
-                    }
-                }
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("탐험 리마인더", style = MaterialTheme.typography.titleMedium)
-                        Text("기본은 꺼짐이며 위치를 사용하지 않습니다.", style = MaterialTheme.typography.bodySmall)
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Switch(
-                                checked = reminderEnabled,
-                                onCheckedChange = { enabled ->
-                                    if (!enabled) {
-                                        reminderManager.disable()
-                                        reminderEnabled = false
-                                    } else if (Build.VERSION.SDK_INT >= 33 && !reminderManager.canPostNotifications()) {
-                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                    } else {
-                                        reminderManager.enable(reminderHour)
-                                        reminderEnabled = true
-                                    }
-                                },
-                            )
-                            Text(if (reminderEnabled) "매일 ${reminderHour}시 전후 알림" else "알림 끔")
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf(12, 18, 20).forEach { hour ->
-                                FilterChip(
-                                    selected = reminderHour == hour,
-                                    onClick = {
-                                        reminderHour = hour
-                                        if (reminderEnabled) reminderManager.enable(hour)
-                                    },
-                                    label = { Text("${hour}시") },
-                                )
-                            }
-                        }
-                        if (reminderEnabled && !reminderManager.canPostNotifications()) {
-                            Text("시스템 알림 권한이 꺼져 있어 리마인더가 표시되지 않습니다.", color = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                }
-
-                ElevatedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("필드테스트 진단", style = MaterialTheme.typography.titleMedium)
-                        Text("패키지/빌드/파생 통계만 공유하며 좌표와 지도 API 키는 제외합니다.", style = MaterialTheme.typography.bodySmall)
-                        Text("패키지 ${BuildConfig.APPLICATION_ID} · NAVER 키 주입 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "완료" else "없음"}")
-                        OutlinedButton(onClick = {
-                            val report = FieldTestDiagnosticBuilder.build(
-                                progress = normalizedProgress,
-                                rejectedLocationCount = snapshot.rejectedLocationCount,
-                                appVersion = BuildConfig.VERSION_NAME,
-                                mapProvider = mapAdapter.providerId.name,
-                                trackingPreset = trackingPreset,
-                            ).render()
-                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_SUBJECT, "Daily Town field-test diagnostic")
-                                putExtra(Intent.EXTRA_TEXT, report)
-                            }
-                            context.startActivity(Intent.createChooser(shareIntent, "진단 리포트 공유"))
-                        }) { Text("진단 리포트 공유") }
-                    }
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = {
-                        if (hasLocationPermission(context)) start(TrackingMode.DEVICE)
-                        else locationPermissionLauncher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                            ),
-                        )
-                    }) { Text("실제 위치") }
-
-                    OutlinedButton(onClick = { start(TrackingMode.REPLAY) }) { Text("경로 리플레이") }
-                    TextButton(onClick = {
-                        trackingMode = TrackingMode.OFF
-                        mapAdapter.setUserLocation(null)
-                    }) { Text("중지") }
                 }
 
                 errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -462,8 +504,13 @@ fun DailyTownApp(
                     when (trackingMode) {
                         TrackingMode.DEVICE -> "실기기 위치 추적 중 · ${trackingPresetLabel(trackingPreset)}"
                         TrackingMode.REPLAY -> "서울시청 → 덕수궁 테스트 경로 재생 중"
-                        TrackingMode.OFF -> if (persistenceReady) "탐험 대기 중 · 게임 진행도 저장 활성" else "진행도 불러오는 중"
+                        TrackingMode.OFF -> when {
+                            !persistenceReady -> "진행도 불러오는 중"
+                            progressRuntime.persistenceEnabled -> "탐험 대기 중 · 게임 진행도 저장 활성"
+                            else -> "탐험 대기 중 · 진행도 임시 모드"
+                        }
                     },
+                    modifier = Modifier.testTag("tracking-status"),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(Modifier.height(16.dp))
@@ -473,76 +520,58 @@ fun DailyTownApp(
 }
 
 @Composable
-private fun EncounterCard(
-    selection: EncounterSelection?,
-    reducer: MysteryReducer,
-    distanceMeters: Int?,
-    onCollectClue: (String, MysteryEncounter) -> Unit,
-    onResolve: (MysteryEncounter) -> Unit,
-    onContinue: () -> Unit,
+private fun CompanionExploreHud(
+    name: String,
+    bond: Int,
+    line: String,
+    visual: @Composable () -> Unit,
 ) {
-    ElevatedCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("현재 미스터리", style = MaterialTheme.typography.titleMedium)
-            if (selection == null) {
-                Text("위치가 들어오면 주변 POI에서 후보를 생성합니다.")
-                return@Column
-            }
-
-            val encounter = selection.encounter
-            Text("${rarityLabel(selection.rarity)} · ${selection.poi.name} · ${mechanicLabel(selection.template.mechanic)}")
-            Text("컨텍스트 ${timeBandLabel(selection.context.timeBand)}${if (selection.isRevisit) " · 재방문" else ""}")
-            distanceMeters?.let { Text("현재 위치에서 약 ${it}m") }
-            Text("상태 ${phaseLabel(encounter.phase)} · 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}")
-
-            when (encounter.phase) {
-                EncounterPhase.HIDDEN -> Text("주변을 이동하면 180m 안에서 신호가 나타납니다.")
-                EncounterPhase.HINTED -> Text("신호 포착 · 약 60m 안으로 접근하면 조사할 수 있습니다.")
-                EncounterPhase.DISCOVERED -> {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        if (encounter.clueIds.size < selection.template.requiredClues) {
-                            Button(onClick = {
-                                val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
-                                val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
-                                onCollectClue(clueId, updated)
-                            }) { Text("단서 조사") }
-                        }
-                        Button(
-                            enabled = encounter.clueIds.size >= selection.template.requiredClues,
-                            onClick = {
-                                val resolved = reducer.reduce(encounter, EncounterEvent.Resolve)
-                                if (resolved.phase == EncounterPhase.RESOLVED) onResolve(resolved)
-                            },
-                        ) { Text("해결") }
-                    }
-                }
-                EncounterPhase.RESOLVED -> {
-                    Text("해결 완료 · 동행에게 이 장소의 기억이 남았습니다.")
-                    Button(onClick = onContinue) { Text("다음 탐험") }
-                }
+    Surface(
+        modifier = Modifier.fillMaxWidth().testTag("explore-companion-hud"),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            visual()
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                Text(line, style = MaterialTheme.typography.bodySmall)
+                Text("관계 $bond", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
 }
 
-private fun encounterMarkerTitle(selection: EncounterSelection): String = when (selection.encounter.phase) {
-    EncounterPhase.HIDDEN -> "? · ${selection.poi.name}"
-    EncounterPhase.HINTED -> "신호 · ${selection.poi.name}"
-    EncounterPhase.DISCOVERED -> "조사 · ${selection.poi.name}"
-    EncounterPhase.RESOLVED -> "해결 · ${selection.poi.name}"
+@Composable
+private fun ExplorationSummaryStrip(
+    distanceMeters: Int,
+    discoveries: Int,
+    clues: Int,
+    memories: Int,
+) {
+    ElevatedCard(Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 11.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            SummaryMetric("걸음", "${distanceMeters}m")
+            SummaryMetric("발견", "${discoveries}곳")
+            SummaryMetric("단서", "${clues}개")
+            SummaryMetric("기억", "${memories}개")
+        }
+    }
 }
 
-private fun rarityLabel(rarity: EncounterRarity) = when (rarity) {
-    EncounterRarity.COMMON -> "일반"
-    EncounterRarity.UNCOMMON -> "특별"
-    EncounterRarity.RARE -> "희귀"
-}
-
-private fun timeBandLabel(timeBand: TimeBand) = when (timeBand) {
-    TimeBand.DAWN -> "새벽/아침"
-    TimeBand.DAY -> "낮"
-    TimeBand.EVENING -> "저녁"
-    TimeBand.NIGHT -> "밤"
+@Composable
+private fun SummaryMetric(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(value, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        Text(label, style = MaterialTheme.typography.labelSmall)
+    }
 }
 
 private fun trackingPresetLabel(preset: LocationTrackingPreset) = when (preset) {
@@ -551,29 +580,13 @@ private fun trackingPresetLabel(preset: LocationTrackingPreset) = when (preset) 
     LocationTrackingPreset.PRECISE -> "정밀"
 }
 
-private fun phaseLabel(phase: EncounterPhase) = when (phase) {
-    EncounterPhase.HIDDEN -> "잠김"
-    EncounterPhase.HINTED -> "신호 포착"
-    EncounterPhase.DISCOVERED -> "조사 가능"
-    EncounterPhase.RESOLVED -> "해결 완료"
-}
-
-private fun mechanicLabel(mechanic: MysteryMechanic) = when (mechanic) {
-    MysteryMechanic.TRACE_CHAIN -> "흔적 이어보기"
-    MysteryMechanic.SOUND_PATTERN -> "소리 패턴"
-    MysteryMechanic.TIME_LAYER -> "시간의 겹"
-    MysteryMechanic.SYMBOL_MATCH -> "상징 맞추기"
-    MysteryMechanic.LOST_OBJECT -> "잃어버린 물건"
-    MysteryMechanic.PHOTO_ANGLE -> "시점 비교"
-    MysteryMechanic.LOCAL_MEMORY -> "동네의 기억"
-    MysteryMechanic.COMPANION_SENSE -> "동행의 감각"
-}
-
-private fun goalLabel(goal: GoalDefinition) = when (goal.metric) {
-    GoalMetric.WALK_DISTANCE_METERS -> "걷기"
-    GoalMetric.DISCOVER_SPOT -> "새 지점 발견"
-    GoalMetric.RESOLVE_MYSTERY -> "미스터리 해결"
-    GoalMetric.COLLECT_CLUE -> "단서 수집"
+private fun mapHealthLabel(status: MapHealthStatus) = when (status) {
+    MapHealthStatus.UNCONFIGURED -> "지도 키 없음"
+    MapHealthStatus.INITIALIZING -> "지도 준비 중"
+    MapHealthStatus.READY -> "지도 정상"
+    MapHealthStatus.AUTH_ERROR -> "지도 인증 오류"
+    MapHealthStatus.ERROR -> "지도 오류"
+    MapHealthStatus.DESTROYED -> "지도 종료"
 }
 
 private fun companionMomentLabel(name: String, moment: CompanionMoment) = when (moment) {

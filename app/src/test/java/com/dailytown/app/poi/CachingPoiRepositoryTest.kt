@@ -1,6 +1,7 @@
 package com.dailytown.app.poi
 
 import com.dailytown.app.domain.GeoPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -67,6 +68,31 @@ class CachingPoiRepositoryTest {
     }
 
     @Test
+    fun `fresh ttl starts when slow upstream fetch completes`() = runBlocking {
+        var now = 1_000L
+        var calls = 0
+        val delegate = object : PoiRepository {
+            override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
+                calls++
+                now += 500L
+                return listOf(nearby)
+            }
+        }
+        val cache = CachingPoiRepository(
+            delegate = delegate,
+            clockMillis = { now },
+            freshTtlMillis = 100L,
+            staleFallbackMillis = 1_000L,
+        )
+
+        cache.nearby(center, 100.0)
+        now += 50L
+        cache.nearby(center, 100.0)
+
+        assertEquals(1, calls)
+    }
+
+    @Test
     fun `upstream failure uses recent stale covering entry`() = runBlocking {
         var now = 1_000L
         var shouldFail = false
@@ -88,6 +114,61 @@ class CachingPoiRepositoryTest {
         shouldFail = true
 
         assertEquals(listOf("nearby"), cache.nearby(center, 100.0).map { it.id })
+    }
+
+    @Test
+    fun `slow upstream failure cannot extend stale grace from request start`() {
+        var now = 1_000L
+        var shouldFail = false
+        val delegate = object : PoiRepository {
+            override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
+                if (shouldFail) {
+                    now += 900L
+                    error("slow timeout")
+                }
+                return listOf(nearby)
+            }
+        }
+        val cache = CachingPoiRepository(
+            delegate = delegate,
+            clockMillis = { now },
+            freshTtlMillis = 100L,
+            staleFallbackMillis = 1_000L,
+        )
+
+        runBlocking { cache.nearby(center, 100.0) }
+        now += 200L
+        shouldFail = true
+
+        assertThrows(IllegalStateException::class.java) {
+            runBlocking { cache.nearby(center, 100.0) }
+        }
+    }
+
+    @Test
+    fun `coroutine cancellation is never converted to stale fallback`() {
+        var now = 1_000L
+        var shouldCancel = false
+        val delegate = object : PoiRepository {
+            override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
+                if (shouldCancel) throw CancellationException("search abandoned")
+                return listOf(nearby)
+            }
+        }
+        val cache = CachingPoiRepository(
+            delegate = delegate,
+            clockMillis = { now },
+            freshTtlMillis = 100L,
+            staleFallbackMillis = 1_000L,
+        )
+
+        runBlocking { cache.nearby(center, 100.0) }
+        now += 200L
+        shouldCancel = true
+
+        assertThrows(CancellationException::class.java) {
+            runBlocking { cache.nearby(center, 100.0) }
+        }
     }
 
     @Test

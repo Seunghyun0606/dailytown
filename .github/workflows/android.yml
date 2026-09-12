@@ -2,14 +2,49 @@ name: Android CI
 
 on:
   push:
-    branches: [main, "feat/**"]
+    branches: [main]
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against committed credentials
+        shell: bash
+        run: |
+          if git grep -nE "NAVER_MAP_NCP_KEY_ID[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_-]{20,}"; then
+            echo "::error::A NAVER Maps credential appears to be hard-coded in a tracked file. Use Gradle user properties, an environment variable, or a GitHub Actions secret instead."
+            exit 1
+          fi
+          if git grep -nE "TOUR_API_SERVICE_KEY[[:space:]]*[:=][[:space:]]*['\"]?[^[:space:]'\"]{20,}"; then
+            echo "::error::A TourAPI credential appears to be hard-coded in a tracked file. Use Gradle user properties or an environment variable instead."
+            exit 1
+          fi
+          if git grep -nE "DAILYTOWN_UPLOAD_(STORE_PASSWORD|KEY_PASSWORD)[[:space:]]*[:=][[:space:]]*['\"]?[^[:space:]'\"]{8,}"; then
+            echo "::error::A release signing password appears to be hard-coded in a tracked file."
+            exit 1
+          fi
+      - name: Verify adopted Play release baseline
+        run: python3 tools/release/verify_play_release_baseline.py
+      - name: Load approved MVP field-test baseline
+        shell: bash
+        run: |
+          python3 -m unittest tools.field_test.test_mvp_baseline
+          sed -n 's/^export //p' tools/field_test/mvp_baseline.env >> "$GITHUB_ENV"
+      - name: Field-test shell tool syntax
+        shell: bash
+        run: bash -n tools/field_test/prepare_physical_test.sh tools/field_test/review_physical_export.sh tools/android/run_naver_emulator_qa_with_retry.sh
+      - name: Field-test export tool tests
+        run: python3 -m unittest discover -s tools/field_test -p 'test_*.py'
+      - name: Marker promotion readiness tool tests
+        run: python3 -m unittest discover -s tools/visual -p 'test_*.py'
+      - name: Visual candidate checksum and semantic gate
+        run: python3 tools/visual/verify_visual_candidates.py
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -23,12 +58,45 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.5.0"
+      - name: Verify managed-device QA configuration
+        run: gradle verifyManagedDeviceQaConfig
       - name: Unit tests
         run: gradle testDebugUnitTest
+      - name: Compile instrumented tests
+        run: gradle assembleDebugAndroidTest
       - name: Android lint
         run: gradle lintDebug
       - name: Build debug APK
         run: gradle assembleDebug
+      - name: Build signed release AAB with ephemeral CI upload key
+        shell: bash
+        run: |
+          set -euo pipefail
+          store="$RUNNER_TEMP/dailytown-ci-upload.jks"
+          password="dailytown-ci-only-password"
+          alias="dailytown-ci"
+          keytool -genkeypair -noprompt \
+            -keystore "$store" \
+            -storetype JKS \
+            -storepass "$password" \
+            -keypass "$password" \
+            -alias "$alias" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 30 \
+            -dname "CN=DailyTown CI, OU=CI, O=DailyTown, L=Seoul, C=KR" \
+            >/dev/null 2>&1
+          store_file_var="DAILYTOWN_UPLOAD_STORE_FILE"
+          store_password_var="DAILYTOWN_UPLOAD_STORE_PASSWORD"
+          key_alias_var="DAILYTOWN_UPLOAD_KEY_ALIAS"
+          key_password_var="DAILYTOWN_UPLOAD_KEY_PASSWORD"
+          export "$store_file_var=$store"
+          export "$store_password_var=$password"
+          export "$key_alias_var=$alias"
+          export "$key_password_var=$password"
+          gradle bundleForPlay
+          test -s app/build/outputs/bundle/release/app-release.aab
+          rm -f "$store"
       - name: Upload main replay APK
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4

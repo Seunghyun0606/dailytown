@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "a3_component_fit": {
+    "spec": "docs/visual/P1_A3_COMPONENT_FIT_SPEC_V1.md",
+    "machine_readable": "design/export-spec/a3-five-screen-component-fit.v1.json",
+    "screens": ["journal_home","discovery_detail","clue_note","collection_grid","memory_detail"],
+    "source_master": "design/source/a3/a3-ui-source-master-v1.svg",
+    "requires_new_product_decision": false
+  },
+  "affinity": {
+    "spec": "docs/visual/P1_AFFINITY_VISUAL_DIRECTIONS_V1.md",
+    "approved_direction": "AF-1_memory_keepsakes_plus_restrained_AF-3_explorer_patina",
+    "manifest": "design/export-spec/affinity-moru-manifest.v1.json",
+    "stages": ["base","familiar","trusted","best_friend"],
+    "best_friend_profile_status": "safe_default_below_unresolved_maximum_ceiling",
+    "direction_selection_gate": "passed"
+  },
+  "evening": {
+    "spec": "docs/visual/P1_EVENING_BRIDGE_STUDY_V1.md",
+    "approved_direction": "EV-1_interpolation_first",
+    "tokens": "design/export-spec/evening-interpolation-tokens.v1.json",
+    "checkpoints": ["E0","E1","E2","E3","E4"],
+    "new_marker_family": false,
+    "new_companion_lighting_family": false,
+    "direction_selection_gate": "passed"
+  },
+  "subcompanions": {
+    "spec": "docs/visual/P1_SUBCOMPANION_SHIPPING_REVIEW_V1.md",
+    "candidates": ["luca","pino","beri"],
+    "provisional_contract_status": "pass_with_constraints",
+    "shipping_gate": "human_approval"
+  },
+  "remaining_human_gates": [
+    "luca_pino_beri_shipping_approval",
+    "affinity_best_friend_maximum_change_ceiling",
+    "final_motion_timing_easing_intensity_after_prototype",
+    "physical_outdoor_readability_approval",
+    "app_icon_logo_final_lock"
+  ]
+}

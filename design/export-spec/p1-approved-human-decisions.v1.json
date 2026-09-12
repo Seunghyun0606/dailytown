@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "approved_at": "2026-08-26",
+  "decisions": {
+    "best_friend_ceiling": {
+      "selected": "BF-B_signature_explorer",
+      "shipping_policy": "cosmetic_profile_with_controlled_signature_silhouette_accent",
+      "canonical_anatomy_change": false,
+      "future_upgrade_path": "BF-C_evolved_character_variant",
+      "future_upgrade_status": "post_mvp_todo",
+      "future_upgrade_requires_explicit_user_or_product_decision": true
+    },
+    "shipping_companion_set": {
+      "selected": "SC-B_moru_plus_luca",
+      "shipping_companions": ["moru", "luca"],
+      "next_expansion_candidate": "beri",
+      "pino_status": "needs_additional_silhouette_separation_review"
+    },
+    "motion_personality": {
+      "selected": "M-B_responsive_soft",
+      "map_avatar_amplitude": "restrained",
+      "encounter_result_amplitude": "soft_clear",
+      "final_timing_easing_gate": "human_prototype_review"
+    },
+    "outdoor_readability_policy": {
+      "selected": "R-B_balanced",
+      "critical_semantic_readability": "must_pass",
+      "decorative_atmosphere_degradation": "allowed_if_non_critical",
+      "provider_legal_ui_obstruction": "forbidden",
+      "physical_device_final_gate": true
+    },
+    "app_identity": {
+      "selected": "ID-A_sprout_town_mark",
+      "brand_independent_of_companion": true,
+      "mark_components": ["two_leaf_sprout", "subtle_path_or_door_or_town_cue", "compact_geometric_silhouette"],
+      "moru_role": "onboarding_store_art_not_required_in_core_mark"
+    }
+  }
+}

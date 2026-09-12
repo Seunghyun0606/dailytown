@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "companion_id": "luca",
+  "canonical_profile": "companion.luca.canonical.v1",
+  "source": "../source/companion/luca/luca-canonical-source-master-v1.svg",
+  "shipping_set": "SC-B",
+  "silhouette_class": "tall_ear_explorer",
+  "identity_locks": ["ear_length_class","head_mass","muzzle_placement","eye_spacing","body_ratio","tail_attachment"],
+  "expression_keys": ["neutral","happy","curious","surprised","clue_found","resolved"],
+  "lighting_families": ["LIGHT","WARM_DUSK","DARK"],
+  "usage_contexts": ["map_avatar","hud_portrait","encounter_halfbody","result_large","journal_stamp","collection_icon","memory_vignette"],
+  "appearance_slots": {
+    "head_or_ear_style": "restricted_ear_safe_only",
+    "neck_or_scarf_style": "supported",
+    "bag_or_carried_item": "supported",
+    "body_accent": "supported",
+    "accessory": "supported_with_ear_safe_constraint",
+    "context_effect": "supported"
+  },
+  "compact_profile": {
+    "target_dp": 48,
+    "keep": ["ears","face","scarf"],
+    "omit_if_unreadable": ["bag_detail","small_accessory"],
+    "must_differ_from_moru_black_silhouette": true
+  },
+  "fallbacks": {
+    "expression": "neutral",
+    "lighting": "LIGHT",
+    "animation": "static_current_expression",
+    "missing_cosmetic": "none"
+  },
+  "promotion_requirements": ["front_threequarter_side_back_consistency","48dp_black_silhouette","six_expression_readability","three_lighting_identity","journal_stamp_readability","sha256"]
+}
