@@ -180,3 +180,39 @@ Decision: **OG02_RESTORATION_NOT_READY / AUTOMATED RESTORATION EXHAUSTED**.
 
 - EDSR candidate binary and QA artifacts: temporary only, not committed
 - canonical/reference/runtime paths: unchanged
+
+## OG-02 exact-candidate edge-reconstruction continuation
+
+Continuation starting local HEAD:
+`0c35163737b1ac54fa830cbc7c5886f5bbbd5afb`.
+The remote branch HEAD at preflight remained
+`a4e500bcb95bc1392616a0be7e290b78a2d9781d`; the local branch contained the
+documentation-only EDSR checkpoint above and was not reset.
+
+The newly authorized workflow treats the accepted native-size candidate as
+the only valid processing input and its alpha as an immutable mask. It
+explicitly prohibits another 128px-source upscale, Real-ESRGAN, generative
+upscale, and use of either previously rejected restoration candidate.
+
+Requested OG-02 input:
+
+- dimensions: 768×768 RGBA PNG
+- SHA-256:
+  `59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92`
+
+A hash-specific, read-only lookup was performed across current session
+scratch, the ai-remote workspace, repository image files, temporary outputs,
+and the existing `.codex-transfer/` content. The checksum remains present in
+manifests, but no file bytes matching it are available. The committed 128×128
+WebP reference was not used as a processing source.
+
+Decision: **FAIL_EDGE_RECONSTRUCTION / SOURCE_BYTES_UNAVAILABLE**.
+
+- failure stage: source-input verification, before RGB/alpha separation
+- alpha/silhouette modification: not performed
+- candidate/QA artifacts: not produced
+- canonical/reference/runtime paths: unchanged
+- OG-03 and Moru: not started
+- next minimum work: attach or otherwise place the exact OG-02 PNG bytes in
+  the current ai-remote session; verify the stated SHA-256, then run one
+  alpha-first edge-RGB reconstruction and QA pass
