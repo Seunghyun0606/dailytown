@@ -44,8 +44,6 @@ This registry preserves design-review imagery in GitHub so accepted/reference bo
 | `design/reference/session-2026-09-12/attachments/explore_detail_parity.png` | 1448×1086 | `ddfef207ac1725ecc360cb0012446938a705e056b86dfbfe00656034a0a9f20b` | `production_reference`; RGBA, alpha channel present but fully opaque; exact current session PNG, same board role as `explore_detail_parity_v1.webp` but byte-distinct from earlier declared source `959b79…` |
 | `design/reference/ux-v2/raster/mobile_readability_qa_v2.webp` | 1800×1350 | `32b330c6e4a39ca2c154953cb326310b60dc1d4ed9d3fb7fee0278d237201c74` | reduced-size QA board made from locked baseline crops |
 | `design/reference/moru-v2/reference-derived-small-context-v1/candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base_reference_candidate.png` | 512×512 | `cddb4f6c1722c8519f23223159991b499bbe29a4809165e9af49017b98d34531` | `REFERENCE_DERIVED_CANDIDATE`; genuine RGBA; 48/56/64dp `REFERENCE_QA_PASS`; not native and not runtime-active |
-| `design/reference/moru-v2/reference-derived-small-context-v1/candidate/companion_moru_v2_hud_portrait_neutral_LIGHT_base_reference_candidate.png` | 768×768 | `8b1cb13831920e64f0e5b83d6ac7b7d7f7c1f5db30128e2b3966e2d1d74c51aa` | `REFERENCE_DERIVED_CANDIDATE`; genuine RGBA; 56/64/72dp `REFERENCE_QA_PASS`; deterministic interpolation only, not native or runtime-active |
-| `design/reference/moru-v2/reference-derived-small-context-v1/candidate/companion_moru_v2_journal_crop_neutral_LIGHT_base_reference_candidate.png` | 768×768 | `59d67630fcebf4318ca5f5362a788d3bfe142039793918b5d4fffc2fafcb8d3b` | `REFERENCE_DERIVED_CANDIDATE`; genuine RGBA; 56/64/72dp `REFERENCE_QA_PASS`; deterministic interpolation only, not native or runtime-active |
 
 ## Isolated scenario references
 
@@ -66,13 +64,13 @@ Moru reference-level mobile QA is preserved at:
 
 Moru deterministic small-context evidence and reconstruction handoff are preserved at:
 
-- `design/reference/moru-v2/reference-derived-small-context-v1/` — exact-pixel-derived candidates, extraction evidence, context boards and manifest
+- `design/reference/moru-v2/reference-derived-small-context-v1/` — exact-pixel-derived map candidate, extraction evidence, map context board and 1/3 PASS / 2/3 FAIL manifest
 - `design/reference/moru-v2/native-master-handoff-v1/` — exact canonical, masks/guides, sampled palette and native-master acceptance contract
 
 ## Production status
 
 - Exact attachment persistence: **7/7 remote-verified**; provenance and byte/color/alpha metadata are in `design/reference/session-2026-09-12/attachments/manifest.json`.
-- Moru canonical source board: **exact PNG persisted**. Deterministic map/HUD/journal reference QA: **PASS 3/3**. Human reconstruction handoff: **ready**. Moru native transparent master/export and runtime promotion: **pending/blocked**.
+- Moru canonical source board: **exact PNG persisted**. Strict no-upscale deterministic reference QA: **map PASS; HUD/journal FAIL**. Human reconstruction handoff: **ready**. Moru native transparent master/export and runtime promotion: **pending/blocked**.
 - Old Ginkgo OG-04 place and OG-05 same-scene memory families: **design-side runtime candidate / static QA PASS / not activated**; full source/masters/runtime crops/QA board and lightweight refs are persisted in GitHub under `production/runtime-v3/`.
 - Old Ginkgo OG-02 and OG-03: exact native-size sources and immutable-alpha edge-corrected candidates are persisted; design-side static source-quality QA PASS. OG-03 v5 preserves all visible-support RGB including the warm-brown perimeter and changes only a transparent-side color-bleed ring. OG-06 is closed as `DESIGN_RUNTIME_CANDIDATE_PACK_READY`; Android runtime activation and physical-device outdoor readability remain separate gates.
 - Historical `old_ginkgo_production_board_ref_v2.webp` is retained, but the committed blob is truncated and is not valid inspectable QA evidence. Runtime-v3 derivation uses the locked baseline, discovery-family board, and isolation crops instead.

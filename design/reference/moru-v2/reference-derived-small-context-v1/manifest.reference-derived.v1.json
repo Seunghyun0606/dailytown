@@ -112,40 +112,13 @@
         760
       ],
       "mode": "RGBA",
-      "sha256": "2bd61358a7dcdc3d540e9da6d6d1704254f333d91619162a4ef95ff85361e678",
+      "sha256": "aaccf5d98c3b15f6b8c767b67a39a1a9f073faf2827a5b8f97d46b2ea8bb8984",
       "alpha_minmax": [
         255,
         255
       ],
-      "role": "opaque_qa_evidence_board"
-    },
-    {
-      "path": "qa/hud_portrait_mobile_context_qa.png",
-      "dimensions": [
-        1200,
-        760
-      ],
-      "mode": "RGBA",
-      "sha256": "452ec74d2080e59dd1d6d4e901082534861a731e29679653e7501f365e240224",
-      "alpha_minmax": [
-        255,
-        255
-      ],
-      "role": "opaque_qa_evidence_board"
-    },
-    {
-      "path": "qa/journal_crop_mobile_context_qa.png",
-      "dimensions": [
-        1200,
-        760
-      ],
-      "mode": "RGBA",
-      "sha256": "c708867281d5d2dad9725e693a6c710bf9a83c43c9739a421351e4385e2ba737",
-      "alpha_minmax": [
-        255,
-        255
-      ],
-      "role": "opaque_qa_evidence_board"
+      "role": "opaque_qa_evidence_board",
+      "bytes": 52244
     }
   ],
   "assets": {
@@ -204,111 +177,69 @@
       ]
     },
     "hud_portrait": {
-      "path": "candidate/companion_moru_v2_hud_portrait_neutral_LIGHT_base_reference_candidate.png",
       "dimensions": [
         768,
         768
       ],
       "mode": "RGBA",
-      "sha256": "8b1cb13831920e64f0e5b83d6ac7b7d7f7c1f5db30128e2b3966e2d1d74c51aa",
+      "candidate_sha256": "c12ad1a990838e0683d1ef4028e1a3de441b5364102f35640b763e1aa95356e3",
       "alpha_minmax": [
         0,
         255
       ],
-      "transparent_pixels": 381837,
-      "partial_alpha_pixels": 17713,
-      "opaque_pixels": 190274,
-      "alpha_bbox_xyxy": [
-        146,
-        39,
-        621,
-        729
-      ],
-      "source_alpha_bbox_xyxy": [
-        0,
-        5,
-        272,
-        400
-      ],
+      "transparent_pixels": 522852,
+      "partial_alpha_pixels": 3136,
+      "opaque_pixels": 63836,
       "source_tight_dimensions": [
         272,
         395
       ],
-      "deterministic_resample": "Pillow Lanczos; no enhancement or generated detail",
-      "scale_factor": 1.746835,
-      "content_bounds_xyxy": [
-        146,
-        39,
-        621,
-        729
-      ],
-      "canvas": [
-        768,
-        768
-      ],
+      "scale_factor": 1,
+      "processing": "exact source pixels + transparent canvas padding; no upscale",
       "classification": "REFERENCE_DERIVED_CANDIDATE",
-      "qa_status": "REFERENCE_QA_PASS",
-      "checks_passed": [
-        "56/64/72dp face/eyes/mouth",
-        "hood contour",
-        "complete sprout",
-        "scarf diagonal",
-        "alpha edge on cream/dark/map-heavy"
+      "qa_status": "REFERENCE_QA_FAIL",
+      "candidate_persisted": false,
+      "failure_reasons": [
+        "visible content is only 28.8/32.9/37.0dp on the requested 56/64/72dp full canvas",
+        "face anchors and scarf diagonal are not reliably readable"
       ]
     },
     "journal_crop": {
-      "path": "candidate/companion_moru_v2_journal_crop_neutral_LIGHT_base_reference_candidate.png",
       "dimensions": [
         768,
         768
       ],
       "mode": "RGBA",
-      "sha256": "59d67630fcebf4318ca5f5362a788d3bfe142039793918b5d4fffc2fafcb8d3b",
+      "candidate_sha256": "3142a26ca7871353f0c0fe16a95b8ce6644007e7fe2c9cd36588509bea8149b3",
       "alpha_minmax": [
         0,
         255
       ],
-      "transparent_pixels": 427555,
-      "partial_alpha_pixels": 13791,
-      "opaque_pixels": 148478,
-      "alpha_bbox_xyxy": [
-        177,
-        74,
-        591,
-        694
-      ],
-      "source_alpha_bbox_xyxy": [
-        11,
-        5,
-        285,
-        415
-      ],
+      "transparent_pixels": 520077,
+      "partial_alpha_pixels": 3303,
+      "opaque_pixels": 66444,
       "source_tight_dimensions": [
         274,
         410
       ],
-      "deterministic_resample": "Pillow Lanczos; no enhancement or generated detail",
-      "scale_factor": 1.512195,
-      "content_bounds_xyxy": [
-        177,
-        74,
-        591,
-        694
-      ],
-      "canvas": [
-        768,
-        768
-      ],
+      "scale_factor": 1,
+      "processing": "exact source pixels + transparent canvas padding; no upscale",
       "classification": "REFERENCE_DERIVED_CANDIDATE",
-      "qa_status": "REFERENCE_QA_PASS",
-      "checks_passed": [
-        "56/64/72dp warm-paper read",
-        "face/hood/scarf",
-        "A3 artifact framing",
-        "alpha edge on cream/dark/map-heavy"
+      "qa_status": "REFERENCE_QA_FAIL",
+      "candidate_persisted": false,
+      "failure_reasons": [
+        "visible content is only 29.9/34.2/38.4dp on the requested 56/64/72dp full canvas",
+        "face/hood/scarf and A3 artifact presence are not reliably readable"
       ]
     }
   },
   "runtime_activation": false,
-  "development_recommendation": "May be bound only to an explicit temporary/reference QA profile or debug flag. Do not activate as companion.moru.canonical.v2 production runtime."
+  "development_recommendation": "Only map_avatar may be bound behind an explicit temporary/reference QA profile or debug flag. HUD and journal failed the no-upscale full-canvas mobile check. Do not activate companion.moru.canonical.v2 production runtime.",
+  "qa_summary": {
+    "map_avatar": "REFERENCE_QA_PASS",
+    "hud_portrait": "REFERENCE_QA_FAIL",
+    "journal_crop": "REFERENCE_QA_FAIL",
+    "pass_count": 1,
+    "fail_count": 2
+  }
 }

@@ -5,9 +5,9 @@
     "reference_extraction": "complete",
     "neutral_identity_lock": "failed_attempt_1",
     "transparent_master_export": "pending",
-    "mobile_qa": "reference_only_pass_native_qa_blocked",
+    "mobile_qa": "map_reference_pass_hud_journal_fail_native_qa_blocked",
     "runtime_promotion": "blocked",
-    "reference_derived_small_context_qa": "pass_3_of_3",
+    "reference_derived_small_context_qa": "partial_pass_1_of_3",
     "native_master_handoff": "ready"
   },
   "source_of_truth": [
@@ -44,7 +44,7 @@
   },
   "reference_derived_small_context_qa": {
     "classification": "REFERENCE_DERIVED_CANDIDATE",
-    "status": "REFERENCE_QA_PASS",
+    "status": "REFERENCE_QA_PARTIAL",
     "path": "design/reference/moru-v2/reference-derived-small-context-v1/",
     "generation_used": false,
     "runtime_activation": false,
@@ -67,29 +67,53 @@
           768,
           768
         ],
-        "sha256": "8b1cb13831920e64f0e5b83d6ac7b7d7f7c1f5db30128e2b3966e2d1d74c51aa",
+        "mode": "RGBA",
+        "candidate_sha256": "c12ad1a990838e0683d1ef4028e1a3de441b5364102f35640b763e1aa95356e3",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "candidate_persisted": false,
+        "source_scale_factor": 1,
+        "no_upscale": true,
         "qa_dp": [
           56,
           64,
           72
         ],
-        "verdict": "REFERENCE_QA_PASS"
+        "verdict": "REFERENCE_QA_FAIL",
+        "failure_reasons": [
+          "Full 768×768 canvas yields only 28.8/32.9/37.0dp visible content at 56/64/72dp.",
+          "Face/eye/mouth and scarf diagonal are not reliably readable without disallowed source enlargement."
+        ]
       },
       "journal_crop": {
         "dimensions": [
           768,
           768
         ],
-        "sha256": "59d67630fcebf4318ca5f5362a788d3bfe142039793918b5d4fffc2fafcb8d3b",
+        "mode": "RGBA",
+        "candidate_sha256": "3142a26ca7871353f0c0fe16a95b8ce6644007e7fe2c9cd36588509bea8149b3",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "candidate_persisted": false,
+        "source_scale_factor": 1,
+        "no_upscale": true,
         "qa_dp": [
           56,
           64,
           72
         ],
-        "verdict": "REFERENCE_QA_PASS"
+        "verdict": "REFERENCE_QA_FAIL",
+        "failure_reasons": [
+          "Full 768×768 canvas yields only 29.9/34.2/38.4dp visible content at 56/64/72dp.",
+          "Face/hood/scarf and A3 artifact presence are too small without disallowed source enlargement."
+        ]
       }
     },
-    "recommendation": "May be used by Development only as an explicitly temporary/reference profile for layout and readability validation. Do not activate as companion.moru.canonical.v2 or call these native masters."
+    "recommendation": "Development may use only the persisted map_avatar behind an explicit temporary/reference QA profile. HUD and journal remain blocked for a compliant reference asset; do not activate any candidate as companion.moru.canonical.v2."
   },
   "native_master_handoff": {
     "status": "HANDOFF_READY_NATIVE_MASTER_NOT_PRODUCED",

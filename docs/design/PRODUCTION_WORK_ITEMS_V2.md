@@ -120,7 +120,8 @@ Current checkpoint:
 - board crops are not native production masters: full-body turnaround references are about 315–340×540–565 px; expression refs are about 162–200×215 px
 - `map_avatar`, `hud_portrait`, and `journal_crop` can support reference-derived QA candidates
 - deterministic, non-generative reference-derived candidates are persisted under `design/reference/moru-v2/reference-derived-small-context-v1/`
-- map 48/56/64dp, HUD 56/64/72dp and journal 56/64/72dp static context QA: `REFERENCE_QA_PASS` (3/3); these are not native masters and were not runtime-activated
+- strict full-canvas/no-upscale QA: map 48/56/64dp `REFERENCE_QA_PASS`; HUD and journal 56/64/72dp `REFERENCE_QA_FAIL` because exact-source-size content is too small for reliable face/detail reading
+- only the passed map candidate is persisted; rejected HUD/journal candidate binaries and QA boards are absent from the current tree; nothing was runtime-activated
 - the human/layered raster reconstruction package is ready under `design/reference/moru-v2/native-master-handoff-v1/`; no large-context asset was regenerated
 - `encounter_halfbody`, `result_large`, and final `companion_portrait` require native same-design raster reproduction rather than simple upscaling
 - this is a source-resolution/clean-transparency blocker, not a design-direction blocker
@@ -131,7 +132,7 @@ Current checkpoint:
 
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **BLOCKED by missing native master; reference-derived small-context QA PASS 3/3**
+Status: **BLOCKED by missing native master; strict reference QA map PASS, HUD/journal FAIL**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read
@@ -140,7 +141,7 @@ Checks:
 - base / familiar / trusted / best_friend invariance
 - transparent edge/halo
 
-Deterministic reference-derived map/HUD/journal context QA is PASS and may inform a temporary/reference Development profile only. Actual MORU-02 runtime-size QA must use the accepted native transparent export family, not these board-derived candidates.
+Only the deterministic map candidate passed and may inform an explicitly temporary/reference Development profile. HUD/journal failed the no-upscale full-canvas check. Actual MORU-02 remains blocked and must use an accepted native transparent export family.
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 

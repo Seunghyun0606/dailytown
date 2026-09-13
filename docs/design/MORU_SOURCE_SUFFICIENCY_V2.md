@@ -164,10 +164,10 @@ No generative redraw or super-resolution was used. The canonical front reference
 | Context | Canvas | Review sizes | Result |
 | --- | ---: | --- | --- |
 | `map_avatar` | 512×512 RGBA | 48 / 56 / 64dp | `REFERENCE_QA_PASS` |
-| `hud_portrait` | 768×768 RGBA | 56 / 64 / 72dp | `REFERENCE_QA_PASS` |
-| `journal_crop` | 768×768 RGBA | 56 / 64 / 72dp | `REFERENCE_QA_PASS` |
+| `hud_portrait` | 768×768 RGBA | 56 / 64 / 72dp | `REFERENCE_QA_FAIL` — exact-source-size content too small without enlargement |
+| `journal_crop` | 768×768 RGBA | 56 / 64 / 72dp | `REFERENCE_QA_FAIL` — exact-source-size content too small without enlargement |
 
-These remain `REFERENCE_DERIVED_CANDIDATE` assets. They are not native production masters and were not runtime-activated. Development may use them only in an explicitly temporary/reference profile for layout/readability validation.
+The map output remains a persisted `REFERENCE_DERIVED_CANDIDATE`; Development may use it only in an explicitly temporary/reference profile. HUD and journal candidates failed and are not persisted in the current tree. None are native production masters or runtime-active.
 
 The human/layered raster reconstruction package is persisted at `design/reference/moru-v2/native-master-handoff-v1/`. It contains the exact canonical, neutral crop, silhouette, face and anchor guides, hood/sprout contour, scarf/satchel/boots reference, sampled palette, target canvases, alpha requirements and forbidden-drift checklist.
 
