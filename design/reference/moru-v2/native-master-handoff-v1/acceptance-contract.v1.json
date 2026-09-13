@@ -1,0 +1,234 @@
+{
+  "version": "moru-native-master-acceptance-v1-2026-09-13",
+  "visual_authority": {
+    "path": "source/moru_candidate3_canonical_baseline_v2_exact.png",
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "dimensions": [
+      1122,
+      1402
+    ]
+  },
+  "coordinate_system": {
+    "front_crop_on_canonical_xyxy": [
+      125,
+      35,
+      465,
+      660
+    ],
+    "front_crop_dimensions": [
+      340,
+      625
+    ],
+    "landmarks_crop_xy": {
+      "subject_bbox": [
+        43,
+        45,
+        317,
+        599
+      ],
+      "sprout_bbox": [
+        116,
+        45,
+        279,
+        139
+      ],
+      "sprout_root": [
+        185,
+        132
+      ],
+      "hood_bbox": [
+        78,
+        125,
+        305,
+        292
+      ],
+      "face_bbox": [
+        118,
+        177,
+        247,
+        270
+      ],
+      "left_eye_center": [
+        153,
+        221
+      ],
+      "right_eye_center": [
+        218,
+        221
+      ],
+      "mouth_center": [
+        186,
+        253
+      ],
+      "chin_center": [
+        185,
+        270
+      ],
+      "scarf_diagonal": [
+        [
+          133,
+          270
+        ],
+        [
+          238,
+          332
+        ]
+      ],
+      "satchel_bbox": [
+        43,
+        322,
+        154,
+        450
+      ],
+      "left_boot_bbox": [
+        75,
+        512,
+        149,
+        600
+      ],
+      "right_boot_bbox": [
+        187,
+        512,
+        260,
+        600
+      ]
+    },
+    "landmarks_subject_normalized": {
+      "subject_bbox": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "sprout_bbox": [
+        0.266423,
+        0.0,
+        0.861314,
+        0.169675
+      ],
+      "sprout_root": [
+        0.518248,
+        0.15704
+      ],
+      "hood_bbox": [
+        0.127737,
+        0.144404,
+        0.956204,
+        0.445848
+      ],
+      "face_bbox": [
+        0.273723,
+        0.238267,
+        0.744526,
+        0.406137
+      ],
+      "left_eye_center": [
+        0.40146,
+        0.31769
+      ],
+      "right_eye_center": [
+        0.638686,
+        0.31769
+      ],
+      "mouth_center": [
+        0.521898,
+        0.375451
+      ],
+      "chin_center": [
+        0.518248,
+        0.406137
+      ],
+      "scarf_diagonal": [
+        [
+          0.328467,
+          0.406137
+        ],
+        [
+          0.711679,
+          0.518051
+        ]
+      ],
+      "satchel_bbox": [
+        0.0,
+        0.5,
+        0.405109,
+        0.731047
+      ],
+      "left_boot_bbox": [
+        0.116788,
+        0.84296,
+        0.386861,
+        1.001805
+      ],
+      "right_boot_bbox": [
+        0.525547,
+        0.84296,
+        0.791971,
+        1.001805
+      ]
+    }
+  },
+  "target_canvases": {
+    "neutral_native_master": "minimum 1280x1600 RGBA or layered source at equivalent native detail",
+    "companion_portrait": [
+      1024,
+      1280
+    ],
+    "encounter_halfbody": [
+      1024,
+      1280
+    ],
+    "result_large": [
+      1280,
+      1600
+    ]
+  },
+  "alpha": {
+    "required": "genuine straight-alpha RGBA",
+    "alpha_range_required": [
+      0,
+      255
+    ],
+    "checkerboard_baked_pixels": "forbidden",
+    "paper/garden/ground residue": "forbidden",
+    "transparent_side_rgb": "nearest visible edge color bleed; no white matte"
+  },
+  "thresholds": {
+    "normalized_full_silhouette_iou_min": 0.92,
+    "normalized_hood_contour_iou_min": 0.93,
+    "normalized_sprout_contour_iou_min": 0.9,
+    "mean_contour_deviation_subject_height_max": 0.02,
+    "max_contour_deviation_subject_height_max": 0.04,
+    "face_anchor_deviation_head_width_max": 0.015,
+    "primary_material_palette_deltaE76_median_max": 8.0,
+    "primary_material_palette_deltaE76_max": 12.0
+  },
+  "required_identity_checks": [
+    "head/body proportion",
+    "face area",
+    "eye/mouth anchors",
+    "asymmetric two-leaf sprout contour",
+    "hood contour",
+    "ochre scarf diagonal",
+    "cream field jacket and botanical layering",
+    "cross-body satchel and round compass placement",
+    "sturdy walking boots and base",
+    "hands/feet scale",
+    "olive/brown/cream palette",
+    "soft raster material and shading"
+  ],
+  "forbidden_drift": [
+    "new costume",
+    "new prop or bag detail",
+    "sprout reinterpretation or changed leaf count",
+    "anatomy or silhouette change",
+    "palette shift",
+    "sharp/vector-like rendering",
+    "sticker outline",
+    "checkerboard baked into pixels",
+    "paper/garden/ground residue",
+    "generated micro-detail not supported by canonical",
+    "legacy profile silent repoint"
+  ],
+  "promotion_rule": "PASS this neutral native master contract before deriving any native usage-context family. Runtime activation remains a separate Development task."
+}

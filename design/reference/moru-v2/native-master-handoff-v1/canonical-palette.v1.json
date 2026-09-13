@@ -1,0 +1,156 @@
+{
+  "source": "moru_candidate3_neutral_front_exact_crop.png",
+  "coordinate_space": "340x625 crop from canonical",
+  "samples": [
+    {
+      "name": "hood_olive_light",
+      "crop_xyxy": [
+        222,
+        146,
+        242,
+        166
+      ],
+      "rgb": [
+        199,
+        177,
+        130
+      ],
+      "hex": "#C7B182"
+    },
+    {
+      "name": "hood_olive_dark",
+      "crop_xyxy": [
+        91,
+        238,
+        111,
+        258
+      ],
+      "rgb": [
+        73,
+        64,
+        41
+      ],
+      "hex": "#494029"
+    },
+    {
+      "name": "scarf_ochre",
+      "crop_xyxy": [
+        172,
+        280,
+        210,
+        302
+      ],
+      "rgb": [
+        223,
+        176,
+        111
+      ],
+      "hex": "#DFB06F"
+    },
+    {
+      "name": "jacket_cream",
+      "crop_xyxy": [
+        211,
+        348,
+        239,
+        378
+      ],
+      "rgb": [
+        236,
+        209,
+        177
+      ],
+      "hex": "#ECD1B1"
+    },
+    {
+      "name": "jacket_botanical_green",
+      "crop_xyxy": [
+        133,
+        385,
+        153,
+        413
+      ],
+      "rgb": [
+        117,
+        92,
+        68
+      ],
+      "hex": "#755C44"
+    },
+    {
+      "name": "satchel_brown",
+      "crop_xyxy": [
+        72,
+        365,
+        105,
+        395
+      ],
+      "rgb": [
+        136,
+        99,
+        72
+      ],
+      "hex": "#886348"
+    },
+    {
+      "name": "boot_leather_brown",
+      "crop_xyxy": [
+        103,
+        548,
+        132,
+        575
+      ],
+      "rgb": [
+        153,
+        116,
+        88
+      ],
+      "hex": "#997458"
+    },
+    {
+      "name": "shorts_olive_brown",
+      "crop_xyxy": [
+        169,
+        455,
+        208,
+        480
+      ],
+      "rgb": [
+        121,
+        107,
+        82
+      ],
+      "hex": "#796B52"
+    },
+    {
+      "name": "hair_gray_olive",
+      "crop_xyxy": [
+        166,
+        184,
+        193,
+        209
+      ],
+      "rgb": [
+        188,
+        166,
+        137
+      ],
+      "hex": "#BCA689"
+    },
+    {
+      "name": "face_warm",
+      "crop_xyxy": [
+        170,
+        232,
+        198,
+        255
+      ],
+      "rgb": [
+        251,
+        218,
+        196
+      ],
+      "hex": "#FBDAC4"
+    }
+  ]
+}

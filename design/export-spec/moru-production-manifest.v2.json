@@ -5,8 +5,10 @@
     "reference_extraction": "complete",
     "neutral_identity_lock": "failed_attempt_1",
     "transparent_master_export": "pending",
-    "mobile_qa": "pending",
-    "runtime_promotion": "blocked"
+    "mobile_qa": "reference_only_pass_native_qa_blocked",
+    "runtime_promotion": "blocked",
+    "reference_derived_small_context_qa": "pass_3_of_3",
+    "native_master_handoff": "ready"
   },
   "source_of_truth": [
     "docs/design/DESIGN_BASELINE_V2.md",
@@ -23,7 +25,10 @@
     "date": "2026-09-13",
     "verdict": "FAIL_MORU_IDENTITY_LOCK",
     "source_assessment": "SOURCE_INSUFFICIENT_FOR_NATIVE_MASTER_FAMILY",
-    "candidate_dimensions": [1122, 1402],
+    "candidate_dimensions": [
+      1122,
+      1402
+    ],
     "candidate_color_mode": "RGB",
     "candidate_sha256": "3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da",
     "candidate_persisted": false,
@@ -37,10 +42,95 @@
     "fan_out": "stopped",
     "retry_rule": "Do not repeat the same prompt. Require genuine alpha and materially stronger exact-reference fidelity, or a human-supplied native/layered transparent source."
   },
+  "reference_derived_small_context_qa": {
+    "classification": "REFERENCE_DERIVED_CANDIDATE",
+    "status": "REFERENCE_QA_PASS",
+    "path": "design/reference/moru-v2/reference-derived-small-context-v1/",
+    "generation_used": false,
+    "runtime_activation": false,
+    "candidates": {
+      "map_avatar": {
+        "dimensions": [
+          512,
+          512
+        ],
+        "sha256": "cddb4f6c1722c8519f23223159991b499bbe29a4809165e9af49017b98d34531",
+        "qa_dp": [
+          48,
+          56,
+          64
+        ],
+        "verdict": "REFERENCE_QA_PASS"
+      },
+      "hud_portrait": {
+        "dimensions": [
+          768,
+          768
+        ],
+        "sha256": "8b1cb13831920e64f0e5b83d6ac7b7d7f7c1f5db30128e2b3966e2d1d74c51aa",
+        "qa_dp": [
+          56,
+          64,
+          72
+        ],
+        "verdict": "REFERENCE_QA_PASS"
+      },
+      "journal_crop": {
+        "dimensions": [
+          768,
+          768
+        ],
+        "sha256": "59d67630fcebf4318ca5f5362a788d3bfe142039793918b5d4fffc2fafcb8d3b",
+        "qa_dp": [
+          56,
+          64,
+          72
+        ],
+        "verdict": "REFERENCE_QA_PASS"
+      }
+    },
+    "recommendation": "May be used by Development only as an explicitly temporary/reference profile for layout and readability validation. Do not activate as companion.moru.canonical.v2 or call these native masters."
+  },
+  "native_master_handoff": {
+    "status": "HANDOFF_READY_NATIVE_MASTER_NOT_PRODUCED",
+    "path": "design/reference/moru-v2/native-master-handoff-v1/",
+    "acceptance_contract": "design/reference/moru-v2/native-master-handoff-v1/acceptance-contract.v1.json",
+    "target_contexts": {
+      "companion_portrait": [
+        1024,
+        1280
+      ],
+      "encounter_halfbody": [
+        1024,
+        1280
+      ],
+      "result_large": [
+        1280,
+        1600
+      ]
+    },
+    "runtime_promotion": "blocked_until_native_neutral_identity_lock_and_MORU_02_pass"
+  },
   "semantic_contract": {
-    "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
-    "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
-    "affinity": ["base", "familiar", "trusted", "best_friend"],
+    "expressions": [
+      "neutral",
+      "happy",
+      "curious",
+      "surprised",
+      "clue_found",
+      "resolved"
+    ],
+    "lighting": [
+      "LIGHT",
+      "WARM_DUSK",
+      "DARK"
+    ],
+    "affinity": [
+      "base",
+      "familiar",
+      "trusted",
+      "best_friend"
+    ],
     "fallback": {
       "expression": "neutral",
       "lighting": "LIGHT",
@@ -50,34 +140,60 @@
   },
   "usage_contexts": {
     "map_avatar": {
-      "master_px": [512, 512],
-      "runtime_targets_dp": [48, 56, 64],
+      "master_px": [
+        512,
+        512
+      ],
+      "runtime_targets_dp": [
+        48,
+        56,
+        64
+      ],
       "anchor": "bottom_center",
       "crop_rule": "Preserve asymmetric sprout, hood silhouette, face/hood negative space, warm scarf accent and boot/base read."
     },
     "hud_portrait": {
-      "master_px": [768, 768],
-      "runtime_targets_dp": [56, 64, 72],
+      "master_px": [
+        768,
+        768
+      ],
+      "runtime_targets_dp": [
+        56,
+        64,
+        72
+      ],
       "anchor": "face_center",
       "crop_rule": "Head plus upper torso; retain sprout, hood contour and scarf diagonal."
     },
     "encounter_halfbody": {
-      "master_px": [1024, 1280],
+      "master_px": [
+        1024,
+        1280
+      ],
       "anchor": "bottom_center",
       "crop_rule": "Head to mid-thigh; satchel strap and expression pose remain legible."
     },
     "result_large": {
-      "master_px": [1280, 1600],
+      "master_px": [
+        1280,
+        1600
+      ],
       "anchor": "bottom_center",
       "crop_rule": "Full expressive pose; never crop sprout or boots."
     },
     "companion_portrait": {
-      "master_px": [1024, 1280],
+      "master_px": [
+        1024,
+        1280
+      ],
       "anchor": "face_center",
       "crop_rule": "Portrait-biased current-mood pose while preserving hood/sprout identity."
     },
     "journal_crop": {
-      "master_px": [768, 768],
+      "master_px": [
+        768,
+        768
+      ],
       "anchor": "face_center",
       "crop_rule": "Warm paper artifact crop; simplify micro-detail at small sizes rather than sharpening."
     }

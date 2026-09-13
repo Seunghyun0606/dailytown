@@ -119,16 +119,19 @@ Current checkpoint:
 - board is sufficient for identity, framing, 48dp reference, expression/lighting/affinity intent
 - board crops are not native production masters: full-body turnaround references are about 315–340×540–565 px; expression refs are about 162–200×215 px
 - `map_avatar`, `hud_portrait`, and `journal_crop` can support reference-derived QA candidates
+- deterministic, non-generative reference-derived candidates are persisted under `design/reference/moru-v2/reference-derived-small-context-v1/`
+- map 48/56/64dp, HUD 56/64/72dp and journal 56/64/72dp static context QA: `REFERENCE_QA_PASS` (3/3); these are not native masters and were not runtime-activated
+- the human/layered raster reconstruction package is ready under `design/reference/moru-v2/native-master-handoff-v1/`; no large-context asset was regenerated
 - `encounter_halfbody`, `result_large`, and final `companion_portrait` require native same-design raster reproduction rather than simple upscaling
 - this is a source-resolution/clean-transparency blocker, not a design-direction blocker
 - 2026-09-13 neutral attempt 1: FAIL_MORU_IDENTITY_LOCK; candidate was 1122×1402 RGB with baked checkerboard, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da
 - face/eye/mouth, hood/sprout silhouette, costume/leaf layering, satchel/compass, hands/boots and rendering drifted from the exact canonical
 - rejected binary/QA evidence was not committed; do not repeat the same prompt or fan out variants
-- resume only with genuine-alpha, higher-fidelity exact-reference reproduction or a human-supplied native/layered transparent source
+- resume native production with the committed reconstruction handoff and a human/layered raster source; validate against the acceptance contract before any native family fan-out
 
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **BLOCKED by failed MORU-01 neutral identity lock; reference precheck PASS**
+Status: **BLOCKED by missing native master; reference-derived small-context QA PASS 3/3**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read
@@ -137,7 +140,7 @@ Checks:
 - base / familiar / trusted / best_friend invariance
 - transparent edge/halo
 
-Reference precheck is already PASS. Actual runtime-size QA must use the real transparent export family, not composite-board crops presented as final masters.
+Deterministic reference-derived map/HUD/journal context QA is PASS and may inform a temporary/reference Development profile only. Actual MORU-02 runtime-size QA must use the accepted native transparent export family, not these board-derived candidates.
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 
@@ -202,7 +205,7 @@ Do after the in-app production family is stable.
 ## Current next action
 
 1. Keep the Old Ginkgo design-side first-scenario pack closed and unchanged until a separate Development task performs Android runtime binding/activation.
-2. Produce **native-resolution transparent Moru Candidate 3 masters** from the locked design; start with map/avatar + HUD for early Android QA, then Companion/journal, then encounter/result-large.
+2. Use `design/reference/moru-v2/native-master-handoff-v1/` for human/layered raster reconstruction of the locked Candidate 3; first deliver one native neutral master and pass the identity acceptance contract before deriving usage contexts.
 3. Run MORU-02 Android-size/edge/lighting/affinity QA and only then prepare semantic activation readiness.
 4. Keep physical-device outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
 

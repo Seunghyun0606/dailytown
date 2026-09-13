@@ -119,17 +119,15 @@ Therefore the production rule is:
 
 Moru production is no longer blocked by design uncertainty. It is blocked by **source/master resolution and clean transparency**.
 
-The next valid work is native-resolution production reproduction of the locked design, not concept exploration.
+The next valid native work is human/layered raster reconstruction from the committed handoff, not concept exploration or another free-form generation attempt.
 
 Recommended order:
 
-1. `map_avatar` + `hud_portrait` candidate masters for early Android QA;
-2. `companion_portrait` + `journal_crop`;
-3. `encounter_halfbody` + `result_large`;
-4. six expressions;
-5. lighting derivatives;
-6. affinity decoration variants;
-7. resolver/fallback readiness.
+1. reconstruct one genuine-RGBA native neutral master from `design/reference/moru-v2/native-master-handoff-v1/`;
+2. pass the identity acceptance contract before any native fan-out;
+3. derive usage contexts from that accepted native master;
+4. run MORU-02, then expressions, lighting and affinity only as required by the resolver/fallback contract;
+5. prepare MORU-03 readiness without silently repointing the legacy profile.
 
 ## 6. QA gate
 
@@ -158,3 +156,19 @@ Result: **FAIL_MORU_IDENTITY_LOCK**.
 - Usage-context, expression, lighting and affinity fan-out was stopped. The rejected PNG and its QA images were not committed to canonical, reference or runtime paths.
 
 Do not repeat the same reproduction prompt. Resume only with a production path that can provide genuine alpha and materially stronger exact-reference fidelity, or with a human-supplied native/layered transparent Moru source.
+
+## 8. Deterministic small-context QA and native reconstruction handoff — 2026-09-13
+
+No generative redraw or super-resolution was used. The canonical front reference was isolated with deterministic crop, manual mask, paper-background removal, alpha cleanup, transparent-side RGB bleed, canvas padding and resampling only.
+
+| Context | Canvas | Review sizes | Result |
+| --- | ---: | --- | --- |
+| `map_avatar` | 512×512 RGBA | 48 / 56 / 64dp | `REFERENCE_QA_PASS` |
+| `hud_portrait` | 768×768 RGBA | 56 / 64 / 72dp | `REFERENCE_QA_PASS` |
+| `journal_crop` | 768×768 RGBA | 56 / 64 / 72dp | `REFERENCE_QA_PASS` |
+
+These remain `REFERENCE_DERIVED_CANDIDATE` assets. They are not native production masters and were not runtime-activated. Development may use them only in an explicitly temporary/reference profile for layout/readability validation.
+
+The human/layered raster reconstruction package is persisted at `design/reference/moru-v2/native-master-handoff-v1/`. It contains the exact canonical, neutral crop, silhouette, face and anchor guides, hood/sprout contour, scarf/satchel/boots reference, sampled palette, target canvases, alpha requirements and forbidden-drift checklist.
+
+`DT-DES-MORU-01` remains blocked until a native neutral master passes that acceptance contract. Consequently MORU-02 native QA and MORU-03 semantic activation readiness remain incomplete, and runtime promotion remains blocked.

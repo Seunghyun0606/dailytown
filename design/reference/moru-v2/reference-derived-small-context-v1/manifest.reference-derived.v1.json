@@ -1,0 +1,314 @@
+{
+  "version": "moru-reference-derived-small-context-v1-2026-09-13",
+  "classification": "REFERENCE_DERIVED_CANDIDATE",
+  "canonical": {
+    "path": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "dimensions": [
+      1122,
+      1402
+    ]
+  },
+  "method": {
+    "generative_processing": false,
+    "super_resolution": false,
+    "source_crop_xyxy": [
+      125,
+      35,
+      465,
+      660
+    ],
+    "segmentation": "manual component polygons + paper-distance edge matte",
+    "alpha_cleanup": "outer-edge matte + alpha-zero nearest-solid RGB bleed",
+    "native_master": false
+  },
+  "extraction": {
+    "source_crop_xyxy": [
+      125,
+      35,
+      465,
+      660
+    ],
+    "source_crop_dimensions": [
+      340,
+      625
+    ],
+    "paper_rgb_median": [
+      246,
+      237,
+      220
+    ],
+    "alpha_bbox_xyxy": [
+      43,
+      45,
+      317,
+      599
+    ],
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "transparent_pixels": 124675,
+    "partial_alpha_pixels": 5264,
+    "opaque_pixels": 82561,
+    "visible_rgb_source_rule": "canonical crop RGB preserved for alpha>0; alpha-zero RGB uses nearest solid foreground bleed"
+  },
+  "artifact_registry": [
+    {
+      "path": "source/moru_candidate3_neutral_front_exact_crop.png",
+      "dimensions": [
+        340,
+        625
+      ],
+      "mode": "RGBA",
+      "sha256": "ac280a5d942d8d7573991db833bba2e7d2e82d97e9d4e30badeaef87c7204aa3",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "canonical_board_exact_crop_source_reference"
+    },
+    {
+      "path": "source/moru_candidate3_neutral_front_manual_mask.png",
+      "dimensions": [
+        340,
+        625
+      ],
+      "mode": "L",
+      "sha256": "8a43bf4a19277607579447baf925249a281e7a9079c570d0456014099b1e67d6",
+      "alpha_facts": "grayscale mask; not an RGBA asset",
+      "role": "segmentation_mask_reference"
+    },
+    {
+      "path": "source/moru_candidate3_neutral_front_reference_cutout.png",
+      "dimensions": [
+        340,
+        625
+      ],
+      "mode": "RGBA",
+      "sha256": "c44b0e3af08d0003ddbf153d2553e5fc959e196a01185a4d7d44aa725a6a5c87",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "role": "transparent_reference_cutout_not_native_master"
+    },
+    {
+      "path": "qa/extraction_context_and_alpha_qa.png",
+      "dimensions": [
+        1260,
+        760
+      ],
+      "mode": "RGBA",
+      "sha256": "c400c6817447dc8724d89c36394cbfaaa514ab6e166ca12ac476753e41ee42cd",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "opaque_qa_evidence_board"
+    },
+    {
+      "path": "qa/map_avatar_mobile_context_qa.png",
+      "dimensions": [
+        1200,
+        760
+      ],
+      "mode": "RGBA",
+      "sha256": "2bd61358a7dcdc3d540e9da6d6d1704254f333d91619162a4ef95ff85361e678",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "opaque_qa_evidence_board"
+    },
+    {
+      "path": "qa/hud_portrait_mobile_context_qa.png",
+      "dimensions": [
+        1200,
+        760
+      ],
+      "mode": "RGBA",
+      "sha256": "452ec74d2080e59dd1d6d4e901082534861a731e29679653e7501f365e240224",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "opaque_qa_evidence_board"
+    },
+    {
+      "path": "qa/journal_crop_mobile_context_qa.png",
+      "dimensions": [
+        1200,
+        760
+      ],
+      "mode": "RGBA",
+      "sha256": "c708867281d5d2dad9725e693a6c710bf9a83c43c9739a421351e4385e2ba737",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "opaque_qa_evidence_board"
+    }
+  ],
+  "assets": {
+    "map_avatar": {
+      "path": "candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base_reference_candidate.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "sha256": "cddb4f6c1722c8519f23223159991b499bbe29a4809165e9af49017b98d34531",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "transparent_pixels": 194743,
+      "partial_alpha_pixels": 7299,
+      "opaque_pixels": 60102,
+      "alpha_bbox_xyxy": [
+        137,
+        20,
+        374,
+        500
+      ],
+      "source_alpha_bbox_xyxy": [
+        43,
+        45,
+        317,
+        599
+      ],
+      "source_tight_dimensions": [
+        274,
+        554
+      ],
+      "deterministic_resample": "Pillow Lanczos; no enhancement or generated detail",
+      "scale_factor": 0.866426,
+      "content_bounds_xyxy": [
+        137,
+        20,
+        374,
+        500
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "classification": "REFERENCE_DERIVED_CANDIDATE",
+      "qa_status": "REFERENCE_QA_PASS",
+      "checks_passed": [
+        "48/56/64dp silhouette",
+        "asymmetric sprout",
+        "face read",
+        "ochre scarf",
+        "boots/base",
+        "alpha edge on cream/dark/map-heavy"
+      ]
+    },
+    "hud_portrait": {
+      "path": "candidate/companion_moru_v2_hud_portrait_neutral_LIGHT_base_reference_candidate.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "sha256": "8b1cb13831920e64f0e5b83d6ac7b7d7f7c1f5db30128e2b3966e2d1d74c51aa",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "transparent_pixels": 381837,
+      "partial_alpha_pixels": 17713,
+      "opaque_pixels": 190274,
+      "alpha_bbox_xyxy": [
+        146,
+        39,
+        621,
+        729
+      ],
+      "source_alpha_bbox_xyxy": [
+        0,
+        5,
+        272,
+        400
+      ],
+      "source_tight_dimensions": [
+        272,
+        395
+      ],
+      "deterministic_resample": "Pillow Lanczos; no enhancement or generated detail",
+      "scale_factor": 1.746835,
+      "content_bounds_xyxy": [
+        146,
+        39,
+        621,
+        729
+      ],
+      "canvas": [
+        768,
+        768
+      ],
+      "classification": "REFERENCE_DERIVED_CANDIDATE",
+      "qa_status": "REFERENCE_QA_PASS",
+      "checks_passed": [
+        "56/64/72dp face/eyes/mouth",
+        "hood contour",
+        "complete sprout",
+        "scarf diagonal",
+        "alpha edge on cream/dark/map-heavy"
+      ]
+    },
+    "journal_crop": {
+      "path": "candidate/companion_moru_v2_journal_crop_neutral_LIGHT_base_reference_candidate.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "sha256": "59d67630fcebf4318ca5f5362a788d3bfe142039793918b5d4fffc2fafcb8d3b",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "transparent_pixels": 427555,
+      "partial_alpha_pixels": 13791,
+      "opaque_pixels": 148478,
+      "alpha_bbox_xyxy": [
+        177,
+        74,
+        591,
+        694
+      ],
+      "source_alpha_bbox_xyxy": [
+        11,
+        5,
+        285,
+        415
+      ],
+      "source_tight_dimensions": [
+        274,
+        410
+      ],
+      "deterministic_resample": "Pillow Lanczos; no enhancement or generated detail",
+      "scale_factor": 1.512195,
+      "content_bounds_xyxy": [
+        177,
+        74,
+        591,
+        694
+      ],
+      "canvas": [
+        768,
+        768
+      ],
+      "classification": "REFERENCE_DERIVED_CANDIDATE",
+      "qa_status": "REFERENCE_QA_PASS",
+      "checks_passed": [
+        "56/64/72dp warm-paper read",
+        "face/hood/scarf",
+        "A3 artifact framing",
+        "alpha edge on cream/dark/map-heavy"
+      ]
+    }
+  },
+  "runtime_activation": false,
+  "development_recommendation": "May be bound only to an explicit temporary/reference QA profile or debug flag. Do not activate as companion.moru.canonical.v2 production runtime."
+}
