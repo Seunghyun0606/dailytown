@@ -3,6 +3,7 @@
   "status": {
     "character_direction": "approved",
     "reference_extraction": "complete",
+    "neutral_identity_lock": "failed_attempt_1",
     "transparent_master_export": "pending",
     "mobile_qa": "pending",
     "runtime_promotion": "blocked"
@@ -17,6 +18,24 @@
     "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
     "width": 1122,
     "height": 1402
+  },
+  "neutral_identity_lock_attempt_1": {
+    "date": "2026-09-13",
+    "verdict": "FAIL_MORU_IDENTITY_LOCK",
+    "source_assessment": "SOURCE_INSUFFICIENT_FOR_NATIVE_MASTER_FAMILY",
+    "candidate_dimensions": [1122, 1402],
+    "candidate_color_mode": "RGB",
+    "candidate_sha256": "3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da",
+    "candidate_persisted": false,
+    "failure_reasons": [
+      "no alpha channel; checkerboard baked into RGB pixels",
+      "face/eye/mouth treatment drift",
+      "hood/sprout silhouette drift",
+      "flower, leaf-layering, garment and satchel/compass detail drift",
+      "hands, boots and overall raster rendering drift"
+    ],
+    "fan_out": "stopped",
+    "retry_rule": "Do not repeat the same prompt. Require genuine alpha and materially stronger exact-reference fidelity, or a human-supplied native/layered transparent source."
   },
   "semantic_contract": {
     "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
@@ -87,7 +106,7 @@
   "human_gates": {
     "outdoor_readability": "pending",
     "motion_timing_intensity": "pending",
-    "identity_lock": "pending"
+    "identity_lock": "failed_attempt_1"
   },
   "promotion_rule": "Do not overwrite or silently repoint the existing runtime Moru pack. Add v2 as a new semantic profile/version and promote only after transparent raster exports and mobile QA pass."
 }

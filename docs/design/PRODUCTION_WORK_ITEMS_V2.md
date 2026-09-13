@@ -105,7 +105,7 @@ Promotion rule:
 
 ### DT-DES-MORU-01 · Transparent master family
 
-Status: **IN PROGRESS — source-sufficiency audit complete; native transparent production masters still required**
+Status: **BLOCKED — neutral identity-lock attempt 1 failed; clean native transparent source/master required**
 
 Outputs:
 - approved Candidate 3 only
@@ -121,10 +121,14 @@ Current checkpoint:
 - `map_avatar`, `hud_portrait`, and `journal_crop` can support reference-derived QA candidates
 - `encounter_halfbody`, `result_large`, and final `companion_portrait` require native same-design raster reproduction rather than simple upscaling
 - this is a source-resolution/clean-transparency blocker, not a design-direction blocker
+- 2026-09-13 neutral attempt 1: FAIL_MORU_IDENTITY_LOCK; candidate was 1122×1402 RGB with baked checkerboard, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da
+- face/eye/mouth, hood/sprout silhouette, costume/leaf layering, satchel/compass, hands/boots and rendering drifted from the exact canonical
+- rejected binary/QA evidence was not committed; do not repeat the same prompt or fan out variants
+- resume only with genuine-alpha, higher-fidelity exact-reference reproduction or a human-supplied native/layered transparent source
 
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **BLOCKED by native/clean MORU-01 masters; reference precheck PASS**
+Status: **BLOCKED by failed MORU-01 neutral identity lock; reference precheck PASS**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read

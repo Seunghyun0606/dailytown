@@ -1,6 +1,6 @@
 # Daily Town — Moru Source Sufficiency v2
 
-> Status: **AUDITED — baseline source is sufficient for identity/reference QA, insufficient for full native production export**
+> Status: **AUDITED / NEUTRAL IDENTITY-LOCK ATTEMPT 1 FAILED — clean native transparent source/master still required**
 >
 > Visual authority: `docs/design/DESIGN_BASELINE_V2.md`
 >
@@ -145,3 +145,16 @@ Do not mark `DT-DES-MORU-01` complete until the following exist as persisted bin
 - previous v1 pack retained as rollback.
 
 Outdoor readability and M-B final motion remain Human Gates.
+
+## 7. Neutral identity-lock attempt 1 — 2026-09-13
+
+Result: **FAIL_MORU_IDENTITY_LOCK**.
+
+- The exact remote canonical was re-verified before the attempt: 1122×1402 RGBA, SHA-256 541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500, fully opaque.
+- Deterministic board extraction remains SOURCE_INSUFFICIENT for a native master family. The usable front-view reference is about 340×540 and is composited with paper, typography, garden and ground pixels.
+- One reference-guided neutral/front/full-body reproduction was evaluated. Candidate facts: 1122×1402 RGB, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da.
+- Alpha gate failed: the file had no alpha channel and the checkerboard was baked into RGB pixels.
+- Identity gate failed: face/eye/mouth treatment, hood/sprout contour, flower and leaf layering, garment rendering, satchel/compass details, hands/boots and the overall raster finish differed from the exact canonical.
+- Usage-context, expression, lighting and affinity fan-out was stopped. The rejected PNG and its QA images were not committed to canonical, reference or runtime paths.
+
+Do not repeat the same reproduction prompt. Resume only with a production path that can provide genuine alpha and materially stronger exact-reference fidelity, or with a human-supplied native/layered transparent Moru source.
