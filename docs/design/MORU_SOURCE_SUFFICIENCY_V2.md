@@ -119,14 +119,14 @@ Therefore the production rule is:
 
 Moru production is no longer blocked by design uncertainty or by the neutral-master gate. The accepted genuine-RGBA layered neutral master is persisted under `design/reference/moru-v2/native-master-v1/`.
 
-The next valid work is native usage-context derivation and MORU-02 mobile/edge QA from that accepted neutral master. Do not regenerate or replace the accepted neutral master, and do not start semantic/runtime activation before the downstream gates pass.
+The accepted neutral master has now also produced a passing six-context `neutral / LIGHT / base / static` native usage family under `design/reference/moru-v2/native-usage-context-v1/`. The next valid work is the remaining MORU-02 semantic family: expression, lighting and affinity production/consistency QA. Do not regenerate or replace either accepted authority, and do not start semantic/runtime activation before the downstream gates pass.
 
 Recommended order:
 
 1. keep `design/reference/moru-v2/native-master-v1/` immutable as the accepted neutral authority;
-2. derive required usage contexts from that accepted neutral master;
-3. run MORU-02 Android-size/edge QA;
-4. only after the required neutral/usage gates pass, derive expressions, lighting and affinity as required by the resolver/fallback contract;
+2. keep `design/reference/moru-v2/native-usage-context-v1/` immutable as the passing neutral usage/mobile-edge baseline;
+3. author and validate only the required expression, LIGHT/WARM_DUSK/DARK and affinity variants under the locked Candidate 3 identity;
+4. verify resolver/fallback coverage and semantic invariance;
 5. prepare MORU-03 readiness without silently repointing the legacy profile.
 
 ## 6. QA gate
@@ -171,7 +171,7 @@ The map output remains a persisted `REFERENCE_DERIVED_CANDIDATE`; Development ma
 
 The human/layered raster reconstruction package is persisted at `design/reference/moru-v2/native-master-handoff-v1/`. It contains the exact canonical, neutral crop, silhouette, face and anchor guides, hood/sprout contour, scarf/satchel/boots reference, sampled palette, target canvases, alpha requirements and forbidden-drift checklist.
 
-The native neutral gate for `DT-DES-MORU-01` is now passed. The transparent usage-context family remains incomplete, so MORU-02 is the next active gate and MORU-03/runtime promotion remain blocked.
+The native neutral gate for `DT-DES-MORU-01` is passed, and the six-context `neutral / LIGHT / base / static` usage/mobile-edge baseline also passes. MORU-02 remains the active gate because expression/lighting/affinity consistency is still incomplete; MORU-03/runtime promotion remain blocked.
 
 
 ## 9. Native neutral master v1 PASS — 2026-09-14
@@ -189,4 +189,21 @@ Result: **PASS_MORU_NATIVE_NEUTRAL_V1**.
 - Fresh remote checkout re-verification: `PASS_REMOTE_BINARY_REVERIFY`; PNG/ORA/QA SHA values match the manifest, PNG IHDR is 1280×1600 8-bit RGBA, and ORA ZIP/mimetype/6-layer integrity passed. Evidence: `design/reference/moru-v2/native-master-v1/qa/remote_binary_verification.v1.json`.
 - No expression, lighting, affinity or usage-context fan-out was generated in this gate. Runtime activation remains false.
 
-Next: derive the required usage contexts only from this accepted neutral master and run MORU-02.
+Next: preserve this accepted neutral master and the passing neutral usage family; continue MORU-02 with expression/lighting/affinity production and consistency QA only.
+
+## 10. Native neutral usage-context baseline PASS — 2026-09-14
+
+Result: **PASS_MORU_02_NEUTRAL_USAGE_V1**.
+
+- Source authority: accepted 1280×1600 neutral master SHA-256 `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692` only; no attachment, board crop, free-form generation or new semantic micro-detail was used.
+- Persisted family: `design/reference/moru-v2/native-usage-context-v1/`.
+- Six `neutral / LIGHT / base / static` context masters: `map_avatar` 512×512, `hud_portrait` 768×768, `encounter_halfbody` 1024×1280, `result_large` 1280×1600, `companion_portrait` 1024×1280, `journal_crop` 768×768; all genuine RGBA with alpha 0–255.
+- Context-specific framing is distinct; `result_large` is a byte-for-byte copy of the accepted neutral master rather than a re-encoded lookalike.
+- Transparent-side bleed QA PASS for derived contexts. Cream/dark/map-heavy review boards and framing evidence are persisted under `native-usage-context-v1/qa/`.
+- Minimum-size metrics: map @48dp visible content 43.406dp / face 7.289dp / sprout 7.375dp; HUD @56dp 49.948dp / face 13.524dp / sprout 13.685dp / scarf 9.016dp; journal @56dp 49.875dp / face 14.426dp / sprout 14.597dp / scarf 9.617dp.
+- The previous no-upscale reference-derived HUD/journal failures remain valid historical evidence; the accepted native source is what closes those size/readability blockers.
+- Accepted usage-family commit: `c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e`.
+- Fresh remote checkout result: `PASS_REMOTE_BINARY_REVERIFY`; all six persisted PNG SHA-256 values, dimensions, RGBA modes/alpha ranges and QA SHA values match `design/export-spec/moru-production-manifest.v2.json`. Evidence: `design/reference/moru-v2/native-usage-context-v1/qa/remote_binary_verification.v1.json`.
+- No expression, WARM_DUSK/DARK lighting, affinity progression or runtime activation was performed. Therefore full MORU-02 is still **IN PROGRESS**, not complete.
+
+Next: produce and validate the locked semantic expression/lighting/affinity family, then verify fallback coverage before MORU-03.

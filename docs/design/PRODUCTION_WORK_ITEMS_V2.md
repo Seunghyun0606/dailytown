@@ -105,7 +105,7 @@ Promotion rule:
 
 ### DT-DES-MORU-01 · Transparent master family
 
-Status: **IN PROGRESS — native neutral master v1 PASS; usage-context family pending; not activated**
+Status: **IN PROGRESS — native neutral master + neutral/LIGHT/base usage-context family PASS; semantic family pending; not activated**
 
 Outputs:
 - approved Candidate 3 only
@@ -123,18 +123,21 @@ Current checkpoint:
 - strict full-canvas/no-upscale QA: map 48/56/64dp `REFERENCE_QA_PASS`; HUD and journal 56/64/72dp `REFERENCE_QA_FAIL` because exact-source-size content is too small for reliable face/detail reading
 - only the passed map candidate is persisted; rejected HUD/journal candidate binaries and QA boards are absent from the current tree; nothing was runtime-activated
 - the reconstruction handoff under `design/reference/moru-v2/native-master-handoff-v1/` is retained as provenance/acceptance evidence; the accepted neutral master now lives under `design/reference/moru-v2/native-master-v1/`
-- `encounter_halfbody`, `result_large`, and final `companion_portrait` must now be derived from the accepted native neutral master and validated in MORU-02; board-crop upscaling remains forbidden
-- the neutral source-resolution/clean-transparency blocker is closed; the remaining blocker is the native usage-context family plus MORU-02 QA
+- the six `neutral / LIGHT / base / static` usage contexts are now persisted under `design/reference/moru-v2/native-usage-context-v1/` and derive only from the accepted native neutral master; board-crop upscaling remains forbidden
+- the neutral source-resolution/clean-transparency blocker and neutral usage-context/mobile-edge baseline are closed; remaining MORU-02 work is expression/lighting/affinity consistency and semantic coverage
 - 2026-09-13 neutral attempt 1: FAIL_MORU_IDENTITY_LOCK; candidate was 1122×1402 RGB with baked checkerboard, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da
 - face/eye/mouth, hood/sprout silhouette, costume/leaf layering, satchel/compass, hands/boots and rendering drifted from the exact canonical
 - rejected binary/QA evidence was not committed; do not repeat the same prompt or fan out variants
 - 2026-09-14 accepted neutral v1: 1280×1600 genuine-RGBA PNG `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692` + 6-layer ORA `2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505`; all acceptance-contract checks PASS
 - accepted source/manifest/QA: `design/reference/moru-v2/native-master-v1/`; fresh remote checkout binary re-verification PASS
-- do not remake the neutral master; derive required usage contexts only from the accepted neutral and run MORU-02 before semantic/runtime activation
+- 2026-09-14 `PASS_MORU_02_NEUTRAL_USAGE_V1`: map 512², HUD 768², encounter 1024×1280, result 1280×1600, Companion 1024×1280 and journal 768² genuine-RGBA assets persisted under `design/reference/moru-v2/native-usage-context-v1/`; all target dimensions, alpha, distinct framing, transparent-side bleed and required feature-presence gates PASS
+- minimum-size mobile metrics now clear the prior source-crop blocker: map @48dp visible-content 43.406dp / face 7.289dp / sprout 7.375dp; HUD @56dp 49.948dp / face 13.524dp / sprout 13.685dp / scarf 9.016dp; journal @56dp 49.875dp / face 14.426dp / sprout 14.597dp / scarf 9.617dp
+- fresh checkout `PASS_REMOTE_BINARY_REVERIFY`: all six asset SHA-256 values, dimensions, RGBA alpha 0–255 and QA artifacts match the production manifest; accepted usage commit `c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e`
+- do not remake the neutral master or neutral usage family; continue only with required expression/lighting/affinity production and MORU-02 consistency QA before semantic/runtime activation
 
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **READY — accepted native neutral exists; native usage-context/mobile QA pending**
+Status: **IN PROGRESS — neutral/LIGHT/base native usage-context + Android-size/edge baseline PASS; expression/lighting/affinity QA pending**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read
@@ -143,7 +146,7 @@ Checks:
 - base / familiar / trusted / best_friend invariance
 - transparent edge/halo
 
-The native neutral gate is now passed. MORU-02 must derive and evaluate native usage-context assets from `design/reference/moru-v2/native-master-v1/`; the earlier reference-derived map/HUD/journal results remain historical evidence and are not substitutes for native QA. Runtime activation remains blocked.
+The native neutral gate and the six-context `neutral / LIGHT / base / static` Android-size/transparent-edge baseline now pass. Evidence is persisted under `design/reference/moru-v2/native-usage-context-v1/`, including cream/dark/map-heavy mobile QA and fresh remote binary re-verification. The earlier reference-derived map/HUD/journal results remain historical evidence only. MORU-02 is **not complete** until six-expression identity consistency, LIGHT/WARM_DUSK/DARK readability, and base/familiar/trusted/best_friend anatomy-invariant progression are produced and validated. Runtime activation remains blocked.
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 
@@ -208,8 +211,8 @@ Do after the in-app production family is stable.
 ## Current next action
 
 1. Keep the Old Ginkgo design-side first-scenario pack closed and unchanged until a separate Development task performs Android runtime binding/activation.
-2. Keep the accepted neutral authority at `design/reference/moru-v2/native-master-v1/` unchanged; derive required usage contexts from it and run MORU-02 Android-size/edge QA.
-3. After MORU-02 passes, produce only the required expression/lighting/affinity family and prepare MORU-03 semantic activation readiness.
+2. Keep both accepted authorities unchanged: `design/reference/moru-v2/native-master-v1/` and the PASS neutral usage family at `design/reference/moru-v2/native-usage-context-v1/`.
+3. Continue MORU-02 with only the required expression/lighting/affinity family, validate identity/readability/anatomy invariance and fallback coverage, then prepare MORU-03 semantic activation readiness.
 4. Keep physical-device outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
 
 Do not start a new concept-board exploration while these production items remain open.
