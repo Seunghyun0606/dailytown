@@ -1,0 +1,201 @@
+{
+  "version": "moru-native-semantic-family-v1-remote-reverify-2026-09-14",
+  "verdict": "PASS_REMOTE_BINARY_REVERIFY",
+  "checkout_commit": "350479875bed9e1d73740a7f90f6916990f7ad8d",
+  "checks": {
+    "neutral_hash": true,
+    "neutral_dims_mode": true,
+    "expression_happy": true,
+    "expression_curious": true,
+    "expression_surprised": true,
+    "expression_clue_found": true,
+    "expression_resolved": true,
+    "affinity_familiar": true,
+    "affinity_trusted": true,
+    "affinity_best_friend": true,
+    "qa_moru_semantic_expression_hud64_qa_v1.png": true,
+    "qa_moru_semantic_affinity_companion_qa_v1.png": true,
+    "qa_moru_semantic_cross_family_companion_qa_v1.png": true,
+    "qa_moru_semantic_expression_lighting_hud64_qa_v1.png": true,
+    "semantic_manifest_status": true,
+    "metrics_verdict": true,
+    "usage_exact": true,
+    "lighting_exact": true,
+    "production_manifest_status": true,
+    "production_runtime_blocked": true,
+    "fallback_contract": true
+  },
+  "verified": {
+    "expressions": {
+      "happy": {
+        "path": "master/companion_moru_v2_result_large_happy_LIGHT_base.png",
+        "sha256": "b96185d96bf92d5bfc2cea8ce06e82f9e583a4a1543b881caa66206a35ea0187",
+        "expected_sha256": "b96185d96bf92d5bfc2cea8ce06e82f9e583a4a1543b881caa66206a35ea0187",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bit_identical_to_neutral": true,
+        "pass": true
+      },
+      "curious": {
+        "path": "master/companion_moru_v2_result_large_curious_LIGHT_base.png",
+        "sha256": "70daccb16a72f57189e5071b841601e1cbd96425b9d46eb0c021dd121b7b25be",
+        "expected_sha256": "70daccb16a72f57189e5071b841601e1cbd96425b9d46eb0c021dd121b7b25be",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bit_identical_to_neutral": true,
+        "pass": true
+      },
+      "surprised": {
+        "path": "master/companion_moru_v2_result_large_surprised_LIGHT_base.png",
+        "sha256": "ff8ac73cead939f96b7fd3be84df6211d4f4dab8c3d8483554cc7fe7de0e3c79",
+        "expected_sha256": "ff8ac73cead939f96b7fd3be84df6211d4f4dab8c3d8483554cc7fe7de0e3c79",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bit_identical_to_neutral": true,
+        "pass": true
+      },
+      "clue_found": {
+        "path": "master/companion_moru_v2_result_large_clue_found_LIGHT_base.png",
+        "sha256": "6fc559a3a8085c95250fb4a53335c8c58c4544158319e3d799f3188f5c5a09cb",
+        "expected_sha256": "6fc559a3a8085c95250fb4a53335c8c58c4544158319e3d799f3188f5c5a09cb",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bit_identical_to_neutral": true,
+        "pass": true
+      },
+      "resolved": {
+        "path": "master/companion_moru_v2_result_large_resolved_LIGHT_base.png",
+        "sha256": "a85e30e1782b0371b549c18c470a74f4107b31d43d8c427f4ab5b5f16cf185c3",
+        "expected_sha256": "a85e30e1782b0371b549c18c470a74f4107b31d43d8c427f4ab5b5f16cf185c3",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bit_identical_to_neutral": true,
+        "pass": true
+      }
+    },
+    "affinity": {
+      "familiar": {
+        "path": "overlay/companion_moru_v2_affinity_familiar_overlay.png",
+        "sha256": "92294ff284d74fb0ce79d76c09b8517920f230ba347c7180844d608365f131d6",
+        "expected_sha256": "92294ff284d74fb0ce79d76c09b8517920f230ba347c7180844d608365f131d6",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          252
+        ],
+        "alpha_pixels": 1073,
+        "pass": true
+      },
+      "trusted": {
+        "path": "overlay/companion_moru_v2_affinity_trusted_overlay.png",
+        "sha256": "e8bbfc66b1326f1a93304f26299c14767595b64672768d99860be40d061021d2",
+        "expected_sha256": "e8bbfc66b1326f1a93304f26299c14767595b64672768d99860be40d061021d2",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          252
+        ],
+        "alpha_pixels": 2168,
+        "pass": true
+      },
+      "best_friend": {
+        "path": "overlay/companion_moru_v2_affinity_best_friend_overlay.png",
+        "sha256": "be1f699b6dc8dc1b244b8bd2b5f642687afdcf6a0b3c51953a041c8ffd356fa9",
+        "expected_sha256": "be1f699b6dc8dc1b244b8bd2b5f642687afdcf6a0b3c51953a041c8ffd356fa9",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_pixels": 4053,
+        "pass": true
+      }
+    },
+    "qa": {
+      "moru_semantic_expression_hud64_qa_v1.png": {
+        "sha256": "aef50cc13bf84b2b48077df5125ab90ca4f1c128d298e75b59d2e2a9e6d242c9",
+        "dimensions": [
+          660,
+          440
+        ],
+        "mode": "RGB",
+        "bytes": 74372
+      },
+      "moru_semantic_affinity_companion_qa_v1.png": {
+        "sha256": "016c6f8b8e07a75722cd038ea02c05c15ff78fa7213bcc57a09daa1eabab0b2a",
+        "dimensions": [
+          660,
+          780
+        ],
+        "mode": "RGB",
+        "bytes": 353464
+      },
+      "moru_semantic_cross_family_companion_qa_v1.png": {
+        "sha256": "f2aa46ebfb70b40df3cd690b705709bc7dce90ee7a4bea72b1b2a432ee59e5a8",
+        "dimensions": [
+          1000,
+          945
+        ],
+        "mode": "RGB",
+        "bytes": 228701
+      },
+      "moru_semantic_expression_lighting_hud64_qa_v1.png": {
+        "sha256": "0bca24ea25159e7cb953d9ebd9fbc7e215e48369e4ddc903ef18f78b8442661f",
+        "dimensions": [
+          615,
+          1290
+        ],
+        "mode": "RGB",
+        "bytes": 511729
+      }
+    }
+  },
+  "runtime_activation": false
+}
