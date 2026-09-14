@@ -1,0 +1,58 @@
+name: Moru export semantic authoring source once
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - '.github/workflows/moru-export-semantic-authoring-source-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify source authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          ora='design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora'
+          test "$(sha256sum "$ora" | awk '{print $1}')" = '2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505'
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          root=pathlib.Path('.')
+          c=json.loads((root/'design/reference/moru-v2/native-semantic-authoring-handoff-v1/semantic-authoring-contract.v1.json').read_text())
+          for group in ('expressions','affinity'):
+              for name, rec in c['reference_crops'][group].items():
+                  p=root/'design/reference/moru-v2/native-semantic-authoring-handoff-v1'/rec['path']
+                  got=hashlib.sha256(p.read_bytes()).hexdigest()
+                  if got != rec['sha256']:
+                      raise SystemExit(f'HASH_MISMATCH:{group}:{name}:{got}')
+          print('PASS_SOURCE_AUTHORITIES')
+          PY
+      - name: Stage exact source pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/moru-semantic-source
+          cp design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora /tmp/moru-semantic-source/
+          cp design/reference/moru-v2/native-semantic-authoring-handoff-v1/semantic-authoring-contract.v1.json /tmp/moru-semantic-source/
+          cp -r design/reference/moru-v2/native-semantic-authoring-handoff-v1/source /tmp/moru-semantic-source/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moru-semantic-authoring-source-exact
+          path: /tmp/moru-semantic-source
+          if-no-files-found: error
+          compression-level: 0
+      - name: Remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'AI Remote Work'
+          git config user.email 'ai-remote@local.invalid'
+          git rm .github/workflows/moru-export-semantic-authoring-source-once.yml
+          git commit -m 'chore: remove Moru semantic source export one-shot'
+          git push origin HEAD:design/production-consolidated-v2
