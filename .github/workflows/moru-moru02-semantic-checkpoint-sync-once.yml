@@ -1,0 +1,36 @@
+name: Moru MORU-02 semantic checkpoint sync one-shot
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - '.github/workflows/moru-moru02-semantic-checkpoint-sync-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install verifier dependency
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Verify handoff and sync docs
+        run: python3 scripts/moru_moru02_semantic_checkpoint_sync_once.py
+      - name: Persist verification/docs and remove one-shot runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git rm .github/workflows/moru-moru02-semantic-checkpoint-sync-once.yml scripts/moru_moru02_semantic_checkpoint_sync_once.py
+          git add -A design/reference/moru-v2/native-semantic-authoring-handoff-v1 docs/design/PRODUCTION_WORK_ITEMS_V2.md docs/design/MORU_SOURCE_SUFFICIENCY_V2.md design/reference/REFERENCE_IMAGE_REGISTRY_V2.md
+          git commit -m "docs: sync Moru lighting and semantic authoring checkpoint"
+          git push origin HEAD:design/production-consolidated-v2
