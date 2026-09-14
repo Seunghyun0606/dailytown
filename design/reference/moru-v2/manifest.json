@@ -32,10 +32,33 @@
     "role": "approved Moru-in-product visual context"
   },
   "semantic_contract": {
-    "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
-    "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
-    "affinity": ["base", "familiar", "trusted", "best_friend"],
-    "usage_contexts": ["map_avatar", "hud_portrait", "encounter_halfbody", "result_large", "companion_portrait", "journal_crop"]
+    "expressions": [
+      "neutral",
+      "happy",
+      "curious",
+      "surprised",
+      "clue_found",
+      "resolved"
+    ],
+    "lighting": [
+      "LIGHT",
+      "WARM_DUSK",
+      "DARK"
+    ],
+    "affinity": [
+      "base",
+      "familiar",
+      "trusted",
+      "best_friend"
+    ],
+    "usage_contexts": [
+      "map_avatar",
+      "hud_portrait",
+      "encounter_halfbody",
+      "result_large",
+      "companion_portrait",
+      "journal_crop"
+    ]
   },
   "promotion_gate": [
     "transparent raster production exports derived from the locked baseline",
@@ -47,5 +70,14 @@
     "physical-device outdoor readability gate"
   ],
   "superseded_reference_note": "Earlier generated comparison, fit or alternate composite boards are historical/reference-only and must not override the exact user-confirmed baseline hashes above.",
-  "production_note": "Do not generate another Moru design. Derive transparent raster exports and usage-context crops only from this locked baseline. Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack before QA passes."
+  "production_note": "Do not generate another Moru design. Derive transparent raster exports and usage-context crops only from this locked baseline. Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack before QA passes.",
+  "native_neutral_master_v1": {
+    "status": "PASS_MORU_NATIVE_NEUTRAL_V1",
+    "path": "native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+    "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+    "layered_source": "native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora",
+    "layered_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+    "runtime_active": false,
+    "family_fan_out_started": false
+  }
 }

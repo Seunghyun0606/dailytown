@@ -1,0 +1,141 @@
+{
+  "verdict": "PASS_MORU_NATIVE_NEUTRAL_V1",
+  "canonical_sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+  "handoff_cutout_vs_mask_iou": 0.9320407111569183,
+  "alpha_cleanup_authority": "committed silhouette mask",
+  "rgb_authority": "committed reference cutout + deterministic 32px edge bleed",
+  "contour_metric": "symmetric nearest 8-neighbor contour distance normalized by subject height",
+  "dimensions": [
+    1280,
+    1600
+  ],
+  "mode": "RGBA",
+  "silhouette_iou": 0.9963700999025602,
+  "hood_iou": 0.9968971201396296,
+  "sprout_iou": 0.9880349099099099,
+  "mean_contour_dev_h": 0.00021932529276414195,
+  "max_contour_dev_h": 0.002552732062045298,
+  "face_anchor_dev_head_w": 0.0,
+  "palette_deltaE76_median": 0.46551335817388195,
+  "palette_deltaE76_max": 1.2616583098034206,
+  "palette_samples": [
+    {
+      "name": "hood_olive_light",
+      "deltaE76": 0.0,
+      "candidate_median_rgb": [
+        199,
+        177,
+        130
+      ]
+    },
+    {
+      "name": "hood_olive_dark",
+      "deltaE76": 0.4409166810731136,
+      "candidate_median_rgb": [
+        72,
+        63,
+        40
+      ]
+    },
+    {
+      "name": "scarf_ochre",
+      "deltaE76": 0.0,
+      "candidate_median_rgb": [
+        223,
+        176,
+        111
+      ]
+    },
+    {
+      "name": "jacket_cream",
+      "deltaE76": 0.0,
+      "candidate_median_rgb": [
+        236,
+        209,
+        177
+      ]
+    },
+    {
+      "name": "jacket_botanical_green",
+      "deltaE76": 0.49011003527465025,
+      "candidate_median_rgb": [
+        116,
+        92,
+        68
+      ]
+    },
+    {
+      "name": "satchel_brown",
+      "deltaE76": 0.0,
+      "candidate_median_rgb": [
+        136,
+        99,
+        72
+      ]
+    },
+    {
+      "name": "boot_leather_brown",
+      "deltaE76": 0.6780815962322521,
+      "candidate_median_rgb": [
+        152,
+        116,
+        87
+      ]
+    },
+    {
+      "name": "shorts_olive_brown",
+      "deltaE76": 0.5662449937650967,
+      "candidate_median_rgb": [
+        121,
+        106,
+        81
+      ]
+    },
+    {
+      "name": "hair_gray_olive",
+      "deltaE76": 1.2616583098034206,
+      "candidate_median_rgb": [
+        187,
+        164,
+        137
+      ]
+    },
+    {
+      "name": "face_warm",
+      "deltaE76": 0.5138635958934452,
+      "candidate_median_rgb": [
+        251,
+        218,
+        195
+      ]
+    }
+  ],
+  "alpha_minmax": [
+    0,
+    255
+  ],
+  "visible_outside_reference": 0,
+  "plain_lanczos_rgb_mae": 2.3056028548701755,
+  "layer_count": 6,
+  "checks": {
+    "canvas_rgba": true,
+    "genuine_alpha": true,
+    "silhouette": true,
+    "hood": true,
+    "sprout": true,
+    "mean_contour": true,
+    "max_contour": true,
+    "face_anchor": true,
+    "palette_median": true,
+    "palette_max": true,
+    "no_residue": true,
+    "layered_source": true,
+    "not_plain_upscale": true
+  },
+  "generation_used": false,
+  "fan_out_generated": false,
+  "runtime_activation": false,
+  "png_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+  "ora_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+  "qa_png_sha256": "755c18e8097af9417fda0df38e60145e4faa9cde0b709055ef9a8926f7403ca5"
+}
