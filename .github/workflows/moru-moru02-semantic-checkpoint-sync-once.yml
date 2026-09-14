@@ -43,7 +43,7 @@ jobs:
           set -euo pipefail
           git config user.name "AI Remote Work"
           git config user.email "ai-remote@local.invalid"
-          git rm .github/workflows/moru-moru02-semantic-checkpoint-sync-once.yml scripts/moru_moru02_semantic_checkpoint_sync_once.py scripts/moru_moru02_semantic_checkpoint_sync_v2_once.py
+          git rm -f .github/workflows/moru-moru02-semantic-checkpoint-sync-once.yml scripts/moru_moru02_semantic_checkpoint_sync_once.py scripts/moru_moru02_semantic_checkpoint_sync_v2_once.py
           git add -A design/reference/moru-v2/native-semantic-authoring-handoff-v1 docs/design/PRODUCTION_WORK_ITEMS_V2.md docs/design/MORU_SOURCE_SUFFICIENCY_V2.md design/reference/REFERENCE_IMAGE_REGISTRY_V2.md
           git commit -m "docs: sync Moru lighting and semantic authoring checkpoint"
           git push origin HEAD:design/production-consolidated-v2
