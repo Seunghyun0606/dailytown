@@ -1,0 +1,92 @@
+name: Moru MORU-03 final design checkpoint sync once
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - .github/workflows/moru-moru03-final-doc-sync-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/production-consolidated-v2
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Sync final design-side MORU-03 status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p=Path(path); s=p.read_text()
+              if s.count(old)!=1:
+                  raise SystemExit(f'REPLACE_COUNT_MISMATCH {path}: {s.count(old)} :: {old[:100]!r}')
+              p.write_text(s.replace(old,new,1))
+
+          work='docs/design/PRODUCTION_WORK_ITEMS_V2.md'
+          replace_once(work,
+            'Status: **READY — MORU-02 PASS; resolver/export activation readiness is the next gate**',
+            'Status: **DONE — PASS_MORU_03_ACTIVATION_READINESS_V1 + persisted-manifest remote re-verification PASS; runtime not activated**')
+          needle='''Checks:\n- `neutral / LIGHT / base / static` fallback\n- v1 rollback retained until v2 resolver/fallback tests pass\n- no silent repoint of legacy profile\n- semantic profile remains `companion.moru.canonical.v2`\n'''
+          repl='''Checks:\n- `neutral / LIGHT / base / static` fallback\n- v1 rollback retained until v2 resolver/fallback tests pass\n- no silent repoint of legacy profile\n- semantic profile remains `companion.moru.canonical.v2`\n\nCurrent checkpoint:\n- `PASS_MORU_03_ACTIVATION_READINESS_V1`: all `6 expressions × 3 lighting × 4 affinity × 6 usage = 432` combinations were materialized ephemerally in a fresh GitHub Actions checkout; repository persistence is source authorities + deterministic recipe + expected RGBA/alpha pixel hashes rather than 432 duplicate PNGs\n- dimensions / alpha invariance / authority-relative edge contract PASS `432/432`; the five derived usage contexts retain zero transparent-side edge error `360/360`; accepted neutral/base authority reproduces pixel-exactly for all six usage contexts × three lightings `18/18`\n- resolver fault-injection PASS: exact `432`, single-exact-missing `432`, exact+same-expression-LIGHT/base-missing `432`, terminal legacy-v1 fallback `432`, invalid-enum fail-closed `4`\n- coverage evidence: `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`; QA metrics: `.../qa/moru_moru03_activation_readiness_metrics_v1.json`\n- fresh persisted-manifest verification: `PASS_REMOTE_MANIFEST_REVERIFY`; exact 432-key set, dimensions, hashes/recipes, source-authority hashes, fallback counts and runtime-inactive state all match\n- first MORU-03 dry-run failed only because the derived-context `edge == 0` measurement was incorrectly applied to the byte-exact `result_large` authority; corrected gate requires exact equality to the accepted result-large authority per lighting. No asset, source authority or quality threshold was modified\n- `runtime_binding_mutated=false`, `runtime_activation=false`; Android packaging/binding and promotion remain a separate Development task, with v1 rollback preserved and physical-device outdoor readability still a Human Gate\n'''
+          replace_once(work,needle,repl)
+
+          p=Path(work); s=p.read_text()
+          start=s.index('## Current next action')
+          s=s[:start]+'''## Current next action\n\n1. Keep Old Ginkgo and all accepted Moru authorities immutable on the design branch. Moru design-side MORU-01 / MORU-02 / MORU-03 are complete.\n2. Start a separate Development session for v2 runtime packaging/binding only: consume `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`, add `companion.moru.canonical.v2` as a separately versioned profile, retain v1 rollback, implement the exact resolver/fallback contract, and never silently repoint the legacy profile.\n3. Runtime promotion is still blocked until Android binding/packaging verification and physical-device outdoor readability pass. `main` and PR #10 are not part of this design-side completion.\n4. Keep M-B final motion timing/intensity and ID-A icon/logo as Human Gates.\n'''
+          p.write_text(s)
+
+          suff='docs/design/MORU_SOURCE_SUFFICIENCY_V2.md'
+          replace_once(suff,
+            '> Status: **AUDITED / NATIVE SEMANTIC FAMILY V1 PASS — MORU-02 complete / MORU-03 pending**',
+            '> Status: **AUDITED / MORU-03 ACTIVATION READINESS PASS — design-side export/resolver complete; runtime promotion pending**')
+          p=Path(suff); s=p.read_text()
+          if '## 12. MORU-03 semantic export/resolver activation readiness PASS — 2026-09-14' not in s:
+              s += '''\n## 12. MORU-03 semantic export/resolver activation readiness PASS — 2026-09-14\n\nResult: **PASS_MORU_03_ACTIVATION_READINESS_V1**.\n\n- All 432 semantic combinations (`6 expressions × 3 lighting × 4 affinity × 6 usage`) were actually materialized ephemerally in a fresh GitHub Actions checkout.\n- Every combination passed target dimensions, accepted-alpha invariance and the corresponding accepted-authority edge contract; maximum edge delta from authority was `0.0`.\n- The five derived usage contexts retained zero transparent-side edge error for `360/360` combinations. `result_large` retains the accepted exact-master RGB-edge contract instead of rewriting transparent RGB; accepted edge references are LIGHT `23.764554936968064`, WARM_DUSK `20.741882639022208`, DARK `15.196563639854098`.\n- Neutral/base reproduction is pixel-exact against the accepted usage/lighting authorities for `18/18` combinations.\n- Resolver fault-injection passed exact `432`, single-exact-missing `432`, exact+same-expression-LIGHT/base-missing `432`, terminal `legacy_v1_static_semantic_fallback` `432`, and invalid-enum fail-closed `4`.\n- Persisted coverage: `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`. The manifest records all 432 semantic keys, expected RGBA/alpha pixel SHA-256 values and deterministic source/composition recipes without storing 432 duplicate production PNGs before the Android packaging decision.\n- Fresh checkout persisted-manifest result: **PASS_REMOTE_MANIFEST_REVERIFY**. Coverage manifest SHA-256 `44f82c8f24223cf8eb2132a38c45e37621b8dd89de6d954afbf18473dc375833`; metrics SHA-256 `015cbe98313dccb5d1b64ad72ba32e93b336f77c679f92925d0a316d66caacd3`.\n- The first MORU-03 dry-run was rejected because its QA incorrectly imposed derived-context `edge == 0` on the byte-exact `result_large` authority. The corrected authority-relative gate passed without changing any asset, source authority, or quality threshold.\n- `runtime_binding_mutated=false` and `runtime_activation=false`. Legacy v1 rollback remains required; silent repoint is forbidden.\n\nMoru design-side production/export readiness is complete through MORU-03. The next valid work is a separate Development session for Android packaging/binding of the separately versioned v2 semantic profile, followed by runtime QA and the physical-device outdoor Human Gate before promotion.\n'''
+              p.write_text(s)
+
+          expdoc='docs/design/MORU_PRODUCTION_EXPORT_V2.md'
+          replace_once(expdoc,
+            '> Status: **PRODUCTION DERIVATION SPEC READY — transparent masters/mobile QA pending**',
+            '> Status: **DESIGN EXPORT / RESOLVER READINESS PASS — Android packaging/runtime promotion pending**')
+          old='''## 10. Next design step\n\nWith the export contract fixed, the next production task is to create/obtain clean transparent Moru masters without changing the approved art, then run the mobile-size QA matrix. In parallel, Explore screen-detail parity can proceed because its composition and surface language are already locked by Design Baseline v2.\n'''
+          new='''## 10. Current completion / next handoff\n\nMORU-01 transparent/native authorities, MORU-02 Android-size semantic-family QA and MORU-03 semantic export/resolver activation-readiness are complete on the design branch. `PASS_MORU_03_ACTIVATION_READINESS_V1` covers all 432 semantic combinations and the fallback chain, with fresh persisted-manifest re-verification. No further Moru character redesign or source-family generation is required for this handoff.\n\nThe next task belongs to Development: package/bind `companion.moru.canonical.v2` as a separately versioned runtime profile using `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`; preserve v1 rollback and exact fallback behavior; do not silently repoint the legacy profile. Runtime promotion remains blocked until Android packaging/binding QA and physical-device outdoor readability pass. M-B final motion timing/intensity remains a separate Human Gate.\n'''
+          replace_once(expdoc,old,new)
+
+          qa='design/reference/moru-v2/PRODUCTION_QA.md'
+          replace_once(qa,
+            'Status: Candidate 3 character direction approved; runtime promotion pending.',
+            'Status: MORU-01 / MORU-02 / MORU-03 design QA PASS; Android runtime promotion and physical-device Human Gate pending.')
+          p=Path(qa); s=p.read_text()
+          if '## 10. Current accepted evidence' not in s:
+              s += '''\n## 10. Current accepted evidence\n\n- `PASS_MORU_NATIVE_NEUTRAL_V1`\n- `PASS_MORU_02_NEUTRAL_USAGE_V1`\n- `PASS_MORU_02_LIGHTING_FAMILY_V1`\n- `PASS_MORU_02_SEMANTIC_FAMILY_V1` + `PASS_REMOTE_BINARY_REVERIFY`\n- `PASS_MORU_03_ACTIVATION_READINESS_V1` + `PASS_REMOTE_MANIFEST_REVERIFY`\n- MORU-03 coverage is 432/432 semantic combinations with exact resolver/fallback fault-injection and no runtime mutation.\n\nDesign-side asset production and resolver/export readiness are complete. Runtime packaging/binding, physical-device outdoor readability, M-B final motion and ID-A lock remain outside this PASS.\n'''
+              p.write_text(s)
+          PY
+          git diff --check
+      - name: Commit final design checkpoint docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"; git config user.email "ai-remote@local.invalid"
+          git add docs/design/PRODUCTION_WORK_ITEMS_V2.md docs/design/MORU_SOURCE_SUFFICIENCY_V2.md docs/design/MORU_PRODUCTION_EXPORT_V2.md design/reference/moru-v2/PRODUCTION_QA.md
+          git commit -m "docs: close Moru MORU-03 design readiness"
+          git push origin HEAD:design/production-consolidated-v2
+      - name: Remove one-shot final doc sync
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"; git config user.email "ai-remote@local.invalid"
+          git pull --rebase origin design/production-consolidated-v2
+          rm -f .github/workflows/moru-moru03-final-doc-sync-once.yml
+          git add -A .github/workflows/moru-moru03-final-doc-sync-once.yml
+          if ! git diff --cached --quiet; then git commit -m "chore: remove Moru MORU-03 final doc sync"; git push origin HEAD:design/production-consolidated-v2; fi
