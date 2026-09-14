@@ -2,6 +2,7 @@ package com.dailytown.app.ui.visual
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -9,15 +10,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.visual.CompanionAssetResolver
+import com.dailytown.app.visual.CompanionRuntimeProfile
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
+import com.dailytown.app.visual.MoruV2Resolution
+import com.dailytown.app.visual.MoruV2SemanticResolver
+
+/** Default remains the current v1 profile until v2 Android + physical-device gates are complete. */
+val LocalCompanionRuntimeProfile = staticCompositionLocalOf { CompanionRuntimeProfile.LEGACY_V1 }
 
 /**
- * Compose entry point for promoted companion visuals.
- * Callers supply semantic state only; file paths and SVG details remain in the Android adapter.
+ * Versioned Compose entry point for production companion visuals.
  *
- * Internal/debug builds expose the visible M-B prototype through a real bitmap sprite atlas for Moru.
- * Release keeps the static production visual until the final human motion-tuning gate is approved.
+ * v1 is preserved byte/behavior-compatible as the terminal rollback path. v2 consumes only raster
+ * authorities and never routes through the SVG/canvas character renderer. The M-B motion prototype
+ * remains v1/debug-only because motion timing/intensity is still a Human Gate.
  */
 @Composable
 fun ProductionCompanionVisual(
@@ -26,9 +33,35 @@ fun ProductionCompanionVisual(
     contentDescription: String? = null,
     rasterTargetPx: Int = 256,
 ) {
+    val profile = LocalCompanionRuntimeProfile.current
+    if (profile == CompanionRuntimeProfile.MORU_CANONICAL_V2 && request.companionId == "moru") {
+        MoruV2ProductionCompanionVisual(
+            request = request,
+            modifier = modifier,
+            contentDescription = contentDescription,
+            rasterTargetPx = rasterTargetPx,
+        )
+        return
+    }
+
+    LegacyProductionCompanionVisual(
+        request = request,
+        modifier = modifier,
+        contentDescription = contentDescription,
+        rasterTargetPx = rasterTargetPx,
+    )
+}
+
+@Composable
+private fun LegacyProductionCompanionVisual(
+    request: CompanionVisualRequest,
+    modifier: Modifier,
+    contentDescription: String?,
+    rasterTargetPx: Int,
+) {
     val spriteEligible = BuildConfig.DEBUG &&
         request.companionId == "moru" &&
-        request.usageContext != CompanionUsageContext.JOURNAL_STAMP &&
+        request.usageContext != CompanionUsageContext.JOURNAL_CROP &&
         !request.reducedMotion
 
     if (spriteEligible) {
@@ -46,6 +79,47 @@ fun ProductionCompanionVisual(
             rasterTargetPx = rasterTargetPx,
         )
     }
+}
+
+@Composable
+private fun MoruV2ProductionCompanionVisual(
+    request: CompanionVisualRequest,
+    modifier: Modifier,
+    contentDescription: String?,
+    rasterTargetPx: Int,
+) {
+    val applicationContext = LocalContext.current.applicationContext
+    val runtime = remember(applicationContext) {
+        runCatching {
+            val catalog = AndroidMoruV2RuntimeAssetCatalog(applicationContext.assets)
+            Triple(catalog, MoruV2SemanticResolver(catalog), MoruV2RasterRenderer(catalog))
+        }.getOrNull()
+    }
+    if (runtime == null) {
+        StaticProductionCompanionVisual(request, modifier, contentDescription, rasterTargetPx)
+        return
+    }
+
+    val resolved = remember(request, runtime) { runtime.second.resolve(request) }
+    if (resolved !is MoruV2Resolution.Raster) {
+        StaticProductionCompanionVisual(request, modifier, contentDescription, rasterTargetPx)
+        return
+    }
+
+    val bitmap = remember(resolved.key, rasterTargetPx, runtime) {
+        runCatching { runtime.third.render(resolved.key, rasterTargetPx) }.getOrNull()
+    }
+    if (bitmap == null) {
+        StaticProductionCompanionVisual(request, modifier, contentDescription, rasterTargetPx)
+        return
+    }
+
+    Image(
+        bitmap = bitmap.asImageBitmap(),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        contentScale = ContentScale.Fit,
+    )
 }
 
 @Composable

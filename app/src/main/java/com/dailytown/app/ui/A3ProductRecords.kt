@@ -27,7 +27,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.poi.defaultFixturePois
+import com.dailytown.app.ui.visual.LocalCompanionRuntimeProfile
+import com.dailytown.app.ui.visual.LocalDailyTownCompanionLighting
+import com.dailytown.app.ui.visual.ProductionCompanionVisual
 import com.dailytown.app.ui.visual.ProductionScenarioRasterAsset
+import com.dailytown.app.visual.AppearanceProfile
+import com.dailytown.app.visual.CompanionExpression
+import com.dailytown.app.visual.CompanionRuntimeProfile
+import com.dailytown.app.visual.CompanionUsageContext
+import com.dailytown.app.visual.CompanionVisualRequest
 import com.dailytown.app.visual.OldGinkgoVisualAssets
 import com.dailytown.app.visual.ScenarioAssetUsage
 
@@ -259,6 +267,21 @@ private fun MemoryRecordDetail(
 ) {
     DetailPage(tag = "record-memory-detail", title = "Moru와의 기억", onBack = onBack, backTag = "memory-back") {
         val memories = progress?.companionMemoryKeys.orEmpty()
+        if (LocalCompanionRuntimeProfile.current == CompanionRuntimeProfile.MORU_CANONICAL_V2) {
+            ProductionCompanionVisual(
+                request = CompanionVisualRequest(
+                    companionId = "moru",
+                    expression = if (memories.isEmpty()) CompanionExpression.NEUTRAL else CompanionExpression.RESOLVED,
+                    lightingFamily = LocalDailyTownCompanionLighting.current,
+                    appearanceProfile = AppearanceProfile.BASE,
+                    usageContext = CompanionUsageContext.JOURNAL_CROP,
+                    reducedMotion = true,
+                ),
+                modifier = Modifier.size(112.dp).testTag("moru-v2-journal-crop"),
+                contentDescription = "기록 속 동행 캐릭터 Moru",
+                rasterTargetPx = 256,
+            )
+        }
         if (memories.isEmpty()) {
             RecordSection(title = "아직 빈 페이지") {
                 Text("함께 탐험을 해결하면 장소와 행동의 semantic memory가 남아요.")

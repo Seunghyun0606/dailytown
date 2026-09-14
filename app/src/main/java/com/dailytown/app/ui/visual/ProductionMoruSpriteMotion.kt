@@ -112,7 +112,7 @@ internal fun ProductionMoruSpriteMotionVisual(
     if (
         !BuildConfig.DEBUG ||
         request.companionId != "moru" ||
-        request.usageContext == CompanionUsageContext.JOURNAL_STAMP ||
+        request.usageContext == CompanionUsageContext.JOURNAL_CROP ||
         request.reducedMotion ||
         sequence == null
     ) {

@@ -16,7 +16,14 @@ enum class CompanionExpression(val semantic: String) {
 enum class AppearanceProfile(val semantic: String) {
     BASE("base"), FAMILIAR("familiar"), TRUSTED("trusted"), BEST_FRIEND("best_friend"),
 }
-enum class CompanionUsageContext { MAP_AVATAR, HUD_PORTRAIT, ENCOUNTER, RESULT_LARGE, JOURNAL_STAMP }
+enum class CompanionUsageContext(val semantic: String) {
+    MAP_AVATAR("map_avatar"),
+    HUD_PORTRAIT("hud_portrait"),
+    ENCOUNTER_HALFBODY("encounter_halfbody"),
+    RESULT_LARGE("result_large"),
+    COMPANION_PORTRAIT("companion_portrait"),
+    JOURNAL_CROP("journal_crop"),
+}
 enum class CompanionMotion(val semantic: String) {
     IDLE_BREATHE("idle_breathe"), CLUE_REACT("clue_react"), RESOLVED_SETTLE("resolved_settle"), WALK("walk"),
 }

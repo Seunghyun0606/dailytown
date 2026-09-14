@@ -92,10 +92,10 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
                         expression = if (hasTodayDiscovery) CompanionExpression.CURIOUS else CompanionExpression.NEUTRAL,
                         lightingFamily = lighting,
                         appearanceProfile = AppearanceProfile.BASE,
-                        usageContext = CompanionUsageContext.RESULT_LARGE,
+                        usageContext = CompanionUsageContext.COMPANION_PORTRAIT,
                         reducedMotion = true,
                     ),
-                    modifier = Modifier.size(248.dp),
+                    modifier = Modifier.size(248.dp).testTag("moru-companion-portrait"),
                     contentDescription = "동행 캐릭터 Moru",
                     rasterTargetPx = 384,
                 )

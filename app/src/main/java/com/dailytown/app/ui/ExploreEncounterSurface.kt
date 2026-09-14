@@ -26,7 +26,15 @@ import com.dailytown.app.mystery.MysteryReducer
 import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.ui.presentation.ExploreEncounterPresentation
 import com.dailytown.app.ui.presentation.ExploreExperienceStep
+import com.dailytown.app.ui.visual.LocalCompanionRuntimeProfile
+import com.dailytown.app.ui.visual.LocalDailyTownCompanionLighting
+import com.dailytown.app.ui.visual.ProductionCompanionVisual
 import com.dailytown.app.ui.visual.ProductionScenarioRasterAsset
+import com.dailytown.app.visual.AppearanceProfile
+import com.dailytown.app.visual.CompanionExpression
+import com.dailytown.app.visual.CompanionRuntimeProfile
+import com.dailytown.app.visual.CompanionUsageContext
+import com.dailytown.app.visual.CompanionVisualRequest
 import com.dailytown.app.visual.ScenarioAssetUsage
 
 @Composable
@@ -172,6 +180,12 @@ private fun DiscoveryContent(
         )
     }
     presentation.moruLine?.let { MoruLine(it) }
+    MoruV2ContextVisual(
+        expression = CompanionExpression.SURPRISED,
+        usage = CompanionUsageContext.ENCOUNTER_HALFBODY,
+        sizeDp = 140,
+        tag = "moru-v2-encounter-discovery",
+    )
     Button(
         onClick = {
             val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
@@ -219,6 +233,12 @@ private fun InvestigationContent(
     }
     presentation.clueLabel?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
     presentation.moruLine?.let { MoruLine(it) }
+    MoruV2ContextVisual(
+        expression = CompanionExpression.CLUE_FOUND,
+        usage = CompanionUsageContext.ENCOUNTER_HALFBODY,
+        sizeDp = 140,
+        tag = "moru-v2-encounter-investigate",
+    )
     Text(
         "확인한 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}",
         style = MaterialTheme.typography.bodySmall,
@@ -274,6 +294,12 @@ private fun CompletionContent(
     presentation.premise?.let { Text(it) }
     presentation.clueLabel?.let { Text("단서 · $it", style = MaterialTheme.typography.bodyMedium) }
     presentation.moruLine?.let { MoruLine(it) }
+    MoruV2ContextVisual(
+        expression = CompanionExpression.RESOLVED,
+        usage = CompanionUsageContext.RESULT_LARGE,
+        sizeDp = 180,
+        tag = "moru-v2-result-large",
+    )
 
     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Text("모루와의 기억 ${progress.companionMemoryKeys.size}개 · 관계 $companionBond", style = MaterialTheme.typography.bodySmall)
@@ -290,6 +316,29 @@ private fun CompletionContent(
             Text("계속 탐험")
         }
     }
+}
+
+@Composable
+private fun MoruV2ContextVisual(
+    expression: CompanionExpression,
+    usage: CompanionUsageContext,
+    sizeDp: Int,
+    tag: String,
+) {
+    if (LocalCompanionRuntimeProfile.current != CompanionRuntimeProfile.MORU_CANONICAL_V2) return
+    ProductionCompanionVisual(
+        request = CompanionVisualRequest(
+            companionId = "moru",
+            expression = expression,
+            lightingFamily = LocalDailyTownCompanionLighting.current,
+            appearanceProfile = AppearanceProfile.BASE,
+            usageContext = usage,
+            reducedMotion = true,
+        ),
+        modifier = Modifier.size(sizeDp.dp).testTag(tag),
+        contentDescription = "동행 캐릭터 Moru",
+        rasterTargetPx = if (sizeDp >= 180) 384 else 256,
+    )
 }
 
 @Composable

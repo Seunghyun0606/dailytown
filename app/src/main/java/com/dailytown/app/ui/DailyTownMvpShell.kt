@@ -12,6 +12,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,8 @@ import com.dailytown.app.progress.ProgressRuntimeCoordinator
 import com.dailytown.app.reminder.LocalReminderManager
 import com.dailytown.app.ui.visual.DailyTownTheme
 import com.dailytown.app.ui.visual.DailyTownTokens
+import com.dailytown.app.ui.visual.LocalCompanionRuntimeProfile
+import com.dailytown.app.visual.CompanionRuntimeProfile
 
 private enum class MvpSection(val label: String, val symbol: String, val testTag: String) {
     EXPLORE("탐험", "⌖", "nav-explore"),
@@ -47,6 +50,7 @@ fun DailyTownMvpShell(
     progressStore: ProgressStore,
     poiRepository: PoiRepository,
     reminderManager: LocalReminderManager,
+    companionRuntimeProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.LEGACY_V1,
 ) {
     var selectedSection by rememberSaveable { mutableStateOf(MvpSection.EXPLORE) }
     var qaMode by rememberSaveable { mutableStateOf(false) }
@@ -67,6 +71,7 @@ fun DailyTownMvpShell(
     }
 
     DailyTownTheme {
+        CompositionLocalProvider(LocalCompanionRuntimeProfile provides companionRuntimeProfile) {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.background,
             bottomBar = {
@@ -137,6 +142,7 @@ fun DailyTownMvpShell(
                     )
                 }
             }
+        }
         }
     }
 }

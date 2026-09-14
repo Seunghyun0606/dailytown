@@ -75,8 +75,10 @@ import com.dailytown.app.ui.presentation.ExploreEncounterPresentationMapper
 import com.dailytown.app.ui.visual.CompanionHudVisualResolver
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
 import com.dailytown.app.ui.visual.MapRuntimeThemeResolver
+import com.dailytown.app.ui.visual.LocalCompanionRuntimeProfile
 import com.dailytown.app.ui.visual.ProductionCompanionVisual
 import com.dailytown.app.visual.AppearanceProfile
+import com.dailytown.app.visual.CompanionRuntimeProfile
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
 import java.time.LocalDate
@@ -292,6 +294,7 @@ fun DailyTownApp(
     val presentation = ExploreEncounterPresentationMapper.map(activeEncounter, distanceToEncounter)
     val companionExpression = CompanionHudVisualResolver.expression(lastCompanionMoment)
     val companionLighting = MapRuntimeThemeResolver().resolve(LocalTime.now()).profile.companionLighting
+    val companionRuntimeProfile = LocalCompanionRuntimeProfile.current
 
     MaterialTheme {
         Scaffold(
@@ -379,6 +382,26 @@ fun DailyTownApp(
                                 style = MaterialTheme.typography.labelMedium,
                             )
                         }
+                    }
+
+                    if (companionRuntimeProfile == CompanionRuntimeProfile.MORU_CANONICAL_V2) {
+                        ProductionCompanionVisual(
+                            request = CompanionVisualRequest(
+                                companionId = snapshot.state.companion.id,
+                                expression = companionExpression,
+                                lightingFamily = companionLighting,
+                                appearanceProfile = AppearanceProfile.BASE,
+                                usageContext = CompanionUsageContext.MAP_AVATAR,
+                                reducedMotion = true,
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 12.dp)
+                                .size(64.dp)
+                                .testTag("moru-v2-map-avatar"),
+                            contentDescription = "지도 위 동행 캐릭터 ${snapshot.state.companion.name}",
+                            rasterTargetPx = 192,
+                        )
                     }
                 }
 

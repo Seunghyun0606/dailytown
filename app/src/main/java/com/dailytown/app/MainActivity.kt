@@ -23,6 +23,7 @@ import com.dailytown.app.ui.DailyTownMvpShell
 import com.dailytown.app.ui.visual.AndroidProductionMarkerAssetCatalog
 import com.dailytown.app.ui.visual.MapThemeRefreshController
 import com.dailytown.app.ui.visual.ProductionMarkerSvgVisualSource
+import com.dailytown.app.visual.CompanionRuntimeProfileSelector
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -99,6 +100,10 @@ class MainActivity : ComponentActivity() {
                 progressStore = progressStore,
                 poiRepository = poiCoordinator,
                 reminderManager = reminderManager,
+                companionRuntimeProfile = CompanionRuntimeProfileSelector.select(
+                    debugBuild = BuildConfig.DEBUG,
+                    requestedSemantic = intent.getStringExtra(CompanionRuntimeProfileSelector.DEBUG_INTENT_EXTRA),
+                ),
             )
         }
         centerInitialMapIfPermissionAlreadyGranted()
