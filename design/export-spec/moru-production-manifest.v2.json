@@ -4,8 +4,8 @@
     "character_direction": "approved",
     "reference_extraction": "complete",
     "neutral_identity_lock": "pass_native_neutral_v1",
-    "transparent_master_export": "neutral_master_pass_family_pending",
-    "mobile_qa": "native_neutral_pass_usage_context_qa_pending",
+    "transparent_master_export": "neutral_usage_context_family_pass_semantic_family_pending",
+    "mobile_qa": "neutral_usage_context_mobile_qa_pass_expression_lighting_affinity_pending",
     "runtime_promotion": "blocked",
     "reference_derived_small_context_qa": "partial_pass_1_of_3",
     "native_master_handoff": "ready"
@@ -116,7 +116,7 @@
     "recommendation": "Development may use only the persisted map_avatar behind an explicit temporary/reference QA profile. HUD and journal remain blocked for a compliant reference asset; do not activate any candidate as companion.moru.canonical.v2."
   },
   "native_master_handoff": {
-    "status": "HANDOFF_READY_NATIVE_MASTER_NOT_PRODUCED",
+    "status": "HANDOFF_CONSUMED_NATIVE_NEUTRAL_V1_PASS",
     "path": "design/reference/moru-v2/native-master-handoff-v1/",
     "acceptance_contract": "design/reference/moru-v2/native-master-handoff-v1/acceptance-contract.v1.json",
     "target_contexts": {
@@ -246,7 +246,7 @@
   "human_gates": {
     "outdoor_readability": "pending",
     "motion_timing_intensity": "pending",
-    "identity_lock": "failed_attempt_1"
+    "identity_lock": "native_neutral_v1_pass"
   },
   "promotion_rule": "Do not overwrite or silently repoint the existing runtime Moru pack. Add v2 as a new semantic profile/version and promote only after transparent raster exports and mobile QA pass.",
   "native_neutral_master_v1": {
@@ -254,7 +254,73 @@
     "path": "design/reference/moru-v2/native-master-v1/",
     "png_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
     "ora_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
-    "fan_out": "not_started",
+    "fan_out": "neutral_usage_context_v1_pass",
     "runtime_activation": false
+  },
+  "native_usage_context_v1": {
+    "status": "PASS_MORU_02_NEUTRAL_USAGE_V1",
+    "path": "design/reference/moru-v2/native-usage-context-v1/",
+    "semantic_state": {
+      "expression": "neutral",
+      "lighting": "LIGHT",
+      "affinity": "base",
+      "motion": "static"
+    },
+    "assets": {
+      "map_avatar": {
+        "dimensions": [
+          512,
+          512
+        ],
+        "sha256": "098df5b9b4b8e9cfe215c7fc8e9f1e9129b5673b7dc168893c5ea185f849d531"
+      },
+      "hud_portrait": {
+        "dimensions": [
+          768,
+          768
+        ],
+        "sha256": "c67bac8dd8eb7e8cd13b8434b2cf92ce2ab6b82c657291109230a2a672af79ab"
+      },
+      "encounter_halfbody": {
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "sha256": "00a643aa14661a9e8b511854b33c7f7f19c04230b781c786ab592e0504dd46e5"
+      },
+      "companion_portrait": {
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "sha256": "b57d5732a1f65a0b1cc5f108e267c422bd0fcfdbd144c403c23627de558e6b14"
+      },
+      "journal_crop": {
+        "dimensions": [
+          768,
+          768
+        ],
+        "sha256": "cbcae8d5a79bc5c68368fe0f36f57fbe385d3c35f5c069ce87a2224ba85540b4"
+      },
+      "result_large": {
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692"
+      }
+    },
+    "qa": {
+      "moru_native_usage_mobile_context_qa_v1.png": {
+        "sha256": "1966c976a747e79960ef4433b4d7291ac6a5101c1a71d31da0ca5f3582ebc53c",
+        "bytes": 396734
+      },
+      "moru_native_usage_framing_qa_v1.png": {
+        "sha256": "c42d6a5d628710bd9873827e4c3702294db001a21cff9fcaa259842a78770924",
+        "bytes": 938408
+      }
+    },
+    "runtime_activation": false,
+    "next": "produce/validate expressions, LIGHT/WARM_DUSK/DARK and affinity stages before MORU-03"
   }
 }
