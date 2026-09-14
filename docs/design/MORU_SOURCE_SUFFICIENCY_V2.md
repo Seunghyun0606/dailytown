@@ -1,6 +1,6 @@
 # Daily Town — Moru Source Sufficiency v2
 
-> Status: **AUDITED / NEUTRAL IDENTITY-LOCK ATTEMPT 1 FAILED — clean native transparent source/master still required**
+> Status: **AUDITED / NATIVE NEUTRAL MASTER V1 PASS — native usage-context family / MORU-02 pending**
 >
 > Visual authority: `docs/design/DESIGN_BASELINE_V2.md`
 >
@@ -117,16 +117,16 @@ Therefore the production rule is:
 
 ## 5. Current production decision
 
-Moru production is no longer blocked by design uncertainty. It is blocked by **source/master resolution and clean transparency**.
+Moru production is no longer blocked by design uncertainty or by the neutral-master gate. The accepted genuine-RGBA layered neutral master is persisted under `design/reference/moru-v2/native-master-v1/`.
 
-The next valid native work is human/layered raster reconstruction from the committed handoff, not concept exploration or another free-form generation attempt.
+The next valid work is native usage-context derivation and MORU-02 mobile/edge QA from that accepted neutral master. Do not regenerate or replace the accepted neutral master, and do not start semantic/runtime activation before the downstream gates pass.
 
 Recommended order:
 
-1. reconstruct one genuine-RGBA native neutral master from `design/reference/moru-v2/native-master-handoff-v1/`;
-2. pass the identity acceptance contract before any native fan-out;
-3. derive usage contexts from that accepted native master;
-4. run MORU-02, then expressions, lighting and affinity only as required by the resolver/fallback contract;
+1. keep `design/reference/moru-v2/native-master-v1/` immutable as the accepted neutral authority;
+2. derive required usage contexts from that accepted neutral master;
+3. run MORU-02 Android-size/edge QA;
+4. only after the required neutral/usage gates pass, derive expressions, lighting and affinity as required by the resolver/fallback contract;
 5. prepare MORU-03 readiness without silently repointing the legacy profile.
 
 ## 6. QA gate
@@ -171,4 +171,22 @@ The map output remains a persisted `REFERENCE_DERIVED_CANDIDATE`; Development ma
 
 The human/layered raster reconstruction package is persisted at `design/reference/moru-v2/native-master-handoff-v1/`. It contains the exact canonical, neutral crop, silhouette, face and anchor guides, hood/sprout contour, scarf/satchel/boots reference, sampled palette, target canvases, alpha requirements and forbidden-drift checklist.
 
-`DT-DES-MORU-01` remains blocked until a native neutral master passes that acceptance contract. Consequently MORU-02 native QA and MORU-03 semantic activation readiness remain incomplete, and runtime promotion remains blocked.
+The native neutral gate for `DT-DES-MORU-01` is now passed. The transparent usage-context family remains incomplete, so MORU-02 is the next active gate and MORU-03/runtime promotion remain blocked.
+
+
+## 9. Native neutral master v1 PASS — 2026-09-14
+
+Result: **PASS_MORU_NATIVE_NEUTRAL_V1**.
+
+- Accepted neutral master: `design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png`
+- Canvas / mode: 1280×1600 RGBA with genuine alpha 0–255
+- PNG SHA-256: `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692`
+- Layered OpenRaster source: `design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora`
+- ORA SHA-256: `2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505`; 6 layers
+- Acceptance metrics: silhouette IoU 0.996370, hood IoU 0.996897, sprout IoU 0.988035, mean/max normalized contour deviation 0.000219/0.002553, palette ΔE76 median/max 0.466/1.262, face-anchor deviation 0, visible residue outside reference 0.
+- Reconstruction was deterministic/non-generative: committed silhouette mask for alpha cleanup, committed reference cutout RGB with deterministic transparent-side edge bleed, and source-supported raster texture only.
+- Accepted asset commit: `38445e229c6937e0856a73071eb8fc4e9007eb4c`.
+- Fresh remote checkout re-verification: `PASS_REMOTE_BINARY_REVERIFY`; PNG/ORA/QA SHA values match the manifest, PNG IHDR is 1280×1600 8-bit RGBA, and ORA ZIP/mimetype/6-layer integrity passed. Evidence: `design/reference/moru-v2/native-master-v1/qa/remote_binary_verification.v1.json`.
+- No expression, lighting, affinity or usage-context fan-out was generated in this gate. Runtime activation remains false.
+
+Next: derive the required usage contexts only from this accepted neutral master and run MORU-02.

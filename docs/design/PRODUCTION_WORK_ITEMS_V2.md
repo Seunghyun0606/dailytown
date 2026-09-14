@@ -105,7 +105,7 @@ Promotion rule:
 
 ### DT-DES-MORU-01 · Transparent master family
 
-Status: **BLOCKED — neutral identity-lock attempt 1 failed; clean native transparent source/master required**
+Status: **IN PROGRESS — native neutral master v1 PASS; usage-context family pending; not activated**
 
 Outputs:
 - approved Candidate 3 only
@@ -128,11 +128,13 @@ Current checkpoint:
 - 2026-09-13 neutral attempt 1: FAIL_MORU_IDENTITY_LOCK; candidate was 1122×1402 RGB with baked checkerboard, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da
 - face/eye/mouth, hood/sprout silhouette, costume/leaf layering, satchel/compass, hands/boots and rendering drifted from the exact canonical
 - rejected binary/QA evidence was not committed; do not repeat the same prompt or fan out variants
-- resume native production with the committed reconstruction handoff and a human/layered raster source; validate against the acceptance contract before any native family fan-out
+- 2026-09-14 accepted neutral v1: 1280×1600 genuine-RGBA PNG `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692` + 6-layer ORA `2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505`; all acceptance-contract checks PASS
+- accepted source/manifest/QA: `design/reference/moru-v2/native-master-v1/`; fresh remote checkout binary re-verification PASS
+- do not remake the neutral master; derive required usage contexts only from the accepted neutral and run MORU-02 before semantic/runtime activation
 
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **BLOCKED by missing native master; strict reference QA map PASS, HUD/journal FAIL**
+Status: **READY — accepted native neutral exists; native usage-context/mobile QA pending**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read
@@ -141,7 +143,7 @@ Checks:
 - base / familiar / trusted / best_friend invariance
 - transparent edge/halo
 
-Only the deterministic map candidate passed and may inform an explicitly temporary/reference Development profile. HUD/journal failed the no-upscale full-canvas check. Actual MORU-02 remains blocked and must use an accepted native transparent export family.
+The native neutral gate is now passed. MORU-02 must derive and evaluate native usage-context assets from `design/reference/moru-v2/native-master-v1/`; the earlier reference-derived map/HUD/journal results remain historical evidence and are not substitutes for native QA. Runtime activation remains blocked.
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 
@@ -206,8 +208,8 @@ Do after the in-app production family is stable.
 ## Current next action
 
 1. Keep the Old Ginkgo design-side first-scenario pack closed and unchanged until a separate Development task performs Android runtime binding/activation.
-2. Use `design/reference/moru-v2/native-master-handoff-v1/` for human/layered raster reconstruction of the locked Candidate 3; first deliver one native neutral master and pass the identity acceptance contract before deriving usage contexts.
-3. Run MORU-02 Android-size/edge/lighting/affinity QA and only then prepare semantic activation readiness.
+2. Keep the accepted neutral authority at `design/reference/moru-v2/native-master-v1/` unchanged; derive required usage contexts from it and run MORU-02 Android-size/edge QA.
+3. After MORU-02 passes, produce only the required expression/lighting/affinity family and prepare MORU-03 semantic activation readiness.
 4. Keep physical-device outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
 
 Do not start a new concept-board exploration while these production items remain open.
