@@ -1,0 +1,195 @@
+{
+  "version": "moru-native-lighting-remote-verification-v1-2026-09-14",
+  "status": "PASS_REMOTE_BINARY_REVERIFY",
+  "branch": "design/production-consolidated-v2",
+  "remote_checkout_commit": "4e6508e5e128cb83fcf1cc6fbc7b0f24e7fdc46d",
+  "lighting_verdict": "PASS_MORU_02_LIGHTING_FAMILY_V1",
+  "assets": {
+    "map_avatar:WARM_DUSK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_map_avatar_neutral_WARM_DUSK_base.png",
+      "sha256": "635c89eb1f4668b77678fa47ac771d17e7a0964cedf323406ae111e50fc74a4d",
+      "git_blob_sha1": "5bf95c0aa462b275dfab74daa860ef3f35ed6212",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 205042
+    },
+    "map_avatar:DARK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_map_avatar_neutral_DARK_base.png",
+      "sha256": "3018db41995faa2512cb3153b43a12a23736acf97fbe9cc36d5643f6a9942170",
+      "git_blob_sha1": "73b9878e85b478e403febb84ebb0e6975f40a449",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 192040
+    },
+    "hud_portrait:WARM_DUSK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_hud_portrait_neutral_WARM_DUSK_base.png",
+      "sha256": "135ac9102b2d66242c92c2ea44ddb164456efbecf3edd88df7a903ac73db1b76",
+      "git_blob_sha1": "9e49a746d8515d236d1e7ea58a663c47f2b8a162",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 556053
+    },
+    "hud_portrait:DARK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_hud_portrait_neutral_DARK_base.png",
+      "sha256": "79c30905ecfb089c6dabb204cda5eeeb60cbefb3bfb972485ad429b857ada12a",
+      "git_blob_sha1": "33cd7a8d311a02b7b24c270b4526ab0e4c1d3009",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 523398
+    },
+    "encounter_halfbody:WARM_DUSK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_encounter_halfbody_neutral_WARM_DUSK_base.png",
+      "sha256": "efa5e8bc2e420330908efc90ea80e570b3c2d5090e6edc43f2d58149551f4ef6",
+      "git_blob_sha1": "143c655914369fb66ee0dd92cd49d27f2ad55522",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 1227746
+    },
+    "encounter_halfbody:DARK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_encounter_halfbody_neutral_DARK_base.png",
+      "sha256": "7cfb7e01d7db5db4b5044568756c9937f0111d6ff778c675cde9981fb6246d13",
+      "git_blob_sha1": "8989c5e52ac7af5f99d5038623609f70365103b7",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 1144864
+    },
+    "companion_portrait:WARM_DUSK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_companion_portrait_neutral_WARM_DUSK_base.png",
+      "sha256": "475f8e2155ebeed7ea73244a43e70cb8c556c26f2b232063deede4db3e96abb0",
+      "git_blob_sha1": "afdc959a98a6ced1064480d320a35d05847641b9",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 1318063
+    },
+    "companion_portrait:DARK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_companion_portrait_neutral_DARK_base.png",
+      "sha256": "7c336ee6d29d27d0bd9ff1b16ad6dcbeab13d18b11d6ac5c12316d0754349056",
+      "git_blob_sha1": "be6132e143df0d04e1d7daac9f94eba91fe82afb",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 1233494
+    },
+    "journal_crop:WARM_DUSK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_journal_crop_neutral_WARM_DUSK_base.png",
+      "sha256": "0700acf76b77145b68ee108f0aefa4155c571ffbcc811a17508c66acdb100a05",
+      "git_blob_sha1": "bbac81604c47ed8165e5aa8b0694fc5c942e9a3a",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 556966
+    },
+    "journal_crop:DARK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_journal_crop_neutral_DARK_base.png",
+      "sha256": "bd411f608b27e90e274be500b228d8aa04a496ab1a47e19ca7b32107248f1891",
+      "git_blob_sha1": "77c9707f1de430c1e19a97cad65328da5f152e0d",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 524687
+    },
+    "result_large:WARM_DUSK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_result_large_neutral_WARM_DUSK_base.png",
+      "sha256": "fcae19b837fb510bc298acb5fa840e037ba87547bdfa85bd8551f5e636998bb1",
+      "git_blob_sha1": "7d4e63c2454ff82ac6d3860be5c14d2d50297873",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 1561754
+    },
+    "result_large:DARK": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/candidate/companion_moru_v2_result_large_neutral_DARK_base.png",
+      "sha256": "06c9cd50d9349eef2828f37642ff82611f85d2eba022d994dd3b8bc2ee923fce",
+      "git_blob_sha1": "c13012369b47ae4ba8e5b423189e3c5c259787e8",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "bytes": 1445630
+    }
+  },
+  "qa_artifact": {
+    "path": "design/reference/moru-v2/native-lighting-family-v1/qa/moru_native_lighting_family_qa_v1.png",
+    "sha256": "563a66c61c3c0dc4c98d09c5e0ef837d6e2f09c5ee6f994507e6eff12b985dd7",
+    "bytes": 1552901
+  },
+  "runtime_activation": false
+}
