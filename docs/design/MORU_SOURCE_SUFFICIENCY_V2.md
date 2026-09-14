@@ -207,3 +207,19 @@ Result: **PASS_MORU_02_NEUTRAL_USAGE_V1**.
 - No expression, WARM_DUSK/DARK lighting, affinity progression or runtime activation was performed. Therefore full MORU-02 is still **IN PROGRESS**, not complete.
 
 Next: produce and validate the locked semantic expression/lighting/affinity family, then verify fallback coverage before MORU-03.
+
+## 10. Native lighting family + semantic authoring handoff — 2026-09-14
+
+Lighting result: **PASS_MORU_02_LIGHTING_FAMILY_V1**.
+
+- Source authority: accepted `neutral / LIGHT / base / static` native usage family only.
+- Canonical lighting-row crops calibrated deterministic Lab-space transfer from LIGHT to WARM_DUSK/DARK.
+- 12 new assets were produced for all six usage contexts × two new lighting states.
+- Alpha and geometry are unchanged from each LIGHT source; no expression or affinity pixels were invented.
+- WARM_DUSK warmth/readability and DARK luminance/face/sprout texture checks PASS across all six contexts.
+- Evidence: `design/reference/moru-v2/native-lighting-family-v1/`; fresh remote binary re-verification PASS.
+
+Expression/affinity art is **not** fabricated from the low-resolution board crops. Instead, `design/reference/moru-v2/native-semantic-authoring-handoff-v1/` contains six exact expression reference crops, four exact affinity reference crops, the accepted 6-layer ORA inventory, an authoring/acceptance contract and a QA reference board. The compact authoring source plan is five new 1280×1600 LIGHT/base expression masters plus three restrained affinity overlay stages; lighting and six usage contexts remain deterministic fan-out steps after semantic master acceptance.
+
+Next valid production step: author the five non-neutral expression masters against the accepted neutral identity, then the three affinity overlay stages, run cross-family identity/mobile/fallback QA, and only after full MORU-02 PASS prepare MORU-03. Runtime activation remains false.
+
