@@ -1,0 +1,36 @@
+name: Moru semantic authoring handoff v1 one-shot
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - '.github/workflows/moru-semantic-authoring-handoff-v1-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install raster tooling
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Build semantic authoring handoff
+        run: python3 scripts/moru_semantic_authoring_handoff_v1_once.py
+      - name: Persist handoff and remove one-shot runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git rm .github/workflows/moru-semantic-authoring-handoff-v1-once.yml scripts/moru_semantic_authoring_handoff_v1_once.py
+          git add -A design/reference/moru-v2/native-semantic-authoring-handoff-v1 design/export-spec/moru-production-manifest.v2.json
+          git commit -m "design: add Moru semantic authoring handoff v1"
+          git push origin HEAD:design/production-consolidated-v2
