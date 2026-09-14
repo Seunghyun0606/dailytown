@@ -336,6 +336,14 @@
     "affinity": "base",
     "alpha_geometry": "bit_identical_to_LIGHT",
     "runtime_activation": false,
-    "next": "author/validate six expression family and four affinity stages; then cross-product/fallback QA before MORU-03"
+    "next": "consume native-semantic-authoring-handoff-v1 to author five expression masters + three restrained affinity overlay stages, then run consistency/fallback QA before MORU-03"
+  },
+  "semantic_authoring_handoff_v1": {
+    "status": "HANDOFF_READY_EXPRESSION_AFFINITY_NOT_PRODUCED",
+    "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/",
+    "new_expression_masters_required": 5,
+    "affinity_overlay_stages_required": 3,
+    "lighting_reuse": "PASS_MORU_02_LIGHTING_FAMILY_V1",
+    "runtime_activation": false
   }
 }
