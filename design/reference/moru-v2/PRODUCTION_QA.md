@@ -1,6 +1,6 @@
 # Moru v2 production QA
 
-Status: Candidate 3 character direction approved; runtime promotion pending.
+Status: MORU-01 / MORU-02 / MORU-03 design QA PASS; Android runtime promotion and physical-device Human Gate pending.
 
 This checklist turns the approved Moru v2 direction into reviewable production derivatives without reopening character design.
 
@@ -107,3 +107,14 @@ Before runtime replacement, provide evidence for:
 ## 9. Current production-fit board
 
 `moru-candidate3-production-fit-board.webp` is a repository review artifact that demonstrates the locked Candidate 3 identity across front/side/back, expressions, usage contexts and UX placement. It is not a runtime sprite atlas and must not be cropped blindly into production assets.
+
+## 10. Current accepted evidence
+
+- `PASS_MORU_NATIVE_NEUTRAL_V1`
+- `PASS_MORU_02_NEUTRAL_USAGE_V1`
+- `PASS_MORU_02_LIGHTING_FAMILY_V1`
+- `PASS_MORU_02_SEMANTIC_FAMILY_V1` + `PASS_REMOTE_BINARY_REVERIFY`
+- `PASS_MORU_03_ACTIVATION_READINESS_V1` + `PASS_REMOTE_MANIFEST_REVERIFY`
+- MORU-03 coverage is 432/432 semantic combinations with exact resolver/fallback fault-injection and no runtime mutation.
+
+Design-side asset production and resolver/export readiness are complete. Runtime packaging/binding, physical-device outdoor readability, M-B final motion and ID-A lock remain outside this PASS.

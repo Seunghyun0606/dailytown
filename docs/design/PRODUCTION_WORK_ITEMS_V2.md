@@ -156,13 +156,22 @@ The native neutral gate, six-context Android-size/transparent-edge baseline, det
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 
-Status: **READY — MORU-02 PASS; resolver/export activation readiness is the next gate**
+Status: **DONE — PASS_MORU_03_ACTIVATION_READINESS_V1 + persisted-manifest remote re-verification PASS; runtime not activated**
 
 Checks:
 - `neutral / LIGHT / base / static` fallback
 - v1 rollback retained until v2 resolver/fallback tests pass
 - no silent repoint of legacy profile
 - semantic profile remains `companion.moru.canonical.v2`
+
+Current checkpoint:
+- `PASS_MORU_03_ACTIVATION_READINESS_V1`: all `6 expressions × 3 lighting × 4 affinity × 6 usage = 432` combinations were materialized ephemerally in a fresh GitHub Actions checkout; repository persistence is source authorities + deterministic recipe + expected RGBA/alpha pixel hashes rather than 432 duplicate PNGs
+- dimensions / alpha invariance / authority-relative edge contract PASS `432/432`; the five derived usage contexts retain zero transparent-side edge error `360/360`; accepted neutral/base authority reproduces pixel-exactly for all six usage contexts × three lightings `18/18`
+- resolver fault-injection PASS: exact `432`, single-exact-missing `432`, exact+same-expression-LIGHT/base-missing `432`, terminal legacy-v1 fallback `432`, invalid-enum fail-closed `4`
+- coverage evidence: `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`; QA metrics: `.../qa/moru_moru03_activation_readiness_metrics_v1.json`
+- fresh persisted-manifest verification: `PASS_REMOTE_MANIFEST_REVERIFY`; exact 432-key set, dimensions, hashes/recipes, source-authority hashes, fallback counts and runtime-inactive state all match
+- first MORU-03 dry-run failed only because the derived-context `edge == 0` measurement was incorrectly applied to the byte-exact `result_large` authority; corrected gate requires exact equality to the accepted result-large authority per lighting. No asset, source authority or quality threshold was modified
+- `runtime_binding_mutated=false`, `runtime_activation=false`; Android packaging/binding and promotion remain a separate Development task, with v1 rollback preserved and physical-device outdoor readability still a Human Gate
 
 ## P1 — Companion / Records finish
 
@@ -216,9 +225,7 @@ Do after the in-app production family is stable.
 
 ## Current next action
 
-1. Keep the Old Ginkgo design-side first-scenario pack closed and unchanged until a separate Development task performs Android runtime binding/activation.
-2. Keep all accepted Moru authorities unchanged: `native-master-v1/`, `native-usage-context-v1/`, `native-lighting-family-v1/`, and `native-semantic-family-v1/`; the semantic authoring handoff is consumed provenance only.
-3. Start MORU-03 only: validate semantic resolver/export coverage for 6 expressions × 3 lightings × 4 affinity states × required usage contexts, exact `neutral/LIGHT/base/static` fallback, v1 rollback retention, and no silent runtime profile repoint. Runtime activation itself remains a separate Development gate.
-4. Keep physical-device outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
-
-Do not start a new concept-board exploration while these production items remain open.
+1. Keep Old Ginkgo and all accepted Moru authorities immutable on the design branch. Moru design-side MORU-01 / MORU-02 / MORU-03 are complete.
+2. Start a separate Development session for v2 runtime packaging/binding only: consume `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`, add `companion.moru.canonical.v2` as a separately versioned profile, retain v1 rollback, implement the exact resolver/fallback contract, and never silently repoint the legacy profile.
+3. Runtime promotion is still blocked until Android binding/packaging verification and physical-device outdoor readability pass. `main` and PR #10 are not part of this design-side completion.
+4. Keep M-B final motion timing/intensity and ID-A icon/logo as Human Gates.

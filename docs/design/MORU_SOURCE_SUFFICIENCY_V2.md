@@ -1,6 +1,6 @@
 # Daily Town — Moru Source Sufficiency v2
 
-> Status: **AUDITED / NATIVE SEMANTIC FAMILY V1 PASS — MORU-02 complete / MORU-03 pending**
+> Status: **AUDITED / MORU-03 ACTIVATION READINESS PASS — design-side export/resolver complete; runtime promotion pending**
 >
 > Visual authority: `docs/design/DESIGN_BASELINE_V2.md`
 >
@@ -240,3 +240,19 @@ Result: **PASS_MORU_02_SEMANTIC_FAMILY_V1**.
 - The first workflow run failed only because of an implementation argument-order error in the one-shot runner; no rejected production binaries were persisted. The framing call was corrected without changing any acceptance threshold, and the stale failure note was removed after PASS.
 
 MORU-02 is now **complete**. Next: MORU-03 semantic resolver/export activation readiness only; Android runtime activation remains a separate Development task.
+
+## 12. MORU-03 semantic export/resolver activation readiness PASS — 2026-09-14
+
+Result: **PASS_MORU_03_ACTIVATION_READINESS_V1**.
+
+- All 432 semantic combinations (`6 expressions × 3 lighting × 4 affinity × 6 usage`) were actually materialized ephemerally in a fresh GitHub Actions checkout.
+- Every combination passed target dimensions, accepted-alpha invariance and the corresponding accepted-authority edge contract; maximum edge delta from authority was `0.0`.
+- The five derived usage contexts retained zero transparent-side edge error for `360/360` combinations. `result_large` retains the accepted exact-master RGB-edge contract instead of rewriting transparent RGB; accepted edge references are LIGHT `23.764554936968064`, WARM_DUSK `20.741882639022208`, DARK `15.196563639854098`.
+- Neutral/base reproduction is pixel-exact against the accepted usage/lighting authorities for `18/18` combinations.
+- Resolver fault-injection passed exact `432`, single-exact-missing `432`, exact+same-expression-LIGHT/base-missing `432`, terminal `legacy_v1_static_semantic_fallback` `432`, and invalid-enum fail-closed `4`.
+- Persisted coverage: `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`. The manifest records all 432 semantic keys, expected RGBA/alpha pixel SHA-256 values and deterministic source/composition recipes without storing 432 duplicate production PNGs before the Android packaging decision.
+- Fresh checkout persisted-manifest result: **PASS_REMOTE_MANIFEST_REVERIFY**. Coverage manifest SHA-256 `44f82c8f24223cf8eb2132a38c45e37621b8dd89de6d954afbf18473dc375833`; metrics SHA-256 `015cbe98313dccb5d1b64ad72ba32e93b336f77c679f92925d0a316d66caacd3`.
+- The first MORU-03 dry-run was rejected because its QA incorrectly imposed derived-context `edge == 0` on the byte-exact `result_large` authority. The corrected authority-relative gate passed without changing any asset, source authority, or quality threshold.
+- `runtime_binding_mutated=false` and `runtime_activation=false`. Legacy v1 rollback remains required; silent repoint is forbidden.
+
+Moru design-side production/export readiness is complete through MORU-03. The next valid work is a separate Development session for Android packaging/binding of the separately versioned v2 semantic profile, followed by runtime QA and the physical-device outdoor Human Gate before promotion.
