@@ -1,0 +1,51 @@
+name: Moru MORU-02 lighting family v1 one-shot
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - '.github/workflows/moru-moru02-lighting-family-v1-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  qa:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install raster tooling
+        run: python -m pip install --disable-pip-version-check pillow numpy
+      - name: Derive and QA lighting family
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/moru_moru02_lighting_family_v1_once.py
+          code=$?
+          echo "$code" > /tmp/moru-lighting-exit-code
+          exit 0
+      - name: Persist result and remove one-shot runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          code="$(cat /tmp/moru-lighting-exit-code)"
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git rm --ignore-unmatch .github/workflows/moru-moru02-lighting-family-v1-once.yml scripts/moru_moru02_lighting_family_v1_once.py
+          git add -A design/reference/moru-v2/native-lighting-family-v1 design/export-spec/moru-production-manifest.v2.json
+          if ! git diff --cached --quiet; then
+            if [[ "$code" == "0" ]]; then
+              msg="design: pass Moru native lighting family v1"
+            else
+              msg="docs: record Moru native lighting family failure"
+            fi
+            git commit -m "$msg"
+            git push origin HEAD:design/production-consolidated-v2
+          fi
+          if [[ "$code" != "0" ]]; then exit "$code"; fi
