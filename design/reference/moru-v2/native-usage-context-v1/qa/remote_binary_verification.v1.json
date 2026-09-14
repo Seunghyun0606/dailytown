@@ -1,0 +1,117 @@
+{
+  "version": "moru-native-usage-context-remote-verification-v1-2026-09-14",
+  "status": "PASS_REMOTE_BINARY_REVERIFY",
+  "branch": "design/production-consolidated-v2",
+  "remote_checkout_commit": "d2538c58faa51ada4713da3996748baafda78efe",
+  "source_master_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+  "usage_verdict": "PASS_MORU_02_NEUTRAL_USAGE_V1",
+  "assets": {
+    "map_avatar": {
+      "path": "design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base.png",
+      "sha256": "098df5b9b4b8e9cfe215c7fc8e9f1e9129b5673b7dc168893c5ea185f849d531",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "git_blob_sha1": "ee72737a2f5c6246baa3d2b160b32f22f3651d09",
+      "bytes": 204826,
+      "introduced_commit": "c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e"
+    },
+    "hud_portrait": {
+      "path": "design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_hud_portrait_neutral_LIGHT_base.png",
+      "sha256": "c67bac8dd8eb7e8cd13b8434b2cf92ce2ab6b82c657291109230a2a672af79ab",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "git_blob_sha1": "05d02e0e767611577ec028f9650bf45068df36ae",
+      "bytes": 551026,
+      "introduced_commit": "c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e"
+    },
+    "encounter_halfbody": {
+      "path": "design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_encounter_halfbody_neutral_LIGHT_base.png",
+      "sha256": "00a643aa14661a9e8b511854b33c7f7f19c04230b781c786ab592e0504dd46e5",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "git_blob_sha1": "50d3e4400b7db5774945a0fe0e1896329be4e2a4",
+      "bytes": 1213996,
+      "introduced_commit": "c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e"
+    },
+    "companion_portrait": {
+      "path": "design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_companion_portrait_neutral_LIGHT_base.png",
+      "sha256": "b57d5732a1f65a0b1cc5f108e267c422bd0fcfdbd144c403c23627de558e6b14",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "git_blob_sha1": "bb5b8e5791ac3f90c786365661e3399038bfc8af",
+      "bytes": 1297924,
+      "introduced_commit": "c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e"
+    },
+    "journal_crop": {
+      "path": "design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_journal_crop_neutral_LIGHT_base.png",
+      "sha256": "cbcae8d5a79bc5c68368fe0f36f57fbe385d3c35f5c069ce87a2224ba85540b4",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "git_blob_sha1": "9781c302316c009e37032a473d77976d7d50d160",
+      "bytes": 550891,
+      "introduced_commit": "c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e"
+    },
+    "result_large": {
+      "path": "design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_result_large_neutral_LIGHT_base.png",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "git_blob_sha1": "fc94489c298b025371c929ebfc68de8f7d230ee4",
+      "bytes": 1577280,
+      "introduced_commit": "c2e17ff28a66cb6b256ae82a77ea4687a0d44a2e"
+    }
+  },
+  "qa_artifacts": {
+    "moru_native_usage_mobile_context_qa_v1.png": {
+      "sha256": "1966c976a747e79960ef4433b4d7291ac6a5101c1a71d31da0ca5f3582ebc53c",
+      "bytes": 396734
+    },
+    "moru_native_usage_framing_qa_v1.png": {
+      "sha256": "c42d6a5d628710bd9873827e4c3702294db001a21cff9fcaa259842a78770924",
+      "bytes": 938408
+    }
+  },
+  "runtime_activation": false
+}
