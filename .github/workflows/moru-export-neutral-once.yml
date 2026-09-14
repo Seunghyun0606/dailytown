@@ -1,0 +1,38 @@
+name: Moru export accepted neutral once
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - '.github/workflows/moru-export-neutral-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact accepted neutral
+        shell: bash
+        run: |
+          set -euo pipefail
+          p='design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png'
+          test "$(sha256sum "$p" | awk '{print $1}')" = 'b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moru-accepted-neutral-exact
+          path: design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png
+          if-no-files-found: error
+          compression-level: 0
+      - name: Remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'AI Remote Work'
+          git config user.email 'ai-remote@local.invalid'
+          git rm .github/workflows/moru-export-neutral-once.yml
+          git commit -m 'chore: remove Moru neutral export one-shot'
+          git push origin HEAD:design/production-consolidated-v2
