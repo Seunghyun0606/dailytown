@@ -4,8 +4,8 @@
     "character_direction": "approved",
     "selected_candidate": "candidate_3",
     "canonical_visual_baseline": "locked",
-    "runtime_production_export": "pending",
-    "mobile_qa": "pending",
+    "runtime_production_export": "activation_readiness_pass_not_runtime_promoted",
+    "mobile_qa": "moru02_pass",
     "motion_final": "pending"
   },
   "source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
@@ -85,5 +85,11 @@
     "path": "native-semantic-family-v1/",
     "runtime_active": false
   },
-  "runtime_active": false
+  "runtime_active": false,
+  "moru03_activation_readiness_v1": {
+    "status": "PASS_MORU_03_ACTIVATION_READINESS_V1",
+    "path": "native-semantic-export-readiness-v1/",
+    "coverage_count": 432,
+    "runtime_active": false
+  }
 }

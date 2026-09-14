@@ -6,7 +6,7 @@
     "neutral_identity_lock": "pass_native_neutral_v1",
     "transparent_master_export": "semantic_source_family_pass_moru03_pending",
     "mobile_qa": "moru02_semantic_cross_family_pass_moru03_pending",
-    "runtime_promotion": "blocked",
+    "runtime_promotion": "blocked_separate_development_and_human_gates",
     "reference_derived_small_context_qa": "partial_pass_1_of_3",
     "native_master_handoff": "ready"
   },
@@ -355,5 +355,12 @@
     "lighting_transfer_exact_reproduction": true,
     "runtime_activation": false,
     "next": "MORU-03 semantic manifest/export readiness"
+  },
+  "moru03_activation_readiness_v1": {
+    "status": "PASS_MORU_03_ACTIVATION_READINESS_V1",
+    "path": "design/reference/moru-v2/native-semantic-export-readiness-v1/",
+    "coverage_count": 432,
+    "runtime_activation": false,
+    "next": "separate Development runtime packaging/binding; preserve v1 rollback and physical-device outdoor gate"
   }
 }

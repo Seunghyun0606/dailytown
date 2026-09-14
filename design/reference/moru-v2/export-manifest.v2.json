@@ -1,6 +1,6 @@
 {
   "profile": "companion.moru.canonical.v2",
-  "status": "production_candidate_not_runtime_promoted",
+  "status": "activation_readiness_pass_not_runtime_promoted",
   "character_direction": "candidate_3_approved",
   "source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
   "qa": "design/reference/moru-v2/PRODUCTION_QA.md",
@@ -8,7 +8,11 @@
     "game_art": "raster_only",
     "master": "PNG with alpha when composited",
     "android_runtime": "lossless/near-lossless WebP or PNG according to QA",
-    "forbidden": ["SVG character", "VectorDrawable character", "Compose Canvas character"]
+    "forbidden": [
+      "SVG character",
+      "VectorDrawable character",
+      "Compose Canvas character"
+    ]
   },
   "resolver_dimensions": [
     "companion_id",
@@ -18,9 +22,25 @@
     "usage_context"
   ],
   "companion_id": "moru",
-  "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
-  "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
-  "affinity": ["base", "familiar", "trusted", "best_friend"],
+  "expressions": [
+    "neutral",
+    "happy",
+    "curious",
+    "surprised",
+    "clue_found",
+    "resolved"
+  ],
+  "lighting": [
+    "LIGHT",
+    "WARM_DUSK",
+    "DARK"
+  ],
+  "affinity": [
+    "base",
+    "familiar",
+    "trusted",
+    "best_friend"
+  ],
   "usage_contexts": [
     "map_avatar",
     "hud_portrait",
@@ -48,8 +68,23 @@
   ],
   "naming_examples": {
     "map_avatar": "companion_moru_v2_map_avatar_neutral_light_base.webp",
-    "hud_portrait": "companion_moru_v2_hud_portrait_curiosity_light_base.webp",
+    "hud_portrait": "companion_moru_v2_hud_portrait_curious_LIGHT_base.webp",
     "result_large": "companion_moru_v2_result_large_resolved_warm_dusk_trusted.webp"
   },
-  "promotion_rule": "Do not overwrite or silently repoint the v1 profile. Add v2 as a separately versioned profile and promote only after QA evidence is complete."
+  "promotion_rule": "Do not overwrite or silently repoint the v1 profile. Add v2 as a separately versioned profile and promote only after QA evidence is complete.",
+  "moru03_activation_readiness": {
+    "status": "PASS_MORU_03_ACTIVATION_READINESS_V1",
+    "coverage_manifest": "design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json",
+    "coverage_count": 432,
+    "fallback_tests": {
+      "exact_requests_tested": 432,
+      "single_exact_missing_tested": 432,
+      "same_expression_and_exact_missing_tested": 432,
+      "legacy_terminal_tested": 432,
+      "invalid_enum_fail_closed": 4
+    },
+    "runtime_activation": false,
+    "runtime_binding_mutated": false,
+    "next": "Development runtime packaging/binding behind separately versioned v2 profile + physical outdoor Human Gate before promotion"
+  }
 }
