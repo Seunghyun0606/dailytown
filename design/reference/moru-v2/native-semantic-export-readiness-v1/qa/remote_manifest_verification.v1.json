@@ -1,0 +1,27 @@
+{
+  "version": "moru-moru03-remote-manifest-reverify-2026-09-14",
+  "verdict": "PASS_REMOTE_MANIFEST_REVERIFY",
+  "checkout_commit": "dad57e4cee1fdc3dab9da0adbcd91968110a5c94",
+  "coverage_manifest_sha256": "44f82c8f24223cf8eb2132a38c45e37621b8dd89de6d954afbf18473dc375833",
+  "metrics_sha256": "015cbe98313dccb5d1b64ad72ba32e93b336f77c679f92925d0a316d66caacd3",
+  "checks": {
+    "coverage_verdict": true,
+    "entry_count": true,
+    "unique_keys": true,
+    "exact_keyset": true,
+    "dimensions": true,
+    "pixel_hash_shape": true,
+    "recipe_order": true,
+    "metrics_verdict": true,
+    "fallback_counts": true,
+    "export_manifest_status": true,
+    "production_manifest_status": true,
+    "runtime_still_inactive": true,
+    "legacy_fallback_retained": true,
+    "semantic_manifest_sha": true,
+    "semantic_metrics_sha": true,
+    "lighting_metrics_sha": true,
+    "usage_metrics_sha": true
+  },
+  "runtime_activation": false
+}
