@@ -79,5 +79,11 @@
     "layered_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
     "runtime_active": false,
     "family_fan_out_started": false
-  }
+  },
+  "native_semantic_family_v1": {
+    "status": "PASS_MORU_02_SEMANTIC_FAMILY_V1",
+    "path": "native-semantic-family-v1/",
+    "runtime_active": false
+  },
+  "runtime_active": false
 }

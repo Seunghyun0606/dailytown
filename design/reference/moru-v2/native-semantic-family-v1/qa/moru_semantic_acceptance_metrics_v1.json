@@ -1,0 +1,563 @@
+{
+  "version": "moru-native-semantic-family-v1-2026-09-14",
+  "verdict": "PASS_MORU_02_SEMANTIC_FAMILY_V1",
+  "classification": "NATIVE_SEMANTIC_SOURCE_AND_CROSS_FAMILY_QA_NOT_RUNTIME_ACTIVE",
+  "source_master_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+  "source_ora_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+  "expression": {
+    "neutral": {
+      "path": "../native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "reuse": true
+    },
+    "happy": {
+      "path": "master/companion_moru_v2_result_large_happy_LIGHT_base.png",
+      "sha256": "b96185d96bf92d5bfc2cea8ce06e82f9e583a4a1543b881caa66206a35ea0187",
+      "changed_rgb_pixels": 18973,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "curious": {
+      "path": "master/companion_moru_v2_result_large_curious_LIGHT_base.png",
+      "sha256": "70daccb16a72f57189e5071b841601e1cbd96425b9d46eb0c021dd121b7b25be",
+      "changed_rgb_pixels": 12583,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "surprised": {
+      "path": "master/companion_moru_v2_result_large_surprised_LIGHT_base.png",
+      "sha256": "ff8ac73cead939f96b7fd3be84df6211d4f4dab8c3d8483554cc7fe7de0e3c79",
+      "changed_rgb_pixels": 12583,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "clue_found": {
+      "path": "master/companion_moru_v2_result_large_clue_found_LIGHT_base.png",
+      "sha256": "6fc559a3a8085c95250fb4a53335c8c58c4544158319e3d799f3188f5c5a09cb",
+      "changed_rgb_pixels": 22635,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "resolved": {
+      "path": "master/companion_moru_v2_result_large_resolved_LIGHT_base.png",
+      "sha256": "a85e30e1782b0371b549c18c470a74f4107b31d43d8c427f4ab5b5f16cf185c3",
+      "changed_rgb_pixels": 12583,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    }
+  },
+  "affinity": {
+    "base": {
+      "reuse": true,
+      "alpha_pixels": 0
+    },
+    "familiar": {
+      "path": "overlay/companion_moru_v2_affinity_familiar_overlay.png",
+      "sha256": "92294ff284d74fb0ce79d76c09b8517920f230ba347c7180844d608365f131d6",
+      "alpha_bbox_xyxy": [
+        471,
+        980,
+        517,
+        1039
+      ],
+      "alpha_pixels": 1073,
+      "anatomy_invariant": true,
+      "silhouette_iou": 1.0
+    },
+    "trusted": {
+      "path": "overlay/companion_moru_v2_affinity_trusted_overlay.png",
+      "sha256": "e8bbfc66b1326f1a93304f26299c14767595b64672768d99860be40d061021d2",
+      "alpha_bbox_xyxy": [
+        317,
+        920,
+        517,
+        1039
+      ],
+      "alpha_pixels": 2168,
+      "anatomy_invariant": true,
+      "silhouette_iou": 1.0
+    },
+    "best_friend": {
+      "path": "overlay/companion_moru_v2_affinity_best_friend_overlay.png",
+      "sha256": "be1f699b6dc8dc1b244b8bd2b5f642687afdcf6a0b3c51953a041c8ffd356fa9",
+      "alpha_bbox_xyxy": [
+        317,
+        920,
+        517,
+        1039
+      ],
+      "alpha_pixels": 4053,
+      "anatomy_invariant": true,
+      "silhouette_iou": 1.0
+    }
+  },
+  "usage_fanout_exact_reproduction": {
+    "map_avatar": true,
+    "hud_portrait": true,
+    "encounter_halfbody": true,
+    "companion_portrait": true,
+    "journal_crop": true,
+    "result_large": true
+  },
+  "lighting_transfer_exact_reproduction": {
+    "map_avatar:WARM_DUSK": true,
+    "map_avatar:DARK": true,
+    "hud_portrait:WARM_DUSK": true,
+    "hud_portrait:DARK": true,
+    "encounter_halfbody:WARM_DUSK": true,
+    "encounter_halfbody:DARK": true,
+    "companion_portrait:WARM_DUSK": true,
+    "companion_portrait:DARK": true,
+    "journal_crop:WARM_DUSK": true,
+    "journal_crop:DARK": true,
+    "result_large:WARM_DUSK": true,
+    "result_large:DARK": true
+  },
+  "hud64_pairwise_expression_difference": {
+    "neutral:happy": {
+      "changed_fraction": 0.03814054414955767,
+      "mae": 1.8056251043231515
+    },
+    "neutral:curious": {
+      "changed_fraction": 0.023368385912201636,
+      "mae": 0.40416179825293497
+    },
+    "neutral:surprised": {
+      "changed_fraction": 0.023368385912201636,
+      "mae": 0.49095866021254103
+    },
+    "neutral:clue_found": {
+      "changed_fraction": 0.0514104490068436,
+      "mae": 2.26637177989206
+    },
+    "neutral:resolved": {
+      "changed_fraction": 0.023201468869971625,
+      "mae": 0.47009402993378957
+    },
+    "happy:curious": {
+      "changed_fraction": 0.06009013520280421,
+      "mae": 2.189256106381795
+    },
+    "happy:surprised": {
+      "changed_fraction": 0.06009013520280421,
+      "mae": 2.276052968341401
+    },
+    "happy:clue_found": {
+      "changed_fraction": 0.013269904857285929,
+      "mae": 0.4607466755689089
+    },
+    "happy:resolved": {
+      "changed_fraction": 0.05992321816057419,
+      "mae": 2.2551883380626494
+    },
+    "curious:surprised": {
+      "changed_fraction": 0.00400600901352028,
+      "mae": 0.17548545039781896
+    },
+    "curious:clue_found": {
+      "changed_fraction": 0.07336004006009013,
+      "mae": 2.650002781950704
+    },
+    "curious:resolved": {
+      "changed_fraction": 0.004339843097980304,
+      "mae": 0.15400879096422412
+    },
+    "surprised:clue_found": {
+      "changed_fraction": 0.07336004006009013,
+      "mae": 2.73679964391031
+    },
+    "surprised:resolved": {
+      "changed_fraction": 0.00542480387247538,
+      "mae": 0.24881767095087076
+    },
+    "clue_found:resolved": {
+      "changed_fraction": 0.07319312301786013,
+      "mae": 2.7159350136315585
+    }
+  },
+  "hud64_min_pairwise_changed_fraction": 0.00400600901352028,
+  "expression_lighting_readability": {
+    "neutral": {
+      "LIGHT": {
+        "pixels": 47545,
+        "mean_luminance": 0.406994849039058,
+        "luminance_std": 0.2594910621440862
+      },
+      "WARM_DUSK": {
+        "pixels": 47545,
+        "mean_luminance": 0.29736387982700185,
+        "luminance_std": 0.19907442630069905
+      },
+      "DARK": {
+        "pixels": 47545,
+        "mean_luminance": 0.16148303766841357,
+        "luminance_std": 0.12849286749911215
+      }
+    },
+    "happy": {
+      "LIGHT": {
+        "pixels": 47545,
+        "mean_luminance": 0.420745920130649,
+        "luminance_std": 0.24008680045946254
+      },
+      "WARM_DUSK": {
+        "pixels": 47545,
+        "mean_luminance": 0.30735146783710154,
+        "luminance_std": 0.1841790079082394
+      },
+      "DARK": {
+        "pixels": 47545,
+        "mean_luminance": 0.16555058250809954,
+        "luminance_std": 0.1187912730427004
+      }
+    },
+    "curious": {
+      "LIGHT": {
+        "pixels": 47545,
+        "mean_luminance": 0.4092007784948974,
+        "luminance_std": 0.2566292513148578
+      },
+      "WARM_DUSK": {
+        "pixels": 47545,
+        "mean_luminance": 0.2989775173093393,
+        "luminance_std": 0.1967064678115642
+      },
+      "DARK": {
+        "pixels": 47545,
+        "mean_luminance": 0.1623016395787159,
+        "luminance_std": 0.12633196253403237
+      }
+    },
+    "surprised": {
+      "LIGHT": {
+        "pixels": 47545,
+        "mean_luminance": 0.40599156304593637,
+        "luminance_std": 0.2563999924241552
+      },
+      "WARM_DUSK": {
+        "pixels": 47545,
+        "mean_luminance": 0.29651655098593227,
+        "luminance_std": 0.19652286339858663
+      },
+      "DARK": {
+        "pixels": 47545,
+        "mean_luminance": 0.1607121015336169,
+        "luminance_std": 0.12614567217888809
+      }
+    },
+    "clue_found": {
+      "LIGHT": {
+        "pixels": 47545,
+        "mean_luminance": 0.420745920130649,
+        "luminance_std": 0.24008680045946254
+      },
+      "WARM_DUSK": {
+        "pixels": 47545,
+        "mean_luminance": 0.30735146783710154,
+        "luminance_std": 0.1841790079082394
+      },
+      "DARK": {
+        "pixels": 47545,
+        "mean_luminance": 0.16555058250809954,
+        "luminance_std": 0.1187912730427004
+      }
+    },
+    "resolved": {
+      "LIGHT": {
+        "pixels": 47545,
+        "mean_luminance": 0.40882147216023934,
+        "luminance_std": 0.25647978273190697
+      },
+      "WARM_DUSK": {
+        "pixels": 47545,
+        "mean_luminance": 0.2986796169658794,
+        "luminance_std": 0.1965879340419733
+      },
+      "DARK": {
+        "pixels": 47545,
+        "mean_luminance": 0.162095328812123,
+        "luminance_std": 0.126250794262568
+      }
+    }
+  },
+  "cross_family_companion": {
+    "neutral": {
+      "base": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "familiar": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "trusted": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "best_friend": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      }
+    },
+    "happy": {
+      "base": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "familiar": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "trusted": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "best_friend": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      }
+    },
+    "curious": {
+      "base": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "familiar": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "trusted": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "best_friend": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      }
+    },
+    "surprised": {
+      "base": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "familiar": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "trusted": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "best_friend": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      }
+    },
+    "clue_found": {
+      "base": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "familiar": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "trusted": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "best_friend": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      }
+    },
+    "resolved": {
+      "base": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "familiar": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "trusted": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      },
+      "best_friend": {
+        "alpha_exact": true,
+        "edge_bleed_error": 0.0,
+        "companion_bbox": [
+          110,
+          58,
+          914,
+          1229
+        ]
+      }
+    }
+  },
+  "fallback_exact": {
+    "neutral_master_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+    "neutral_usage_pixel_exact": true,
+    "accepted_lighting_pixel_exact": true
+  },
+  "runtime_activation": false
+}

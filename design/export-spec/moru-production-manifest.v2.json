@@ -4,8 +4,8 @@
     "character_direction": "approved",
     "reference_extraction": "complete",
     "neutral_identity_lock": "pass_native_neutral_v1",
-    "transparent_master_export": "neutral_usage_context_and_lighting_family_pass_expression_affinity_pending",
-    "mobile_qa": "neutral_usage_and_lighting_qa_pass_expression_affinity_pending",
+    "transparent_master_export": "semantic_source_family_pass_moru03_pending",
+    "mobile_qa": "moru02_semantic_cross_family_pass_moru03_pending",
     "runtime_promotion": "blocked",
     "reference_derived_small_context_qa": "partial_pass_1_of_3",
     "native_master_handoff": "ready"
@@ -83,7 +83,7 @@
         ],
         "verdict": "REFERENCE_QA_FAIL",
         "failure_reasons": [
-          "Full 768×768 canvas yields only 28.8/32.9/37.0dp visible content at 56/64/72dp.",
+          "Full 768\u00d7768 canvas yields only 28.8/32.9/37.0dp visible content at 56/64/72dp.",
           "Face/eye/mouth and scarf diagonal are not reliably readable without disallowed source enlargement."
         ]
       },
@@ -108,7 +108,7 @@
         ],
         "verdict": "REFERENCE_QA_FAIL",
         "failure_reasons": [
-          "Full 768×768 canvas yields only 29.9/34.2/38.4dp visible content at 56/64/72dp.",
+          "Full 768\u00d7768 canvas yields only 29.9/34.2/38.4dp visible content at 56/64/72dp.",
           "Face/hood/scarf and A3 artifact presence are too small without disallowed source enlargement."
         ]
       }
@@ -339,11 +339,21 @@
     "next": "consume native-semantic-authoring-handoff-v1 to author five expression masters + three restrained affinity overlay stages, then run consistency/fallback QA before MORU-03"
   },
   "semantic_authoring_handoff_v1": {
-    "status": "HANDOFF_READY_EXPRESSION_AFFINITY_NOT_PRODUCED",
+    "status": "HANDOFF_CONSUMED_MORU_02_SEMANTIC_FAMILY_PASS",
     "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/",
     "new_expression_masters_required": 5,
     "affinity_overlay_stages_required": 3,
     "lighting_reuse": "PASS_MORU_02_LIGHTING_FAMILY_V1",
     "runtime_activation": false
+  },
+  "native_semantic_family_v1": {
+    "status": "PASS_MORU_02_SEMANTIC_FAMILY_V1",
+    "path": "design/reference/moru-v2/native-semantic-family-v1/",
+    "new_expression_masters": 5,
+    "affinity_overlay_stages": 3,
+    "usage_fanout_exact_reproduction": true,
+    "lighting_transfer_exact_reproduction": true,
+    "runtime_activation": false,
+    "next": "MORU-03 semantic manifest/export readiness"
   }
 }
