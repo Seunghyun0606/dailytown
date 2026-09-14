@@ -7,7 +7,6 @@ Canonical SHA gate passed: `541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812
 Rejected candidate stayed in `/tmp` and was not persisted.
 
 Failed checks:
-- `sprout`
 - `max_contour`
 
 No fan-out was started.
