@@ -1,0 +1,92 @@
+name: Moru semantic family v1 once
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - .github/workflows/moru-semantic-family-v1-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  semantic-family:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/production-consolidated-v2
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deterministic image dependencies
+        run: python -m pip install --disable-pip-version-check --no-cache-dir numpy pillow scipy
+
+      - name: Run semantic family authoring and QA
+        id: semantic
+        shell: bash
+        run: |
+          set +e
+          python scripts/moru_moru02_semantic_family_v1_once.py 2>&1 | tee /tmp/moru-semantic-family-v1.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit accepted semantic family only
+        if: steps.semantic.outputs.exit_code == '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git add design/reference/moru-v2/native-semantic-family-v1 \
+                  design/export-spec/moru-production-manifest.v2.json \
+                  design/reference/moru-v2/manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "design: pass Moru semantic family v1"
+            git push origin HEAD:design/production-consolidated-v2
+          fi
+
+      - name: Persist failure evidence only
+        if: steps.semantic.outputs.exit_code != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          mkdir -p design/reference/moru-v2/native-semantic-family-v1/qa
+          {
+            echo "# FAIL_MORU_02_SEMANTIC_FAMILY_V1"
+            echo
+            echo "- runner commit: $GITHUB_SHA"
+            echo "- exit code: ${{ steps.semantic.outputs.exit_code }}"
+            echo "- rejected production binaries persisted: false"
+            echo
+            echo '```text'
+            tail -n 120 /tmp/moru-semantic-family-v1.log
+            echo '```'
+          } > design/reference/moru-v2/native-semantic-family-v1/qa/FAILURE_MORU_02_SEMANTIC_FAMILY_V1.md
+          git add design/reference/moru-v2/native-semantic-family-v1/qa/FAILURE_MORU_02_SEMANTIC_FAMILY_V1.md
+          git commit -m "docs: record Moru semantic family v1 failure"
+          git push origin HEAD:design/production-consolidated-v2
+
+      - name: Remove one-shot runner and workflow
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git pull --rebase origin design/production-consolidated-v2
+          rm -f scripts/moru_moru02_semantic_family_v1_once.py
+          rm -f .github/workflows/moru-semantic-family-v1-once.yml
+          git add -A scripts/moru_moru02_semantic_family_v1_once.py .github/workflows/moru-semantic-family-v1-once.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: remove Moru semantic family one-shot"
+            git push origin HEAD:design/production-consolidated-v2
+          fi
