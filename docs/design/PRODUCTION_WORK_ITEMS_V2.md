@@ -122,9 +122,9 @@ Current checkpoint:
 - deterministic, non-generative reference-derived candidates are persisted under `design/reference/moru-v2/reference-derived-small-context-v1/`
 - strict full-canvas/no-upscale QA: map 48/56/64dp `REFERENCE_QA_PASS`; HUD and journal 56/64/72dp `REFERENCE_QA_FAIL` because exact-source-size content is too small for reliable face/detail reading
 - only the passed map candidate is persisted; rejected HUD/journal candidate binaries and QA boards are absent from the current tree; nothing was runtime-activated
-- the human/layered raster reconstruction package is ready under `design/reference/moru-v2/native-master-handoff-v1/`; no large-context asset was regenerated
-- `encounter_halfbody`, `result_large`, and final `companion_portrait` require native same-design raster reproduction rather than simple upscaling
-- this is a source-resolution/clean-transparency blocker, not a design-direction blocker
+- the reconstruction handoff under `design/reference/moru-v2/native-master-handoff-v1/` is retained as provenance/acceptance evidence; the accepted neutral master now lives under `design/reference/moru-v2/native-master-v1/`
+- `encounter_halfbody`, `result_large`, and final `companion_portrait` must now be derived from the accepted native neutral master and validated in MORU-02; board-crop upscaling remains forbidden
+- the neutral source-resolution/clean-transparency blocker is closed; the remaining blocker is the native usage-context family plus MORU-02 QA
 - 2026-09-13 neutral attempt 1: FAIL_MORU_IDENTITY_LOCK; candidate was 1122×1402 RGB with baked checkerboard, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da
 - face/eye/mouth, hood/sprout silhouette, costume/leaf layering, satchel/compass, hands/boots and rendering drifted from the exact canonical
 - rejected binary/QA evidence was not committed; do not repeat the same prompt or fan out variants
