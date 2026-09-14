@@ -1,6 +1,6 @@
 # Daily Town — Moru Source Sufficiency v2
 
-> Status: **AUDITED / NATIVE NEUTRAL MASTER V1 PASS — native usage-context family / MORU-02 pending**
+> Status: **AUDITED / NATIVE SEMANTIC FAMILY V1 PASS — MORU-02 complete / MORU-03 pending**
 >
 > Visual authority: `docs/design/DESIGN_BASELINE_V2.md`
 >
@@ -119,15 +119,15 @@ Therefore the production rule is:
 
 Moru production is no longer blocked by design uncertainty or by the neutral-master gate. The accepted genuine-RGBA layered neutral master is persisted under `design/reference/moru-v2/native-master-v1/`.
 
-The accepted neutral master has now also produced a passing six-context `neutral / LIGHT / base / static` native usage family under `design/reference/moru-v2/native-usage-context-v1/`. The next valid work is the remaining MORU-02 semantic family: expression, lighting and affinity production/consistency QA. Do not regenerate or replace either accepted authority, and do not start semantic/runtime activation before the downstream gates pass.
+The accepted neutral master has produced the passing six-context native usage family, the deterministic LIGHT/WARM_DUSK/DARK lighting family, and the accepted native semantic source family under `design/reference/moru-v2/native-semantic-family-v1/`. MORU-02 expression/lighting/affinity production and cross-family QA are complete. Do not regenerate or replace any accepted authority; the next valid work is MORU-03 resolver/export activation readiness, with runtime activation still blocked.
 
 Recommended order:
 
 1. keep `design/reference/moru-v2/native-master-v1/` immutable as the accepted neutral authority;
 2. keep `design/reference/moru-v2/native-usage-context-v1/` immutable as the passing neutral usage/mobile-edge baseline;
-3. author and validate only the required expression, LIGHT/WARM_DUSK/DARK and affinity variants under the locked Candidate 3 identity;
-4. verify resolver/fallback coverage and semantic invariance;
-5. prepare MORU-03 readiness without silently repointing the legacy profile.
+3. keep `design/reference/moru-v2/native-lighting-family-v1/` and `design/reference/moru-v2/native-semantic-family-v1/` immutable as the accepted lighting/semantic authorities;
+4. in MORU-03 verify resolver/export coverage and exact fallback while retaining the legacy v1 rollback pack;
+5. prepare activation readiness without silently repointing the legacy runtime profile.
 
 ## 6. QA gate
 
@@ -223,3 +223,20 @@ Expression/affinity art is **not** fabricated from the low-resolution board crop
 
 Next valid production step: author the five non-neutral expression masters against the accepted neutral identity, then the three affinity overlay stages, run cross-family identity/mobile/fallback QA, and only after full MORU-02 PASS prepare MORU-03. Runtime activation remains false.
 
+
+## 11. Native semantic family v1 PASS — 2026-09-14
+
+Result: **PASS_MORU_02_SEMANTIC_FAMILY_V1**.
+
+- Accepted family: `design/reference/moru-v2/native-semantic-family-v1/`; runtime activation remains false.
+- Five new 1280×1600 RGBA LIGHT/base expression masters: `happy`, `curious`, `surprised`, `clue_found`, `resolved`; `neutral` reuses the accepted neutral master.
+- Expression identity locks: alpha bit-identical to neutral, silhouette IoU 1.0, face-anchor deviation 0, changed pixels outside allowed semantic regions 0.
+- Three 1280×1600 restrained affinity overlays: `familiar`, `trusted`, `best_friend`, confined to keepsake/satchel treatment with anatomy invariant.
+- HUD 64dp expression distinction PASS; minimum pairwise changed fraction is `0.00400600901352028`.
+- All six expressions retain readable face statistics across LIGHT/WARM_DUSK/DARK.
+- Cross-family Companion expression×affinity alpha exactness and transparent-edge error `0.0` PASS.
+- Accepted usage fan-out and lighting transfer are reproduced exactly before semantic application, preventing silent algorithm drift.
+- Fresh remote checkout result: **PASS_REMOTE_BINARY_REVERIFY**. All five expression SHA-256 values, three affinity SHA-256 values, dimensions, RGBA/alpha properties, four QA boards, production manifest state and `neutral/LIGHT/base/static` fallback contract match. Evidence: `native-semantic-family-v1/qa/remote_binary_verification.v1.json`.
+- The first workflow run failed only because of an implementation argument-order error in the one-shot runner; no rejected production binaries were persisted. The framing call was corrected without changing any acceptance threshold, and the stale failure note was removed after PASS.
+
+MORU-02 is now **complete**. Next: MORU-03 semantic resolver/export activation readiness only; Android runtime activation remains a separate Development task.

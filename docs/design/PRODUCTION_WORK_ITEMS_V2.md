@@ -105,7 +105,7 @@ Promotion rule:
 
 ### DT-DES-MORU-01 · Transparent master family
 
-Status: **IN PROGRESS — native neutral + neutral usage + LIGHT/WARM_DUSK/DARK lighting family PASS; expression/affinity authoring pending; not activated**
+Status: **DONE — native neutral, usage, lighting and semantic source family PASS; runtime not activated**
 
 Outputs:
 - approved Candidate 3 only
@@ -124,7 +124,7 @@ Current checkpoint:
 - only the passed map candidate is persisted; rejected HUD/journal candidate binaries and QA boards are absent from the current tree; nothing was runtime-activated
 - the reconstruction handoff under `design/reference/moru-v2/native-master-handoff-v1/` is retained as provenance/acceptance evidence; the accepted neutral master now lives under `design/reference/moru-v2/native-master-v1/`
 - the six `neutral / LIGHT / base / static` usage contexts are now persisted under `design/reference/moru-v2/native-usage-context-v1/` and derive only from the accepted native neutral master; board-crop upscaling remains forbidden
-- the neutral source-resolution/clean-transparency blocker, neutral usage-context/mobile-edge baseline, and LIGHT/WARM_DUSK/DARK lighting family are closed; remaining MORU-02 work is expression/affinity authoring, consistency and semantic coverage
+- the neutral source-resolution/clean-transparency blocker, neutral usage-context/mobile-edge baseline, LIGHT/WARM_DUSK/DARK lighting family, and expression/affinity semantic source family are closed; MORU-02 repository-side semantic/cross-family QA is complete
 - 2026-09-13 neutral attempt 1: FAIL_MORU_IDENTITY_LOCK; candidate was 1122×1402 RGB with baked checkerboard, SHA-256 3c9ca6ddbc0f53a4dc40f1d335ac040646b7d1c3cf12c5f44de2ef7d25ed61da
 - face/eye/mouth, hood/sprout silhouette, costume/leaf layering, satchel/compass, hands/boots and rendering drifted from the exact canonical
 - rejected binary/QA evidence was not committed; do not repeat the same prompt or fan out variants
@@ -136,11 +136,14 @@ Current checkpoint:
 - 2026-09-14 `PASS_MORU_02_LIGHTING_FAMILY_V1`: canonical LIGHT/WARM_DUSK/DARK reference row calibrated a deterministic Lab transfer; 12 WARM_DUSK/DARK assets across all six usage contexts PASS with LIGHT-identical alpha/geometry and face/sprout readability preserved; evidence: `design/reference/moru-v2/native-lighting-family-v1/`
 - lighting family fresh-checkout binary re-verification PASS; runtime activation remains false
 - expression/affinity authoring handoff is ready at `design/reference/moru-v2/native-semantic-authoring-handoff-v1/`: 6 exact expression crops + 4 exact affinity crops, accepted neutral ORA layer inventory, compact authoring plan (5 new expression masters + 3 affinity overlay stages), acceptance contract and QA board; crops are guide-only and must not be upscaled into native masters
-- do not remake the neutral master, neutral usage family, or accepted lighting family; consume the semantic authoring handoff for five non-neutral expression masters + three restrained affinity overlay stages, then run MORU-02 cross-family/fallback QA before semantic/runtime activation
+- 2026-09-14 `PASS_MORU_02_SEMANTIC_FAMILY_V1`: five non-neutral 1280×1600 RGBA expression masters + three restrained 1280×1600 affinity overlays persisted under `design/reference/moru-v2/native-semantic-family-v1/`; expression alpha is bit-identical to neutral, silhouette IoU 1.0, face-anchor deviation 0, changed-outside-allowed pixels 0, and usage/lighting algorithms reproduce their accepted authorities exactly
+- HUD 64dp pairwise expression difference gate PASS (minimum changed fraction `0.00400600901352028`); LIGHT/WARM_DUSK/DARK face readability and all expression×affinity Companion alpha/edge gates PASS
+- semantic family fresh-checkout `PASS_REMOTE_BINARY_REVERIFY`: five expression and three affinity SHA-256 values, dimensions/modes/alpha properties, four QA boards, production manifest state and fallback `neutral/LIGHT/base/static` all match; runtime activation remains false
+- do not remake the neutral, usage, lighting or semantic source families; proceed only to MORU-03 resolver/export activation-readiness checks
 
 ### DT-DES-MORU-02 · Actual Android-size QA
 
-Status: **IN PROGRESS — neutral usage/mobile-edge + LIGHT/WARM_DUSK/DARK lighting family PASS; expression/affinity QA pending**
+Status: **DONE — PASS_MORU_02_SEMANTIC_FAMILY_V1 + fresh remote binary re-verification PASS; not activated**
 
 Checks:
 - 48 / 56 / 64 dp map/HUD read
@@ -149,11 +152,11 @@ Checks:
 - base / familiar / trusted / best_friend invariance
 - transparent edge/halo
 
-The native neutral gate, six-context `neutral / LIGHT / base / static` Android-size/transparent-edge baseline, and deterministic `LIGHT / WARM_DUSK / DARK` lighting family now pass. Evidence is persisted under `design/reference/moru-v2/native-usage-context-v1/` and `design/reference/moru-v2/native-lighting-family-v1/`, both with fresh remote binary re-verification. The earlier reference-derived map/HUD/journal results remain historical evidence only. MORU-02 is **not complete** until the five non-neutral expression masters and familiar/trusted/best_friend affinity overlays are authored from the semantic handoff and cross-family identity/fallback QA passes. Runtime activation remains blocked.
+The native neutral gate, six-context Android-size/transparent-edge baseline, deterministic LIGHT/WARM_DUSK/DARK lighting family, five non-neutral expression masters, and familiar/trusted/best_friend restrained affinity overlays now pass. Cross-family Companion alpha/edge invariance, HUD 64dp expression distinction, expression×lighting readability, exact usage/lighting reproduction and fallback `neutral / LIGHT / base / static` all pass. Evidence is persisted under `design/reference/moru-v2/native-semantic-family-v1/` with fresh remote binary re-verification. The earlier reference-derived map/HUD/journal results remain historical evidence only. **MORU-02 is complete.** Runtime activation remains blocked until MORU-03 resolver/export readiness passes.
 
 ### DT-DES-MORU-03 · Semantic manifest activation readiness
 
-Status: **BLOCKED by MORU-02**
+Status: **READY — MORU-02 PASS; resolver/export activation readiness is the next gate**
 
 Checks:
 - `neutral / LIGHT / base / static` fallback
@@ -214,8 +217,8 @@ Do after the in-app production family is stable.
 ## Current next action
 
 1. Keep the Old Ginkgo design-side first-scenario pack closed and unchanged until a separate Development task performs Android runtime binding/activation.
-2. Keep all accepted authorities unchanged: `design/reference/moru-v2/native-master-v1/`, `design/reference/moru-v2/native-usage-context-v1/`, and `design/reference/moru-v2/native-lighting-family-v1/`.
-3. Consume `design/reference/moru-v2/native-semantic-authoring-handoff-v1/` to author only five non-neutral expression masters + three restrained affinity overlay stages, then finish MORU-02 cross-family/fallback QA before MORU-03 semantic activation readiness.
+2. Keep all accepted Moru authorities unchanged: `native-master-v1/`, `native-usage-context-v1/`, `native-lighting-family-v1/`, and `native-semantic-family-v1/`; the semantic authoring handoff is consumed provenance only.
+3. Start MORU-03 only: validate semantic resolver/export coverage for 6 expressions × 3 lightings × 4 affinity states × required usage contexts, exact `neutral/LIGHT/base/static` fallback, v1 rollback retention, and no silent runtime profile repoint. Runtime activation itself remains a separate Development gate.
 4. Keep physical-device outdoor readability, M-B final timing/intensity and ID-A icon/logo as Human Gates.
 
 Do not start a new concept-board exploration while these production items remain open.
