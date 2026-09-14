@@ -4,8 +4,8 @@
     "character_direction": "approved",
     "reference_extraction": "complete",
     "neutral_identity_lock": "pass_native_neutral_v1",
-    "transparent_master_export": "neutral_usage_context_family_pass_semantic_family_pending",
-    "mobile_qa": "neutral_usage_context_mobile_qa_pass_expression_lighting_affinity_pending",
+    "transparent_master_export": "neutral_usage_context_and_lighting_family_pass_expression_affinity_pending",
+    "mobile_qa": "neutral_usage_and_lighting_qa_pass_expression_affinity_pending",
     "runtime_promotion": "blocked",
     "reference_derived_small_context_qa": "partial_pass_1_of_3",
     "native_master_handoff": "ready"
@@ -83,7 +83,7 @@
         ],
         "verdict": "REFERENCE_QA_FAIL",
         "failure_reasons": [
-          "Full 768\u00d7768 canvas yields only 28.8/32.9/37.0dp visible content at 56/64/72dp.",
+          "Full 768×768 canvas yields only 28.8/32.9/37.0dp visible content at 56/64/72dp.",
           "Face/eye/mouth and scarf diagonal are not reliably readable without disallowed source enlargement."
         ]
       },
@@ -108,7 +108,7 @@
         ],
         "verdict": "REFERENCE_QA_FAIL",
         "failure_reasons": [
-          "Full 768\u00d7768 canvas yields only 29.9/34.2/38.4dp visible content at 56/64/72dp.",
+          "Full 768×768 canvas yields only 29.9/34.2/38.4dp visible content at 56/64/72dp.",
           "Face/hood/scarf and A3 artifact presence are too small without disallowed source enlargement."
         ]
       }
@@ -321,6 +321,21 @@
       }
     },
     "runtime_activation": false,
-    "next": "produce/validate expressions, LIGHT/WARM_DUSK/DARK and affinity stages before MORU-03"
+    "next": "lighting family passed; expression and affinity authoring/consistency QA remain before MORU-03"
+  },
+  "native_lighting_family_v1": {
+    "status": "PASS_MORU_02_LIGHTING_FAMILY_V1",
+    "path": "design/reference/moru-v2/native-lighting-family-v1/",
+    "source": "accepted neutral/LIGHT/base usage family",
+    "lightings": [
+      "LIGHT",
+      "WARM_DUSK",
+      "DARK"
+    ],
+    "expression": "neutral",
+    "affinity": "base",
+    "alpha_geometry": "bit_identical_to_LIGHT",
+    "runtime_activation": false,
+    "next": "author/validate six expression family and four affinity stages; then cross-product/fallback QA before MORU-03"
   }
 }
