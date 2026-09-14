@@ -1,0 +1,98 @@
+name: Moru native neutral PASS docs sync one-shot
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+permissions:
+  contents: write
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Sync Moru production status docs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('docs/design/MORU_SOURCE_SUFFICIENCY_V2.md')
+          work = Path('docs/design/PRODUCTION_WORK_ITEMS_V2.md')
+          reg = Path('design/reference/REFERENCE_IMAGE_REGISTRY_V2.md')
+
+          s = source.read_text()
+          s = s.replace(
+              '> Status: **AUDITED / NEUTRAL IDENTITY-LOCK ATTEMPT 1 FAILED — clean native transparent source/master still required**',
+              '> Status: **AUDITED / NATIVE NEUTRAL MASTER V1 PASS — native usage-context family / MORU-02 pending**'
+          )
+          s = s.replace(
+              'Moru production is no longer blocked by design uncertainty. It is blocked by **source/master resolution and clean transparency**.\n\nThe next valid native work is human/layered raster reconstruction from the committed handoff, not concept exploration or another free-form generation attempt.',
+              'Moru production is no longer blocked by design uncertainty or by the neutral-master gate. The accepted genuine-RGBA layered neutral master is persisted under `design/reference/moru-v2/native-master-v1/`.\n\nThe next valid work is native usage-context derivation and MORU-02 mobile/edge QA from that accepted neutral master. Do not regenerate or replace the accepted neutral master, and do not start semantic/runtime activation before the downstream gates pass.'
+          )
+          s = s.replace(
+              '1. reconstruct one genuine-RGBA native neutral master from `design/reference/moru-v2/native-master-handoff-v1/`;\n2. pass the identity acceptance contract before any native fan-out;\n3. derive usage contexts from that accepted native master;\n4. run MORU-02, then expressions, lighting and affinity only as required by the resolver/fallback contract;\n5. prepare MORU-03 readiness without silently repointing the legacy profile.',
+              '1. keep `design/reference/moru-v2/native-master-v1/` immutable as the accepted neutral authority;\n2. derive required usage contexts from that accepted neutral master;\n3. run MORU-02 Android-size/edge QA;\n4. only after the required neutral/usage gates pass, derive expressions, lighting and affinity as required by the resolver/fallback contract;\n5. prepare MORU-03 readiness without silently repointing the legacy profile.'
+          )
+          s = s.replace(
+              '`DT-DES-MORU-01` remains blocked until a native neutral master passes that acceptance contract. Consequently MORU-02 native QA and MORU-03 semantic activation readiness remain incomplete, and runtime promotion remains blocked.',
+              'The native neutral gate for `DT-DES-MORU-01` is now passed. The transparent usage-context family remains incomplete, so MORU-02 is the next active gate and MORU-03/runtime promotion remain blocked.'
+          )
+          if '## 9. Native neutral master v1 PASS — 2026-09-14' not in s:
+              s += '''\n\n## 9. Native neutral master v1 PASS — 2026-09-14\n\nResult: **PASS_MORU_NATIVE_NEUTRAL_V1**.\n\n- Accepted neutral master: `design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png`\n- Canvas / mode: 1280×1600 RGBA with genuine alpha 0–255\n- PNG SHA-256: `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692`\n- Layered OpenRaster source: `design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora`\n- ORA SHA-256: `2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505`; 6 layers\n- Acceptance metrics: silhouette IoU 0.996370, hood IoU 0.996897, sprout IoU 0.988035, mean/max normalized contour deviation 0.000219/0.002553, palette ΔE76 median/max 0.466/1.262, face-anchor deviation 0, visible residue outside reference 0.\n- Reconstruction was deterministic/non-generative: committed silhouette mask for alpha cleanup, committed reference cutout RGB with deterministic transparent-side edge bleed, and source-supported raster texture only.\n- Accepted asset commit: `38445e229c6937e0856a73071eb8fc4e9007eb4c`.\n- Fresh remote checkout re-verification: `PASS_REMOTE_BINARY_REVERIFY`; PNG/ORA/QA SHA values match the manifest, PNG IHDR is 1280×1600 8-bit RGBA, and ORA ZIP/mimetype/6-layer integrity passed. Evidence: `design/reference/moru-v2/native-master-v1/qa/remote_binary_verification.v1.json`.\n- No expression, lighting, affinity or usage-context fan-out was generated in this gate. Runtime activation remains false.\n\nNext: derive the required usage contexts only from this accepted neutral master and run MORU-02.\n'''
+          source.write_text(s)
+
+          w = work.read_text()
+          w = w.replace(
+              'Status: **BLOCKED — neutral identity-lock attempt 1 failed; clean native transparent source/master required**',
+              'Status: **IN PROGRESS — native neutral master v1 PASS; usage-context family pending; not activated**'
+          )
+          anchor = '- resume native production with the committed reconstruction handoff and a human/layered raster source; validate against the acceptance contract before any native family fan-out'
+          repl = '''- 2026-09-14 accepted neutral v1: 1280×1600 genuine-RGBA PNG `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692` + 6-layer ORA `2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505`; all acceptance-contract checks PASS\n- accepted source/manifest/QA: `design/reference/moru-v2/native-master-v1/`; fresh remote checkout binary re-verification PASS\n- do not remake the neutral master; derive required usage contexts only from the accepted neutral and run MORU-02 before semantic/runtime activation'''
+          if anchor in w:
+              w = w.replace(anchor, repl)
+          w = w.replace(
+              'Status: **BLOCKED by missing native master; strict reference QA map PASS, HUD/journal FAIL**',
+              'Status: **READY — accepted native neutral exists; native usage-context/mobile QA pending**'
+          )
+          w = w.replace(
+              'Only the deterministic map candidate passed and may inform an explicitly temporary/reference Development profile. HUD/journal failed the no-upscale full-canvas check. Actual MORU-02 remains blocked and must use an accepted native transparent export family.',
+              'The native neutral gate is now passed. MORU-02 must derive and evaluate native usage-context assets from `design/reference/moru-v2/native-master-v1/`; the earlier reference-derived map/HUD/journal results remain historical evidence and are not substitutes for native QA. Runtime activation remains blocked.'
+          )
+          w = w.replace(
+              '2. Use `design/reference/moru-v2/native-master-handoff-v1/` for human/layered raster reconstruction of the locked Candidate 3; first deliver one native neutral master and pass the identity acceptance contract before deriving usage contexts.\n3. Run MORU-02 Android-size/edge/lighting/affinity QA and only then prepare semantic activation readiness.',
+              '2. Keep the accepted neutral authority at `design/reference/moru-v2/native-master-v1/` unchanged; derive required usage contexts from it and run MORU-02 Android-size/edge QA.\n3. After MORU-02 passes, produce only the required expression/lighting/affinity family and prepare MORU-03 semantic activation readiness.'
+          )
+          work.write_text(w)
+
+          r = reg.read_text()
+          row = '| `design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png` | 1280×1600 | `b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692` | `native_neutral_master_pass_not_runtime_active`; genuine RGBA; paired 6-layer ORA + acceptance/remote-verification evidence under `native-master-v1/` |\n'
+          needle = '| `design/reference/moru-v2/reference-derived-small-context-v1/candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base_reference_candidate.png` | 512×512 | `cddb4f6c1722c8519f23223159991b499bbe29a4809165e9af49017b98d34531` | `REFERENCE_DERIVED_CANDIDATE`; genuine RGBA; 48/56/64dp `REFERENCE_QA_PASS`; not native and not runtime-active |\n'
+          if row not in r:
+              r = r.replace(needle, needle + row)
+          r = r.replace(
+              '- `design/reference/moru-v2/native-master-handoff-v1/` — exact canonical, masks/guides, sampled palette and native-master acceptance contract',
+              '- `design/reference/moru-v2/native-master-handoff-v1/` — exact canonical, masks/guides, sampled palette and native-master acceptance contract\n- `design/reference/moru-v2/native-master-v1/` — accepted 1280×1600 neutral PNG, 6-layer ORA, acceptance metrics/QA and remote binary verification'
+          )
+          r = r.replace(
+              '- Moru canonical source board: **exact PNG persisted**. Strict no-upscale deterministic reference QA: **map PASS; HUD/journal FAIL**. Human reconstruction handoff: **ready**. Moru native transparent master/export and runtime promotion: **pending/blocked**.',
+              '- Moru canonical source board: **exact PNG persisted**. Strict no-upscale deterministic reference QA remains **map PASS; HUD/journal FAIL** as historical evidence. Native neutral master v1 is **PASS and remote-binary-verified** at `design/reference/moru-v2/native-master-v1/`; native usage-context family/MORU-02 remain pending and runtime promotion remains blocked.'
+          )
+          r = r.replace(
+              '- Moru 48dp/expression/lighting/affinity reference precheck: **PASS**, while transparent-edge and actual Android usage-size QA remain blocked until clean masters exist.',
+              '- Moru 48dp/expression/lighting/affinity reference precheck: **PASS**. The neutral genuine-alpha/edge gate now passes; actual native usage-context Android-size QA and semantic family fan-out remain pending under MORU-02.'
+          )
+          reg.write_text(r)
+          PY
+      - name: Commit synchronized docs and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git rm .github/workflows/moru-native-master-doc-sync-once.yml
+          git add docs/design/MORU_SOURCE_SUFFICIENCY_V2.md docs/design/PRODUCTION_WORK_ITEMS_V2.md design/reference/REFERENCE_IMAGE_REGISTRY_V2.md
+          git commit -m "docs: advance Moru to native neutral PASS"
+          git push origin HEAD:design/production-consolidated-v2
