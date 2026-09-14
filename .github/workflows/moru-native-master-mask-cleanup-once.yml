@@ -1,0 +1,43 @@
+name: Moru native neutral mask cleanup one-shot
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+permissions:
+  contents: write
+concurrency:
+  group: moru-native-master-mask-cleanup-v1
+  cancel-in-progress: false
+jobs:
+  reconstruct:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install raster tooling
+        run: python -m pip install --disable-pip-version-check pillow numpy
+      - name: Reconstruct and acceptance-test neutral master
+        run: python3 scripts/moru_native_master_v1_mask_cleanup_once.py
+      - name: Persist PASS or failure record and remove one-shot runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat /tmp/moru-result.json
+          verdict="$(python3 -c 'import json; print(json.load(open("/tmp/moru-result.json"))["verdict"])')"
+          git config user.name "AI Remote Work"
+          git config user.email "ai-remote@local.invalid"
+          git rm --ignore-unmatch .github/workflows/moru-native-master-mask-cleanup-once.yml scripts/moru_native_master_v1_mask_cleanup_once.py
+          git add -A design/reference/moru-v2 design/export-spec/moru-production-manifest.v2.json
+          if git diff --cached --quiet; then exit 0; fi
+          if [[ "$verdict" == PASS_* ]]; then
+            msg="design: add Moru Candidate 3 native neutral master v1"
+          else
+            msg="docs: record Moru mask-cleanup neutral failure"
+          fi
+          git commit -m "$msg"
+          git push origin HEAD:design/production-consolidated-v2
