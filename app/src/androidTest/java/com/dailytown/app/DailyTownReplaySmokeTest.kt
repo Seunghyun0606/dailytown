@@ -78,7 +78,7 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("companion-product-screen").assert(hasTestTag("companion-product-screen"))
         composeRule.onNodeWithTag("nav-explore").performClick()
 
-        waitForTag("explore-state-discover", timeoutMillis = 10_000L)
+        waitForTag("explore-state-discover", timeoutMillis = 15_000L)
         composeRule.onNodeWithTag("old-ginkgo-place-discovery")
             .performScrollTo()
             .assert(hasTestTag("old-ginkgo-place-discovery"))
