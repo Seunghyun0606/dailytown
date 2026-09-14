@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "candidate_family",
+  "direction": "ID-A_sprout_town_mark",
+  "source": "../source/brand/id-a-sprout-town-candidates-v1.svg",
+  "candidates": {
+    "ID-A1": {"name":"Sprout + Path","strength":"exploration clarity","risk":"generic eco/location resemblance"},
+    "ID-A2": {"name":"Sprout + Door/Town","strength":"warm neighborhood identity","risk":"too domestic if detailed"},
+    "ID-A3": {"name":"Sprout + Neighborhood Map","strength":"real-world exploration meaning","risk":"small-size complexity"}
+  },
+  "required_final_exports": ["app_icon_round","app_icon_square","android_adaptive_foreground","android_monochrome","compact_mark","wordmark_horizontal","wordmark_stacked"],
+  "brand_independence": {"moru_not_embedded_in_primary_mark": true, "future_companion_variation_safe": true},
+  "qa": ["48px_launcher_recognition","monochrome_recognition","adaptive_safe_zone","light_dark_background","wordmark_legibility"],
+  "human_gate": "select_ID_A1_A2_A3_and_final_lock"
+}

@@ -48,7 +48,14 @@ class ReplayLocationSource(
 }
 
 fun seoulCityHallReplayRoute(): List<LocationSample> {
+    // The first four points approach Seoul City Hall from the east in accepted walking-sized
+    // increments. This keeps the QA replay deterministic enough to expose the existing 180 m
+    // HINTED phase before the existing 60 m DISCOVERED phase without changing either domain rule.
     val points = listOf(
+        GeoPoint(37.56650, 126.97940),
+        GeoPoint(37.56650, 126.97905),
+        GeoPoint(37.56650, 126.97870),
+        GeoPoint(37.56650, 126.97835),
         GeoPoint(37.56650, 126.97800),
         GeoPoint(37.56666, 126.97763),
         GeoPoint(37.56688, 126.97719),

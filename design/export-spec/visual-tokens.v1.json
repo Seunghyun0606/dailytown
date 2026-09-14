@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "visual_pack": "daily-town-option-a",
+  "status": "approved_source",
+  "color_space": "sRGB",
+  "tokens": {
+    "brand.leaf.primary": {"value": "#6B8F7A", "role": "primary_botanical_accent"},
+    "brand.leaf.secondary": {"value": "#A7C7A5", "role": "secondary_botanical_accent"},
+    "brand.leaf.ink": {"value": "#214F3B", "role": "readable_botanical_ink"},
+    "brand.butter": {"value": "#FFD36B", "role": "discovery_warmth"},
+    "brand.warmPeach": {"value": "#FFB184", "role": "sunset_warmth"},
+    "brand.sky": {"value": "#9CC9FF", "role": "cool_daylight_accent"},
+    "brand.deepNavy": {"value": "#1E2A44", "role": "night_surface"},
+    "surface.white": {"value": "#FFFFFF", "role": "neutral_surface"},
+    "surface.ivory": {"value": "#F7F3E8", "role": "warm_surface"},
+    "surface.paper": {"value": "#F4F0E6", "role": "storybook_paper"},
+    "surface.coolLight": {"value": "#EEF3F5", "role": "cool_light_surface"},
+    "text.ink": {"value": "#1A1F1C", "role": "primary_light_surface_text"},
+    "text.onDark": {"value": "#F7FAF5", "role": "primary_dark_surface_text"},
+    "stroke.soft": {"value": "#D8D3C3", "role": "soft_divider_stroke"},
+    "status.info": {"value": "#4DA3FF", "role": "information"},
+    "status.success": {"value": "#48836C", "role": "completion_success"},
+    "status.alert": {"value": "#FFB020", "role": "attention"},
+    "status.warning": {"value": "#FF5C5C", "role": "warning_error"},
+    "status.mystery": {"value": "#8B6CFF", "role": "mystery_memory"},
+    "phase.morning.route": {"value": "#6F9F71", "role": "morning_route"},
+    "phase.sunset.route": {"value": "#E8794F", "role": "sunset_route"},
+    "phase.night.route": {"value": "#78A7F6", "role": "night_route"},
+    "phase.night.warmPoint": {"value": "#FFBE68", "role": "night_warm_point"}
+  },
+  "aliases": {
+    "a3.paper.base": "surface.paper",
+    "a3.paper.raised": "surface.ivory",
+    "a3.paper.shadow": "stroke.soft",
+    "a3.ink.primary": "brand.leaf.ink",
+    "a3.ink.secondary": "text.ink",
+    "a3.accent.botanical": "brand.leaf.primary",
+    "a3.accent.memory": "brand.butter",
+    "a3.rule": "stroke.soft"
+  },
+  "policy": {
+    "gameplay_state_color_only_forbidden": true,
+    "brand_leaf_primary_is_default_small_text": false,
+    "preferred_green_text_token": "brand.leaf.ink",
+    "preferred_light_surface_text_token": "text.ink",
+    "preferred_dark_surface_text_token": "text.onDark"
+  }
+}

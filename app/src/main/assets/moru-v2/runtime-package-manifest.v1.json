@@ -1,0 +1,168 @@
+{
+  "version": "moru-v2-android-runtime-package-v1-2026-09-14",
+  "semantic_profile": "companion.moru.canonical.v2",
+  "legacy_terminal_profile": "legacy/current-v1",
+  "design_authority": {
+    "branch": "design/production-consolidated-v2",
+    "head": "4e53243fe01df54ae4b85d8504c678cf6a81d7af"
+  },
+  "runtime_activation": false,
+  "default_profile": "legacy/current-v1",
+  "packaging_policy": {
+    "strategy": "authoritative_source_rasters_plus_deterministic_runtime_materialization_cache",
+    "persisted_combination_pngs": 0,
+    "source_raster_count": 9,
+    "semantic_combination_count": 432,
+    "reason": "Avoid duplicating 432 deterministic PNGs and keep APK/decode cost bounded. Runtime composes raster authorities at display size and caches results; no per-frame generation."
+  },
+  "authorities": [
+    {
+      "asset_path": "moru-v2/authority/manifest.native-semantic.v1.json",
+      "expected_sha256": "605dc6754b85675def0ebaaa03bb07e03ca015f293d336135b4bcf92e966b632",
+      "bytes": 4385
+    },
+    {
+      "asset_path": "moru-v2/authority/moru_native_lighting_acceptance_metrics_v1.json",
+      "expected_sha256": "fea6a8ed08a5737e194805456d24ebb6f8f086b396159186250866e941664f2b",
+      "bytes": 19513
+    },
+    {
+      "asset_path": "moru-v2/authority/moru_native_usage_acceptance_metrics_v1.json",
+      "expected_sha256": "15773bf7b55f83a5677b358e38eed4ecc917b8ce8161dd661d7986099b3d642d",
+      "bytes": 13155
+    },
+    {
+      "asset_path": "moru-v2/authority/semantic-resolver-export-manifest.v1.json",
+      "expected_sha256": "44f82c8f24223cf8eb2132a38c45e37621b8dd89de6d954afbf18473dc375833",
+      "bytes": 509075
+    }
+  ],
+  "sources": [
+    {
+      "kind": "expression",
+      "semantic": "neutral",
+      "asset_path": "moru-v2/sources/expression/neutral.png",
+      "source_authority": "design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+      "expected_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1577280
+    },
+    {
+      "kind": "expression",
+      "semantic": "happy",
+      "asset_path": "moru-v2/sources/expression/happy.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_happy_LIGHT_base.png",
+      "expected_sha256": "b96185d96bf92d5bfc2cea8ce06e82f9e583a4a1543b881caa66206a35ea0187",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1565136
+    },
+    {
+      "kind": "expression",
+      "semantic": "curious",
+      "asset_path": "moru-v2/sources/expression/curious.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_curious_LIGHT_base.png",
+      "expected_sha256": "70daccb16a72f57189e5071b841601e1cbd96425b9d46eb0c021dd121b7b25be",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1572044
+    },
+    {
+      "kind": "expression",
+      "semantic": "surprised",
+      "asset_path": "moru-v2/sources/expression/surprised.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_surprised_LIGHT_base.png",
+      "expected_sha256": "ff8ac73cead939f96b7fd3be84df6211d4f4dab8c3d8483554cc7fe7de0e3c79",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1572857
+    },
+    {
+      "kind": "expression",
+      "semantic": "clue_found",
+      "asset_path": "moru-v2/sources/expression/clue_found.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_clue_found_LIGHT_base.png",
+      "expected_sha256": "6fc559a3a8085c95250fb4a53335c8c58c4544158319e3d799f3188f5c5a09cb",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1567366
+    },
+    {
+      "kind": "expression",
+      "semantic": "resolved",
+      "asset_path": "moru-v2/sources/expression/resolved.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_resolved_LIGHT_base.png",
+      "expected_sha256": "a85e30e1782b0371b549c18c470a74f4107b31d43d8c427f4ab5b5f16cf185c3",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1572473
+    },
+    {
+      "kind": "affinity",
+      "semantic": "familiar",
+      "asset_path": "moru-v2/sources/affinity/familiar.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/overlay/companion_moru_v2_affinity_familiar_overlay.png",
+      "expected_sha256": "92294ff284d74fb0ce79d76c09b8517920f230ba347c7180844d608365f131d6",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 12186
+    },
+    {
+      "kind": "affinity",
+      "semantic": "trusted",
+      "asset_path": "moru-v2/sources/affinity/trusted.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/overlay/companion_moru_v2_affinity_trusted_overlay.png",
+      "expected_sha256": "e8bbfc66b1326f1a93304f26299c14767595b64672768d99860be40d061021d2",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 16039
+    },
+    {
+      "kind": "affinity",
+      "semantic": "best_friend",
+      "asset_path": "moru-v2/sources/affinity/best_friend.png",
+      "source_authority": "design/reference/moru-v2/native-semantic-family-v1/overlay/companion_moru_v2_affinity_best_friend_overlay.png",
+      "expected_sha256": "be1f699b6dc8dc1b244b8bd2b5f642687afdcf6a0b3c51953a041c8ffd356fa9",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 23414
+    }
+  ]
+}

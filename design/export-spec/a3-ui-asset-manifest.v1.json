@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "status": "production_export",
+  "surface_family": "A-3 storybook/paper",
+  "screens": ["journal_home","discovery_detail","clue_note","collection_grid","memory_detail"],
+  "assets": ["surface.journal.paper","surface.collection.paper","surface.memory.paper","sticker.discovery.default","card.clue.unresolved","card.clue.resolved","stamp.companion.default","stamp.memory.resolved","collection.locked.pattern"],
+  "rules": {"paper_surface_stable_across_time_of_day":true,"status_color_only_forbidden":true,"paper_texture_must_not_reduce_text_contrast":true,"companion_stamp_target_dp_min":32,"companion_stamp_target_dp_max":64,"memory_hero_may_preserve_original_time_of_day":true,"decorations_removable_without_hierarchy_loss":true},
+  "motion": {"allowed":["page_card_crossfade","sticker_settle","completion_stamp_once","tiny_companion_idle"],"avoid":["ambient_particles","perpetual_paper_wobble","aggressive_parallax"],"reduced_motion_required":true},
+  "source_master": {"path":"design/source/a3/a3-ui-source-master-v1.svg","approval_state":"approved_source","editable":true,"runtime_direct_use":false},
+  "split_export": {"batch":"design/production/a3-split-export-v1.json","asset_count":9,"design_qa":"PASS","android_fit_qa":"PASS","semantic_resolver_qa":"PASS","reduced_motion_qa":"PASS","target_apk_binding_qa":"PASS"},
+  "export_state": "production_export",
+  "development_evidence": {"head":"819d1a22bd5607cb51a6839f49074b43e3335fe3","workflow_run":32958759449},
+  "next_gate": "none_for_static_A3_asset_promotion"
+}

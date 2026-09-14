@@ -33,6 +33,7 @@ data class ExplorationProgress(
     val resolvedEncounterIds: Set<String> = emptySet(),
     val encounterVisitedPoiIds: Set<String> = emptySet(),
     val recentPoiIds: List<String> = emptyList(),
+    val recentPoiTitles: List<String> = emptyList(),
     val recentTemplateIds: List<String> = emptyList(),
     val recentPairKeys: List<String> = emptyList(),
     val companionMemoryKeys: Set<String> = emptySet(),
@@ -73,11 +74,24 @@ data class ExplorationProgress(
         )
     }
 
-    fun recordEncounterVisit(poiId: String, templateId: String, date: LocalDate): ExplorationProgress {
+    fun recordEncounterVisit(
+        poiId: String,
+        templateId: String,
+        date: LocalDate,
+        poiTitle: String? = null,
+    ): ExplorationProgress {
         val normalized = normalizePeriods(date)
+        val recentPois = pushRecentPoiSnapshot(
+            existingIds = normalized.recentPoiIds,
+            existingTitles = normalized.recentPoiTitles,
+            poiId = poiId,
+            poiTitle = poiTitle,
+            maxSize = 12,
+        )
         return normalized.copy(
             encounterVisitedPoiIds = normalized.encounterVisitedPoiIds + poiId,
-            recentPoiIds = pushRecentUnique(normalized.recentPoiIds, listOf(poiId), maxSize = 12),
+            recentPoiIds = recentPois.map(Pair<String, String>::first),
+            recentPoiTitles = recentPois.map(Pair<String, String>::second),
             recentTemplateIds = pushRecentUnique(normalized.recentTemplateIds, listOf(templateId), maxSize = 12),
             recentPairKeys = pushRecentUnique(normalized.recentPairKeys, listOf("$poiId:$templateId"), maxSize = 12),
             daily = normalized.daily.recordDiscovery(poiId),
@@ -101,6 +115,23 @@ data class ExplorationProgress(
 
 internal fun pushRecentUnique(existing: List<String>, values: List<String>, maxSize: Int): List<String> =
     (values + existing).distinct().take(maxSize)
+
+internal fun pushRecentPoiSnapshot(
+    existingIds: List<String>,
+    existingTitles: List<String>,
+    poiId: String,
+    poiTitle: String?,
+    maxSize: Int,
+): List<Pair<String, String>> {
+    require(maxSize > 0)
+    val existing = existingIds.mapIndexed { index, id ->
+        id to existingTitles.getOrNull(index).orEmpty()
+    }
+    val previousTitle = existing.firstOrNull { it.first == poiId }?.second.orEmpty()
+    val normalizedTitle = poiTitle?.trim().orEmpty().ifBlank { previousTitle }
+    return (listOf(poiId to normalizedTitle) + existing.filterNot { it.first == poiId })
+        .take(maxSize)
+}
 
 interface ProgressStore {
     suspend fun load(): ExplorationProgress

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<title>appearance.moru.best_friend</title>
+<metadata>source=design/source/companion/moru/moru-bf-b-final-board-v1.svg;approval=production_export_candidate;profile=best_friend</metadata>
+<defs><style>
+.ink{fill:#1A1F1C}.line{stroke:#214F3B;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.leaf{fill:#6B8F7A;stroke:#214F3B;stroke-width:4}.body{fill:#F7E7B8;stroke:#214F3B;stroke-width:4}
+.bag{fill:#A86F3D;stroke:#214F3B;stroke-width:4}.scarf{fill:#6B8F7A;stroke:#214F3B;stroke-width:4}
+</style></defs>
+<g transform="translate(128 126) scale(.82)">
+<ellipse cx="0" cy="10" rx="72" ry="92" class="body"/>
+<circle cx="-24" cy="-4" r="7" class="ink"/><circle cx="24" cy="-4" r="7" class="ink"/>
+<path d="M-10 28Q0 34 10 28" fill="none" class="line"/>
+<path d="M0-87C-30-126-62-109-48-77C-24-78-8-88 0-98Z" class="leaf"/>
+<path d="M0-88C30-126 62-109 48-77C24-78 8-88 0-98Z" class="leaf"/>
+<path d="M-68 38Q0 70 70 38L58 84Q0 62-58 84Z" fill="#557962" stroke="#214F3B" stroke-width="4"/><rect x="34" y="55" width="52" height="62" rx="12" class="bag"/><rect x="-28" y="54" width="30" height="20" rx="5" fill="#FFD36B" stroke="#214F3B" stroke-width="3"/><rect x="8" y="60" width="24" height="16" rx="4" fill="#FFB184" stroke="#214F3B" stroke-width="3"/><circle cx="55" cy="82" r="7" fill="#FFD36B"/><circle cx="77" cy="98" r="7" fill="#9CC9FF"/><path d="M22-102Q38-124 58-113Q48-92 25-88Z" fill="#A7C7A5" stroke="#214F3B" stroke-width="3"/>
+</g></svg>

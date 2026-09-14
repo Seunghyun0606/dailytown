@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "companion_id": "moru",
+  "canonical_profile": "companion.moru.canonical.a2",
+  "direction": "AF-1 Memory Keepsakes + restrained AF-3 Explorer Patina",
+  "principle": "shared_history_not_power_progression",
+  "profiles": {
+    "appearance.moru.base": {
+      "stage": "base",
+      "slots": {
+        "head_or_sprout_style": "slot.moru.sprout.base",
+        "neck_or_scarf_style": "slot.moru.scarf.base",
+        "bag_or_carried_item": "slot.moru.bag.base",
+        "body_accent": "none",
+        "accessory": "none",
+        "context_effect": "none"
+      },
+      "map_avatar_profile": "appearance.moru.base"
+    },
+    "appearance.moru.familiar": {
+      "stage": "familiar",
+      "intent": "first_shared_memories",
+      "slots": {
+        "head_or_sprout_style": "slot.moru.sprout.base",
+        "neck_or_scarf_style": "slot.moru.scarf.base",
+        "bag_or_carried_item": "slot.moru.bag.charm_first_walk",
+        "body_accent": "none",
+        "accessory": "none",
+        "context_effect": "none"
+      },
+      "map_avatar_profile": "appearance.moru.base",
+      "reason": "single small keepsake may be omitted at compact map size"
+    },
+    "appearance.moru.trusted": {
+      "stage": "trusted",
+      "intent": "journeys_together",
+      "slots": {
+        "head_or_sprout_style": "slot.moru.sprout.base",
+        "neck_or_scarf_style": "slot.moru.scarf.stitched_memory_patch",
+        "bag_or_carried_item": "slot.moru.bag.shared_route_tag",
+        "body_accent": "none",
+        "accessory": "none",
+        "context_effect": "none"
+      },
+      "map_avatar_profile": "appearance.moru.trusted.compact",
+      "compact_rules": {
+        "keep": ["neck_or_scarf_style"],
+        "omit_if_unreadable": ["bag_or_carried_item"]
+      }
+    },
+    "appearance.moru.best_friend": {
+      "stage": "best_friend",
+      "intent": "signature_shared_history_within_safe_ceiling",
+      "ceiling_status": "safe_default_not_maximum",
+      "slots": {
+        "head_or_sprout_style": "slot.moru.sprout.pressed_leaf_thread",
+        "neck_or_scarf_style": "slot.moru.scarf.travel_worn_patchwork",
+        "bag_or_carried_item": "slot.moru.bag.memory_tag_set",
+        "body_accent": "none",
+        "accessory": "slot.moru.accessory.pressed_leaf_keepsake",
+        "context_effect": "none"
+      },
+      "map_avatar_profile": "appearance.moru.best_friend.compact",
+      "compact_rules": {
+        "keep": ["neck_or_scarf_style"],
+        "optional": ["head_or_sprout_style"],
+        "omit": ["bag_or_carried_item", "accessory", "context_effect"]
+      }
+    }
+  },
+  "slot_policy": {
+    "canonical_anatomy_changes_forbidden": true,
+    "face_geometry_changes_forbidden": true,
+    "primary_silhouette_must_remain_moru": true,
+    "large_cape_or_massive_carried_item_forbidden_by_default": true,
+    "recurring_particles_forbidden_by_default": true,
+    "map_avatar_can_use_simplified_profile": true
+  },
+  "historical_memory_policy": {
+    "prefer_event_time_profile_when_recorded": true,
+    "fallback_when_missing": "appearance.moru.base",
+    "never_fail_record_rendering_for_missing_cosmetic": true
+  },
+  "motion_policy": {
+    "animate_canonical_body_first": true,
+    "static_overlay_cosmetics_preferred": true,
+    "sprite_gen_layering_only_when_accessory_requires_sync": true,
+    "prebake_all_stage_expression_lighting_motion_combinations": false,
+    "static_fallback_required": true
+  },
+  "qa": {
+    "required": [
+      "48dp_map_avatar_recognition",
+      "black_silhouette_if_slot_changes_outline",
+      "six_expression_readability",
+      "LIGHT_WARM_DUSK_DARK_identity",
+      "journal_stamp_recognition"
+    ],
+    "best_friend_final_change_ceiling_human_gate": true
+  }
+}
