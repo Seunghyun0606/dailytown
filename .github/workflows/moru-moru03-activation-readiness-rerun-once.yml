@@ -1,0 +1,176 @@
+name: Moru MORU-03 corrected activation readiness once
+
+on:
+  push:
+    branches:
+      - design/production-consolidated-v2
+    paths:
+      - .github/workflows/moru-moru03-activation-readiness-rerun-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/production-consolidated-v2
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deterministic image dependencies
+        run: python -m pip install --disable-pip-version-check --no-cache-dir numpy pillow scipy
+      - name: Exhaustively dry-run semantic export and resolver coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show 2ad5aea76347cf5cc43bc3282051bd47b2b2b4c9:scripts/moru_moru02_semantic_family_v1_once.py > /tmp/moru02_semantic_authority.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/moru02_semantic_authority.py'); s=p.read_text()
+          old='    return fit_usage(src, sub, *specs[usage])\n'; new='    target, fr, fill, anchor = specs[usage]\n    return fit_usage(src, sub, fr, target, fill, anchor)\n'
+          if old not in s: raise SystemExit('HISTORICAL_DERIVE_USAGE_PATCH_TARGET_MISSING')
+          p.write_text(s.replace(old,new,1))
+          PY
+          python - <<'PY'
+          from __future__ import annotations
+          import hashlib,json,runpy,subprocess
+          from pathlib import Path
+          import numpy as np
+          from PIL import Image
+          from scipy.ndimage import distance_transform_edt
+          ROOT=Path.cwd(); FAM=ROOT/'design/reference/moru-v2/native-semantic-family-v1'; USAGE_ROOT=ROOT/'design/reference/moru-v2/native-usage-context-v1'; LIGHT_ROOT=ROOT/'design/reference/moru-v2/native-lighting-family-v1'; OUT=ROOT/'design/reference/moru-v2/native-semantic-export-readiness-v1'; PROD=ROOT/'design/export-spec/moru-production-manifest.v2.json'; MORU_MAN=ROOT/'design/reference/moru-v2/manifest.json'; EXPORT_MAN=ROOT/'design/reference/moru-v2/export-manifest.v2.json'
+          EXPRESSIONS=['neutral','happy','curious','surprised','clue_found','resolved']; LIGHTINGS=['LIGHT','WARM_DUSK','DARK']; AFFINITIES=['base','familiar','trusted','best_friend']; USAGES=['map_avatar','hud_portrait','encounter_halfbody','result_large','companion_portrait','journal_crop']; USAGE_DIMS={'map_avatar':[512,512],'hud_portrait':[768,768],'encounter_halfbody':[1024,1280],'result_large':[1280,1600],'companion_portrait':[1024,1280],'journal_crop':[768,768]}; EXPECTED_COUNT=432; PROFILE='companion.moru.canonical.v2'; LEGACY='legacy_v1_static_semantic_fallback'
+          mod=runpy.run_path('/tmp/moru02_semantic_authority.py',run_name='moru02_authority'); derive_usage=mod['derive_usage']; apply_transfer=mod['apply_transfer']
+          def fsha(p):
+              h=hashlib.sha256()
+              with p.open('rb') as f:
+                  for b in iter(lambda:f.read(1048576),b''):h.update(b)
+              return h.hexdigest()
+          def psha(im): return hashlib.sha256(np.ascontiguousarray(np.asarray(im.convert('RGBA'),dtype=np.uint8)).tobytes()).hexdigest()
+          def asha(im): return hashlib.sha256(np.ascontiguousarray(np.asarray(im.convert('RGBA').getchannel('A'),dtype=np.uint8)).tobytes()).hexdigest()
+          def key(u,e,l,a):return f'companion/moru/v2/{u}/{e}/{l}/{a}'
+          def name(u,e,l,a):return f'companion_moru_v2_{u}_{e}_{l}_{a}.png'
+          sem=json.loads((FAM/'manifest.native-semantic.v1.json').read_text()); sm=json.loads((FAM/'qa/moru_semantic_acceptance_metrics_v1.json').read_text()); lm=json.loads((LIGHT_ROOT/'qa/moru_native_lighting_acceptance_metrics_v1.json').read_text())
+          if sem.get('status')!='PASS_MORU_02_SEMANTIC_FAMILY_V1' or sm.get('verdict')!='PASS_MORU_02_SEMANTIC_FAMILY_V1': raise SystemExit('MORU02_AUTHORITY_NOT_PASS')
+          expr={}
+          for e in EXPRESSIONS:
+              r=sem['expressions'][e]; p=(FAM/r['path']).resolve(); im=Image.open(p).convert('RGBA')
+              if im.size!=(1280,1600) or fsha(p)!=r['sha256']:raise SystemExit(f'EXPR_AUTHORITY_FAIL:{e}')
+              expr[e]=im
+          overlays={'base':None}
+          for a in AFFINITIES[1:]:
+              r=sem['affinity'][a];p=FAM/r['path'];im=Image.open(p).convert('RGBA')
+              if im.size!=(1280,1600) or fsha(p)!=r['sha256']:raise SystemExit(f'AFFINITY_AUTHORITY_FAIL:{a}')
+              overlays[a]=im
+          usage_files={'map_avatar':'companion_moru_v2_map_avatar_neutral_LIGHT_base.png','hud_portrait':'companion_moru_v2_hud_portrait_neutral_LIGHT_base.png','encounter_halfbody':'companion_moru_v2_encounter_halfbody_neutral_LIGHT_base.png','result_large':'companion_moru_v2_result_large_neutral_LIGHT_base.png','companion_portrait':'companion_moru_v2_companion_portrait_neutral_LIGHT_base.png','journal_crop':'companion_moru_v2_journal_crop_neutral_LIGHT_base.png'}
+          accepted={}; edge_geom={}; accepted_edge={}
+          def make_geom(im):
+              a=np.asarray(im.getchannel('A')); tr=~(a>0); dist,idx=distance_transform_edt(tr,return_indices=True); return tr&(dist<=8),idx
+          def edge_fast(im,geom):
+              arr=np.asarray(im,dtype=np.int16); ring,idx=geom
+              if not ring.any():return 0.0
+              yy,xx=idx; near=arr[yy,xx,:3]; d=np.abs(arr[...,:3]-near).mean(2); return float(d[ring].mean())
+          for u,fn in usage_files.items():
+              base=Image.open(USAGE_ROOT/'candidate'/fn).convert('RGBA'); edge_geom[u]=make_geom(base)
+              accepted[(u,'LIGHT')]=base
+              for l in ('WARM_DUSK','DARK'):accepted[(u,l)]=Image.open(LIGHT_ROOT/'candidate'/fn.replace('_LIGHT_',f'_{l}_')).convert('RGBA')
+              for l in LIGHTINGS:accepted_edge[(u,l)]=edge_fast(accepted[(u,l)],edge_geom[u])
+          accepted_alpha={u:asha(accepted[(u,'LIGHT')]) for u in USAGES}; accepted_pixel={(u,l):psha(accepted[(u,l)]) for u in USAGES for l in LIGHTINGS}
+          cache={}
+          for e in EXPRESSIONS:
+            for a in AFFINITIES:
+              master=expr[e] if a=='base' else Image.alpha_composite(expr[e],overlays[a])
+              for u in USAGES:cache[(u,e,a)]=derive_usage(master,u)
+          entries=[];keys=set();checks={'count':0,'dimension':0,'alpha':0,'edge_matches_authority':0,'derived_context_zero_edge':0,'neutral_authority_exact':0}; max_edge_delta=0.0; result_edge_ranges={l:[] for l in LIGHTINGS}
+          for u in USAGES:
+            for e in EXPRESSIONS:
+             for l in LIGHTINGS:
+              for a in AFFINITIES:
+               b=cache[(u,e,a)]; im=b if l=='LIGHT' else apply_transfer(b,lm['transfer'][l],l); k=key(u,e,l,a)
+               if k in keys:raise SystemExit(f'DUP_KEY:{k}')
+               keys.add(k);checks['count']+=1
+               if list(im.size)!=USAGE_DIMS[u]:raise SystemExit(f'DIM_FAIL:{k}')
+               checks['dimension']+=1; ah=asha(im)
+               if ah!=accepted_alpha[u]:raise SystemExit(f'ALPHA_FAIL:{k}')
+               checks['alpha']+=1
+               ee=edge_fast(im,edge_geom[u]); target=accepted_edge[(u,l)]; delta=abs(ee-target);max_edge_delta=max(max_edge_delta,delta)
+               if delta>1e-9:raise SystemExit(f'EDGE_AUTHORITY_DRIFT:{k}:{ee}:{target}')
+               checks['edge_matches_authority']+=1
+               if u!='result_large':
+                   if ee>1e-9:raise SystemExit(f'DERIVED_EDGE_NONZERO:{k}:{ee}')
+                   checks['derived_context_zero_edge']+=1
+               else:result_edge_ranges[l].append(ee)
+               if e=='neutral' and a=='base':
+                   if psha(im)!=accepted_pixel[(u,l)]:raise SystemExit(f'NEUTRAL_AUTHORITY_DRIFT:{k}')
+                   checks['neutral_authority_exact']+=1
+               er=sem['expressions'][e]; ar=None if a=='base' else sem['affinity'][a]
+               entries.append({'semantic_key':k,'output_name':name(u,e,l,a),'usage_context':u,'expression':e,'lighting':l,'affinity':a,'dimensions':USAGE_DIMS[u],'rgba_pixel_sha256':psha(im),'alpha_pixel_sha256':ah,'edge_bleed_mean_abs_rgb_error':ee,'accepted_edge_reference':target,'recipe':{'expression_source_sha256':er['sha256'],'affinity_overlay_sha256':None if ar is None else ar['sha256'],'usage_transform':'accepted_native_usage_context_v1_exact_algorithm','lighting_transform':'identity_LIGHT' if l=='LIGHT' else 'accepted_native_lighting_family_v1_exact_Lab_transfer','composition_order':['expression_master','affinity_overlay','usage_framing','lighting_transfer']}})
+          if len(entries)!=EXPECTED_COUNT or len(keys)!=EXPECTED_COUNT or checks['neutral_authority_exact']!=18:raise SystemExit('COVERAGE_COUNT_FAIL')
+          def cands(u,e,l,a):
+              vals=[key(u,e,l,a),key(u,e,'LIGHT','base'),key(u,'neutral','LIGHT','base'),LEGACY];out=[]
+              for x in vals:
+                  if x not in out:out.append(x)
+              return out
+          def resolve(u,e,l,a,available):
+              if u not in USAGES or e not in EXPRESSIONS or l not in LIGHTINGS or a not in AFFINITIES:return 'INVALID_REQUEST_FAIL_CLOSED'
+              for c in cands(u,e,l,a):
+                  if c==LEGACY or c in available:return c
+          fb={'exact_requests_tested':0,'single_exact_missing_tested':0,'same_expression_and_exact_missing_tested':0,'legacy_terminal_tested':0,'invalid_enum_fail_closed':0}
+          for u in USAGES:
+           for e in EXPRESSIONS:
+            for l in LIGHTINGS:
+             for a in AFFINITIES:
+              k=key(u,e,l,a);same=key(u,e,'LIGHT','base');neutral=key(u,'neutral','LIGHT','base')
+              if resolve(u,e,l,a,keys)!=k:raise SystemExit(f'EXACT_RESOLVE_FAIL:{k}')
+              fb['exact_requests_tested']+=1
+              av=set(keys);av.remove(k);expected=same if same!=k else neutral if neutral!=k else LEGACY
+              if resolve(u,e,l,a,av)!=expected:raise SystemExit(f'SINGLE_FALLBACK_FAIL:{k}')
+              fb['single_exact_missing_tested']+=1
+              av=set(keys);av.discard(k);av.discard(same);expected=neutral if neutral not in (k,same) else LEGACY
+              if resolve(u,e,l,a,av)!=expected:raise SystemExit(f'CASCADE_FAIL:{k}')
+              fb['same_expression_and_exact_missing_tested']+=1
+              av.discard(neutral)
+              if resolve(u,e,l,a,av)!=LEGACY:raise SystemExit(f'LEGACY_FAIL:{k}')
+              fb['legacy_terminal_tested']+=1
+          for vals in [('bad','neutral','LIGHT','base'),('map_avatar','bad','LIGHT','base'),('map_avatar','neutral','BAD','base'),('map_avatar','neutral','LIGHT','bad')]:
+              if resolve(*vals,keys)!='INVALID_REQUEST_FAIL_CLOSED':raise SystemExit('INVALID_ENUM_FAIL')
+              fb['invalid_enum_fail_closed']+=1
+          exp=json.loads(EXPORT_MAN.read_text());moru=json.loads(MORU_MAN.read_text())
+          if exp.get('profile')!=PROFILE or LEGACY not in exp.get('fallback_order',[]) or 'Do not overwrite or silently repoint' not in exp.get('promotion_rule',''):raise SystemExit('EXPORT_CONTRACT_DRIFT')
+          if moru.get('runtime_active') is not False:raise SystemExit('RUNTIME_ALREADY_ACTIVE')
+          main_head=subprocess.check_output(['git','rev-parse','origin/main'],text=True).strip()
+          OUT.mkdir(parents=True,exist_ok=True);(OUT/'qa').mkdir(exist_ok=True)
+          coverage={'version':'moru-semantic-export-readiness-v1-2026-09-14','verdict':'PASS_MORU_03_ACTIVATION_READINESS_V1','classification':'DESIGN_EXPORT_RESOLVER_READY_NOT_RUNTIME_ACTIVE','semantic_profile':PROFILE,'cartesian_coverage':{'expressions':6,'lighting':3,'affinity':4,'usage_contexts':6,'total':432,'all_exact_recipes_present':True},'materialization_policy':{'validation':'all_432_materialized_in_fresh_GitHub_Actions_checkout','persisted_runtime_binaries':False,'reason':'avoid 432 deterministic duplicate PNGs before Android packaging choice; retain source masters + recipe + pixel hashes'},'resolver':{'fallback_order':['exact','same_context_expression_LIGHT_base','same_context_neutral_LIGHT_base',LEGACY],'invalid_enum':'fail_closed','fallback_static':'neutral/LIGHT/base/static'},'edge_contract':{'derived_usage_contexts':'must remain 0.0 and equal accepted authority','result_large':'must equal accepted result-large authority per lighting; exact master is intentionally not RGB-edge-rewritten','accepted_result_large_edge':{l:accepted_edge[('result_large',l)] for l in LIGHTINGS}},'source_authorities':{'semantic_manifest_sha256':fsha(FAM/'manifest.native-semantic.v1.json'),'semantic_metrics_sha256':fsha(FAM/'qa/moru_semantic_acceptance_metrics_v1.json'),'lighting_metrics_sha256':fsha(LIGHT_ROOT/'qa/moru_native_lighting_acceptance_metrics_v1.json'),'usage_metrics_sha256':fsha(USAGE_ROOT/'qa/moru_native_usage_acceptance_metrics_v1.json')},'main_head_observed':main_head,'runtime_activation':False,'entries':entries}
+          (OUT/'semantic-resolver-export-manifest.v1.json').write_text(json.dumps(coverage,indent=2)+'\n')
+          metrics={'version':'moru-moru03-activation-readiness-v1-2026-09-14','verdict':'PASS_MORU_03_ACTIVATION_READINESS_V1','expected_cartesian_count':432,'checks':checks,'fallback_tests':fb,'max_edge_delta_from_accepted_authority':max_edge_delta,'accepted_result_large_edge':{l:accepted_edge[('result_large',l)] for l in LIGHTINGS},'neutral_base_authority_exact_combinations':checks['neutral_authority_exact'],'legacy_v1_fallback_declared':True,'no_silent_repoint_rule_present':True,'runtime_binding_mutated':False,'runtime_activation':False,'main_head_observed':main_head,'first_attempt_note':'initial MORU-03 QA incorrectly applied derived-context edge==0 to result_large exact master; corrected to authority-relative edge gate without modifying any asset or acceptance authority'}
+          (OUT/'qa/moru_moru03_activation_readiness_metrics_v1.json').write_text(json.dumps(metrics,indent=2)+'\n')
+          (OUT/'README.md').write_text('# Moru Semantic Export / Resolver Readiness v1\n\nStatus: **PASS_MORU_03_ACTIVATION_READINESS_V1 / not runtime-active**\n\nAll 432 semantic combinations were materialized ephemerally in a fresh GitHub Actions checkout and validated for dimensions, alpha invariance, authority-relative transparent-edge behavior, accepted neutral authority exactness, semantic-key uniqueness and fallback resolution. Derived usage contexts retain zero transparent-edge error; result_large intentionally preserves the accepted exact-master edge contract rather than rewriting transparent RGB. The repository persists recipe/pixel-hash coverage instead of 432 duplicate PNGs. Android packaging/runtime activation remains a separate Development task.\n')
+          exp['status']='activation_readiness_pass_not_runtime_promoted';exp['fallback_order']=['exact','same_context_expression_LIGHT_base','same_context_neutral_LIGHT_base',LEGACY];exp['moru03_activation_readiness']={'status':'PASS_MORU_03_ACTIVATION_READINESS_V1','coverage_manifest':'design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json','coverage_count':432,'fallback_tests':fb,'runtime_activation':False,'runtime_binding_mutated':False,'next':'Development runtime packaging/binding behind separately versioned v2 profile + physical outdoor Human Gate before promotion'};exp['naming_examples']['hud_portrait']='companion_moru_v2_hud_portrait_curious_LIGHT_base.webp';EXPORT_MAN.write_text(json.dumps(exp,indent=2)+'\n')
+          prod=json.loads(PROD.read_text());prod['status']['runtime_promotion']='blocked_separate_development_and_human_gates';prod['moru03_activation_readiness_v1']={'status':'PASS_MORU_03_ACTIVATION_READINESS_V1','path':'design/reference/moru-v2/native-semantic-export-readiness-v1/','coverage_count':432,'runtime_activation':False,'next':'separate Development runtime packaging/binding; preserve v1 rollback and physical-device outdoor gate'};PROD.write_text(json.dumps(prod,indent=2)+'\n')
+          moru['status']['runtime_production_export']='activation_readiness_pass_not_runtime_promoted';moru['status']['mobile_qa']='moru02_pass';moru['moru03_activation_readiness_v1']={'status':'PASS_MORU_03_ACTIVATION_READINESS_V1','path':'native-semantic-export-readiness-v1/','coverage_count':432,'runtime_active':False};moru['runtime_active']=False;MORU_MAN.write_text(json.dumps(moru,indent=2)+'\n')
+          print(json.dumps({'verdict':'PASS_MORU_03_ACTIVATION_READINESS_V1','coverage':432,'fallback_tests':fb,'max_edge_delta_from_authority':max_edge_delta,'accepted_result_large_edge':{l:accepted_edge[('result_large',l)] for l in LIGHTINGS},'main_head':main_head,'runtime_activation':False},indent=2))
+          PY
+          git diff --check
+      - name: Commit MORU-03 readiness evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"; git config user.email "ai-remote@local.invalid"
+          git add design/reference/moru-v2/native-semantic-export-readiness-v1 design/reference/moru-v2/export-manifest.v2.json design/reference/moru-v2/manifest.json design/export-spec/moru-production-manifest.v2.json
+          git commit -m "design: pass Moru MORU-03 activation readiness"
+          git push origin HEAD:design/production-consolidated-v2
+      - name: Remove corrected one-shot readiness workflow
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "AI Remote Work"; git config user.email "ai-remote@local.invalid"
+          git pull --rebase origin design/production-consolidated-v2
+          rm -f .github/workflows/moru-moru03-activation-readiness-rerun-once.yml
+          git add -A .github/workflows/moru-moru03-activation-readiness-rerun-once.yml
+          if ! git diff --cached --quiet; then git commit -m "chore: remove corrected Moru MORU-03 readiness workflow"; git push origin HEAD:design/production-consolidated-v2; fi
