@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><title>DailyTown M-B motion review</title>
+<style>
+:root{--paper:#F4EBDD;--card:#FFF8EB;--ink:#453B30;--muted:#74685B;--moss:#68704E;--edge:#D8C8AE}
+*{box-sizing:border-box}body{margin:0;background:#eee9de;color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Noto Sans KR",sans-serif}main{max-width:1280px;margin:auto;padding:32px}h1{margin:0 0 4px}p{color:var(--muted)}.notice{background:#fff3cd;border:1px solid #e2ca83;border-radius:14px;padding:12px 16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}.c{background:var(--card);border:1px solid var(--edge);border-radius:22px;padding:16px}.state{margin:12px 0;padding:12px;background:var(--paper);border-radius:16px;text-align:center;overflow:hidden}.state b{display:block;text-align:left;font-size:12px;color:var(--moss)}img{height:168px;max-width:90%;object-fit:contain;transform-origin:50% 86%}.mb1.idle{animation:idle1 3.2s ease-in-out infinite}.mb2.idle{animation:idle2 2.6s ease-in-out infinite}.mb3.idle{animation:idle3 2.2s ease-in-out infinite}.mb1.react{animation:clue1 2.4s ease-in-out infinite}.mb2.react{animation:clue2 2.2s ease-in-out infinite}.mb3.react{animation:clue3 2s ease-in-out infinite}.mb1.done{animation:done1 2.8s ease-in-out infinite}.mb2.done{animation:done2 2.6s ease-in-out infinite}.mb3.done{animation:done3 2.4s ease-in-out infinite}
+@keyframes idle1{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.006)}}
+@keyframes idle2{0%,100%{transform:translateY(0) scale(1) rotate(0)}50%{transform:translateY(-2px) scale(1.008) rotate(.4deg)}}
+@keyframes idle3{0%,100%{transform:translateY(0) scale(1) rotate(0)}50%{transform:translateY(-3px) scale(1.011) rotate(.7deg)}}
+@keyframes clue1{0%,65%,100%{transform:none}69%{transform:translateY(1px) scale(.993)}78%{transform:translateY(-4px) scale(1.015) rotate(1deg)}90%{transform:none}}
+@keyframes clue2{0%,65%,100%{transform:none}69%{transform:translateY(1px) scale(.99)}77%{transform:translateY(-6px) scale(1.025) rotate(1.8deg)}90%{transform:none}}
+@keyframes clue3{0%,65%,100%{transform:none}68%{transform:translateY(2px) scale(.986)}76%{transform:translateY(-8px) scale(1.04) rotate(2.6deg)}90%{transform:none}}
+@keyframes done1{0%,65%,100%{transform:none}71%{transform:translateY(1px)}79%{transform:translateY(-3px) rotate(.8deg)}92%{transform:none}}
+@keyframes done2{0%,65%,100%{transform:none}70%{transform:translateY(1px)}79%{transform:translateY(-4px) rotate(1.2deg)}92%{transform:none}}
+@keyframes done3{0%,65%,100%{transform:none}70%{transform:translateY(1px)}78%{transform:translateY(-5px) rotate(1.8deg)}91%{transform:none}}
+@media(prefers-reduced-motion:reduce){img{animation:none!important}}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+<main><h1>M-B motion Human Gate preview</h1><p>Exact accepted Moru raster authorities are reused. CSS transforms are review-only; Android runtime is not modified.</p><div class="notice"><b>Important:</b> clue_found / resolved loop here only so the reviewer can compare repeatedly. Runtime intent is one-shot then static hold. Reduced-motion disables all transforms.</div><div class="grid">
+<script>
+const src={idle:'../../../reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_result_large_neutral_LIGHT_base.png',react:'../../../reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_clue_found_LIGHT_base.png',done:'../../../reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_resolved_LIGHT_base.png'};
+const c=[['M-B1 Quiet','mb1'],['M-B2 Calm Reactive','mb2'],['M-B3 Warm Expressive','mb3']];
+document.write(c.map(([name,cls])=>`<section class=c><h2>${name}</h2><div class=state><b>neutral / idle</b><img class="${cls} idle" src="${src.idle}"></div><div class=state><b>clue_found</b><img class="${cls} react" src="${src.react}"></div><div class=state><b>resolved</b><img class="${cls} done" src="${src.done}"></div></section>`).join(''));
+</script></div></main>

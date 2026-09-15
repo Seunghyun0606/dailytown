@@ -207,25 +207,46 @@ Runtime follow-up:
 
 ### DT-DES-QA-01 · Outdoor readability
 
-Status: **HUMAN GATE**
+Status: **HUMAN GATE — REVIEW PACK READY; PHYSICAL PASS PENDING**
 
 Physical-device review for map/HUD/marker/discovery readability. Emulator screenshots cannot close this gate.
 
+Prepared review evidence:
+- checklist / verdict contract: `design/review/final-human-gates-v3/outdoor/R_B_OUTDOOR_READABILITY_REVIEW.md`
+- 54-cell human matrix: `design/review/final-human-gates-v3/outdoor/r-b-outdoor-readability-matrix.v1.json`
+- static accepted-asset preflight: `design/review/final-human-gates-v3/outdoor/outdoor-preflight.html`
+- `physical_pass_claimed=false`; only real-device outdoor review may close R-B
+
 ### DT-DES-MOTION-01 · M-B motion timing/intensity
 
-Status: **HUMAN GATE**
+Status: **HUMAN GATE — 3-CANDIDATE REVIEW PACK READY; SELECTION PENDING**
 
 Use the existing Candidate 3 anatomy and asset family only. No alternate character design during motion work.
 
+Prepared candidates:
+- `M-B1 Quiet`
+- `M-B2 Calm Reactive` — design review recommendation
+- `M-B3 Warm Expressive`
+
+Timing/easing/amplitude/loop/anticipation/settle/reduced-motion contract and exact-raster preview are in `design/review/final-human-gates-v3/motion/`. Android/runtime implementation was not changed.
+
 ### DT-DES-ID-01 · ID-A app icon / logo lock
 
-Status: **HUMAN GATE**
+Status: **HUMAN GATE — 3-CANDIDATE REVIEW PACK READY; SELECTION PENDING**
 
-Do after the in-app production family is stable.
+The in-app production family is stable enough for final identity comparison. Moru's face is not used as the app logo.
+
+Prepared candidates:
+- `ID-A1 Sprout Trail`
+- `ID-A2 Sprout Gate` — design review recommendation
+- `ID-A3 Town Path`
+
+Light/dark/monochrome/adaptive-safe-zone/small-size/wordmark review materials and standalone 108×108 layer masters are in `design/review/final-human-gates-v3/id-a/`. Android resource binding was not performed.
 
 ## Current next action
 
-1. Keep Old Ginkgo and all accepted Moru authorities immutable on the design branch. Moru design-side MORU-01 / MORU-02 / MORU-03 are complete.
-2. Start a separate Development session for v2 runtime packaging/binding only: consume `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`, add `companion.moru.canonical.v2` as a separately versioned profile, retain v1 rollback, implement the exact resolver/fallback contract, and never silently repoint the legacy profile.
-3. Runtime promotion is still blocked until Android binding/packaging verification and physical-device outdoor readability pass. `main` and PR #10 are not part of this design-side completion.
-4. Keep M-B final motion timing/intensity and ID-A icon/logo as Human Gates.
+1. Keep Old Ginkgo and every accepted Moru canonical/native/semantic authority immutable. Moru design-side MORU-01 / MORU-02 / MORU-03 remain complete.
+2. Human compares `M-B1 / M-B2 / M-B3` and locks final motion timing/intensity; no new Moru art is required.
+3. Human compares `ID-A1 / ID-A2 / ID-A3` and locks the app identity mark plus optional wordmark layout.
+4. Human performs R-B on the physical Android device using the 54-cell matrix. Static/emulator preflight cannot produce `PASS_RB_PHYSICAL_DEVICE`.
+5. After Human Gate decisions, hand only the selected M-B tokens, selected ID-A layers/constraints, and R-B verdict/evidence to Development. This design branch does not modify runtime resources, `main`, `feat/emulator-test-harness`, or PR #10.

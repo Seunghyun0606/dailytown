@@ -1,0 +1,1088 @@
+{
+  "schema": "dailytown.r-b.outdoor-readability-matrix.v1",
+  "gate": "R-B",
+  "physical_pass_claimed": false,
+  "cell_count": 54,
+  "cells": [
+    {
+      "id": "rb_map_avatar_48dp_LIGHT_cream",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "LIGHT",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_LIGHT_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_LIGHT_dark",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "LIGHT",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_LIGHT_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_LIGHT_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "LIGHT",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_LIGHT_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_WARM_DUSK_cream",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "WARM_DUSK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_WARM_DUSK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_WARM_DUSK_dark",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "WARM_DUSK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_WARM_DUSK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_WARM_DUSK_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "WARM_DUSK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_WARM_DUSK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_DARK_cream",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "DARK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_DARK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_DARK_dark",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "DARK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_DARK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_48dp_DARK_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 48,
+      "lighting": "DARK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_48dp_DARK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_LIGHT_cream",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "LIGHT",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_LIGHT_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_LIGHT_dark",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "LIGHT",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_LIGHT_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_LIGHT_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "LIGHT",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_LIGHT_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_WARM_DUSK_cream",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "WARM_DUSK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_WARM_DUSK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_WARM_DUSK_dark",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "WARM_DUSK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_WARM_DUSK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_WARM_DUSK_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "WARM_DUSK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_WARM_DUSK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_DARK_cream",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "DARK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_DARK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_DARK_dark",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "DARK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_DARK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_56dp_DARK_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 56,
+      "lighting": "DARK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_56dp_DARK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_LIGHT_cream",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "LIGHT",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_LIGHT_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_LIGHT_dark",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "LIGHT",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_LIGHT_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_LIGHT_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "LIGHT",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_LIGHT_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_WARM_DUSK_cream",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "WARM_DUSK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_WARM_DUSK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_WARM_DUSK_dark",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "WARM_DUSK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_WARM_DUSK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_WARM_DUSK_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "WARM_DUSK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_WARM_DUSK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_DARK_cream",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "DARK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_DARK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_DARK_dark",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "DARK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_DARK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_map_avatar_64dp_DARK_map-heavy",
+      "usage": "map_avatar",
+      "size_dp": 64,
+      "lighting": "DARK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_map_64dp_DARK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_LIGHT_cream",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "LIGHT",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_LIGHT_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_LIGHT_dark",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "LIGHT",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_LIGHT_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_LIGHT_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "LIGHT",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_LIGHT_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_WARM_DUSK_cream",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "WARM_DUSK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_WARM_DUSK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_WARM_DUSK_dark",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "WARM_DUSK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_WARM_DUSK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_WARM_DUSK_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "WARM_DUSK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_WARM_DUSK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_DARK_cream",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "DARK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_DARK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_DARK_dark",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "DARK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_DARK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_56dp_DARK_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 56,
+      "lighting": "DARK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_56dp_DARK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_LIGHT_cream",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "LIGHT",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_LIGHT_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_LIGHT_dark",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "LIGHT",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_LIGHT_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_LIGHT_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "LIGHT",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_LIGHT_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_WARM_DUSK_cream",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "WARM_DUSK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_WARM_DUSK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_WARM_DUSK_dark",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "WARM_DUSK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_WARM_DUSK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_WARM_DUSK_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "WARM_DUSK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_WARM_DUSK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_DARK_cream",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "DARK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_DARK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_DARK_dark",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "DARK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_DARK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_64dp_DARK_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 64,
+      "lighting": "DARK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_64dp_DARK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_LIGHT_cream",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "LIGHT",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_LIGHT_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_LIGHT_dark",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "LIGHT",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_LIGHT_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_LIGHT_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "LIGHT",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_LIGHT_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_WARM_DUSK_cream",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "WARM_DUSK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_WARM_DUSK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_WARM_DUSK_dark",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "WARM_DUSK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_WARM_DUSK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_WARM_DUSK_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "WARM_DUSK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_WARM_DUSK_map-heavy_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_DARK_cream",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "DARK",
+      "background": "cream",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_DARK_cream_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_DARK_dark",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "DARK",
+      "background": "dark",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_DARK_dark_<pass-review-fail>.<ext>"
+    },
+    {
+      "id": "rb_hud_portrait_72dp_DARK_map-heavy",
+      "usage": "hud_portrait",
+      "size_dp": 72,
+      "lighting": "DARK",
+      "background": "map-heavy",
+      "criteria": [
+        "sprout_silhouette",
+        "face_readability",
+        "scarf_diagonal",
+        "costume_identity",
+        "boots_base",
+        "alpha_halo",
+        "foreground_background_separation",
+        "glance_readability"
+      ],
+      "status": "UNREVIEWED_HUMAN",
+      "physical_device_required": true,
+      "evidence_name_pattern": "rb_hud_72dp_DARK_map-heavy_<pass-review-fail>.<ext>"
+    }
+  ]
+}

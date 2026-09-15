@@ -1,0 +1,121 @@
+{
+  "schema": "dailytown.final-human-gates-v3.review-manifest.v1",
+  "source_branch": "design/production-consolidated-v2",
+  "source_head": "4e53243fe01df54ae4b85d8504c678cf6a81d7af",
+  "working_branch": "design/final-human-gates-v3",
+  "human_gates": {
+    "M-B": "SELECTION_PENDING",
+    "ID-A": "SELECTION_PENDING",
+    "R-B": "PHYSICAL_DEVICE_PENDING"
+  },
+  "constraints": {
+    "moru_redesign": false,
+    "native_master_mutated": false,
+    "semantic_family_mutated": false,
+    "runtime_code_mutated": false,
+    "runtime_profile_mutated": false,
+    "physical_RB_pass_claimed": false
+  },
+  "artifacts": [
+    {
+      "path": "design/review/final-human-gates-v3/README.md",
+      "bytes": 649,
+      "sha256": "59bf3255fc535db2b10dede3226ee52a911d29a3efeb8b9b306ae44f0ada3f8f"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/ID_A_ICON_LOCK_REVIEW.md",
+      "bytes": 4495,
+      "sha256": "bec701a870a8d43ff93fc5ceedc2399077cf0d119f048e3582b96603e61e4b60"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/background-dark.svg",
+      "bytes": 140,
+      "sha256": "013e5b9e8875d92800c117644984b68f525b763f3d0c2c5834f41f680df8010b"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/background-light.svg",
+      "bytes": 140,
+      "sha256": "8fb8344a0966f43b322bc875819e07bcb43cfaaf23cf8d473ee54ae70b9d7d53"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/foreground.svg",
+      "bytes": 486,
+      "sha256": "e6c429ae2d3a9b203ef727676beebe3a64f7a61362af08f6e62811e9679d0467"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/monochrome.svg",
+      "bytes": 486,
+      "sha256": "a728a265ca95841c40984ac8401119ababaf8fbe7514e20fd998d40ad1f3e1e2"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/background-dark.svg",
+      "bytes": 140,
+      "sha256": "013e5b9e8875d92800c117644984b68f525b763f3d0c2c5834f41f680df8010b"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/background-light.svg",
+      "bytes": 140,
+      "sha256": "8fb8344a0966f43b322bc875819e07bcb43cfaaf23cf8d473ee54ae70b9d7d53"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground.svg",
+      "bytes": 580,
+      "sha256": "912612a2e6f73a1b81c7420578d51d24b2ddb57212999fed4ee8ad7e97da78cf"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/monochrome.svg",
+      "bytes": 580,
+      "sha256": "9c51440114f228d517e0d64b46f245e318eaac157820c3cd78c290c4e21d8b5b"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/background-dark.svg",
+      "bytes": 140,
+      "sha256": "013e5b9e8875d92800c117644984b68f525b763f3d0c2c5834f41f680df8010b"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/background-light.svg",
+      "bytes": 140,
+      "sha256": "8fb8344a0966f43b322bc875819e07bcb43cfaaf23cf8d473ee54ae70b9d7d53"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/foreground.svg",
+      "bytes": 697,
+      "sha256": "4042167f66d2e2b928d6aed504e92d1296a934f3e3c21632bd83d63e58246464"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/monochrome.svg",
+      "bytes": 697,
+      "sha256": "aedc696e5817f82784607f3157da40139178aa55fdbcf04ca5cb215e066cbdd4"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/id-a-candidate-sheet.svg",
+      "bytes": 9965,
+      "sha256": "65700ddb519be035ebb58c6d3ab517df1fa2a60d266b50b12e8cb08e9bedb8d4"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/motion/M_B_MOTION_REVIEW.md",
+      "bytes": 4336,
+      "sha256": "efc28b198723393096cea52c2f7dba3df4205567e4dbd0cbd1fe65a457af337d"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/motion/motion-review.html",
+      "bytes": 4047,
+      "sha256": "5b695a2d16b5b87113f6679550e35bf7a4c89f8837f8c03c71c34b0f9893cb9f"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/outdoor/R_B_OUTDOOR_READABILITY_REVIEW.md",
+      "bytes": 4779,
+      "sha256": "d7fdeeddf1428403d882035fdab10e35b9abf81474b3e6e45a69d72763e55c9f"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/outdoor/outdoor-preflight.html",
+      "bytes": 2875,
+      "sha256": "75a2b9c2f8a6456a8544e26f0cda1179ba5a20a495188e51efec84f839214c77"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/outdoor/r-b-outdoor-readability-matrix.v1.json",
+      "bytes": 31902,
+      "sha256": "9d645c8f8ed0cce28e3919828239ddb2328c87298e222d7da28d70f72b8a1be9"
+    }
+  ]
+}
