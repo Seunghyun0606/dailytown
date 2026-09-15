@@ -1,6 +1,6 @@
 # M-B Motion Human Gate Review
 
-Status: **CANDIDATES READY / HUMAN SELECTION PENDING**
+Status: **HUMAN APPROVED / LOCKED — M-B2 CALM REACTIVE**
 
 ## Locked scope
 
@@ -13,6 +13,23 @@ Motion sources:
 - `resolved` → accepted `resolved` Moru authority
 
 The candidates below change only presentation transforms/timing around those existing raster states.
+
+## Human decision · 2026-09-15
+
+The recommended **M-B2 Calm Reactive** candidate is approved and locked for Development handoff.
+
+Locked behavior:
+
+- idle: 2600 ms, `cubic-bezier(.4,0,.2,1)`, ±1.4% bbox vertical amplitude with cap 1.0 dp map / 1.2 dp HUD, scale `1.000 ↔ 1.008`, rotation ±0.4°, looping
+- `clue_found`: 720 ms total = 90 ms anticipation + 210 ms accent + 420 ms settle; accent reaches -3.5% Y, +2.5% scale and 1.8° tilt; settle overshoot ≤0.5%
+- `resolved`: 900 ms total = 100 ms anticipation + 240 ms accent + 560 ms settle; accent reaches -2.0% Y and 1.2° nod
+- anticipation easing: `cubic-bezier(.4,0,.6,1)`
+- reaction easing: `cubic-bezier(.16,1,.3,1)`
+- settle easing: `cubic-bezier(.22,.72,.24,1)`
+- `clue_found` and `resolved` are one-shot only and then hold their semantic static state
+- reduced-motion contract below is mandatory
+
+`M-B1 Quiet` and `M-B3 Warm Expressive` remain comparison history only and are not shipping defaults.
 
 ## Shared rules
 
@@ -43,7 +60,7 @@ The candidates below change only presentation transforms/timing around those exi
 | Resolved anticipation | 120 ms inhale | 100 ms inhale | 90 ms inhale |
 | Resolved accent | 260 ms, -1.4% Y, 0.8° nod | 240 ms, -2.0% Y, 1.2° nod | 210 ms, -2.8% Y, 1.8° nod |
 | Resolved settle | 600 ms | 560 ms | 480 ms |
-| Recommended use | map-first calm / motion-sensitive | default Human Gate candidate | only if B2 feels too inert |
+| Disposition | lower-intensity reference | **LOCKED** | upper-intensity reference |
 
 ## Easing detail
 
@@ -53,7 +70,7 @@ The candidates below change only presentation transforms/timing around those exi
 - reaction: `cubic-bezier(0,.0,.2,1)`
 - settle: `cubic-bezier(.2,.8,.2,1)`
 
-### M-B2 Calm Reactive
+### M-B2 Calm Reactive — LOCKED
 
 - anticipation: `cubic-bezier(.4,0,.6,1)`
 - reaction: `cubic-bezier(.16,1,.3,1)`
@@ -79,18 +96,8 @@ When reduced motion is requested:
 
 Meaning must never depend on motion alone.
 
-## Review questions
+## Development handoff
 
-Human reviewer should answer:
+Development may implement **M-B2 only** as the default motion contract after consuming this design decision. The implementation must reuse the existing Moru v2 semantic raster assets and must not introduce a new pose family or mutate the canonical/native/semantic source family.
 
-- Does idle feel alive without pulling attention away from the map?
-- Does `clue_found` feel like recognition rather than a victory jump?
-- Does `resolved` feel warm/settled rather than celebratory arcade feedback?
-- At 48–64 dp, does motion preserve silhouette and avoid blur/noise?
-- Does reduced-motion still communicate all three states clearly?
-
-## Design recommendation
-
-Start Human Gate comparison with **M-B2 Calm Reactive**. It is the best balance between the approved cozy tone and state legibility. M-B1 and M-B3 are retained as lower/higher intensity bounds, not alternate character directions.
-
-No candidate is final until the human chooses it.
+The design Human Gate for M-B is closed. Runtime implementation and runtime QA remain Development-owned.
