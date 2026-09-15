@@ -1,6 +1,6 @@
 # ID-A App Icon / Logo Human Gate Review
 
-Status: **CANDIDATES READY / HUMAN SELECTION PENDING**
+Status: **HUMAN APPROVED / LOCKED — ID-A2 SPROUT GATE**
 
 ## Direction lock
 
@@ -26,9 +26,25 @@ Candidate layer masters:
 
 These are explicit 108×108 light/dark design-layer SVG masters for Human Gate comparison, not Android resources.
 
+## Human decision · 2026-09-15
+
+The recommended **ID-A2 Sprout Gate** candidate is approved and locked as the DailyTown app identity mark.
+
+Locked design masters:
+
+- light foreground: `candidates/id-a2-sprout-gate/foreground-light.svg`
+- dark foreground: `candidates/id-a2-sprout-gate/foreground-dark.svg`
+- light background: `candidates/id-a2-sprout-gate/background-light.svg`
+- dark background: `candidates/id-a2-sprout-gate/background-dark.svg`
+- monochrome: `candidates/id-a2-sprout-gate/monochrome.svg`
+
+Launcher identity is **mark-only** for now. `W1 Horizontal` and `W2 Field-note` remain optional future brand lockups and do not block Android app-icon production. No final typeface is locked by this decision.
+
+`ID-A1 Sprout Trail` and `ID-A3 Town Path` remain comparison history only.
+
 ## Android adaptive-icon frame
 
-Review uses current Android adaptive-icon geometry:
+The locked handoff uses:
 
 - layer canvas: 108 × 108 dp
 - guaranteed safe zone: centered 66 × 66 dp
@@ -54,9 +70,9 @@ Risk:
 
 - town cue is subtle; can read as a generic nature/trail app.
 
-Recommended if DailyTown should feel primarily like an **exploration product**.
+Disposition: comparison history.
 
-## Candidate A2 — Sprout Gate
+## Candidate A2 — Sprout Gate — LOCKED
 
 Visual idea: a compact town/door arch forms the base; the sprout grows from the roof and the doorway doubles as the path entrance.
 
@@ -71,7 +87,7 @@ Risk:
 
 - slightly more architectural and less free-flowing than A1.
 
-Recommended default Human Gate candidate because it encodes both halves of the name without using Moru.
+Decision: selected because it encodes both halves of the DailyTown identity without using Moru.
 
 ## Candidate A3 — Town Path
 
@@ -87,11 +103,11 @@ Risk:
 
 - highest detail density; needs careful small-size check at 24–32 px.
 
-Recommended if the product should feel primarily like **neighborhood discovery**.
+Disposition: comparison history.
 
 ## Light / dark / monochrome
 
-Human review must confirm the selected mark in all three:
+The selected ID-A2 mark must preserve the same identity in all three:
 
 - Light: warm paper background + moss/leaf + ochre path.
 - Dark: dark olive/ink background + warm cream mark + restrained ochre cue.
@@ -101,7 +117,7 @@ Do not rely on the ochre path color alone to communicate path/town identity.
 
 ## Small-size gate
 
-Review at minimum:
+Review at minimum during runtime resource production:
 
 - 48 px: full mark should be immediately recognizable.
 - 32 px: two leaves and the path/door cue must remain distinct.
@@ -115,19 +131,19 @@ Fail if:
 - foreground touches unsafe mask edges,
 - monochrome loses the path/town cue.
 
-## Wordmark / lockup candidates
+## Wordmark / lockup
 
-Launcher icon should remain mark-only. For store/landing/contextual branding, compare only after selecting the mark:
+Launcher icon is locked to **mark-only**.
 
-- `W1 Horizontal`: mark + `Daily Town` to the right; calm utility/default lockup.
-- `W2 Field-note`: mark above `Daily Town`; centered editorial/store treatment.
+For a future store/landing/contextual brand system, the following remain non-blocking options:
 
-The sheet uses a system-font placeholder only. It does **not** lock a final typeface. Long Korean text remains app typography, not handwritten display lettering.
+- `W1 Horizontal`: mark + `Daily Town` to the right.
+- `W2 Field-note`: mark above `Daily Town`.
 
-## Human decision
+The candidate sheet uses a system-font placeholder only. This Human Gate does not lock a final typeface.
 
-Choose one mark: `ID-A1`, `ID-A2`, or `ID-A3`.
+## Development handoff
 
-Optional second choice: `W1`, `W2`, or `mark-only for now`.
+Development may package **ID-A2 Sprout Gate only** into Android adaptive-icon resources, preserving the 108×108 layers, centered 66×66 safe zone, light/dark foreground-background separation, and monochrome identity.
 
-No candidate is final until explicitly selected.
+The design Human Gate for ID-A is closed. Runtime resource generation/binding and launcher QA remain Development-owned.
