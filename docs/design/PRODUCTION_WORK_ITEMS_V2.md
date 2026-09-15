@@ -219,34 +219,36 @@ Prepared review evidence:
 
 ### DT-DES-MOTION-01 · M-B motion timing/intensity
 
-Status: **HUMAN GATE — 3-CANDIDATE REVIEW PACK READY; SELECTION PENDING**
+Status: **DONE — HUMAN APPROVED / LOCKED: M-B2 CALM REACTIVE**
 
-Use the existing Candidate 3 anatomy and asset family only. No alternate character design during motion work.
+The selected contract is `M-B2 Calm Reactive`.
 
-Prepared candidates:
-- `M-B1 Quiet`
-- `M-B2 Calm Reactive` — design review recommendation
-- `M-B3 Warm Expressive`
+- idle: 2600 ms, `cubic-bezier(.4,0,.2,1)`, cap 1.0 dp map / 1.2 dp HUD, scale `1.000 ↔ 1.008`, rotation ±0.4°, loop
+- `clue_found`: 720 ms one-shot with 90 / 210 / 420 ms anticipation/accent/settle
+- `resolved`: 900 ms one-shot with 100 / 240 / 560 ms anticipation/accent/settle
+- reduced-motion: static semantic asset; no translation/scale/rotation/bounce; optional opacity crossfade ≤120 ms
+- detailed contract: `design/review/final-human-gates-v3/motion/M_B_MOTION_REVIEW.md`
 
-Timing/easing/amplitude/loop/anticipation/settle/reduced-motion contract and exact-raster preview are in `design/review/final-human-gates-v3/motion/`. Android/runtime implementation was not changed.
+No new Moru art or runtime implementation was performed by Design.
 
 ### DT-DES-ID-01 · ID-A app icon / logo lock
 
-Status: **HUMAN GATE — 3-CANDIDATE REVIEW PACK READY; SELECTION PENDING**
+Status: **DONE — HUMAN APPROVED / LOCKED: ID-A2 SPROUT GATE**
 
-The in-app production family is stable enough for final identity comparison. Moru's face is not used as the app logo.
+The selected identity mark is `ID-A2 Sprout Gate` with launcher `mark-only`.
 
-Prepared candidates:
-- `ID-A1 Sprout Trail`
-- `ID-A2 Sprout Gate` — design review recommendation
-- `ID-A3 Town Path`
+Locked layers:
+- `design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-light.svg`
+- `design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-dark.svg`
+- `design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/background-light.svg`
+- `design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/background-dark.svg`
+- `design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/monochrome.svg`
 
-Light/dark/monochrome/adaptive-safe-zone/small-size/wordmark review materials and standalone 108×108 layer masters are in `design/review/final-human-gates-v3/id-a/`. Android resource binding was not performed.
+Adaptive-icon design handoff remains 108×108 dp layers, centered 66×66 dp guaranteed safe zone, and 48–66 dp core mark target. W1/W2 wordmark directions remain non-blocking future options; no final typeface is locked. Android resource binding was not performed.
 
 ## Current next action
 
 1. Keep Old Ginkgo and every accepted Moru canonical/native/semantic authority immutable. Moru design-side MORU-01 / MORU-02 / MORU-03 remain complete.
-2. Human compares `M-B1 / M-B2 / M-B3` and locks final motion timing/intensity; no new Moru art is required.
-3. Human compares `ID-A1 / ID-A2 / ID-A3` and locks the app identity mark plus optional wordmark layout.
-4. Human performs R-B on the physical Android device using the 54-cell matrix. Static/emulator preflight cannot produce `PASS_RB_PHYSICAL_DEVICE`.
-5. After Human Gate decisions, hand only the selected M-B tokens, selected ID-A layers/constraints, and R-B verdict/evidence to Development. This design branch does not modify runtime resources, `main`, `feat/emulator-test-harness`, or PR #10.
+2. Development may consume the locked `M-B2 Calm Reactive` motion contract and `ID-A2 Sprout Gate` adaptive-icon layer set as separate implementation handoffs.
+3. Human performs R-B on the physical Android device using the 54-cell matrix. Static/emulator preflight cannot produce `PASS_RB_PHYSICAL_DEVICE`.
+4. Until R-B is physically reviewed, keep outdoor readability status pending. This design branch does not modify runtime resources, `main`, `feat/emulator-test-harness`, or PR #10.
