@@ -4,9 +4,36 @@
   "source_head": "4e53243fe01df54ae4b85d8504c678cf6a81d7af",
   "working_branch": "design/final-human-gates-v3",
   "human_gates": {
-    "M-B": "SELECTION_PENDING",
-    "ID-A": "SELECTION_PENDING",
+    "M-B": "LOCKED_M-B2_CALM_REACTIVE",
+    "ID-A": "LOCKED_ID-A2_SPROUT_GATE",
     "R-B": "PHYSICAL_DEVICE_PENDING"
+  },
+  "selection": {
+    "decision_date": "2026-09-15",
+    "M-B": {
+      "candidate": "M-B2",
+      "name": "Calm Reactive",
+      "status": "HUMAN_APPROVED",
+      "contract": "design/review/final-human-gates-v3/motion/M_B_MOTION_REVIEW.md"
+    },
+    "ID-A": {
+      "candidate": "ID-A2",
+      "name": "Sprout Gate",
+      "status": "HUMAN_APPROVED",
+      "launcher_lockup": "MARK_ONLY",
+      "contract": "design/review/final-human-gates-v3/id-a/ID_A_ICON_LOCK_REVIEW.md",
+      "layers": {
+        "foreground_light": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-light.svg",
+        "foreground_dark": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-dark.svg",
+        "background_light": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/background-light.svg",
+        "background_dark": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/background-dark.svg",
+        "monochrome": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/monochrome.svg"
+      }
+    },
+    "R-B": {
+      "status": "PHYSICAL_DEVICE_PENDING",
+      "physical_pass_claimed": false
+    }
   },
   "constraints": {
     "moru_redesign": false,
@@ -24,8 +51,8 @@
     },
     {
       "path": "design/review/final-human-gates-v3/id-a/ID_A_ICON_LOCK_REVIEW.md",
-      "bytes": 4587,
-      "sha256": "b43b487a9116610d74dee8518ae53148bfdf5a95140e4776ab1b19fa45db0da8"
+      "bytes": 5387,
+      "sha256": "1a488a2589680c9baf4cad1ce47a2c24bf730c68255cf18f30f81ed1ced75b62"
     },
     {
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/background-dark.svg",
@@ -124,8 +151,8 @@
     },
     {
       "path": "design/review/final-human-gates-v3/motion/M_B_MOTION_REVIEW.md",
-      "bytes": 4336,
-      "sha256": "efc28b198723393096cea52c2f7dba3df4205567e4dbd0cbd1fe65a457af337d"
+      "bytes": 4986,
+      "sha256": "33069095fe66784ee267ba7df1c6cad423831c174d85b7083506d218d9976f4c"
     },
     {
       "path": "design/review/final-human-gates-v3/motion/motion-review.html",
