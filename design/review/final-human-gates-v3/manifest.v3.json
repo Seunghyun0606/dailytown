@@ -24,8 +24,8 @@
     },
     {
       "path": "design/review/final-human-gates-v3/id-a/ID_A_ICON_LOCK_REVIEW.md",
-      "bytes": 4495,
-      "sha256": "bec701a870a8d43ff93fc5ceedc2399077cf0d119f048e3582b96603e61e4b60"
+      "bytes": 4587,
+      "sha256": "b43b487a9116610d74dee8518ae53148bfdf5a95140e4776ab1b19fa45db0da8"
     },
     {
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/background-dark.svg",
@@ -36,6 +36,16 @@
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/background-light.svg",
       "bytes": 140,
       "sha256": "8fb8344a0966f43b322bc875819e07bcb43cfaaf23cf8d473ee54ae70b9d7d53"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/foreground-dark.svg",
+      "bytes": 486,
+      "sha256": "d716c6ece1c1db58c2de97f0075feb2be6f54d2fb581c11d59c0d18c828bb6ba"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/foreground-light.svg",
+      "bytes": 486,
+      "sha256": "e6c429ae2d3a9b203ef727676beebe3a64f7a61362af08f6e62811e9679d0467"
     },
     {
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a1-sprout-trail/foreground.svg",
@@ -58,6 +68,16 @@
       "sha256": "8fb8344a0966f43b322bc875819e07bcb43cfaaf23cf8d473ee54ae70b9d7d53"
     },
     {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-dark.svg",
+      "bytes": 580,
+      "sha256": "0106c690ca07cff49abb7e40d6a0824ff58b76a5934d26cc53e1c4816c71c5a8"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-light.svg",
+      "bytes": 580,
+      "sha256": "912612a2e6f73a1b81c7420578d51d24b2ddb57212999fed4ee8ad7e97da78cf"
+    },
+    {
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground.svg",
       "bytes": 580,
       "sha256": "912612a2e6f73a1b81c7420578d51d24b2ddb57212999fed4ee8ad7e97da78cf"
@@ -76,6 +96,16 @@
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/background-light.svg",
       "bytes": 140,
       "sha256": "8fb8344a0966f43b322bc875819e07bcb43cfaaf23cf8d473ee54ae70b9d7d53"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/foreground-dark.svg",
+      "bytes": 697,
+      "sha256": "c741201bd83b6a9a498b97f985755f72dfdbe2ba76f8f9b87a99f6b43f91ef2a"
+    },
+    {
+      "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/foreground-light.svg",
+      "bytes": 697,
+      "sha256": "4042167f66d2e2b928d6aed504e92d1296a934f3e3c21632bd83d63e58246464"
     },
     {
       "path": "design/review/final-human-gates-v3/id-a/candidates/id-a3-town-path/foreground.svg",

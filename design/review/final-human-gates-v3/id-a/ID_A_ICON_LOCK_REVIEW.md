@@ -20,11 +20,11 @@ Candidate sheet: `id-a-candidate-sheet.svg`
 
 Candidate layer masters:
 
-- `candidates/id-a1-sprout-trail/` — foreground / light background / dark background / monochrome
-- `candidates/id-a2-sprout-gate/` — foreground / light background / dark background / monochrome
-- `candidates/id-a3-town-path/` — foreground / light background / dark background / monochrome
+- `candidates/id-a1-sprout-trail/` — light foreground / dark foreground / light background / dark background / monochrome
+- `candidates/id-a2-sprout-gate/` — light foreground / dark foreground / light background / dark background / monochrome
+- `candidates/id-a3-town-path/` — light foreground / dark foreground / light background / dark background / monochrome
 
-These are 108×108 design-layer SVG masters for Human Gate comparison, not Android resources.
+These are explicit 108×108 light/dark design-layer SVG masters for Human Gate comparison, not Android resources.
 
 ## Android adaptive-icon frame
 
