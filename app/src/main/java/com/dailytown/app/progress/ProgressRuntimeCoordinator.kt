@@ -14,6 +14,8 @@ data class ProgressRuntimeState(
     val weeklyGoals: List<GoalDefinition> = emptyList(),
     val ready: Boolean = false,
     val persistenceEnabled: Boolean = false,
+    /** Increments on every explicit player data reset so live runtimes can drop in-memory session state. */
+    val resetGeneration: Int = 0,
 )
 
 /**
@@ -80,6 +82,24 @@ class ProgressRuntimeCoordinator(
         )
     }
 
+    /**
+     * Player-initiated "delete my records": replaces progress with a fresh state for [date] and
+     * persists it immediately. Only allowed when persistence is healthy so a fallback session can
+     * never wipe stored data it could not read.
+     */
+    suspend fun resetAll(date: LocalDate): ProgressRuntimeState {
+        val current = _state.value
+        check(current.ready && current.persistenceEnabled) { "Progress reset requires a healthy restored store" }
+        val next = replace(
+            result = goalRotationCoordinator.ensure(ExplorationProgress(), date),
+            ready = true,
+            persistenceEnabled = true,
+            resetGeneration = current.resetGeneration + 1,
+        )
+        store.save(next.progress)
+        return next
+    }
+
     suspend fun persist() {
         val current = _state.value
         if (current.ready && current.persistenceEnabled) store.save(current.progress)
@@ -89,6 +109,7 @@ class ProgressRuntimeCoordinator(
         result: GoalRotationResult,
         ready: Boolean,
         persistenceEnabled: Boolean,
+        resetGeneration: Int = _state.value.resetGeneration,
     ): ProgressRuntimeState {
         val next = ProgressRuntimeState(
             progress = result.progress,
@@ -96,6 +117,7 @@ class ProgressRuntimeCoordinator(
             weeklyGoals = result.weeklyGoals,
             ready = ready,
             persistenceEnabled = persistenceEnabled,
+            resetGeneration = resetGeneration,
         )
         if (_state.value != next) _state.value = next
         return _state.value

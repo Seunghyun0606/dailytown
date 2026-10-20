@@ -92,6 +92,34 @@ class ProgressRuntimeCoordinatorTest {
         assertEquals(33, store.saved?.companionBond)
     }
 
+    @Test
+    fun `reset wipes and persists progress and bumps the reset generation`() = runBlocking {
+        val store = FakeProgressStore(
+            ExplorationProgress(distanceWalkedMeters = 900.0, companionBond = 40, companionMemoryKeys = setOf("poi:a")),
+        )
+        val coordinator = ProgressRuntimeCoordinator(store)
+        val date = LocalDate.of(2026, 10, 20)
+        coordinator.restore(date)
+
+        val reset = coordinator.resetAll(date)
+
+        assertEquals(1, reset.resetGeneration)
+        assertEquals(0.0, reset.progress.distanceWalkedMeters, 0.0)
+        assertTrue(reset.progress.companionMemoryKeys.isEmpty())
+        assertTrue(reset.dailyGoals.isNotEmpty())
+        assertEquals(reset.progress, store.saved)
+        assertEquals("generation survives later mutations", 1, coordinator.mutate(date) { it }.resetGeneration)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `reset is refused in fallback mode so unreadable stored data is never wiped`() {
+        runBlocking {
+            val coordinator = ProgressRuntimeCoordinator(FakeProgressStore())
+            coordinator.activateFallback(LocalDate.of(2026, 10, 20))
+            coordinator.resetAll(LocalDate.of(2026, 10, 20))
+        }
+    }
+
     private class FakeProgressStore(
         private var loaded: ExplorationProgress = ExplorationProgress(),
     ) : ProgressStore {

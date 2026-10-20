@@ -19,9 +19,16 @@ object CompanionRuntimeProfileSelector {
     const val DEBUG_INTENT_EXTRA = "com.dailytown.app.extra.COMPANION_RUNTIME_PROFILE"
     val defaultProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.LEGACY_V1
 
-    /** Release builds fail closed to v1. Debug builds may explicitly opt into v2 for emulator QA. */
+    /**
+     * Debug/internal prototype builds show the approved Moru Candidate 3 raster family by default.
+     * Release stays on v1 until the R-B physical-device readability gate passes (MORU_PRODUCTION_EXPORT_V2).
+     */
+    val debugDefaultProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.MORU_CANONICAL_V2
+
+    /** Release builds fail closed to v1. Debug builds default to v2; an explicit extra can roll back to v1. */
     fun select(debugBuild: Boolean, requestedSemantic: String?): CompanionRuntimeProfile {
         if (!debugBuild) return defaultProfile
+        if (requestedSemantic == null) return debugDefaultProfile
         return CompanionRuntimeProfile.fromSemantic(requestedSemantic) ?: defaultProfile
     }
 }

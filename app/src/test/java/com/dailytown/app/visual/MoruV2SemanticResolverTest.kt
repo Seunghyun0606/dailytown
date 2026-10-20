@@ -148,6 +148,16 @@ class MoruV2SemanticResolverTest {
             CompanionRuntimeProfileSelector.select(false, CompanionRuntimeProfile.MORU_CANONICAL_V2.semantic),
         )
         assertFalse(CompanionRuntimeProfileSelector.defaultProfile == CompanionRuntimeProfile.MORU_CANONICAL_V2)
+        assertEquals(
+            "debug prototype builds show Candidate 3 by default",
+            CompanionRuntimeProfile.MORU_CANONICAL_V2,
+            CompanionRuntimeProfileSelector.select(true, null),
+        )
+        assertEquals(
+            "release never activates v2 before the R-B gate",
+            CompanionRuntimeProfile.LEGACY_V1,
+            CompanionRuntimeProfileSelector.select(false, null),
+        )
         assertNotEquals(CompanionRuntimeProfile.LEGACY_V1.semantic, CompanionRuntimeProfile.MORU_CANONICAL_V2.semantic)
     }
 }
