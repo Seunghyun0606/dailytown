@@ -21,8 +21,9 @@ relationship feedback → continue / stop → walk summary → Records / Compani
 | Companion | `companion/CompanionContent.kt`: relationship tiers → affinity appearance layer (HUD, portrait, result), bond meter to next tier, authored rule-based dialogue with two replies per topic, keepsakes (one per mechanic) unlocked by resolved mechanics. |
 | Records | System Back returns to Records home from details; developer-facing sentences replaced with player copy. |
 | Settings | Location/privacy explanation, replay onboarding, "탐험 기록 모두 지우기" with confirmation (`ProgressRuntimeCoordinator.resetAll`, refused in fallback mode), 19시 reminder chip, POI status from the actual source, QA entry gated by `BuildVariantPolicy`. |
-| Moru art | Debug/internal builds default to the Moru v2 Candidate 3 raster profile; release stays v1 until R-B passes. |
 | Map without key | Player-facing placeholder text instead of a developer TODO. |
+| Mechanic scenarios | Own place/clue/keepsake art for all 8 mechanics and mechanic-specific investigation steps (`docs/visual/DEV_MECHANIC_SCENARIOS.md`). |
+| Moru art | v2 Candidate 3 is the default in debug and release after the R-B physical-device PASS (`docs/validation/R_B_OUTDOOR_READABILITY_RESULT.md`). |
 
 ## Tests
 
@@ -48,5 +49,4 @@ relationship feedback → continue / stop → walk summary → Records / Compani
 
 - Final authored copy for the 7 draft mechanics (pack entries are marked `ENGINEERING_DRAFT`).
 - Affinity tier cut-offs (20/50 reused from the existing labels) and a BEST_FRIEND stage.
-- R-B outdoor readability on a physical device (also gates Moru v2 in release).
-- Mechanic-specific discovery art: every mechanic currently reuses the approved Old Ginkgo note/leaf rasters.
+- Owner review of the generated mechanic art picks (`design/pipeline/mechanic_selection.v1.json`).
