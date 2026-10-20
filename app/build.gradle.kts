@@ -106,6 +106,20 @@ check(dailyTownPoiApiBaseUrl.isBlank() || dailyTownPoiApiBaseUrl.startsWith("htt
 }
 val dailyTownPoiApiConfigured = dailyTownPoiApiBaseUrl.isNotBlank()
 
+// Optional native ABI restriction for sideloaded test APKs (e.g. "arm64-v8a,armeabi-v7a"). Unset keeps
+// every ABI so x86/x86_64 emulators and managed devices keep working. The NAVER map SDK ships ~25 MB of
+// native code per ABI, so restricting a phone-only internal APK cuts its size by roughly half.
+val supportedAbis = setOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+val dailyTownAbiFilters: List<String> = optionalConfig("DAILYTOWN_ABI_FILTERS")
+    .split(',')
+    .map { it.trim() }
+    .filter { it.isNotEmpty() }
+    .distinct()
+    .also { abis ->
+        val unknown = abis.filterNot { it in supportedAbis }
+        check(unknown.isEmpty()) { "DAILYTOWN_ABI_FILTERS contains unsupported ABIs: ${unknown.joinToString(",")}" }
+    }
+
 val fieldTestMinSessionSeconds = optionalNonNegativeLong("FIELD_TEST_MIN_SESSION_SECONDS")
 val fieldTestMaxGpsRejectionPercent = optionalPercent("FIELD_TEST_MAX_GPS_REJECTION_PERCENT")
 val fieldTestRequireMapReady = optionalBoolean("FIELD_TEST_REQUIRE_MAP_READY")
@@ -174,6 +188,16 @@ android {
         buildConfigField("int", "FIELD_TEST_COMPARISON_MIN_SESSIONS_PER_COHORT", fieldTestComparisonMinSessionsPerCohort.toString())
         buildConfigField("int", "FIELD_TEST_COMPARISON_REQUIRE_MATCHING_PRESET", fieldTestComparisonRequireMatchingPreset.toString())
         buildConfigField("String", "FIELD_TEST_COMPARISON_REQUIRED_EVIDENCE", "\"$fieldTestComparisonRequiredEvidence\"")
+
+        if (dailyTownAbiFilters.isNotEmpty()) {
+            ndk { abiFilters += dailyTownAbiFilters }
+        }
+    }
+
+    packaging {
+        // Store native libraries compressed inside the APK: the NAVER map SDK dominates APK size and
+        // sideloaded test builds are downloaded far more often than they are cold-started.
+        jniLibs { useLegacyPackaging = true }
     }
 
     signingConfigs {

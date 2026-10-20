@@ -68,13 +68,15 @@ jobs:
       - name: Build credentialed debug APK
         env:
           NAVER_MAP_NCP_KEY_ID: ${{ secrets.NAVER_MAP_NCP_KEY_ID }}
+          # Phones only: emulator ABIs are built by the CI/emulator workflows, not this sideload APK.
+          DAILYTOWN_ABI_FILTERS: arm64-v8a,armeabi-v7a
         run: gradle assembleDebug
       - name: Generate APK integrity metadata
         shell: bash
         run: |
           cd app/build/outputs/apk/debug
           sha256sum app-debug.apk > app-debug.apk.sha256
-          printf 'package=com.dailytown.app\nversion=0.7.0\ncommit=%s\npoiSource=%s\n' \
+          printf 'package=com.dailytown.app\nversion=0.7.0\ncommit=%s\nabis=arm64-v8a,armeabi-v7a\npoiSource=%s\n' \
             "$GITHUB_SHA" \
             "$(if [[ -n "${TOUR_API_SERVICE_KEY:-}" ]]; then echo tourapi; else echo fixture; fi)" \
             > build-metadata.txt

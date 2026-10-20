@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.companion_sense.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/companion_sense/clue-main.v1.png",
-      "sha256": "b5864dbbcf37cb41b1325473b6de2a140bb728fbb6598f4d9ab24f7f7872450d"
+      "runtime_path": "scenario/companion_sense/clue-main.v1.webp",
+      "sha256": "0683c837d666b3db0184e21f8f69f1667981b68472c1e74d6e8479ec85fdcfb7"
     },
     {
       "semantic_key": "clue.companion_sense.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/companion_sense/clue-keepsake.v1.png",
-      "sha256": "d4327090d62460c62b5bb3c08812deee3b9a9251f1d0caf5d193733af335ae8b"
+      "runtime_path": "scenario/companion_sense/clue-keepsake.v1.webp",
+      "sha256": "37d735903f11183d3db63bab1cc44746725b4393fef3f7c71105450baa8ccead"
     }
   ]
 }

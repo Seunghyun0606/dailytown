@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.lost_object.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/lost_object/clue-main.v1.png",
-      "sha256": "dbc3fe342e99050e1fcb89e4cce679ebba214b89488cb020778c5567ba696fe0"
+      "runtime_path": "scenario/lost_object/clue-main.v1.webp",
+      "sha256": "fc6bbca71f37d04c682d9f1fb12c02d24db1a0cc099c3a5c111c53157da5eef3"
     },
     {
       "semantic_key": "clue.lost_object.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/lost_object/clue-keepsake.v1.png",
-      "sha256": "ab33b0d98100b5a05f01825f53bd2878f1220b6416e722b6cdc58e048d5db295"
+      "runtime_path": "scenario/lost_object/clue-keepsake.v1.webp",
+      "sha256": "fe205a3bf83ded17d7ec2eebc540a4cfae10b1b52fb691d685b0185f5054a539"
     }
   ]
 }

@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.symbol_match.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/symbol_match/clue-main.v1.png",
-      "sha256": "2a093f87526b0b3516bfb3502ae8f0bd0628bf54d8c245970b399cab2907e737"
+      "runtime_path": "scenario/symbol_match/clue-main.v1.webp",
+      "sha256": "36c42de73272f3336b1b53d1e5b3ca75bb07532e31f79d9076f7152966c2e52a"
     },
     {
       "semantic_key": "clue.symbol_match.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/symbol_match/clue-keepsake.v1.png",
-      "sha256": "b2da89b2de7708a1413ad51b9e774eab02cc54b4217b36798c20de07362adb21"
+      "runtime_path": "scenario/symbol_match/clue-keepsake.v1.webp",
+      "sha256": "02b89112c195b13d57898ee23b972fa35f4f70232885b8b49f132e1933c4294f"
     }
   ]
 }

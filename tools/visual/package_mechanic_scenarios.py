@@ -51,9 +51,12 @@ def webp(img: Image.Image, size: tuple[int, int], quality: int = 84) -> bytes:
     return buf.getvalue()
 
 
-def png(img: Image.Image, size: int) -> bytes:
+def alpha_webp(img: Image.Image, size: int, quality: int = 90) -> bytes:
+    """Transparent item art as lossy WebP with alpha (~5x smaller than PNG, decoded natively by Android)."""
     buf = io.BytesIO()
-    img.convert("RGBA").resize((size, size), Image.Resampling.LANCZOS).save(buf, "PNG", optimize=True)
+    img.convert("RGBA").resize((size, size), Image.Resampling.LANCZOS).save(
+        buf, "WEBP", quality=quality, alpha_quality=100, method=6, exact=False,
+    )
     return buf.getvalue()
 
 
@@ -85,6 +88,8 @@ def main(argv: list[str] | None = None) -> int:
         out_dir = ASSETS / mech
         ref_dir.mkdir(parents=True, exist_ok=True)
         out_dir.mkdir(parents=True, exist_ok=True)
+        for stale in out_dir.iterdir():
+            stale.unlink()
 
         scene_variant = entry["scene"]
         scene_src = PIPELINE / "output/processed/scene" / f"{scene_variant}.png"
@@ -107,8 +112,8 @@ def main(argv: list[str] | None = None) -> int:
                 webp(crop_to_ratio(scene, 4 / 3, focus), (1024, 768)),
             ("memory", "COMPANION_RECENT_MEMORY", "memory-keepsake-companion-recent.v1.webp", 1280, 720, False):
                 webp(crop_to_ratio(scene, 16 / 9, focus), (1280, 720)),
-            ("clue_main", "CLUE_ART", "clue-main.v1.png", 768, 768, True): png(Image.open(clue_src), 768),
-            ("clue_keepsake", "CLUE_ART", "clue-keepsake.v1.png", 512, 512, True): png(Image.open(keep_src), 512),
+            ("clue_main", "CLUE_ART", "clue-main.v1.webp", 768, 768, True): alpha_webp(Image.open(clue_src), 768),
+            ("clue_keepsake", "CLUE_ART", "clue-keepsake.v1.webp", 512, 512, True): alpha_webp(Image.open(keep_src), 512),
         }
         manifest_assets = []
         for (kind, usage, name, w, h, alpha), data in outputs.items():
