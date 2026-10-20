@@ -51,7 +51,8 @@ class SetMotionAtlasRepository(atlases: Iterable<SpriteAtlasDescriptor>) : Motio
 /**
  * Human-approved runtime tuning only. There are intentionally no default duration/easing/intensity values.
  * The opaque easing/intensity ids let authoring data cross the runtime boundary without this core inventing
- * visual behavior. A provider should return null until the visible M-B prototype receives approval.
+ * visual behavior. The locked M-B2 decision is a whole-art transform contract (MbCalmReactiveMotion),
+ * not per-frame atlas timing, so atlas providers still return null until authored atlases are approved.
  */
 data class MotionPlaybackTuning(
     val frameDurationsMs: List<Long>,

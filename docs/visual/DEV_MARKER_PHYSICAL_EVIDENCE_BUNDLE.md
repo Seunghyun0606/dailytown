@@ -97,4 +97,4 @@ Current integration head `8919f290a90acb142015d7d09eb4d8691e18a3e4` is green on 
 
 ## Human TODO tracking
 
-The real-device marker review remains a human-owned gate and is tracked in the existing Daily Town physical Android/NAVER TODO rather than duplicated in a separate task. The M-B timing/easing/intensity approval, R-B outdoor acceptance, and ID-A final lockup remain tracked in the existing visual approval TODO.
+The real-device marker review remains a human-owned gate and is tracked in the existing Daily Town physical Android/NAVER TODO rather than duplicated in a separate task. M-B (M-B2 Calm Reactive) and ID-A (ID-A2 Sprout Gate) were human-locked on 2026-09-15 and are bound at runtime (`DEV_M_B_RUNTIME_PLAYBACK.md`, `DEV_ID_A2_LAUNCHER_ICON.md`); R-B outdoor acceptance remains tracked in the existing visual approval TODO.
