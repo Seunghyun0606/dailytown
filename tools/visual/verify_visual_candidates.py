@@ -38,7 +38,7 @@ def verify_svg(path: Path, semantic_key: str) -> None:
     ET.fromstring(text)
     if semantic_key not in text:
         raise AssertionError(f"{path}: semantic key metadata/title missing: {semantic_key}")
-    if "design/source/" in str(path.relative_to(ROOT)):
+    if "design/source/" in path.relative_to(ROOT).as_posix():
         raise AssertionError(f"{path}: source master entered production candidate path")
 
 
@@ -78,7 +78,7 @@ def main() -> int:
             raise AssertionError(f"{manifest_path}: expected {expected} assets, got {len(assets)}")
         for asset in assets:
             rel = Path(asset["path"])
-            if rel.is_absolute() or not str(rel).startswith("design/production/"):
+            if rel.is_absolute() or not rel.as_posix().startswith("design/production/"):
                 raise AssertionError(f"{manifest_path}: non-production candidate path: {rel}")
             path = ROOT / rel
             if not path.is_file():

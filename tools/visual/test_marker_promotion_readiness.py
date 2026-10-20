@@ -29,7 +29,7 @@ class MarkerPromotionReadinessTest(unittest.TestCase):
                 assets.append({
                     'family': family,
                     'semantic_key': semantic,
-                    'path': str(rel),
+                    'path': rel.as_posix(),
                     'sha256': hashlib.sha256(content).hexdigest(),
                     'approval_state': 'production_export_candidate',
                 })

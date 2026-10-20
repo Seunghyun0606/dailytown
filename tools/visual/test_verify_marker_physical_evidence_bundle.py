@@ -152,7 +152,12 @@ class MarkerPhysicalEvidenceBundleIntegrityTest(unittest.TestCase):
             bundle, _ = make_bundle(root)
             external = root / "external.txt"
             external.write_text("external", encoding="utf-8")
-            (bundle / "linked.txt").symlink_to(external)
+            try:
+                (bundle / "linked.txt").symlink_to(external)
+            except OSError as error:
+                # Windows without Developer Mode/admin cannot create symlinks; the verifier rule still
+                # runs everywhere symlinks can exist.
+                self.skipTest(f"symlinks unavailable on this host: {error}")
             with self.assertRaisesRegex(verify.BundleIntegrityError, "contains symlink"):
                 self.verify_dir(bundle)
 

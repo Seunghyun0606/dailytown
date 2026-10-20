@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 import subprocess
 import unittest
 
@@ -8,7 +9,12 @@ RUNNER = ROOT / "tools/android/run_naver_physical_evidence.sh"
 
 class PhysicalEvidenceRunnerContractTest(unittest.TestCase):
     def test_runner_shell_syntax_is_valid(self):
-        subprocess.run(["bash", "-n", str(RUNNER)], check=True)
+        bash = shutil.which("bash")
+        if bash is None:
+            self.skipTest("bash is not available on this host")
+        # Feed the script on stdin: a Windows bash (Git Bash/WSL) cannot always resolve a native
+        # C:\ path argument, which would turn a syntax check into a false file-not-found failure.
+        subprocess.run([bash, "-n"], input=RUNNER.read_bytes(), check=True)
 
     def test_runner_uses_working_python_fallback(self):
         text = RUNNER.read_text(encoding="utf-8")
