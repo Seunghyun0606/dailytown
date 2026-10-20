@@ -43,6 +43,7 @@ class EncounterCoordinator(
     ),
 ) {
     private var sequence: Long = 0L
+    private var sessionKey: String = ""
 
     fun advance(
         current: EncounterSelection?,
@@ -55,7 +56,7 @@ class EncounterCoordinator(
         var selection = current
         if (selection == null) {
             selection = generator.choose(
-                encounterKey = "enc-${sequence++}",
+                encounterKey = if (sessionKey.isEmpty()) "enc-${sequence++}" else "enc-$sessionKey-${sequence++}",
                 center = user,
                 pois = nearbyPois,
                 context = EncounterContextFactory.create(
@@ -102,8 +103,14 @@ class EncounterCoordinator(
     fun distanceTo(user: GeoPoint, selection: EncounterSelection): Double =
         proximityController.distanceTo(user, selection.poi.position)
 
-    /** A new tracking/replay session starts a fresh deterministic encounter-id sequence. */
-    fun reset() {
+    /**
+     * A new tracking/replay session starts a fresh deterministic encounter-id sequence.
+     * Callers pass a per-session [sessionKey] so ids from different sessions never collide: progress
+     * records resolutions/clues idempotently by id, so a reused id would silently not count again.
+     */
+    fun reset(sessionKey: String = "") {
+        require(sessionKey.none { it == ':' }) { "session key must not contain ':'" }
         sequence = 0L
+        this.sessionKey = sessionKey
     }
 }

@@ -6,6 +6,7 @@ import com.dailytown.app.poi.PoiCategory
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 
@@ -113,5 +114,28 @@ class EncounterCoordinatorTest {
         ).selection!!
 
         assertEquals(first.encounter.id, afterReset.encounter.id)
+    }
+
+    @Test
+    fun distinctSessionKeysNeverReuseEncounterIdsAcrossSessions() {
+        val coordinator = EncounterCoordinator()
+        val poi = Poi("poi-1", "Test", GeoPoint(37.5665, 126.9780), "jung-gu", PoiCategory.LANDMARK)
+        fun pick() = coordinator.advance(
+            current = null,
+            user = poi.position,
+            nearbyPois = listOf(poi),
+            runtime = EncounterRuntimeContext(),
+            date = LocalDate.of(2026, 10, 20),
+            time = LocalTime.NOON,
+        ).selection!!.encounter.id
+
+        coordinator.reset("s1")
+        val firstSession = pick()
+        coordinator.reset("s2")
+        val secondSession = pick()
+        coordinator.reset("s1")
+
+        assertNotEquals(firstSession, secondSession)
+        assertEquals("same session key stays deterministic", firstSession, pick())
     }
 }

@@ -2,6 +2,7 @@ package com.dailytown.app.ui.presentation
 
 import com.dailytown.app.mystery.EncounterPhase
 import com.dailytown.app.mystery.EncounterSelection
+import com.dailytown.app.mystery.ScenarioContentPack
 import com.dailytown.app.visual.OldGinkgoVisualAssets
 import com.dailytown.app.visual.SemanticAssetKey
 
@@ -38,6 +39,9 @@ data class ExploreEncounterPresentation(
  * The 120 m value below is intentionally a UI-only anticipation boundary while an encounter is
  * already HINTED; it must never be fed back into encounter progression.
  *
+ * Copy comes from the versioned [ScenarioContentPack] (approved Old Ginkgo story for TRACE_CHAIN,
+ * engineering drafts with the real place name for the other mechanics). The Old Ginkgo note/leaf
+ * rasters are the only approved discovery art family, so every mechanic currently reuses them.
  * Old Ginkgo raster keys are also presentation-only. PREPARE/DETECT/APPROACH intentionally expose
  * no scenario art so an unknown signal is not visually spoiled before discovery.
  */
@@ -53,7 +57,11 @@ object ExploreEncounterPresentationMapper {
             return ExploreEncounterPresentation(step = ExploreExperienceStep.PREPARE)
         }
 
-        val authored = authoredCopy(selection.isRevisit)
+        val authored = ScenarioContentPack.copy(
+            mechanic = selection.template.mechanic,
+            placeName = selection.poi.name,
+            isRevisit = selection.isRevisit,
+        )
         return when (selection.encounter.phase) {
             EncounterPhase.HIDDEN -> ExploreEncounterPresentation(step = ExploreExperienceStep.PREPARE)
             EncounterPhase.HINTED -> {
@@ -104,42 +112,4 @@ object ExploreEncounterPresentationMapper {
             )
         }
     }
-
-    private fun authoredCopy(isRevisit: Boolean): AuthoredValidationCopy = if (isRevisit) {
-        AuthoredValidationCopy(
-            title = "오래된 가로수의 메모",
-            hint = "전에 걸었던 길인데, 오래된 나무 근처에서 다시 종이 같은 게 반짝였어.",
-            premise = "전에 살펴본 나무 밑에 새로운 접힘 자국이 남은 메모가 보인다.",
-            clueLabel = "잎자국이 남은 메모",
-            detectMoruLine = "전에 봤던 곳인데, 이번엔 조금 다른 흔적 같아.",
-            discoverMoruLine = "같은 장소라도 남는 이야기는 달라질 수 있나 봐.",
-            investigateMoruLine = "잎자국이 전보다 또렷해. 이건 기억해두자.",
-            resolution = "이번 산책에서 확인한 흔적을 기록에 덧붙였다.",
-            resolveMoruLine = "우리 기억에 한 장면이 더 생겼네.",
-        )
-    } else {
-        AuthoredValidationCopy(
-            title = "오래된 가로수의 메모",
-            hint = "오래된 나무 근처에서 종이 같은 게 반짝였어.",
-            premise = "나무 밑에 접힌 메모 한 장이 남아 있다. 글씨는 조금 번졌지만 마지막 문장은 읽을 수 있다.",
-            clueLabel = "잎자국이 남은 메모",
-            detectMoruLine = "저쪽이 조금 신경 쓰이는데?",
-            discoverMoruLine = "여기야. 나무 밑에 메모가 하나 있어.",
-            investigateMoruLine = "잎자국이 일부러 남긴 표시처럼 보여.",
-            resolution = "메모에 남은 작은 표시를 확인하고 오늘의 발견으로 기록했다.",
-            resolveMoruLine = "누군가 다음 사람에게 작은 힌트를 남긴 것 같아. 우리도 기억해두자.",
-        )
-    }
-
-    private data class AuthoredValidationCopy(
-        val title: String,
-        val hint: String,
-        val premise: String,
-        val clueLabel: String,
-        val detectMoruLine: String,
-        val discoverMoruLine: String,
-        val investigateMoruLine: String,
-        val resolution: String,
-        val resolveMoruLine: String,
-    )
 }
