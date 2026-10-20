@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><title>companion.moru.expression.resolved</title><metadata>source=design/source/companion/moru/moru-a2-vector-source-master-v1.svg;approval=production_export_candidate;layer=expression</metadata><defs><style>
+.ink{stroke:#214F3B;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#214F3B;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.bodyLight{fill:#F8E5BF}.bodyDusk{fill:#EBC28F}.bodyDark{fill:#B98E67}.leaf{fill:#6B8F7A}.leafLight{fill:#7FA48B}.leafDusk{fill:#71896D}.leafDark{fill:#57736D}
+.scarf{fill:#6B8F7A}.scarfDusk{fill:#7A775C}.scarfDark{fill:#405F59}.bag{fill:#8D6A43}.bagDark{fill:#5B493D}
+.cheek{fill:#F1A68A}.eye{fill:#1A1F1C}.mouth{fill:none;stroke:#1A1F1C;stroke-width:4;stroke-linecap:round}
+</style></defs><g transform="translate(128 128) scale(.92)"><path class="mouth" d="M-34-18Q-25-25-16-18M16-18Q25-25 34-18"/><circle cx="-47" cy="2" r="8" class="cheek" opacity=".8"/><circle cx="47" cy="2" r="8" class="cheek" opacity=".8"/><path class="mouth" d="M-11 7Q0 18 11 7"/><path d="M50-47L54-36L65-33L55-27L58-16L49-22L40-16L43-27L33-33L45-36Z" fill="#FFD36B" stroke="#214F3B" stroke-width="2"/></g></svg>

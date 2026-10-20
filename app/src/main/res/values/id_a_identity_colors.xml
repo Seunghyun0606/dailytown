@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ID-A2 Sprout Gate (FINAL_HUMAN_GATES_V3, locked 2026-09-15). Light layer palette. -->
+<resources>
+    <color name="id_a_icon_background">#F4EBDD</color>
+    <color name="id_a_mark_fill">#87906A</color>
+    <color name="id_a_mark_stroke">#68704E</color>
+    <color name="id_a_mark_path">#B18B45</color>
+</resources>

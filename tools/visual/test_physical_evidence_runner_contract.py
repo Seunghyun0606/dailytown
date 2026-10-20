@@ -1,0 +1,43 @@
+from pathlib import Path
+import shutil
+import subprocess
+import unittest
+
+ROOT = Path(__file__).resolve().parents[2]
+RUNNER = ROOT / "tools/android/run_naver_physical_evidence.sh"
+
+
+class PhysicalEvidenceRunnerContractTest(unittest.TestCase):
+    def test_runner_shell_syntax_is_valid(self):
+        bash = shutil.which("bash")
+        if bash is None:
+            self.skipTest("bash is not available on this host")
+        # Feed the script on stdin: a Windows bash (Git Bash/WSL) cannot always resolve a native
+        # C:\ path argument, which would turn a syntax check into a false file-not-found failure.
+        subprocess.run([bash, "-n"], input=RUNNER.read_bytes(), check=True)
+
+    def test_runner_uses_working_python_fallback(self):
+        text = RUNNER.read_text(encoding="utf-8")
+        self.assertIn("for candidate in python3 python", text)
+        self.assertIn("PYTHON_CMD=(py -3)", text)
+        self.assertIn('"${PYTHON_CMD[@]}" tools/visual/package_marker_physical_evidence.py', text)
+        self.assertIn('"${PYTHON_CMD[@]}" tools/visual/verify_marker_physical_evidence_bundle.py', text)
+        self.assertNotIn("\npython3 tools/visual/", text)
+
+    def test_runner_verifies_directory_and_zip_after_packaging(self):
+        text = RUNNER.read_text(encoding="utf-8")
+        package_at = text.index("package_marker_physical_evidence.py")
+        verifier_calls = [
+            index
+            for index in range(len(text))
+            if text.startswith("verify_marker_physical_evidence_bundle.py", index)
+        ]
+        self.assertEqual(len(verifier_calls), 2)
+        self.assertTrue(all(index > package_at for index in verifier_calls))
+        self.assertIn('--bundle "$BUNDLE_DIR"', text)
+        self.assertIn('--bundle "$BUNDLE_ZIP"', text)
+        self.assertIn("packaged and integrity-verified", text)
+
+
+if __name__ == "__main__":
+    unittest.main()

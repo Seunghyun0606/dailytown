@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="320" viewBox="0 0 256 320"><title>lighting.moru.dark</title><metadata>source=design/source/companion/moru/moru-a2-vector-source-master-v1.svg;approval=production_export_candidate;layer=lighting</metadata><defs><style>
+.ink{stroke:#214F3B;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}.thin{stroke:#214F3B;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.bodyLight{fill:#F8E5BF}.bodyDusk{fill:#EBC28F}.bodyDark{fill:#B98E67}.leaf{fill:#6B8F7A}.leafLight{fill:#7FA48B}.leafDusk{fill:#71896D}.leafDark{fill:#57736D}
+.scarf{fill:#6B8F7A}.scarfDusk{fill:#7A775C}.scarfDark{fill:#405F59}.bag{fill:#8D6A43}.bagDark{fill:#5B493D}
+.cheek{fill:#F1A68A}.eye{fill:#1A1F1C}.mouth{fill:none;stroke:#1A1F1C;stroke-width:4;stroke-linecap:round}
+</style></defs><g transform="translate(128 175) scale(.78)"><path d="M0-92C55-92 88-50 84 8C80 67 48 105 0 105C-48 105-80 67-84 8C-88-50-55-92 0-92Z" fill="#B98E67" class="ink"/>
+<path d="M-8-100C-47-113-62-149-49-178C-14-176 11-150 7-116Z" fill="#57736D" class="ink"/>
+<path d="M8-103C45-119 72-103 81-72C50-54 18-65 4-91Z" fill="#57736D" class="ink" transform="rotate(-38 8 -103)"/>
+<path d="M-58 18C-27 5 25 3 58 18L47 47C18 39-17 39-47 47Z" fill="#405F59" class="ink"/>
+<path d="M49 28C74 26 88 44 84 71C80 92 61 100 43 90L42 44Z" fill="#5B493D" class="ink"/>
+<path d="M47 34C56 3 71-8 82-17" fill="none" class="thin"/>
+<ellipse cx="-32" cy="68" rx="18" ry="11" fill="#B98E67" class="ink"/><ellipse cx="32" cy="68" rx="18" ry="11" fill="#B98E67" class="ink"/>
+<ellipse cx="-26" cy="108" rx="22" ry="12" fill="#5B493D" class="ink"/><ellipse cx="26" cy="108" rx="22" ry="12" fill="#5B493D" class="ink"/></g></svg>

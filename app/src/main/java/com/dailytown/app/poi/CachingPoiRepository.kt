@@ -1,7 +1,9 @@
 package com.dailytown.app.poi
 
-import com.dailytown.app.domain.ExplorationEngine
+import com.dailytown.app.domain.GeoDistance
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.domain.HaversineGeoDistance
+import kotlinx.coroutines.CancellationException
 
 /**
  * Provider-neutral POI cache. It deliberately caches a padded search area and filters the result
@@ -17,7 +19,7 @@ class CachingPoiRepository(
     private val staleFallbackMillis: Long = 30 * 60 * 1_000L,
     private val paddingMeters: Double = 250.0,
     private val maxEntries: Int = 8,
-    private val distance: ExplorationEngine = ExplorationEngine(),
+    private val distance: GeoDistance = HaversineGeoDistance,
 ) : PoiRepository {
     private data class CacheEntry(
         val center: GeoPoint,
@@ -30,8 +32,8 @@ class CachingPoiRepository(
 
     override suspend fun nearby(center: GeoPoint, radiusMeters: Double): List<Poi> {
         require(radiusMeters > 0.0) { "radiusMeters must be positive" }
-        val now = clockMillis()
-        findCovering(center, radiusMeters, now, freshOnly = true)?.let { entry ->
+        val lookupAt = clockMillis()
+        findCovering(center, radiusMeters, lookupAt, freshOnly = true)?.let { entry ->
             return filter(entry.pois, center, radiusMeters)
         }
 
@@ -39,20 +41,32 @@ class CachingPoiRepository(
         return try {
             val fetched = delegate.nearby(center, upstreamRadius)
                 .distinctBy { it.id }
+            // Cache freshness starts when the upstream result actually completed, not when a possibly
+            // slow request began. This keeps the configured TTL meaningful under poor connectivity.
+            val fetchedAt = clockMillis()
             remember(
                 CacheEntry(
                     center = center,
                     coverageRadiusMeters = upstreamRadius,
-                    fetchedAtMillis = now,
+                    fetchedAtMillis = fetchedAt,
                     pois = fetched,
                 ),
             )
             filter(fetched, center, radiusMeters)
-        } catch (error: Throwable) {
-            val fallback = findCovering(center, radiusMeters, now, freshOnly = false)
+        } catch (error: CancellationException) {
+            // Cancellation is lifecycle/control flow, not a provider outage. Returning stale data here
+            // would keep abandoned searches alive after navigation/session shutdown.
+            throw error
+        } catch (error: Exception) {
+            // Re-check age after the failed call. A slow timeout may itself cross the stale grace
+            // boundary, so using the pre-request timestamp could serve evidence older than policy.
+            val failedAt = clockMillis()
+            val fallback = findCovering(center, radiusMeters, failedAt, freshOnly = false)
             if (fallback != null) filter(fallback.pois, center, radiusMeters) else throw error
         }
     }
+
+    override fun sourceMetadata(): List<PoiSourceMetadata> = delegate.sourceMetadata()
 
     fun clear() {
         entries.clear()
@@ -69,7 +83,7 @@ class CachingPoiRepository(
             .asSequence()
             .filter { now - it.fetchedAtMillis in 0..maxAge }
             .filter { entry ->
-                val centerOffset = distance.distanceMeters(entry.center, center)
+                val centerOffset = distance.meters(entry.center, center)
                 centerOffset + requestedRadiusMeters <= entry.coverageRadiusMeters
             }
             .maxByOrNull { it.fetchedAtMillis }
@@ -77,7 +91,7 @@ class CachingPoiRepository(
 
     private fun remember(entry: CacheEntry) {
         entries.removeAll { existing ->
-            distance.distanceMeters(existing.center, entry.center) < 10.0 &&
+            distance.meters(existing.center, entry.center) < 10.0 &&
                 existing.coverageRadiusMeters == entry.coverageRadiusMeters
         }
         entries.add(0, entry)
@@ -87,5 +101,5 @@ class CachingPoiRepository(
     }
 
     private fun filter(items: List<Poi>, center: GeoPoint, radiusMeters: Double): List<Poi> =
-        items.filter { distance.distanceMeters(center, it.position) <= radiusMeters }
+        items.filter { distance.meters(center, it.position) <= radiusMeters }
 }

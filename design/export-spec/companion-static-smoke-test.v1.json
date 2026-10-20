@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "purpose": "development-session smoke test required before companion static production candidates are authoritatively promoted to production_export",
+  "input_batches": [
+    "design/production/production-promotion-batch-01.v1.json",
+    "design/production/production-promotion-batch-01-luca-derivatives.v1.json"
+  ],
+  "companions": ["moru", "luca"],
+  "required_checks": [
+    {
+      "id": "asset_loader_semantic_resolution",
+      "pass_when": "all requested semantic keys resolve without raw filename coupling"
+    },
+    {
+      "id": "expression_plus_lighting_composition",
+      "matrix": {
+        "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
+        "lighting": ["LIGHT", "WARM_DUSK", "DARK"]
+      },
+      "pass_when": "layer anchors align and composition does not shift canonical face/body geometry"
+    },
+    {
+      "id": "compact_48dp",
+      "contexts": ["map_avatar", "hud_portrait"],
+      "pass_when": "identity and critical expression cues remain readable"
+    },
+    {
+      "id": "fallback",
+      "cases": [
+        "missing_expression_to_neutral",
+        "missing_lighting_to_LIGHT",
+        "missing_animation_to_static_expression"
+      ],
+      "pass_when": "fallback is deterministic and logged without gameplay-state changes"
+    },
+    {
+      "id": "moru_affinity_swap",
+      "profiles": ["base", "familiar", "trusted", "best_friend"],
+      "pass_when": "appearance profile replacement does not change companionId or expression/lighting semantics"
+    },
+    {
+      "id": "moru_luca_switch",
+      "pass_when": "same semantic expression and lighting request can switch companionId with no domain-code filename dependency"
+    }
+  ],
+  "debug_capture_minimum": [
+    "moru.neutral.LIGHT.48dp",
+    "moru.clue_found.WARM_DUSK.48dp",
+    "moru.resolved.DARK.48dp",
+    "luca.neutral.LIGHT.48dp",
+    "luca.clue_found.WARM_DUSK.48dp",
+    "luca.resolved.DARK.48dp"
+  ],
+  "result_values": ["PASS", "FAIL"],
+  "promotion_on_pass": {
+    "approval_state": "production_export",
+    "update_required": [
+      "authoritative production manifest",
+      "runtime resource mapping",
+      "checksum verification"
+    ]
+  },
+  "design_session_boundary": "no Android/Kotlin implementation in design session"
+}
