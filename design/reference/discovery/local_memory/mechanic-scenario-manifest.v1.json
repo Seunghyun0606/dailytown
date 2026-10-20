@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "mechanic": "local_memory",
+  "status": "runtime_bound_owner_approved_2026_10_20",
+  "style_baseline": "Old Ginkgo production v3 (approved raster baseline); generated, not a new style family",
+  "provenance": {
+    "scene": {
+      "variant": "scene_local_memory_v02",
+      "generator": "ComfyUI",
+      "seed": 1472246963,
+      "attempt": 0,
+      "prompt": "anime background painting, studio ghibli inspired, soft painterly brushwork, old corner shop with a wooden community board covered in small paper notes and pressed flowers, a bicycle parked outside, quiet korean neighborhood, warm golden afternoon light, ginkgo yellow and sage green and cream palette, scattered yellow ginkgo leaves, gentle atmosphere, highly detailed background art, no people, no text",
+      "negative": "photo, photorealistic, 3d render, people, person, character, text, letters, signage text, watermark, signature, logo, frame, border, dark, night, neon, horror, blurry, oversaturated",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "model_sha256": {
+        "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+      },
+      "workflow_sha256": "208f555e4c072553a96266d0bd1560e9813948e8d621f791f9a644be1f64b051"
+    },
+    "clue": {
+      "variant": "clue_local_memory_v02",
+      "generator": "ComfyUI",
+      "seed": 1613452571,
+      "attempt": 0,
+      "prompt": "game item icon, soft painterly anime illustration, exactly one single small cream paper card with a pressed flower pinned on it and no writing, gentle watercolor shading, warm cream and sage green and ginkgo yellow palette, subtle hand-drawn outline, one object only, centered, simple background, white background, isolated on plain white",
+      "negative": "photo, photograph, photorealistic, product photo, mockup, table, wood surface, 3d render, text, letters, words, watermark, signature, logo, frame, border, multiple objects, pattern, collage, duplicate, cropped, cast shadow, scenery, paper background, beige background, grey background, textured background, vignette, two objects, pair, set, branches, extra leaves, vines, decorations around",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "model_sha256": {
+        "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+      },
+      "workflow_sha256": "208f555e4c072553a96266d0bd1560e9813948e8d621f791f9a644be1f64b051"
+    },
+    "keepsake_item": {
+      "variant": "keepsake_local_memory_v03",
+      "generator": "ComfyUI",
+      "seed": 2820503084,
+      "attempt": 0,
+      "prompt": "game item icon, soft painterly anime illustration, exactly one single small bundle of dried white flowers tied with twine, gentle watercolor shading, warm cream and sage green and ginkgo yellow palette, subtle hand-drawn outline, one object only, centered, simple background, white background, isolated on plain white",
+      "negative": "photo, photograph, photorealistic, product photo, mockup, table, wood surface, 3d render, text, letters, words, watermark, signature, logo, frame, border, multiple objects, pattern, collage, duplicate, cropped, cast shadow, scenery, paper background, beige background, grey background, textured background, vignette, two objects, pair, set, branches, extra leaves, vines, decorations around",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "model_sha256": {
+        "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+      },
+      "workflow_sha256": "208f555e4c072553a96266d0bd1560e9813948e8d621f791f9a644be1f64b051"
+    }
+  },
+  "curation_note": "shop front covered in notes, bicycle",
+  "runtime_assets": [
+    {
+      "semantic_key": "place.local_memory.main",
+      "usage": "DISCOVERY_CARD",
+      "runtime_path": "scenario/local_memory/place-main-discovery-card.v1.webp",
+      "sha256": "5974a53fc3eda9e6d79632cd6e9adf0f85b48f5954238d17f73d5330c9933dbe"
+    },
+    {
+      "semantic_key": "place.local_memory.main",
+      "usage": "RECORDS_HEADER",
+      "runtime_path": "scenario/local_memory/place-main-records-header.v1.webp",
+      "sha256": "05b5b5c281db257ccd37c397d8e14b450aaf79fcbc6bc1c87c04a987305b93b6"
+    },
+    {
+      "semantic_key": "place.local_memory.main",
+      "usage": "MEMORY_THUMBNAIL",
+      "runtime_path": "scenario/local_memory/place-main-memory-thumbnail.v1.webp",
+      "sha256": "13f35747811dadfb995d418448086f5cc33f3b6f1871ef825e4e9e9f9cef84f1"
+    },
+    {
+      "semantic_key": "memory.local_memory.keepsake",
+      "usage": "RECORDS_CARD",
+      "runtime_path": "scenario/local_memory/memory-keepsake-records-card.v1.webp",
+      "sha256": "5e4f2dd698497fcfaef7d85b1182209b3913d888b91ba624ad3a4198f4215e28"
+    },
+    {
+      "semantic_key": "memory.local_memory.keepsake",
+      "usage": "COMPANION_RECENT_MEMORY",
+      "runtime_path": "scenario/local_memory/memory-keepsake-companion-recent.v1.webp",
+      "sha256": "b7537b8e6d73c6d102981af503740a43b963a34eae7daf1f7064d24b76e0f2ff"
+    },
+    {
+      "semantic_key": "clue.local_memory.main",
+      "usage": "CLUE_ART",
+      "runtime_path": "scenario/local_memory/clue-main.v1.png",
+      "sha256": "b50ea5fcdfd2eeb642f335ddd8351131a6c72dfea0f8dd2ab070ee4153912103"
+    },
+    {
+      "semantic_key": "clue.local_memory.keepsake",
+      "usage": "CLUE_ART",
+      "runtime_path": "scenario/local_memory/clue-keepsake.v1.png",
+      "sha256": "4a2e0e2af5b9725726e9d172eb4e4a08a4809408953a0fd5abf196fd5e895b0d"
+    }
+  ]
+}

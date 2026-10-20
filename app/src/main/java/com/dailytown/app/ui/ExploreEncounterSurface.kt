@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.companion.CompanionRelationship
 import com.dailytown.app.mystery.EncounterEvent
+import com.dailytown.app.mystery.MechanicInteractions
 import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.mystery.MysteryEncounter
 import com.dailytown.app.mystery.MysteryReducer
@@ -93,6 +94,7 @@ internal fun ExploreEncounterSurface(
                     selection = requireNotNull(selection),
                     presentation = presentation,
                     reducer = reducer,
+                    showQaTools = showQaTools,
                     onCollectClue = onCollectClue,
                     onResolve = onResolve,
                 )
@@ -161,11 +163,11 @@ private fun DiscoveryContent(
         ProductionScenarioRasterAsset(
             semanticKey = key,
             usage = ScenarioAssetUsage.DISCOVERY_CARD,
-            contentDescription = "오래된 가로수 발견 장면",
+            contentDescription = presentation.placeDescription ?: "발견 장면",
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .testTag("old-ginkgo-place-discovery"),
+                .testTag("scenario-place-discovery"),
             contentScale = ContentScale.Crop,
         )
     }
@@ -174,10 +176,10 @@ private fun DiscoveryContent(
         ProductionScenarioRasterAsset(
             semanticKey = key,
             usage = ScenarioAssetUsage.CLUE_ART,
-            contentDescription = "접힌 메모 단서",
+            contentDescription = presentation.clueDescription ?: "단서",
             modifier = Modifier
                 .size(112.dp)
-                .testTag("old-ginkgo-note-discovery"),
+                .testTag("scenario-note-discovery"),
         )
     }
     presentation.moruLine?.let { MoruLine(it) }
@@ -195,7 +197,7 @@ private fun DiscoveryContent(
         },
         modifier = Modifier.testTag("encounter-start-investigation"),
     ) {
-        Text("메모 살펴보기")
+        Text("살펴보기")
     }
 }
 
@@ -204,10 +206,16 @@ private fun InvestigationContent(
     selection: EncounterSelection,
     presentation: ExploreEncounterPresentation,
     reducer: MysteryReducer,
+    showQaTools: Boolean,
     onCollectClue: (String, MysteryEncounter) -> Unit,
     onResolve: (MysteryEncounter) -> Unit,
 ) {
     val encounter = selection.encounter
+    fun collectNextClue() {
+        val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
+        val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
+        if (updated != encounter) onCollectClue(clueId, updated)
+    }
     Text(presentation.title.orEmpty(), style = MaterialTheme.typography.titleLarge)
     Text("살펴보기", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -215,20 +223,20 @@ private fun InvestigationContent(
             ProductionScenarioRasterAsset(
                 semanticKey = key,
                 usage = ScenarioAssetUsage.CLUE_ART,
-                contentDescription = "접힌 메모 단서",
+                contentDescription = presentation.clueDescription ?: "단서",
                 modifier = Modifier
                     .size(96.dp)
-                    .testTag("old-ginkgo-note-investigate"),
+                    .testTag("scenario-note-investigate"),
             )
         }
         presentation.clueAssetKey?.let { key ->
             ProductionScenarioRasterAsset(
                 semanticKey = key,
                 usage = ScenarioAssetUsage.CLUE_ART,
-                contentDescription = "은행잎 단서",
+                contentDescription = presentation.keepsakeDescription ?: "기념품 단서",
                 modifier = Modifier
                     .size(96.dp)
-                    .testTag("old-ginkgo-leaf-investigate"),
+                    .testTag("scenario-leaf-investigate"),
             )
         }
     }
@@ -243,18 +251,26 @@ private fun InvestigationContent(
     Text(
         "확인한 단서 ${encounter.clueIds.size}/${selection.template.requiredClues}",
         style = MaterialTheme.typography.bodySmall,
+        modifier = Modifier.testTag("encounter-clue-progress"),
     )
+    if (encounter.clueIds.size < selection.template.requiredClues) {
+        MechanicInteractionCard(
+            interaction = MechanicInteractions.forStep(
+                mechanic = selection.template.mechanic,
+                encounterId = encounter.id,
+                clueIndex = encounter.clueIds.size + 1,
+            ),
+            onSolved = ::collectNextClue,
+        )
+    }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (encounter.clueIds.size < selection.template.requiredClues) {
-            Button(
-                onClick = {
-                    val clueId = "${encounter.id}:clue-${encounter.clueIds.size + 1}"
-                    val updated = reducer.reduce(encounter, EncounterEvent.CollectClue(clueId))
-                    if (updated != encounter) onCollectClue(clueId, updated)
-                },
+        if (showQaTools && encounter.clueIds.size < selection.template.requiredClues) {
+            // Field-test shortcut only; players solve the mechanic interaction above.
+            OutlinedButton(
+                onClick = ::collectNextClue,
                 modifier = Modifier.testTag("encounter-collect-clue"),
             ) {
-                Text("단서 더 살펴보기")
+                Text("QA 단서 바로 수집")
             }
         }
         Button(
@@ -284,11 +300,11 @@ private fun CompletionContent(
         ProductionScenarioRasterAsset(
             semanticKey = key,
             usage = ScenarioAssetUsage.RECORDS_CARD,
-            contentDescription = "오래된 가로수의 모루와의 기억",
+            contentDescription = (presentation.placeDescription ?: "이 장소") + "에서 모루와 함께한 기억",
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(4f / 3f)
-                .testTag("old-ginkgo-memory-resolved"),
+                .testTag("scenario-memory-resolved"),
             contentScale = ContentScale.Crop,
         )
     }

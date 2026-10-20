@@ -37,7 +37,8 @@ import com.dailytown.app.visual.CompanionExpression
 import com.dailytown.app.visual.CompanionRuntimeProfile
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
-import com.dailytown.app.visual.OldGinkgoVisualAssets
+import com.dailytown.app.visual.recentScenarioArt
+import com.dailytown.app.visual.scenarioArtForPlace
 import com.dailytown.app.visual.ScenarioAssetUsage
 
 private enum class RecordsRoute { HOME, PLACE_DETAIL, CLUE_DETAIL, MEMORY_DETAIL }
@@ -184,17 +185,18 @@ private fun PlaceRecordDetail(
     onOpenMemories: () -> Unit,
 ) {
     val remembered = poiId != null && "poi:$poiId" in progress?.companionMemoryKeys.orEmpty()
-    val hasOldGinkgoPlaceEvidence = poiId != null && poiId in progress?.daily?.discoveredPoiIds.orEmpty()
+    val placeArt = poiId?.let { scenarioArtForPlace(it, progress?.recentPairKeys.orEmpty()) }
+    val hasPlaceArt = placeArt != null
     DetailPage(tag = "record-discovery-detail", title = "장소 기록", onBack = onBack, backTag = "discovery-back") {
-        if (hasOldGinkgoPlaceEvidence) {
+        if (hasPlaceArt) {
             ProductionScenarioRasterAsset(
-                semanticKey = OldGinkgoVisualAssets.PlaceMain,
+                semanticKey = requireNotNull(placeArt).place,
                 usage = ScenarioAssetUsage.RECORDS_HEADER,
-                contentDescription = "오래된 가로수 장소 기록",
+                contentDescription = "${placeArt.placeDescription} 장소 기록",
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(8f / 3f)
-                    .testTag("old-ginkgo-place-records"),
+                    .testTag("scenario-place-records"),
                 contentScale = ContentScale.Crop,
             )
         }
@@ -226,21 +228,21 @@ private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit)
             if (oldGinkgoClueCount > 0) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     ProductionScenarioRasterAsset(
-                        semanticKey = OldGinkgoVisualAssets.FoldedNote,
+                        semanticKey = recentScenarioArt(progress?.recentTemplateIds.orEmpty()).clueMain,
                         usage = ScenarioAssetUsage.CLUE_ART,
                         contentDescription = "접힌 메모 단서",
                         modifier = Modifier
                             .size(112.dp)
-                            .testTag("old-ginkgo-note-records"),
+                            .testTag("scenario-note-records"),
                     )
                     if (oldGinkgoClueCount > 1) {
                         ProductionScenarioRasterAsset(
-                            semanticKey = OldGinkgoVisualAssets.GinkgoLeaf,
+                            semanticKey = recentScenarioArt(progress?.recentTemplateIds.orEmpty()).clueKeepsake,
                             usage = ScenarioAssetUsage.CLUE_ART,
                             contentDescription = "은행잎 단서",
                             modifier = Modifier
                                 .size(112.dp)
-                                .testTag("old-ginkgo-leaf-records"),
+                                .testTag("scenario-leaf-records"),
                         )
                     }
                 }
@@ -282,16 +284,16 @@ private fun MemoryRecordDetail(
                 Text("모루와 함께 동네 이야기를 풀면 그 장소와 순간이 여기에 남아요.")
             }
         } else {
-            val hasOldGinkgoSessionEvidence = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty()
-            if (hasOldGinkgoSessionEvidence) {
+            val hasSessionArt = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty()
+            if (hasSessionArt) {
                 ProductionScenarioRasterAsset(
-                    semanticKey = OldGinkgoVisualAssets.Keepsake,
+                    semanticKey = recentScenarioArt(progress?.recentTemplateIds.orEmpty()).memory,
                     usage = ScenarioAssetUsage.RECORDS_CARD,
-                    contentDescription = "오래된 가로수의 모루와의 기억",
+                    contentDescription = "${recentScenarioArt(progress?.recentTemplateIds.orEmpty()).placeDescription}에서 모루와 함께한 기억",
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(4f / 3f)
-                        .testTag("old-ginkgo-memory-records"),
+                        .testTag("scenario-memory-records"),
                     contentScale = ContentScale.Crop,
                 )
             }

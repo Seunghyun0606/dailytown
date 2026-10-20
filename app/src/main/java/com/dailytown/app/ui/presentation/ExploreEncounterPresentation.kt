@@ -3,7 +3,7 @@ package com.dailytown.app.ui.presentation
 import com.dailytown.app.mystery.EncounterPhase
 import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.mystery.ScenarioContentPack
-import com.dailytown.app.visual.OldGinkgoVisualAssets
+import com.dailytown.app.visual.MechanicScenarioArtCatalog
 import com.dailytown.app.visual.SemanticAssetKey
 
 enum class ExploreExperienceStep {
@@ -28,6 +28,9 @@ data class ExploreEncounterPresentation(
     val noteAssetKey: SemanticAssetKey? = null,
     val clueAssetKey: SemanticAssetKey? = null,
     val memoryAssetKey: SemanticAssetKey? = null,
+    val placeDescription: String? = null,
+    val clueDescription: String? = null,
+    val keepsakeDescription: String? = null,
     val moruLine: String? = null,
     val isRevisit: Boolean = false,
 )
@@ -57,6 +60,7 @@ object ExploreEncounterPresentationMapper {
             return ExploreEncounterPresentation(step = ExploreExperienceStep.PREPARE)
         }
 
+        val art = MechanicScenarioArtCatalog.forMechanic(selection.template.mechanic)
         val authored = ScenarioContentPack.copy(
             mechanic = selection.template.mechanic,
             placeName = selection.poi.name,
@@ -89,9 +93,12 @@ object ExploreEncounterPresentationMapper {
                     premise = authored.premise,
                     clueLabel = authored.clueLabel,
                     clueSemanticKey = VALIDATION_CLUE_SEMANTIC_KEY,
-                    placeAssetKey = OldGinkgoVisualAssets.PlaceMain,
-                    noteAssetKey = OldGinkgoVisualAssets.FoldedNote,
-                    clueAssetKey = OldGinkgoVisualAssets.GinkgoLeaf,
+                    placeAssetKey = art.place,
+                    placeDescription = art.placeDescription,
+                    noteAssetKey = art.clueMain,
+                    clueDescription = art.clueDescription,
+                    clueAssetKey = art.clueKeepsake,
+                    keepsakeDescription = art.keepsakeDescription,
                     moruLine = if (investigating) authored.investigateMoruLine else authored.discoverMoruLine,
                     isRevisit = selection.isRevisit,
                 )
@@ -103,10 +110,13 @@ object ExploreEncounterPresentationMapper {
                 premise = authored.resolution,
                 clueLabel = authored.clueLabel,
                 clueSemanticKey = VALIDATION_CLUE_SEMANTIC_KEY,
-                placeAssetKey = OldGinkgoVisualAssets.PlaceMain,
-                noteAssetKey = OldGinkgoVisualAssets.FoldedNote,
-                clueAssetKey = OldGinkgoVisualAssets.GinkgoLeaf,
-                memoryAssetKey = OldGinkgoVisualAssets.Keepsake,
+                placeAssetKey = art.place,
+                    placeDescription = art.placeDescription,
+                noteAssetKey = art.clueMain,
+                    clueDescription = art.clueDescription,
+                clueAssetKey = art.clueKeepsake,
+                    keepsakeDescription = art.keepsakeDescription,
+                memoryAssetKey = art.memory,
                 moruLine = authored.resolveMoruLine,
                 isRevisit = selection.isRevisit,
             )

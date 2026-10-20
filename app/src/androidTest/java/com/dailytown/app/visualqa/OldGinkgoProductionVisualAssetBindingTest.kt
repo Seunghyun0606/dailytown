@@ -28,8 +28,12 @@ class OldGinkgoProductionVisualAssetBindingTest {
 
     @Test
     fun packagedOldGinkgoRuntimeBytesMatchApprovedDesignChecksumsAndDimensions() {
+        // Old Ginkgo plus every generated mechanic scenario pack: exact bytes and dimensions on device.
         val records = ProductionScenarioAssetRegistry.records()
-        assertEquals(ProductionScenarioAssetRegistry.PROMOTED_OLD_GINKGO_ASSET_COUNT, records.size)
+        assertEquals(
+            ProductionScenarioAssetRegistry.PROMOTED_OLD_GINKGO_ASSET_COUNT + ProductionScenarioAssetRegistry.PROMOTED_MECHANIC_ASSET_COUNT,
+            records.size,
+        )
 
         records.forEach { record ->
             val bytes = catalog.open(record).use { it.readBytes() }

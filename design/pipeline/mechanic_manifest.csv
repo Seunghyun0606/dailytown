@@ -1,0 +1,22 @@
+id,enabled,category,style,post,prompt,negative_extra,width,height,seed,variants,steps,cfg,lora_strength,target_w,target_h,sheet_group,labels,min_pass,notes
+scene_sound_pattern,1,scene,dt_scene,dt_scene,"narrow alley under old shop eaves with a small brass wind chime hanging from the eaves, potted plants, stone steps",,1344,768,,3,,,,1344,768,mechanic_scenes,sound_pattern,2,mechanic place scene
+clue_sound_pattern,1,mclue,dt_item,storybook_sticker,small brass wind chime bell with a short red string,,1024,1024,,4,,,,768,768,mechanic_items,sound_pattern,2,mechanic clue item
+keepsake_sound_pattern,1,mclue,dt_item,storybook_sticker,single soft grey and white bird feather,,1024,1024,,4,,,,512,512,mechanic_items,sound_pattern,2,mechanic keepsake item
+scene_time_layer,1,scene,dt_scene,dt_scene,"old weathered stone boundary marker standing at the corner of a low stone wall between newer houses, ivy, fallen ginkgo leaves",,1344,768,,3,,,,1344,768,mechanic_scenes,time_layer,2,mechanic place scene
+clue_time_layer,1,mclue,dt_item,storybook_sticker,small weathered stone tablet with faded carved lines and no letters,,1024,1024,,4,,,,768,768,mechanic_items,time_layer,2,mechanic clue item
+keepsake_time_layer,1,mclue,dt_item,storybook_sticker,small antique brass key with a round bow,,1024,1024,,4,,,,512,512,mechanic_items,time_layer,2,mechanic keepsake item
+scene_symbol_match,1,scene,dt_scene,dt_scene,"quiet stepped alley with small green leaf symbols painted on several walls and stair risers, lanterns, potted plants",,1344,768,,3,,,,1344,768,mechanic_scenes,symbol_match,2,mechanic place scene
+clue_symbol_match,1,mclue,dt_item,storybook_sticker,small square ceramic tile painted with a green leaf symbol,,1024,1024,,4,,,,768,768,mechanic_items,symbol_match,2,mechanic clue item
+keepsake_symbol_match,1,mclue,dt_item,storybook_sticker,ginkgo leaf bookmark with a small cream ribbon,,1024,1024,,4,,,,512,512,mechanic_items,symbol_match,2,mechanic keepsake item
+scene_lost_object,1,scene,dt_scene,dt_scene,small neighborhood park with a wooden bench under ginkgo trees and a tiny knitted pouch left on the bench,,1344,768,,3,,,,1344,768,mechanic_scenes,lost_object,2,mechanic place scene
+clue_lost_object,1,mclue,dt_item,storybook_sticker,small hand-knitted cream pouch with a drawstring,,1024,1024,,4,,,,768,768,mechanic_items,lost_object,2,mechanic clue item
+keepsake_lost_object,1,mclue,dt_item,storybook_sticker,small brown acorn with its cap,,1024,1024,,4,,,,512,512,mechanic_items,lost_object,2,mechanic keepsake item
+scene_photo_angle,1,scene,dt_scene,dt_scene,"viewpoint at the top of old stone stairs overlooking layered rooftops and a distant green hill, iron railing",,1344,768,,3,,,,1344,768,mechanic_scenes,photo_angle,2,mechanic place scene
+clue_photo_angle,1,mclue,dt_item,storybook_sticker,small round brass magnifying lens,,1024,1024,,4,,,,768,768,mechanic_items,photo_angle,2,mechanic clue item
+keepsake_photo_angle,1,mclue,dt_item,storybook_sticker,torn scrap of a hand-drawn paper map with a dotted path and no lettering,,1024,1024,,4,,,,512,512,mechanic_items,photo_angle,2,mechanic keepsake item
+scene_local_memory,1,scene,dt_scene,dt_scene,"old corner shop with a wooden community board covered in small paper notes and pressed flowers, a bicycle parked outside",,1344,768,,3,,,,1344,768,mechanic_scenes,local_memory,2,mechanic place scene
+clue_local_memory,1,mclue,dt_item,storybook_sticker,small cream paper card with a pressed flower pinned on it and no writing,,1024,1024,,4,,,,768,768,mechanic_items,local_memory,2,mechanic clue item
+keepsake_local_memory,1,mclue,dt_item,storybook_sticker,small bundle of dried white flowers tied with twine,,1024,1024,,4,,,,512,512,mechanic_items,local_memory,2,mechanic keepsake item
+scene_companion_sense,1,scene,dt_scene,dt_scene,"small community garden path with young sprouts in raised beds, a breeze carrying petals and ginkgo leaves, wooden fence",,1344,768,,3,,,,1344,768,mechanic_scenes,companion_sense,2,mechanic place scene
+clue_companion_sense,1,mclue,dt_item,storybook_sticker,small green sprout growing in a tiny clay pot,,1024,1024,,4,,,,768,768,mechanic_items,companion_sense,2,mechanic clue item
+keepsake_companion_sense,1,mclue,dt_item,storybook_sticker,soft green ribbon tied in a bow with a tiny leaf sprout,,1024,1024,,4,,,,512,512,mechanic_items,companion_sense,2,mechanic keepsake item

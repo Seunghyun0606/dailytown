@@ -44,7 +44,8 @@ import com.dailytown.app.visual.AppearanceProfile
 import com.dailytown.app.visual.CompanionExpression
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
-import com.dailytown.app.visual.OldGinkgoVisualAssets
+import com.dailytown.app.visual.MechanicScenarioArtCatalog
+import com.dailytown.app.visual.recentScenarioArt
 import com.dailytown.app.visual.ScenarioAssetUsage
 
 private enum class CompanionPanel { NONE, TALK, MEMORIES, GIFTS }
@@ -65,7 +66,7 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
         }
         .firstOrNull()
     val hasTodayDiscovery = (progress?.daily?.discoveredPoiIds?.size ?: 0) > 0
-    val hasOldGinkgoSessionEvidence = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty() &&
+    val hasSessionArt = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty() &&
         !progress?.companionMemoryKeys.isNullOrEmpty()
     val mood = if (hasTodayDiscovery) "호기심 가득" else "산책 준비 중"
     val contextualLine = when {
@@ -148,15 +149,15 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("최근 함께한 기억", style = MaterialTheme.typography.titleMedium)
-                if (hasOldGinkgoSessionEvidence) {
+                if (hasSessionArt) {
                     ProductionScenarioRasterAsset(
-                        semanticKey = OldGinkgoVisualAssets.Keepsake,
+                        semanticKey = recentScenarioArt(progress?.recentTemplateIds.orEmpty()).memory,
                         usage = ScenarioAssetUsage.COMPANION_RECENT_MEMORY,
-                        contentDescription = "오래된 가로수에서 함께한 기억",
+                        contentDescription = "${recentScenarioArt(progress?.recentTemplateIds.orEmpty()).placeDescription}에서 함께한 기억",
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(16f / 9f)
-                            .testTag("old-ginkgo-memory-companion"),
+                            .testTag("scenario-memory-companion"),
                         contentScale = ContentScale.Crop,
                     )
                 }
@@ -234,9 +235,21 @@ internal fun CompanionScreen(progress: ExplorationProgress?) {
                     Text("동네 이야기를 하나 풀면 그 이야기를 닮은 기념품이 생겨요.", modifier = Modifier.testTag("companion-keepsakes-empty"))
                 } else {
                     keepsakes.forEach { keepsake ->
-                        Column(Modifier.fillMaxWidth().testTag("companion-keepsake")) {
-                            Text("• ${keepsake.name}", style = MaterialTheme.typography.titleSmall)
-                            Text(keepsake.note, style = MaterialTheme.typography.bodySmall)
+                        Row(
+                            Modifier.fillMaxWidth().testTag("companion-keepsake"),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            ProductionScenarioRasterAsset(
+                                semanticKey = MechanicScenarioArtCatalog.forMechanic(keepsake.mechanic).clueKeepsake,
+                                usage = ScenarioAssetUsage.CLUE_ART,
+                                contentDescription = keepsake.name,
+                                modifier = Modifier.size(56.dp),
+                            )
+                            Column(Modifier.weight(1f)) {
+                                Text(keepsake.name, style = MaterialTheme.typography.titleSmall)
+                                Text(keepsake.note, style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                     }
                     val remaining = KeepsakeCatalog.all.size - keepsakes.size

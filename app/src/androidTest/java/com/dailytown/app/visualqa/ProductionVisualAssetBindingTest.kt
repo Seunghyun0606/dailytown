@@ -72,8 +72,9 @@ class ProductionVisualAssetBindingTest {
 
     @Test
     fun oldGinkgoScenarioPackUsesDedicatedRasterRegistryWithExactPackagedChecksums() {
+        val oldGinkgo = ProductionScenarioAssetRegistry.oldGinkgoBindings()
         val records = ProductionScenarioAssetRegistry.records()
-        assertEquals(ProductionScenarioAssetRegistry.PROMOTED_OLD_GINKGO_ASSET_COUNT, records.size)
+        assertEquals(ProductionScenarioAssetRegistry.PROMOTED_OLD_GINKGO_ASSET_COUNT, oldGinkgo.size)
         assertEquals(
             setOf(
                 OldGinkgoVisualAssets.FoldedNote,
@@ -81,7 +82,7 @@ class ProductionVisualAssetBindingTest {
                 OldGinkgoVisualAssets.PlaceMain,
                 OldGinkgoVisualAssets.Keepsake,
             ),
-            records.map { it.semanticKey }.toSet(),
+            oldGinkgo.map { it.semanticKey }.toSet(),
         )
 
         records.forEach { record ->
@@ -91,7 +92,7 @@ class ProductionVisualAssetBindingTest {
             )
             val bytes = productionScenarioCatalog.open(record).use { it.readBytes() }
             assertEquals(
-                "Old Ginkgo packaged checksum mismatch for ${record.semanticKey.value}/${record.usage}",
+                "Scenario packaged checksum mismatch for ${record.semanticKey.value}/${record.usage}",
                 record.expectedSha256,
                 sha256(bytes),
             )

@@ -12,6 +12,7 @@ import androidx.test.core.graphics.writeToTestStorage
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.MainActivity
+import com.dailytown.app.MechanicInteractionSolver
 import com.dailytown.app.OnboardingStateRule
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
@@ -68,10 +69,7 @@ class ProductJourneyCaptureTest {
         composeRule.onNodeWithTag("encounter-start-investigation").performScrollTo().performClick()
         waitFor("explore-state-investigate")
         capture("12-investigate")
-        repeat(3) {
-            composeRule.waitForIdle()
-            if (exists("encounter-collect-clue")) composeRule.onNodeWithTag("encounter-collect-clue").performScrollTo().performClick()
-        }
+        MechanicInteractionSolver(composeRule).collectAllClues()
         composeRule.onNodeWithTag("encounter-resolve").performScrollTo().performClick()
         waitFor("explore-state-record")
         composeRule.onNodeWithTag("explore-state-record").performScrollTo()

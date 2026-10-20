@@ -47,6 +47,8 @@ class PrototypeJourneyTest {
         waitForTag("explore-state-discover", 20_000L)
         composeRule.onNodeWithTag("encounter-start-investigation").performScrollTo().performClick()
         waitForTag("explore-state-investigate")
+        // Earn one clue the player way: solve the mechanic-specific interaction.
+        MechanicInteractionSolver(composeRule).solveOne()
         repeat(3) {
             composeRule.waitForIdle()
             if (exists("encounter-collect-clue")) {

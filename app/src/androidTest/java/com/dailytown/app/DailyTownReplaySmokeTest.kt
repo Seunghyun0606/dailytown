@@ -73,8 +73,8 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("explore-domain-state")
             .performScrollTo()
             .assert(hasText("HINTED", substring = true))
-        composeRule.onAllNodesWithTag("old-ginkgo-place-discovery").assertCountEquals(0)
-        composeRule.onAllNodesWithTag("old-ginkgo-note-discovery").assertCountEquals(0)
+        composeRule.onAllNodesWithTag("scenario-place-discovery").assertCountEquals(0)
+        composeRule.onAllNodesWithTag("scenario-note-discovery").assertCountEquals(0)
 
         // Explore remains composed and replay keeps running behind another tab.
         composeRule.onNodeWithTag("nav-companion").performClick()
@@ -82,32 +82,26 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("nav-explore").performClick()
 
         waitForTag("explore-state-discover", timeoutMillis = 15_000L)
-        composeRule.onNodeWithTag("old-ginkgo-place-discovery")
+        composeRule.onNodeWithTag("scenario-place-discovery")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-place-discovery"))
-        composeRule.onNodeWithTag("old-ginkgo-note-discovery")
+            .assert(hasTestTag("scenario-place-discovery"))
+        composeRule.onNodeWithTag("scenario-note-discovery")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-note-discovery"))
+            .assert(hasTestTag("scenario-note-discovery"))
         composeRule.onNodeWithTag("encounter-start-investigation")
             .performScrollTo()
             .performClick()
         waitForTag("explore-state-investigate")
-        composeRule.onNodeWithTag("old-ginkgo-note-investigate")
+        composeRule.onNodeWithTag("scenario-note-investigate")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-note-investigate"))
-        composeRule.onNodeWithTag("old-ginkgo-leaf-investigate")
+            .assert(hasTestTag("scenario-note-investigate"))
+        composeRule.onNodeWithTag("scenario-leaf-investigate")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-leaf-investigate"))
+            .assert(hasTestTag("scenario-leaf-investigate"))
 
-        // Existing templates require two or three clues. The discovery CTA already collected clue 1.
-        repeat(3) {
-            composeRule.waitForIdle()
-            if (tagExists("encounter-collect-clue")) {
-                composeRule.onNodeWithTag("encounter-collect-clue")
-                    .performScrollTo()
-                    .performClick()
-            }
-        }
+        // Existing templates require two or three clues. The discovery CTA already collected clue 1;
+        // the rest are earned through the mechanic-specific interaction, as a player would.
+        MechanicInteractionSolver(composeRule).collectAllClues()
         composeRule.onNodeWithTag("encounter-resolve")
             .performScrollTo()
             .assertIsEnabled()
@@ -115,16 +109,16 @@ class DailyTownReplaySmokeTest {
 
         waitForTag("explore-state-record")
         composeRule.onNodeWithText("오늘의 기록이 생겼어요").assert(hasText("오늘의 기록이 생겼어요"))
-        composeRule.onNodeWithTag("old-ginkgo-memory-resolved")
+        composeRule.onNodeWithTag("scenario-memory-resolved")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-memory-resolved"))
+            .assert(hasTestTag("scenario-memory-resolved"))
 
         // Companion reads the same persisted bond/memory state, then system Back returns to live Explore.
         composeRule.onNodeWithTag("nav-companion").performClick()
         composeRule.onNodeWithTag("companion-recent-memory").performScrollTo().assert(hasTestTag("companion-recent-memory"))
-        composeRule.onNodeWithTag("old-ginkgo-memory-companion")
+        composeRule.onNodeWithTag("scenario-memory-companion")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-memory-companion"))
+            .assert(hasTestTag("scenario-memory-companion"))
         composeRule.onAllNodesWithText("아직 이름이 남은 장소 기억은 없어요.").assertCountEquals(0)
         composeRule.runOnUiThread {
             composeRule.activity.onBackPressedDispatcher.onBackPressed()
@@ -142,9 +136,9 @@ class DailyTownReplaySmokeTest {
         composeRule.onNodeWithTag("records-memories")
             .performScrollTo()
             .performClick()
-        composeRule.onNodeWithTag("old-ginkgo-memory-records")
+        composeRule.onNodeWithTag("scenario-memory-records")
             .performScrollTo()
-            .assert(hasTestTag("old-ginkgo-memory-records"))
+            .assert(hasTestTag("scenario-memory-records"))
 
         composeRule.onNodeWithTag("nav-explore").performClick()
         waitForTag("explore-state-record")
