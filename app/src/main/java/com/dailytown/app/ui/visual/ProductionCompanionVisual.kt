@@ -10,14 +10,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.dailytown.app.visual.CompanionAssetResolver
 import com.dailytown.app.visual.CompanionRuntimeProfile
+import com.dailytown.app.visual.CompanionRuntimeProfileSelector
 import com.dailytown.app.visual.CompanionUsageContext
 import com.dailytown.app.visual.CompanionVisualRequest
 import com.dailytown.app.visual.MbCalmReactiveMotion
 import com.dailytown.app.visual.MoruV2Resolution
 import com.dailytown.app.visual.MoruV2SemanticResolver
 
-/** Default remains the current v1 profile until v2 Android + physical-device gates are complete. */
-val LocalCompanionRuntimeProfile = staticCompositionLocalOf { CompanionRuntimeProfile.LEGACY_V1 }
+/** Moru v2 Candidate 3 is the default since the R-B physical-device gate passed (2026-10-20); v1 is rollback. */
+val LocalCompanionRuntimeProfile = staticCompositionLocalOf { CompanionRuntimeProfileSelector.defaultProfile }
 
 /**
  * Versioned Compose entry point for production companion visuals.

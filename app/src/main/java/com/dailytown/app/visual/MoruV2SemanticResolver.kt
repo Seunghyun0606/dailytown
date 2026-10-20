@@ -17,18 +17,17 @@ enum class CompanionRuntimeProfile(val semantic: String) {
 
 object CompanionRuntimeProfileSelector {
     const val DEBUG_INTENT_EXTRA = "com.dailytown.app.extra.COMPANION_RUNTIME_PROFILE"
-    val defaultProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.LEGACY_V1
-
     /**
-     * Debug/internal prototype builds show the approved Moru Candidate 3 raster family by default.
-     * Release stays on v1 until the R-B physical-device readability gate passes (MORU_PRODUCTION_EXPORT_V2).
+     * Moru v2 Candidate 3 is the default everywhere since the R-B outdoor readability gate was passed
+     * on a physical device (owner decision 2026-10-20, docs/validation/R_B_OUTDOOR_READABILITY_RESULT.md).
+     * v1 remains the rollback profile: debug builds can force it with the intent extra.
      */
-    val debugDefaultProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.MORU_CANONICAL_V2
+    val defaultProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.MORU_CANONICAL_V2
+    val rollbackProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.LEGACY_V1
 
-    /** Release builds fail closed to v1. Debug builds default to v2; an explicit extra can roll back to v1. */
+    /** Release always uses the default; debug honours an explicit valid profile extra, else the default. */
     fun select(debugBuild: Boolean, requestedSemantic: String?): CompanionRuntimeProfile {
-        if (!debugBuild) return defaultProfile
-        if (requestedSemantic == null) return debugDefaultProfile
+        if (!debugBuild || requestedSemantic == null) return defaultProfile
         return CompanionRuntimeProfile.fromSemantic(requestedSemantic) ?: defaultProfile
     }
 }

@@ -129,35 +129,22 @@ class MoruV2SemanticResolverTest {
     }
 
     @Test
-    fun profileSelectionKeepsV1AsDefaultAndRollback() {
-        assertEquals(CompanionRuntimeProfile.LEGACY_V1, CompanionRuntimeProfileSelector.defaultProfile)
+    fun profileSelectionDefaultsToV2AfterRbGateAndKeepsV1Rollback() {
+        assertEquals(CompanionRuntimeProfile.MORU_CANONICAL_V2, CompanionRuntimeProfileSelector.defaultProfile)
+        assertEquals(CompanionRuntimeProfile.LEGACY_V1, CompanionRuntimeProfileSelector.rollbackProfile)
+        assertEquals(CompanionRuntimeProfile.MORU_CANONICAL_V2, CompanionRuntimeProfileSelector.select(false, null))
+        assertEquals(CompanionRuntimeProfile.MORU_CANONICAL_V2, CompanionRuntimeProfileSelector.select(true, null))
         assertEquals(
-            CompanionRuntimeProfile.MORU_CANONICAL_V2,
-            CompanionRuntimeProfileSelector.select(true, CompanionRuntimeProfile.MORU_CANONICAL_V2.semantic),
-        )
-        assertEquals(
+            "debug can force the v1 rollback profile",
             CompanionRuntimeProfile.LEGACY_V1,
             CompanionRuntimeProfileSelector.select(true, CompanionRuntimeProfile.LEGACY_V1.semantic),
         )
         assertEquals(
-            CompanionRuntimeProfile.LEGACY_V1,
-            CompanionRuntimeProfileSelector.select(true, "unknown-profile"),
-        )
-        assertEquals(
-            CompanionRuntimeProfile.LEGACY_V1,
-            CompanionRuntimeProfileSelector.select(false, CompanionRuntimeProfile.MORU_CANONICAL_V2.semantic),
-        )
-        assertFalse(CompanionRuntimeProfileSelector.defaultProfile == CompanionRuntimeProfile.MORU_CANONICAL_V2)
-        assertEquals(
-            "debug prototype builds show Candidate 3 by default",
+            "release ignores debug extras",
             CompanionRuntimeProfile.MORU_CANONICAL_V2,
-            CompanionRuntimeProfileSelector.select(true, null),
+            CompanionRuntimeProfileSelector.select(false, CompanionRuntimeProfile.LEGACY_V1.semantic),
         )
-        assertEquals(
-            "release never activates v2 before the R-B gate",
-            CompanionRuntimeProfile.LEGACY_V1,
-            CompanionRuntimeProfileSelector.select(false, null),
-        )
+        assertEquals(CompanionRuntimeProfile.MORU_CANONICAL_V2, CompanionRuntimeProfileSelector.select(true, "unknown-profile"))
         assertNotEquals(CompanionRuntimeProfile.LEGACY_V1.semantic, CompanionRuntimeProfile.MORU_CANONICAL_V2.semantic)
     }
 }

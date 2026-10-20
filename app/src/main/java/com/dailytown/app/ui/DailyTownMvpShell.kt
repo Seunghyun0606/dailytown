@@ -38,6 +38,7 @@ import com.dailytown.app.ui.visual.DailyTownTheme
 import com.dailytown.app.ui.visual.DailyTownTokens
 import com.dailytown.app.ui.visual.LocalCompanionRuntimeProfile
 import com.dailytown.app.visual.CompanionRuntimeProfile
+import com.dailytown.app.visual.CompanionRuntimeProfileSelector
 import java.time.LocalDate
 import kotlinx.coroutines.launch
 
@@ -55,7 +56,7 @@ fun DailyTownMvpShell(
     progressStore: ProgressStore,
     poiRepository: PoiRepository,
     reminderManager: LocalReminderManager,
-    companionRuntimeProfile: CompanionRuntimeProfile = CompanionRuntimeProfile.LEGACY_V1,
+    companionRuntimeProfile: CompanionRuntimeProfile = CompanionRuntimeProfileSelector.defaultProfile,
 ) {
     var selectedSection by rememberSaveable { mutableStateOf(MvpSection.EXPLORE) }
     var qaMode by rememberSaveable { mutableStateOf(false) }
