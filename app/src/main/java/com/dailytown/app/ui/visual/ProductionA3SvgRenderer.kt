@@ -50,7 +50,12 @@ class ProductionA3SvgRenderer(
             "Production A-3 renderer rejects non-A3 semantic key: ${key.value}"
         }
         svgCache.get(key.value)?.let { return it }
-        val parsed = SVG.getFromString(catalog.readSvg(key))
+        val parsed = SVG.getFromString(catalog.readSvg(key)).apply {
+            // A-3 exports declare intrinsic width/height; AndroidSVG then draws at that pixel size and
+            // ignores the viewport. 100% makes the viewBox scale (xMidYMid meet) into the target slot.
+            setDocumentWidth("100%")
+            setDocumentHeight("100%")
+        }
         svgCache.put(key.value, parsed)
         return parsed
     }
