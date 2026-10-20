@@ -110,9 +110,14 @@ class EncounterGenerator(
 class EncounterProximityController(
     private val reducer: MysteryReducer,
     private val distance: ExplorationEngine = ExplorationEngine(),
-    private val hintRadiusMeters: Double = 180.0,
-    private val discoveryRadiusMeters: Double = 60.0,
+    private val hintRadiusMeters: Double = HINT_RADIUS_METERS,
+    private val discoveryRadiusMeters: Double = DISCOVERY_RADIUS_METERS,
 ) {
+    companion object {
+        const val HINT_RADIUS_METERS = 180.0
+        const val DISCOVERY_RADIUS_METERS = 60.0
+    }
+
     fun advance(encounter: MysteryEncounter, user: GeoPoint, poi: GeoPoint): MysteryEncounter {
         val meters = distance.distanceMeters(user, poi)
         var next = encounter

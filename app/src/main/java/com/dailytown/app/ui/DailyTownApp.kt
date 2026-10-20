@@ -54,6 +54,7 @@ import com.dailytown.app.domain.Companion
 import com.dailytown.app.domain.ExplorationSession
 import com.dailytown.app.domain.ExplorationState
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.domain.HaversineGeoDistance
 import com.dailytown.app.domain.MysterySpot
 import com.dailytown.app.location.FusedDeviceLocationSource
 import com.dailytown.app.location.LocationQualityPolicy
@@ -135,6 +136,18 @@ fun DailyTownApp(
     var walkStart by remember { mutableStateOf<WalkStart?>(null) }
     val sessionDiscoveredPoiIds = remember { mutableStateListOf<String>() }
     var walkSummary by remember { mutableStateOf<WalkSessionSummary?>(null) }
+    var tappedMarker by remember { mutableStateOf<MapMarkerSpec?>(null) }
+
+    DisposableEffect(mapAdapter) {
+        mapAdapter.setMarkerClickListener { spec -> tappedMarker = spec }
+        onDispose { mapAdapter.setMarkerClickListener(null) }
+    }
+    LaunchedEffect(tappedMarker) {
+        if (tappedMarker != null) {
+            kotlinx.coroutines.delay(4_000L)
+            tappedMarker = null
+        }
+    }
 
     val deviceSource = remember(trackingPreset) {
         FusedDeviceLocationSource(
@@ -447,6 +460,27 @@ fun DailyTownApp(
                             contentDescription = "지도 위 동행 캐릭터 ${snapshot.state.companion.name}",
                             rasterTargetPx = 192,
                         )
+                    }
+
+                    tappedMarker?.let { marker ->
+                        val meters = snapshot.currentLocation?.let { sample ->
+                            HaversineGeoDistance.meters(sample.point, marker.position).roundToInt()
+                        }
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(12.dp)
+                                .testTag("map-marker-label"),
+                            shape = MaterialTheme.shapes.medium,
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+                            tonalElevation = 4.dp,
+                        ) {
+                            Text(
+                                marker.title + (meters?.let { " · 약 ${it}m" } ?: ""),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                style = MaterialTheme.typography.labelLarge,
+                            )
+                        }
                     }
                 }
 

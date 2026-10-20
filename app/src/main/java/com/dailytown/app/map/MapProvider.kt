@@ -57,6 +57,28 @@ fun interface MapMarkerVisualSource {
     fun resolve(marker: MapMarkerSpec, theme: MapThemeSpec): MapMarkerBitmap?
 }
 
+enum class MapAreaEmphasis {
+    /** Signal detected: where the player must walk to discover it. */
+    DISCOVERY_ZONE,
+    /** Discovered and being investigated. */
+    ACTIVE,
+}
+
+/**
+ * Geographic area tied to real encounter rules (centre = POI, radius = the domain discovery radius).
+ * It is gameplay geometry, not decoration, so it never depends on unapproved route/effect inputs.
+ */
+data class MapEncounterAreaSpec(
+    val id: String,
+    val center: GeoPoint,
+    val radiusMeters: Double,
+    val emphasis: MapAreaEmphasis,
+) {
+    init {
+        require(radiusMeters > 0.0)
+    }
+}
+
 data class UserLocationSpec(
     val position: GeoPoint,
     val bearingDegrees: Float? = null,
@@ -77,6 +99,10 @@ interface MapViewAdapter {
      */
     fun setOverlayState(state: MapOverlaySemanticState) = Unit
     fun setUserLocation(location: UserLocationSpec?)
+    /** Draws (or clears with null) the active encounter's discovery area. */
+    fun setEncounterArea(area: MapEncounterAreaSpec?) = Unit
+    /** Receives the spec of a tapped marker; null removes the listener. */
+    fun setMarkerClickListener(listener: ((MapMarkerSpec) -> Unit)?) = Unit
     fun onStart() = Unit
     fun onResume() = Unit
     fun onPause() = Unit

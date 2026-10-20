@@ -107,3 +107,14 @@ Current connector-written head has not received a GitHub Actions run, and this e
 5. Promote marker 24 assets only after all marker gates pass.
 6. Add provider-specific route/halo/discovery drawing only from approved runtime geometry/style inputs; do not copy QA framing values into production.
 7. Final physical outdoor R-B remains human-approved.
+
+## Discovery zone and marker taps (2026-10-21)
+
+- `MapViewAdapter.setEncounterArea` draws the **real 60 m discovery radius** (`EncounterProximityController.DISCOVERY_RADIUS_METERS`)
+  around the active encounter's POI: `DISCOVERY_ZONE` while HINTED, `ACTIVE` while DISCOVERED, cleared otherwise.
+  This is gameplay geometry from domain rules, not decorative route/effect styling, so it does not depend on the still
+  unapproved route geometry or discovery-intensity mapping (both remain undrawn).
+- NAVER renders it as a translucent `CircleOverlay` below markers using approved tokens (day: `status.success` outline,
+  `brand.butter` wash; dark: `text.onDark` outline, `phase.night.warmPoint` wash).
+- `setMarkerClickListener` forwards tapped marker specs; Explore shows a 4-second "name · 약 n m" label.
+
