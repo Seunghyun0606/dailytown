@@ -163,6 +163,24 @@ Blocked on a human/product/data decision rather than engineering:
 - [ ] Implement the concrete production POI upstream adapter after the source/licensing choice is approved; the cache/degradation layer is already ready
 - [ ] Replace semantic companion/content copy with the approved authored scenario pack
 
+## Prototype product loop — implemented (2026-10-20)
+
+See `docs/development/PROTOTYPE_COMPLETION_V1.md`.
+
+- [x] First-run onboarding (promise, privacy explanation before permission, meet Moru), replayable
+- [x] Versioned scenario content pack with per-mechanic, place-aware copy and validation
+- [x] Session-unique encounter ids so later walks count again
+- [x] End-of-walk summary with Records hand-off
+- [x] Companion relationship tiers → affinity appearance, authored dialogue, keepsakes
+- [x] Records back navigation and player-facing copy
+- [x] Settings privacy explanation and full progress reset
+- [x] Debug builds default to Moru v2 Candidate 3 rasters
+- [x] Emulator E2E test for the whole loop
+
+Human TODO:
+- [ ] Approve or replace the 7 `ENGINEERING_DRAFT` mechanic stories
+- [ ] Approve affinity tier cut-offs and a BEST_FRIEND stage
+
 ## Closed field test — human-gated
 
 - [x] Register `com.dailytown.app` in NAVER Console

@@ -91,9 +91,12 @@ Required work:
 
 ### 2. Authored scenario/copy pack integration
 
-**Status:** blocked on narrative/copy approval.
+**Status:** content-pack boundary implemented (`mystery/ScenarioContentPack.kt`, `scenario-pack-v1`); final copy blocked on narrative approval.
 
-Mechanic templates and semantic reaction keys are already implemented. After copy approval, add a versioned content-pack boundary instead of embedding final text throughout Compose/domain code.
+The pack has full mechanic coverage, place-name substitution, revisit variants, a safe fallback and
+load-time + CI validation. Only the Old Ginkgo story is `AUTHORED_APPROVED`; the other seven mechanics
+are `ENGINEERING_DRAFT` and must be replaced by the approved copy pack. Remaining work below is what
+is still open after that boundary.
 
 Recommended work:
 
