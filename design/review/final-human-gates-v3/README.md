@@ -1,6 +1,6 @@
 # DailyTown Final Human Gates v3 — Review Pack
 
-Status: **M-B + ID-A HUMAN APPROVED / LOCKED — R-B PHYSICAL DEVICE PENDING**
+Status: **M-B + ID-A HUMAN APPROVED / LOCKED — R-B PASS (owner physical-device review 2026-10-20)**
 
 This directory contains design-only review materials for the remaining final visual gates and a consolidated showcase of the currently approved DailyTown design.
 
@@ -21,6 +21,6 @@ See `showcase/README.md` for platform-specific local-open commands.
 
 - M-B: **PASS / LOCKED — M-B2 Calm Reactive**
 - ID-A: **PASS / LOCKED — ID-A2 Sprout Gate**
-- R-B: **PENDING_PHYSICAL_DEVICE**
+- R-B: **PASS** — owner physical-device outdoor review 2026-10-20
 
 The showcase is review-only. It does not activate Android runtime resources, mutate canonical Moru or semantic-family assets, or imply that outdoor readability has passed. R-B can only be closed after the physical Android-device review.

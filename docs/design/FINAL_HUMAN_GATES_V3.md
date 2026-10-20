@@ -1,8 +1,8 @@
 # Daily Town — Final Human Gates v3
 
-> Status: **M-B + ID-A HUMAN APPROVED / LOCKED — R-B PHYSICAL DEVICE PENDING**
+> Status: **M-B + ID-A HUMAN APPROVED / LOCKED — R-B PASS (owner physical-device review 2026-10-20)**
 >
-> Branch scope: design-only finalization for `M-B`, `ID-A`, and `R-B`. M-B and ID-A are now selected. R-B remains an open physical-device Human Gate. This document does not authorize unrelated Android runtime changes.
+> Branch scope: design-only finalization for `M-B`, `ID-A`, and `R-B`. M-B and ID-A are now selected. R-B was closed as PASS by the owner's physical-device review on 2026-10-20. This document does not authorize unrelated Android runtime changes.
 
 ## 1. Source lock
 
@@ -65,7 +65,7 @@ Adaptive-icon handoff remains 108×108 dp layers with a centered 66×66 dp guara
 
 `ID-A1` and `ID-A3` remain comparison history. The ID-A design Human Gate is closed; Android adaptive-icon resource binding/launcher QA belongs to Development.
 
-## 4. Human Gate C — R-B outdoor readability — OPEN
+## 4. Human Gate C — R-B outdoor readability — PASS (2026-10-20)
 
 Review artifact: `design/review/final-human-gates-v3/outdoor/R_B_OUTDOOR_READABILITY_REVIEW.md`
 
@@ -99,7 +99,7 @@ Only an actual physical-device outdoor review may close R-B as `PASS`.
 
 - M-B: `PASS / LOCKED` — `M-B2 Calm Reactive`
 - ID-A: `PASS / LOCKED` — `ID-A2 Sprout Gate`, launcher `mark-only`
-- R-B: `PENDING_PHYSICAL_DEVICE`
+- R-B: `PASS` — owner physical-device outdoor review 2026-10-20 (`docs/validation/R_B_OUTDOOR_READABILITY_RESULT.md`)
 
 No static/emulator artifact may be used to infer `PASS_RB_PHYSICAL_DEVICE`.
 
@@ -110,6 +110,6 @@ Development may now consume:
 - the locked M-B2 timing/easing/intensity/reduced-motion contract;
 - the locked ID-A2 light/dark foreground-background and monochrome design layers plus adaptive safe-zone constraints.
 
-Development must still wait for a real-device R-B verdict before treating outdoor readability as passed.
+The real-device R-B verdict was recorded on 2026-10-20 (owner review); see `docs/validation/R_B_OUTDOOR_READABILITY_RESULT.md`.
 
 Design does not modify runtime resources on this branch.

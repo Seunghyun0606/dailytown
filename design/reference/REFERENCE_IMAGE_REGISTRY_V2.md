@@ -88,6 +88,36 @@ Moru deterministic small-context evidence and reconstruction handoff are preserv
 - `design/reference/moru-v2/native-master-v1/` — accepted 1280×1600 neutral PNG, 6-layer ORA, acceptance metrics/QA and remote binary verification
 - `design/reference/moru-v2/native-usage-context-v1/` — six-context `neutral / LIGHT / base / static` native usage family, Android-size/edge QA and fresh remote binary verification
 
+## Mechanic scenario masters v1 (runtime-bound)
+
+Generated with the game_analysis image pipeline from the Old Ginkgo v3 look, curated in
+`design/pipeline/mechanic_selection.v1.json`; provenance (prompt, seed, model/workflow SHA-256) is in each
+`design/reference/discovery/<mechanic>/mechanic-scenario-manifest.v1.json`. See `docs/visual/DEV_MECHANIC_SCENARIOS.md`.
+
+| GitHub reference | Dimensions | SHA-256 | Role |
+| --- | ---: | --- | --- |
+| `design/reference/discovery/companion_sense/clue-keepsake.master.png` | 512×512 | `edfa3035382400f4b98724addf71361c7d4bda2354e8ab4afb8ae6df13bd6db7` | `clue.companion_sense.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/companion_sense/clue-main.master.png` | 768×768 | `8fb376118586b6078bf51a945d80edd74b28baf2dcb2432f93df68efb2ce5c69` | `clue.companion_sense.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/companion_sense/place-main.master.png` | 1344×768 | `cabfa1ba0b6a204eb877f2dcc311a06f3b0535bba84b17fe7b67ef6e9473c9f8` | `place.companion_sense.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.companion_sense.keepsake` crops); runtime-bound 2026-10-20 |
+| `design/reference/discovery/local_memory/clue-keepsake.master.png` | 512×512 | `ca296ddcabd6cc31a074fcb65a07eec96187c64ea7777a2e7abdd4f46bfe69d5` | `clue.local_memory.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/local_memory/clue-main.master.png` | 768×768 | `e29fed1e46b2e9c83dcf0b2ddfaf8801bd5f6f4dc027da2154f690d1fae72e4d` | `clue.local_memory.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/local_memory/place-main.master.png` | 1344×768 | `2e4479908d44d30198eb741b4935932a501b8756b0b4977f821f717cb3cf7335` | `place.local_memory.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.local_memory.keepsake` crops); runtime-bound 2026-10-20 |
+| `design/reference/discovery/lost_object/clue-keepsake.master.png` | 512×512 | `9c44c964685b5901d6add615d942c4c1b52bc4f4c5bf4ece7671dd7d2e7e603b` | `clue.lost_object.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/lost_object/clue-main.master.png` | 768×768 | `7a9d348de95afff8a9152571eea85d551b7cc3b43259011ee98e0f505b2fc5f9` | `clue.lost_object.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/lost_object/place-main.master.png` | 1344×768 | `14ebfb82628ded1d2618a7d21d053bb200e31a1091245f29909618c0ad247ee0` | `place.lost_object.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.lost_object.keepsake` crops); runtime-bound 2026-10-20 |
+| `design/reference/discovery/photo_angle/clue-keepsake.master.png` | 512×512 | `7bfcc95202662ed4f643f556939dd4c8b90d0d6006c711bd7234911f4226254a` | `clue.photo_angle.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/photo_angle/clue-main.master.png` | 768×768 | `23966bd1070fc764a4b4e72ed6877e4eed2dbc6d6ed57e47bcf5062e1b33cff6` | `clue.photo_angle.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/photo_angle/place-main.master.png` | 1344×768 | `eeee34cd686eb629cfd0d107c688820f1aaa35fdeeb41a783bf9dd5ff55012e7` | `place.photo_angle.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.photo_angle.keepsake` crops); runtime-bound 2026-10-20 |
+| `design/reference/discovery/sound_pattern/clue-keepsake.master.png` | 512×512 | `a4cb634aaaecae87e0f781457c3de2951dd6c5c7ede398368e7dc565d3fbf7d2` | `clue.sound_pattern.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/sound_pattern/clue-main.master.png` | 768×768 | `1162fef741fd83408c310081f0c8e8f64bdfccc5e1bc769be997921b5e6fe8c1` | `clue.sound_pattern.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/sound_pattern/place-main.master.png` | 1344×768 | `5e135933afc66592f8953f9abdaf86fb4b0ae2b7b931a5047cc4a563e34f6f12` | `place.sound_pattern.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.sound_pattern.keepsake` crops); runtime-bound 2026-10-20 |
+| `design/reference/discovery/symbol_match/clue-keepsake.master.png` | 512×512 | `27b20924761b37946690cffd584552b88eb7160d9c2eabbf4d3136d37120f4a7` | `clue.symbol_match.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/symbol_match/clue-main.master.png` | 768×768 | `383a2b0e6dee69a4f4a69f90af163f32f9895e4b025b206dc92dbfeb34086f84` | `clue.symbol_match.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/symbol_match/place-main.master.png` | 1344×768 | `358a826473b1d87982a196f3c53d2cef568dc378cbad6de45a351bb9e55b5d23` | `place.symbol_match.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.symbol_match.keepsake` crops); runtime-bound 2026-10-20 |
+| `design/reference/discovery/time_layer/clue-keepsake.master.png` | 512×512 | `81f8f33e5294235ab489bafea1c562145582f71f1077810bc3fe81d58cb24c09` | `clue.time_layer.keepsake` transparent keepsake item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/time_layer/clue-main.master.png` | 768×768 | `5f91cc702d60f9de53228d866257d85e67e39b602874561d58c4228078bbafd5` | `clue.time_layer.main` transparent clue item master; runtime-bound 2026-10-20 |
+| `design/reference/discovery/time_layer/place-main.master.png` | 1344×768 | `de40465644b04219ff528a02bcde4104cf579671f485e6c0f2a0203390c19563` | `place.time_layer.main` scene master (DISCOVERY_CARD / RECORDS_HEADER / MEMORY_THUMBNAIL and same-scene `memory.time_layer.keepsake` crops); runtime-bound 2026-10-20 |
+
 ## Production status
 
 - Exact attachment persistence: **7/7 remote-verified**; provenance and byte/color/alpha metadata are in `design/reference/session-2026-09-12/attachments/manifest.json`.
@@ -98,7 +128,8 @@ Moru deterministic small-context evidence and reconstruction handoff are preserv
 - Moru 48dp/expression/lighting/affinity reference precheck: **PASS**. The neutral genuine-alpha gate and six-context native Android-size/edge baseline now pass; expression/lighting/affinity semantic family production and consistency QA remain pending under MORU-02.
 - Companion/Records UI implementation may use the hierarchy and surface treatment as reference, but must not embed these composite boards as runtime screenshots.
 - Explore implementation must preserve current domain behavior; decorative numbers visible in concept art do not replace the authoritative runtime hint/discovery thresholds.
-- Outdoor readability and M-B motion timing remain Human Gates.
+- Outdoor readability (R-B) **PASS by owner physical-device review 2026-10-20** (`docs/validation/R_B_OUTDOOR_READABILITY_RESULT.md`); M-B2 locked 2026-09-15 and implemented at runtime.
+- Old Ginkgo and the 7 mechanic scenario packs are runtime-bound in Android (`app/src/main/assets/old-ginkgo`, `app/src/main/assets/scenario/<mechanic>`); Moru v2 Candidate 3 is the default runtime profile.
 
 ## Persistence rule
 
