@@ -60,7 +60,7 @@ class NaverMapAdapter(
             return FrameLayout(context).apply {
                 addView(
                     TextView(context).apply {
-                        text = "NAVER Maps 준비 완료\nTODO: NAVER_MAP_NCP_KEY_ID 설정"
+                        text = "지도를 표시할 수 없어요 (지도 키 미설정).\n탐험 기록과 리플레이는 계속 쓸 수 있어요."
                         gravity = Gravity.CENTER
                     },
                     FrameLayout.LayoutParams(

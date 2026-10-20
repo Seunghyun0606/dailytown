@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.dailytown.app.companion.CompanionRelationship
 import com.dailytown.app.mystery.EncounterEvent
 import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.mystery.MysteryEncounter
@@ -299,6 +300,7 @@ private fun CompletionContent(
         usage = CompanionUsageContext.RESULT_LARGE,
         sizeDp = 180,
         tag = "moru-v2-result-large",
+        appearance = CompanionRelationship.tier(companionBond).appearance,
     )
 
     Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -324,6 +326,7 @@ private fun MoruV2ContextVisual(
     usage: CompanionUsageContext,
     sizeDp: Int,
     tag: String,
+    appearance: AppearanceProfile = AppearanceProfile.BASE,
 ) {
     if (LocalCompanionRuntimeProfile.current != CompanionRuntimeProfile.MORU_CANONICAL_V2) return
     ProductionCompanionVisual(
@@ -331,7 +334,7 @@ private fun MoruV2ContextVisual(
             companionId = "moru",
             expression = expression,
             lightingFamily = LocalDailyTownCompanionLighting.current,
-            appearanceProfile = AppearanceProfile.BASE,
+            appearanceProfile = appearance,
             usageContext = usage,
             reducedMotion = true,
         ),

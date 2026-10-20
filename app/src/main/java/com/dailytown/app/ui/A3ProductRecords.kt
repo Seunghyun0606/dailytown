@@ -1,5 +1,6 @@
 package com.dailytown.app.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,7 @@ import com.dailytown.app.visual.ScenarioAssetUsage
 private enum class RecordsRoute { HOME, PLACE_DETAIL, CLUE_DETAIL, MEMORY_DETAIL }
 
 @Composable
-fun DailyTownRecordsScreen(progress: ExplorationProgress?) {
+fun DailyTownRecordsScreen(progress: ExplorationProgress?, isActive: Boolean = true) {
     var route by remember { mutableStateOf(RecordsRoute.HOME) }
     var selectedPoiIndex by remember { mutableIntStateOf(0) }
     val recentPoiIds = progress?.recentPoiIds.orEmpty()
@@ -52,6 +53,9 @@ fun DailyTownRecordsScreen(progress: ExplorationProgress?) {
     val selectedTitle = selectedPoiId?.let {
         recentPoiTitle(selectedPoiIndex, it, recentPoiTitles, fixtureNames)
     } ?: "아직 발견하지 않은 장소"
+
+    // System Back on a Records detail returns to Records home before the shell sends the player to Explore.
+    BackHandler(enabled = isActive && route != RecordsRoute.HOME) { route = RecordsRoute.HOME }
 
     when (route) {
         RecordsRoute.HOME -> RecordsHome(
@@ -146,7 +150,7 @@ private fun RecordsHome(
         RecordSection(title = "미스터리", modifier = Modifier.testTag("records-mysteries")) {
             Text("해결한 동네 이야기 ${progress?.resolvedEncounterIds?.size ?: 0}건")
             Text(
-                "여러 조각을 1/4→4/4로 모으는 장기 미스터리는 아직 만들지 않습니다.",
+                "하나하나 풀어 간 이야기가 이곳에 쌓여요.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -200,20 +204,15 @@ private fun PlaceRecordDetail(
         }
         RecordSection(title = "연결된 진행") {
             Text("전체 단서 ${progress?.inventoryClueIds?.size ?: 0}개 · 해결 ${progress?.resolvedEncounterIds?.size ?: 0}건")
-            Text(
-                "현재 저장 구조에 없는 장소↔단서/해결의 1:1 연결은 만들어 표시하지 않습니다.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
             TextButton(onClick = onOpenClues, modifier = Modifier.testTag("discovery-open-clue")) { Text("단서 기록 보기") }
         }
         if (remembered) {
             RecordSection(title = "Moru") {
-                Text("이 장소는 모루의 semantic memory에 남아 있습니다.")
+                Text("모루가 이 장소를 기억하고 있어요.")
                 TextButton(onClick = onOpenMemories, modifier = Modifier.testTag("discovery-open-memory")) { Text("Moru와의 기억 보기") }
             }
         }
-        Text("재방문 시 기존 방문·memory 이력은 encounter rotation/weighting에 활용될 수 있습니다.", style = MaterialTheme.typography.bodySmall)
+        Text("다시 찾아오면 전과는 다른 이야기가 기다리고 있을지도 몰라요.", style = MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -223,7 +222,7 @@ private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit)
         RecordSection(title = "관찰한 단서") {
             val count = progress?.inventoryClueIds?.size ?: 0
             val oldGinkgoClueCount = progress?.daily?.clueIds?.size ?: 0
-            Text("지금까지 실제 encounter에서 수집한 단서 ${count}개가 저장되어 있어요.")
+            Text("지금까지 동네에서 살펴본 단서 ${count}개가 남아 있어요.")
             if (oldGinkgoClueCount > 0) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     ProductionScenarioRasterAsset(
@@ -245,10 +244,6 @@ private fun ClueRecordDetail(progress: ExplorationProgress?, onBack: () -> Unit)
                         )
                     }
                 }
-                Text(
-                    "첫 UX validation의 authored copy는 기존 encounter clue ID를 바꾸지 않고 표현 계층에서만 연결됩니다.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
             }
         }
         RecordSection(title = "해결 상태") {
@@ -284,7 +279,7 @@ private fun MemoryRecordDetail(
         }
         if (memories.isEmpty()) {
             RecordSection(title = "아직 빈 페이지") {
-                Text("함께 탐험을 해결하면 장소와 행동의 semantic memory가 남아요.")
+                Text("모루와 함께 동네 이야기를 풀면 그 장소와 순간이 여기에 남아요.")
             }
         } else {
             val hasOldGinkgoSessionEvidence = !progress?.daily?.resolvedEncounterIds.isNullOrEmpty()
@@ -310,7 +305,7 @@ private fun MemoryRecordDetail(
             }
             val mechanicMemoryCount = memories.count { it.startsWith("mechanic:") }
             RecordSection(title = "함께 해결한 방식") {
-                Text("미스터리 해결에서 남은 semantic memory ${mechanicMemoryCount}개")
+                Text("함께 풀어 본 이야기의 종류 ${mechanicMemoryCount}가지")
             }
         }
     }

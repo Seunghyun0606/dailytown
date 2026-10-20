@@ -21,7 +21,10 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DailyTownReplaySmokeTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    val onboardingRule = OnboardingStateRule(completed = true)
+
+    @get:Rule(order = 1)
     val composeRule = createAndroidComposeRule<MainActivity>()
 
     @Test

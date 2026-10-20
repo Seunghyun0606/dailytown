@@ -31,6 +31,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +47,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.dailytown.app.companion.CompanionMoment
+import com.dailytown.app.companion.CompanionRelationship
 import com.dailytown.app.companion.DefaultCompanionReactionPolicy
+import com.dailytown.app.companion.KeepsakeCatalog
 import com.dailytown.app.domain.Companion
 import com.dailytown.app.domain.ExplorationSession
 import com.dailytown.app.domain.ExplorationState
@@ -68,9 +71,12 @@ import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.mystery.EncounterTransition
 import com.dailytown.app.mystery.MysteryReducer
 import com.dailytown.app.mystery.MysteryTemplateCatalog
+import com.dailytown.app.persistence.ExplorationProgress
 import com.dailytown.app.persistence.toState
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.ProgressRuntimeCoordinator
+import com.dailytown.app.progress.WalkSessionSummary
+import com.dailytown.app.progress.WalkSessionSummaryBuilder
 import com.dailytown.app.ui.presentation.ExploreEncounterPresentationMapper
 import com.dailytown.app.ui.visual.CompanionHudVisualResolver
 import com.dailytown.app.ui.visual.MapGameplayVisualBinder
@@ -126,6 +132,9 @@ fun DailyTownApp(
     var activeEncounter by remember { mutableStateOf<EncounterSelection?>(null) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var lastCompanionMoment by remember { mutableStateOf<CompanionMoment?>(null) }
+    var walkStart by remember { mutableStateOf<WalkStart?>(null) }
+    val sessionDiscoveredPoiIds = remember { mutableStateListOf<String>() }
+    var walkSummary by remember { mutableStateOf<WalkSessionSummary?>(null) }
 
     val deviceSource = remember(trackingPreset) {
         FusedDeviceLocationSource(
@@ -147,6 +156,21 @@ fun DailyTownApp(
             session.restore(fallback.progress.toState(defaultCompanion))
             snapshot = session.current()
         }
+    }
+
+    // Player data reset (Settings): drop every in-memory session value so the next sync cannot write
+    // old distance/bond back over the freshly reset store.
+    LaunchedEffect(progressRuntime.resetGeneration) {
+        if (progressRuntime.resetGeneration == 0) return@LaunchedEffect
+        if (trackingMode != TrackingMode.OFF) trackingCoordinator.stop()
+        mapAdapter.setUserLocation(null)
+        session.restore(progressRuntime.progress.toState(defaultCompanion))
+        snapshot = session.current()
+        activeEncounter = null
+        lastCompanionMoment = null
+        walkStart = null
+        walkSummary = null
+        sessionDiscoveredPoiIds.clear()
     }
 
     LaunchedEffect(currentDate, persistenceReady) {
@@ -175,9 +199,13 @@ fun DailyTownApp(
 
     fun start(mode: TrackingMode) {
         session.restartTracking()
-        encounterCoordinator.reset()
+        // Session-unique ids so a later session's resolution of the same place/template still counts.
+        encounterCoordinator.reset(sessionKey = java.lang.Long.toString(System.currentTimeMillis(), 36))
         fieldTestRuntime.onTrackingStart(mode)
         snapshot = session.current()
+        walkStart = WalkStart(progress = progressCoordinator.state.value.progress, bond = snapshot.state.companion.bond)
+        sessionDiscoveredPoiIds.clear()
+        walkSummary = null
         activeEncounter = null
         lastCompanionMoment = null
         errorMessage = null
@@ -185,6 +213,22 @@ fun DailyTownApp(
     }
 
     fun stopTracking() {
+        val started = walkStart
+        if (started != null && snapshot.totalLocationSampleCount > 0) {
+            val runtime = progressCoordinator.state.value
+            walkSummary = WalkSessionSummaryBuilder.build(
+                start = started.progress,
+                end = runtime.progress,
+                sessionDiscoveredPoiIds = sessionDiscoveredPoiIds.toList(),
+                distanceMeters = snapshot.sessionDistanceMeters,
+                durationSeconds = snapshot.trackingDurationSeconds.toLong(),
+                bondBefore = started.bond,
+                bondAfter = snapshot.state.companion.bond,
+                goals = runtime.dailyGoals + runtime.weeklyGoals,
+                date = LocalDate.now(),
+            )
+        }
+        walkStart = null
         fieldTestRuntime.onTrackingStop(trackingMode)
         trackingCoordinator.stop()
         mapAdapter.setUserLocation(null)
@@ -260,6 +304,7 @@ fun DailyTownApp(
             EncounterTransition.DISCOVERED -> {
                 val selection = step.selection ?: return@LaunchedEffect
                 fieldTestRuntime.recordDiscovered(selection.isRevisit)
+                sessionDiscoveredPoiIds += selection.poi.id
                 progressCoordinator.mutate(LocalDate.now()) { progress ->
                     progress
                         .recordEncounterVisit(
@@ -417,7 +462,7 @@ fun DailyTownApp(
                                 companionId = snapshot.state.companion.id,
                                 expression = companionExpression,
                                 lightingFamily = companionLighting,
-                                appearanceProfile = AppearanceProfile.BASE,
+                                appearanceProfile = CompanionRelationship.tier(snapshot.state.companion.bond).appearance,
                                 usageContext = CompanionUsageContext.HUD_PORTRAIT,
                             ),
                             modifier = Modifier.size(72.dp),
@@ -451,7 +496,7 @@ fun DailyTownApp(
                         ) { Text("리플레이") }
                     }
                     if (trackingMode != TrackingMode.OFF) {
-                        TextButton(onClick = ::stopTracking) { Text("중지") }
+                        TextButton(onClick = ::stopTracking, modifier = Modifier.testTag("tracking-stop")) { Text("중지") }
                     }
                 }
 
@@ -461,6 +506,18 @@ fun DailyTownApp(
                     clues = gameProgress.inventoryClueIds.size,
                     memories = gameProgress.companionMemoryKeys.size,
                 )
+
+                walkSummary?.let { summary ->
+                    WalkSummaryCard(
+                        summary = summary,
+                        companionName = snapshot.state.companion.name,
+                        onOpenRecords = {
+                            walkSummary = null
+                            onOpenRecords()
+                        },
+                        onClose = { walkSummary = null },
+                    )
+                }
 
                 ExploreEncounterSurface(
                     selection = activeEncounter,
@@ -487,7 +544,7 @@ fun DailyTownApp(
                         progressCoordinator.mutate(LocalDate.now()) { progress ->
                             var updated = progress.recordResolution(resolved, LocalDate.now())
                             if (mechanic != null) {
-                                updated = updated.recordMemory("mechanic:${mechanic.name}")
+                                updated = updated.recordMemory(KeepsakeCatalog.memoryKey(mechanic))
                             }
                             updated
                         }
@@ -662,4 +719,9 @@ private fun demoMysterySpots() = listOf(
     MysterySpot("cityhall-echo", "시청 광장의 이상한 메아리", GeoPoint(37.56650, 126.97800), 55.0),
     MysterySpot("stone-trace", "돌담길의 희미한 흔적", GeoPoint(37.56711, 126.97676), 45.0),
     MysterySpot("hidden-note", "덕수궁 옆 숨겨진 쪽지", GeoPoint(37.56792, 126.97543), 50.0),
+)
+
+private data class WalkStart(
+    val progress: ExplorationProgress,
+    val bond: Int,
 )

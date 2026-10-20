@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -26,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.dailytown.app.BuildConfig
+import com.dailytown.app.BuildVariantPolicy
 import com.dailytown.app.poi.PoiSourceMetadata
 import com.dailytown.app.reminder.LocalReminderManager
 
@@ -34,7 +38,12 @@ internal fun SettingsScreen(
     reminderManager: LocalReminderManager,
     poiSources: List<PoiSourceMetadata>,
     onOpenQa: () -> Unit,
+    onReplayOnboarding: () -> Unit = {},
+    resetAvailable: Boolean = false,
+    onResetProgress: () -> Unit = {},
 ) {
+    var confirmReset by remember { mutableStateOf(false) }
+    var resetDone by remember { mutableStateOf(false) }
     val initialPreference = remember { reminderManager.preference() }
     var reminderEnabled by remember { mutableStateOf(initialPreference.enabled) }
     var reminderHour by remember { mutableIntStateOf(initialPreference.hour) }
@@ -59,7 +68,7 @@ internal fun SettingsScreen(
                 Text("Daily Town", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
                 Text("앱 버전 ${BuildConfig.VERSION_NAME}")
                 Text("NAVER 지도 ${if (BuildConfig.NAVER_MAP_CONFIGURED) "연결됨" else "설정 필요"}")
-                Text("Production POI ${if (BuildConfig.TOUR_API_CONFIGURED) "TourAPI 활성" else if (BuildConfig.DEBUG) "Field Test fixture" else "설정 필요"}")
+                Text("장소 데이터 ${poiSources.firstOrNull()?.displayName ?: "설정 필요"}")
             }
         }
         ElevatedCard(
@@ -107,7 +116,8 @@ internal fun SettingsScreen(
                     Text(if (reminderEnabled) "매일 ${reminderHour}시 전후 알림" else "알림 끔")
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf(12, 18, 20).forEach { hour ->
+                    // 19시 is the stored default, so it must be selectable too.
+                    listOf(12, 18, 19, 20).forEach { hour ->
                         FilterChip(
                             selected = reminderHour == hour,
                             onClick = {
@@ -121,7 +131,45 @@ internal fun SettingsScreen(
                 reminderError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
         }
-        if (BuildConfig.DEBUG) {
+        ElevatedCard(Modifier.fillMaxWidth().testTag("settings-privacy")) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("위치와 기록", style = MaterialTheme.typography.titleMedium)
+                Text("· 위치는 탐험 중, 앱이 화면에 있을 때만 사용해요.")
+                Text("· 이동 경로 좌표는 저장하지 않아요. 거리·발견·단서·기억 같은 기록만 이 기기에 남아요.")
+                Text("· 위치 권한은 Android 설정 > 앱 > Daily Town에서 언제든 바꿀 수 있어요.")
+                OutlinedButton(
+                    onClick = onReplayOnboarding,
+                    modifier = Modifier.testTag("settings-replay-onboarding"),
+                ) { Text("처음 안내 다시 보기") }
+                OutlinedButton(
+                    onClick = { confirmReset = true },
+                    enabled = resetAvailable,
+                    modifier = Modifier.testTag("settings-reset"),
+                ) { Text("탐험 기록 모두 지우기") }
+                if (resetDone) {
+                    Text("기록을 모두 지웠어요. 모루와 처음부터 다시 걸어요.", modifier = Modifier.testTag("settings-reset-done"))
+                }
+            }
+        }
+        if (confirmReset) {
+            AlertDialog(
+                onDismissRequest = { confirmReset = false },
+                title = { Text("탐험 기록을 지울까요?") },
+                text = { Text("거리, 발견한 장소, 단서, 해결한 이야기, 모루와의 기억과 호감도가 모두 사라져요. 되돌릴 수 없어요.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            confirmReset = false
+                            onResetProgress()
+                            resetDone = true
+                        },
+                        modifier = Modifier.testTag("settings-reset-confirm"),
+                    ) { Text("모두 지우기", color = MaterialTheme.colorScheme.error) }
+                },
+                dismissButton = { TextButton(onClick = { confirmReset = false }) { Text("취소") } },
+            )
+        }
+        if (BuildVariantPolicy.exposeFieldTestTools) {
             ElevatedCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("개발 / Field Test", style = MaterialTheme.typography.titleMedium)

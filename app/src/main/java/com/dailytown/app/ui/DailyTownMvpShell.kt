@@ -17,16 +17,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.dailytown.app.map.MapViewAdapter
+import com.dailytown.app.onboarding.OnboardingStore
 import com.dailytown.app.persistence.ProgressStore
 import com.dailytown.app.poi.PoiRepository
 import com.dailytown.app.progress.ProgressRuntimeCoordinator
@@ -35,6 +38,8 @@ import com.dailytown.app.ui.visual.DailyTownTheme
 import com.dailytown.app.ui.visual.DailyTownTokens
 import com.dailytown.app.ui.visual.LocalCompanionRuntimeProfile
 import com.dailytown.app.visual.CompanionRuntimeProfile
+import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 private enum class MvpSection(val label: String, val symbol: String, val testTag: String) {
     EXPLORE("탐험", "⌖", "nav-explore"),
@@ -60,6 +65,10 @@ fun DailyTownMvpShell(
     val dailyGoals = progressRuntime.dailyGoals
     val weeklyGoals = progressRuntime.weeklyGoals
     val poiSources = remember(poiRepository) { poiRepository.sourceMetadata() }
+    val context = LocalContext.current
+    val onboardingStore = remember(context) { OnboardingStore(context) }
+    var showOnboarding by rememberSaveable { mutableStateOf(!onboardingStore.isCompleted()) }
+    val scope = rememberCoroutineScope()
 
     fun openExplore() {
         qaMode = false
@@ -72,7 +81,11 @@ fun DailyTownMvpShell(
 
     DailyTownTheme {
         CompositionLocalProvider(LocalCompanionRuntimeProfile provides companionRuntimeProfile) {
+        Box(Modifier.fillMaxSize()) {
         Scaffold(
+            // While the first-run guide is up, the live shell stays composed underneath (map/runtime
+            // keep their lifecycle) but is hidden from accessibility and tests.
+            modifier = if (showOnboarding) Modifier.clearAndSetSemantics { } else Modifier,
             containerColor = MaterialTheme.colorScheme.background,
             bottomBar = {
                 NavigationBar(
@@ -126,7 +139,7 @@ fun DailyTownMvpShell(
                     CompanionScreen(progress)
                 }
                 SectionLayer(active = selectedSection == MvpSection.RECORDS) {
-                    DailyTownRecordsScreen(progress)
+                    DailyTownRecordsScreen(progress, isActive = selectedSection == MvpSection.RECORDS && !showOnboarding)
                 }
                 SectionLayer(active = selectedSection == MvpSection.GOALS) {
                     GoalsScreen(progress, dailyGoals, weeklyGoals, onOpenExplore = ::openExplore)
@@ -139,9 +152,27 @@ fun DailyTownMvpShell(
                             qaMode = true
                             selectedSection = MvpSection.EXPLORE
                         },
+                        resetAvailable = progressRuntime.ready && progressRuntime.persistenceEnabled,
+                        onResetProgress = {
+                            scope.launch { progressCoordinator.resetAll(LocalDate.now()) }
+                        },
+                        onReplayOnboarding = {
+                            onboardingStore.reset()
+                            showOnboarding = true
+                        },
                     )
                 }
             }
+        }
+        if (showOnboarding) {
+            OnboardingFlow(
+                onFinished = {
+                    onboardingStore.markCompleted()
+                    showOnboarding = false
+                    openExplore()
+                },
+            )
+        }
         }
         }
     }

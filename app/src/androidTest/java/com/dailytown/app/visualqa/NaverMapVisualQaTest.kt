@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailytown.app.BuildConfig
 import com.dailytown.app.MainActivity
+import com.dailytown.app.OnboardingStateRule
 import com.dailytown.app.domain.GeoPoint
 import com.dailytown.app.map.MapBrightnessFamily
 import com.dailytown.app.map.MapHealthStatus
@@ -39,11 +40,15 @@ import com.dailytown.app.visual.VisualThemeProfiles
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NaverMapVisualQaTest {
+    @get:Rule
+    val onboardingRule = OnboardingStateRule(completed = true)
+
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val sourceCatalog by lazy { MapOverlayQaSourceCatalog(instrumentation.context.assets) }
     private val companionResolver by lazy { CompanionAssetResolver(ProductionVisualAssetRegistry) }
