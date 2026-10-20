@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "pack": "mechanic-scenarios",
+  "pack_version": "v1",
+  "selected_by": "engineering curation under owner instruction 2026-10-20 (\"메커니즘별 디자인 제작\")",
+  "style_baseline": "Old Ginkgo production v3",
+  "mechanics": [
+    {"mechanic": "sound_pattern", "scene": "scene_sound_pattern_v02", "clue": "clue_sound_pattern_v02", "keepsake_item": "keepsake_sound_pattern_v04", "keepsake_focus_y": 0.55, "note": "keepsake v02 auto-QC false pass (bird, not feather) rejected"},
+    {"mechanic": "time_layer", "scene": "scene_time_layer_v01", "clue": "clue_time_layer_v02", "keepsake_item": "keepsake_time_layer_v03", "keepsake_focus_y": 0.6, "note": "key v02 has a cream disk backdrop; v03 chosen for consistent cutout"},
+    {"mechanic": "symbol_match", "scene": "scene_symbol_match_v02", "clue": "clue_symbol_match_v02", "keepsake_item": "keepsake_symbol_match_v01", "keepsake_focus_y": 0.6, "note": "tile shows the leaf symbol; bookmark keeps the ribbon"},
+    {"mechanic": "lost_object", "scene": "scene_lost_object_v02", "clue": "clue_lost_object_v02", "keepsake_item": "keepsake_lost_object_v04", "keepsake_focus_y": 0.65, "note": "bench under the tree; drawstring pouch reads best at 96dp"},
+    {"mechanic": "photo_angle", "scene": "scene_photo_angle_v02", "clue": "clue_photo_angle_v02", "keepsake_item": "keepsake_photo_angle_v03", "keepsake_focus_y": 0.5, "note": "railing viewpoint over rooftops"},
+    {"mechanic": "local_memory", "scene": "scene_local_memory_v02", "clue": "clue_local_memory_v02", "keepsake_item": "keepsake_local_memory_v03", "keepsake_focus_y": 0.55, "note": "shop front covered in notes, bicycle"},
+    {"mechanic": "companion_sense", "scene": "scene_companion_sense_v02", "clue": "clue_companion_sense_v03", "keepsake_item": "keepsake_companion_sense_v03", "keepsake_focus_y": 0.6, "note": "garden path with fence; sprout pot and sprout ribbon"}
+  ]
+}

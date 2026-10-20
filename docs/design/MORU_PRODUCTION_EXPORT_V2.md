@@ -1,6 +1,6 @@
 # Daily Town — Moru Production Export v2
 
-> Status: **PRODUCTION DERIVATION SPEC READY — transparent masters/mobile QA pending**
+> Status: **DESIGN EXPORT / RESOLVER READINESS PASS — Android packaging/runtime promotion pending**
 >
 > This document derives production rules from the approved Design Baseline v2. It does not introduce a new Moru design.
 
@@ -136,6 +136,8 @@ Required before v2 is activated:
 9. outdoor readability remains a physical-device Human Gate
 10. M-B final motion timing/intensity remains a separate Human Gate
 
-## 10. Next design step
+## 10. Current completion / next handoff
 
-With the export contract fixed, the next production task is to create/obtain clean transparent Moru masters without changing the approved art, then run the mobile-size QA matrix. In parallel, Explore screen-detail parity can proceed because its composition and surface language are already locked by Design Baseline v2.
+MORU-01 transparent/native authorities, MORU-02 Android-size semantic-family QA and MORU-03 semantic export/resolver activation-readiness are complete on the design branch. `PASS_MORU_03_ACTIVATION_READINESS_V1` covers all 432 semantic combinations and the fallback chain, with fresh persisted-manifest re-verification. No further Moru character redesign or source-family generation is required for this handoff.
+
+The next task belongs to Development: package/bind `companion.moru.canonical.v2` as a separately versioned runtime profile using `design/reference/moru-v2/native-semantic-export-readiness-v1/semantic-resolver-export-manifest.v1.json`; preserve v1 rollback and exact fallback behavior; do not silently repoint the legacy profile. Runtime promotion remains blocked until Android packaging/binding QA and physical-device outdoor readability pass. M-B final motion timing/intensity remains a separate Human Gate.

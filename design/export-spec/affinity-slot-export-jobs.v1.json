@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "source_master": "design/source/companion/moru/moru-affinity-slots-source-master-v1.svg",
+  "direction": "AF-1 Memory Keepsakes + restrained AF-3 Explorer Patina",
+  "jobs": [
+    {"semantic_key":"slot.moru.bag.charm_first_walk","stage":"familiar","preferred":"svg","compact_map":"omit","qa":["isolated_alpha_or_vector_bounds","no_canonical_body_dependency"]},
+    {"semantic_key":"slot.moru.scarf.stitched_memory_patch","stage":"trusted","preferred":"svg","compact_map":"keep","qa":["48dp_readability","does_not_obscure_face_or_sprout"]},
+    {"semantic_key":"slot.moru.bag.shared_route_tag","stage":"trusted","preferred":"svg","compact_map":"omit_if_unreadable","qa":["isolated_bounds","no_silhouette_confusion"]},
+    {"semantic_key":"slot.moru.sprout.pressed_leaf_thread","stage":"best_friend","preferred":"svg","compact_map":"optional","qa":["black_silhouette_check","canonical_sprout_attachment_preserved"]},
+    {"semantic_key":"slot.moru.scarf.travel_worn_patchwork","stage":"best_friend","preferred":"svg","compact_map":"keep","qa":["48dp_readability","canonical_neck_mass_preserved"]},
+    {"semantic_key":"slot.moru.bag.memory_tag_set","stage":"best_friend","preferred":"svg","compact_map":"omit","qa":["isolated_bounds","no_primary_silhouette_takeover"]},
+    {"semantic_key":"slot.moru.accessory.pressed_leaf_keepsake","stage":"best_friend","preferred":"svg","compact_map":"omit","qa":["isolated_bounds","historical_memory_safe"]}
+  ],
+  "promotion": {
+    "target_state_after_qa": "production_export",
+    "checksum": "sha256",
+    "raw_source_master_runtime_use_forbidden": true,
+    "all_slots_replaceable": true
+  },
+  "human_gate": {
+    "best_friend_maximum_transformation_ceiling": "still_required_for_any_change_beyond_current_safe_default"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "asset": "OG-02 folded note",
+  "status": "PASS_EDGE_RECONSTRUCTION",
+  "source_path": ".ai-remote-tmp/og-edge-reconstruction-20260913-xepyMu/input/og02_folded_note_exact.png",
+  "source_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
+  "corrected_path": ".ai-remote-tmp/og-edge-reconstruction-20260913-xepyMu/og02/clue_old_ginkgo_folded_note_edge_corrected_v4.png",
+  "corrected_sha256": "2adc914f6ca2e5648339943bc02afe62059948d52a672e382fad69b5e6c08869",
+  "dimensions": [
+    768,
+    768
+  ],
+  "png_color_type": 6,
+  "mode": "RGBA",
+  "method": {
+    "name": "alpha-first nearest-opaque RGB propagation with controlled transparent-side color bleed",
+    "visible_fractional_edge_band_px": 20.0,
+    "transparent_bleed_ring_px": 12.0,
+    "alpha_policy": "immutable byte-for-byte",
+    "opaque_interior_rgb_policy": "immutable",
+    "deep_fractional_rgb_policy": "immutable beyond visible band"
+  },
+  "alpha": {
+    "min": 0,
+    "max": 255,
+    "transparent_pixels": 379316,
+    "opaque_pixels": 181029,
+    "fractional_pixels": 29479,
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "changed_pixels": 0,
+    "exact_equal": true
+  },
+  "silhouette": {
+    "iou": 1.0,
+    "bbox": [
+      69,
+      86,
+      698,
+      682
+    ],
+    "centroid": [
+      417.49318904377765,
+      405.5548637375228
+    ],
+    "orientation_degrees": 145.42587629574348,
+    "changed_support_pixels": 0,
+    "connected_components": 1
+  },
+  "rgb_changes": {
+    "total_pixels": 54932,
+    "visible_edge_pixels": 28944,
+    "transparent_bleed_pixels": 25988,
+    "opaque_pixels": 0,
+    "deep_fractional_pixels": 0
+  },
+  "edge_color_distance_to_nearest_opaque": {
+    "before_mean": 21.85735511779785,
+    "before_p95": 63.474395751953125,
+    "before_max": 184.68080139160156,
+    "after_mean": 0.0,
+    "after_p95": 0.0,
+    "after_max": 0.0
+  },
+  "qa": {
+    "genuine_rgba": true,
+    "geometry_unchanged": true,
+    "text_motif_fold_interior_unchanged": true,
+    "runtime_activation": false,
+    "preview_only": true
+  }
+}

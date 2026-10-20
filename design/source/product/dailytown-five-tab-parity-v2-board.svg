@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1020" viewBox="0 0 1900 1020">
+<title>Daily Town five-tab visual parity v2 board</title>
+<desc>Design-review board for Explore, Companion, Records, Goals and Settings. Not a runtime screenshot.</desc>
+<defs><style>
+.bg{fill:#EEF3F5}.phone{fill:#FCFCF8;stroke:#214F3B;stroke-width:3}.paper{fill:#F4F0E6;stroke:#D8D3C3;stroke-width:2}.raised{fill:#FFFDF7;stroke:#D8D3C3;stroke-width:2}.leaf{fill:#6B8F7A}.leaf2{fill:#A7C7A5}.ink{fill:#214F3B}.text{fill:#1A1F1C}.muted{fill:#66756D}.peach{fill:#FFB184}.butter{fill:#FFD36B}.sky{fill:#9CC9FF}.navy{fill:#1E2A44}.route{fill:none;stroke:#6F9F71;stroke-width:6;stroke-linecap:round;stroke-dasharray:14 10}.line{fill:none;stroke:#D8D3C3;stroke-width:2}.label{font-family:Arial,sans-serif;font-size:18px;font-weight:700;fill:#214F3B}.small{font-family:Arial,sans-serif;font-size:13px;fill:#66756D}.tiny{font-family:Arial,sans-serif;font-size:11px;fill:#66756D}.title{font-family:Arial,sans-serif;font-size:26px;font-weight:700;fill:#1A1F1C}
+</style></defs>
+<rect width="1900" height="1020" rx="28" class="bg"/>
+<text x="42" y="55" class="title">Daily Town visual parity v2 — product composition board</text>
+<text x="42" y="84" class="small">A1/A2 live exploration + A3 record artifacts + quiet utility shell. Material primitives are implementation details, not the visible art direction.</text>
+
+<!-- reusable nav -->
+<g id="nav"><rect x="0" y="626" width="320" height="74" fill="#FFFDF7"/><line x1="0" y1="626" x2="320" y2="626" class="line"/><circle cx="33" cy="651" r="10" class="leaf2"/><circle cx="96" cy="651" r="10" class="leaf2"/><circle cx="160" cy="651" r="10" class="leaf2"/><circle cx="224" cy="651" r="10" class="leaf2"/><circle cx="287" cy="651" r="10" class="leaf2"/><text x="17" y="679" class="tiny">탐험</text><text x="79" y="679" class="tiny">동행</text><text x="143" y="679" class="tiny">기록</text><text x="207" y="679" class="tiny">목표</text><text x="270" y="679" class="tiny">설정</text></g>
+
+<!-- Explore -->
+<g transform="translate(35 145)"><rect width="320" height="700" rx="32" class="phone"/>
+<rect x="0" y="0" width="320" height="700" rx="32" fill="#DDE9D6"/>
+<!-- map blocks -->
+<path d="M0 160L320 80V700H0Z" fill="#DDE8D8"/><path d="M0 330L320 205" stroke="#FFFDF7" stroke-width="22"/><path d="M70 0L150 700M255 0L225 700" stroke="#F7F3E8" stroke-width="17" opacity=".85"/><path d="M38 518C88 452 144 470 181 403C217 340 256 350 292 278" class="route"/>
+<rect x="16" y="18" width="288" height="72" rx="18" fill="#FFFDF7" opacity=".94"/><text x="32" y="45" class="label">오늘의 동네 탐험</text><text x="32" y="68" class="small">덕수궁 돌담길의 작은 단서</text><circle cx="278" cy="54" r="17" class="butter"/>
+<!-- markers --> <path d="M92 298l14-18 14 18-14 20Z" class="leaf"/><circle cx="106" cy="293" r="5" fill="#FFFDF7"/><path d="M235 232l14-18 14 18-14 20Z" class="peach"/><circle cx="249" cy="227" r="5" fill="#FFFDF7"/>
+<!-- Moru edge vignette -->
+<g transform="translate(245 492) scale(.6)"><path d="M-18-63Q-30-94-58-88Q-52-63-30-53Z" class="leaf"/><path d="M-42-42Q0-69 42-42L47 7Q39 38 0 44Q-39 38-47 7Z" fill="#C7DDBF" stroke="#214F3B" stroke-width="4"/><path d="M-31-30Q0-46 31-30L34 5Q28 27 0 30Q-28 27-34 5Z" fill="#F4D9A8" stroke="#214F3B" stroke-width="4"/><circle cx="-12" cy="-6" r="4" class="text"/><circle cx="12" cy="-6" r="4" class="text"/><path d="M-28 44Q0 35 28 44L34 98Q0 111-34 98Z" fill="#F7E7B8" stroke="#214F3B" stroke-width="4"/><path d="M-32 47Q0 61 32 47L27 65Q0 57-27 65Z" class="peach" stroke="#214F3B" stroke-width="4"/></g>
+<rect x="16" y="547" width="210" height="63" rx="16" fill="#FFFDF7" opacity=".96"/><text x="30" y="571" class="small">모루 · “이 골목, 전에 봤던 것 같아.”</text><text x="30" y="593" class="tiny">180m · 힌트가 가까워지고 있어요</text>
+<use href="#nav"/><ellipse cx="33" cy="651" rx="23" ry="17" fill="#DDE9D6" stroke="#6B8F7A" stroke-width="2"/>
+<text x="100" y="744" text-anchor="middle" class="label">EXPLORE</text><text x="160" y="770" text-anchor="middle" class="small">map-first + botanical expedition HUD</text></g>
+
+<!-- Companion -->
+<g transform="translate(405 145)"><rect width="320" height="700" rx="32" class="phone"/><rect x="0" y="0" width="320" height="700" rx="32" fill="#F7F3E8"/>
+<text x="20" y="44" class="small">오늘의 동행</text><text x="20" y="73" class="title">모루</text>
+<rect x="18" y="95" width="284" height="300" rx="26" class="paper"/>
+<!-- portrait --> <g transform="translate(160 235)"><path d="M-14-92Q-35-125-68-115Q-61-82-31-76Z" class="leaf"/><path d="M6-93Q28-125 60-111Q49-81 20-74Z" class="leaf2"/><path d="M-61-66Q0-105 61-66L70 0Q60 50 0 58Q-60 50-70 0Z" fill="#C7DDBF" stroke="#214F3B" stroke-width="4"/><path d="M-45-49Q0-74 45-49L50-2Q42 35 0 40Q-42 35-50-2Z" fill="#F4D9A8" stroke="#214F3B" stroke-width="4"/><circle cx="-18" cy="-12" r="6" class="text"/><circle cx="18" cy="-12" r="6" class="text"/><path d="M-41 60Q0 48 41 60L49 132Q0 154-49 132Z" fill="#F7E7B8" stroke="#214F3B" stroke-width="4"/><path d="M-46 63Q0 83 46 63L38 88Q0 76-38 88Z" class="peach" stroke="#214F3B" stroke-width="4"/><path d="M-30 58Q17 88 54 126" fill="none" stroke="#214F3B" stroke-width="3"/><rect x="34" y="111" width="45" height="42" rx="10" fill="#9A6A3F" stroke="#214F3B" stroke-width="4"/></g>
+<rect x="30" y="356" width="260" height="26" rx="13" fill="#FFFDF7"/><text x="44" y="374" class="tiny">호감도 12 · 함께 발견한 기억 7개</text>
+<text x="20" y="430" class="label">최근 함께한 기억</text><rect x="18" y="449" width="284" height="92" rx="18" class="raised"/><circle cx="55" cy="495" r="24" class="butter"/><text x="91" y="485" class="small">덕수궁 담장 끝에서</text><text x="91" y="508" class="tiny">어제 · 해결한 미스터리</text><rect x="18" y="557" width="136" height="48" rx="14" class="raised"/><rect x="166" y="557" width="136" height="48" rx="14" class="raised"/><text x="31" y="586" class="tiny">같이 걸은 곳 18</text><text x="179" y="586" class="tiny">수집한 단서 11</text>
+<use href="#nav"/><ellipse cx="96" cy="651" rx="23" ry="17" fill="#DDE9D6" stroke="#6B8F7A" stroke-width="2"/>
+<text x="160" y="744" text-anchor="middle" class="label">COMPANION</text><text x="160" y="770" text-anchor="middle" class="small">field-notebook portrait, not dashboard</text></g>
+
+<!-- Records -->
+<g transform="translate(775 145)"><rect width="320" height="700" rx="32" class="phone"/><rect x="0" y="0" width="320" height="700" rx="32" fill="#F4F0E6"/>
+<text x="20" y="42" class="small">우리 동네 이야기</text><text x="20" y="72" class="title">탐험 일지</text>
+<rect x="18" y="94" width="284" height="76" rx="18" class="raised"/><text x="32" y="120" class="tiny">이번 주</text><text x="32" y="148" class="label">발견 6 · 단서 4 · 해결 2</text>
+<text x="20" y="204" class="small">9월 9일</text><rect x="18" y="221" width="284" height="110" rx="18" class="raised"/><rect x="30" y="235" width="72" height="72" rx="16" fill="#DDE9D6"/><path d="M47 289Q65 255 86 278" class="route"/><circle cx="68" cy="258" r="10" class="butter"/><text x="119" y="250" class="label">돌담길의 작은 반짝임</text><text x="119" y="276" class="tiny">덕수궁 · 해결 완료</text><circle cx="264" cy="300" r="16" class="leaf2"/><text x="259" y="305" class="tiny">✓</text>
+<rect x="18" y="346" width="284" height="94" rx="18" class="raised"/><rect x="30" y="360" width="60" height="60" rx="14" fill="#FFF0D5"/><text x="109" y="375" class="small">오래된 표지판의 방향</text><text x="109" y="400" class="tiny">새 단서 · 아직 미해결</text>
+<text x="20" y="478" class="small">컬렉션</text><rect x="18" y="495" width="86" height="86" rx="18" fill="#FFFDF7" stroke="#D8D3C3" stroke-width="2"/><rect x="117" y="495" width="86" height="86" rx="18" fill="#FFFDF7" stroke="#D8D3C3" stroke-width="2"/><rect x="216" y="495" width="86" height="86" rx="18" fill="#E8E5DA" stroke="#D8D3C3" stroke-width="2"/><circle cx="61" cy="530" r="16" class="peach"/><circle cx="160" cy="530" r="16" class="sky"/><path d="M244 517h30v28h-30z" fill="none" stroke="#66756D" stroke-width="3"/><text x="40" y="566" class="tiny">골목</text><text x="142" y="566" class="tiny">공원</text><text x="239" y="566" class="tiny">???</text>
+<use href="#nav"/><ellipse cx="160" cy="651" rx="23" ry="17" fill="#DDE9D6" stroke="#6B8F7A" stroke-width="2"/>
+<text x="160" y="744" text-anchor="middle" class="label">RECORDS</text><text x="160" y="770" text-anchor="middle" class="small">A3 paper is the native content surface</text></g>
+
+<!-- Goals -->
+<g transform="translate(1145 145)"><rect width="320" height="700" rx="32" class="phone"/><rect x="0" y="0" width="320" height="700" rx="32" fill="#F7F3E8"/>
+<text x="20" y="44" class="small">작은 걸음 모으기</text><text x="20" y="74" class="title">오늘의 산책</text>
+<rect x="18" y="101" width="284" height="145" rx="22" fill="#FFFDF7" stroke="#A7C7A5" stroke-width="3"/><circle cx="55" cy="139" r="20" class="leaf2"/><text x="88" y="135" class="label">새 장소 2곳 발견</text><text x="88" y="159" class="tiny">1 / 2 · 한 곳만 더 찾아보세요</text><rect x="34" y="192" width="250" height="12" rx="6" fill="#E6E2D7"/><rect x="34" y="192" width="130" height="12" rx="6" class="leaf"/>
+<text x="20" y="286" class="small">이번 주 원정 노트</text><rect x="18" y="303" width="284" height="72" rx="16" class="raised"/><circle cx="45" cy="339" r="13" fill="#FFFDF7" stroke="#6B8F7A" stroke-width="3"/><text x="71" y="334" class="small">2km 걷기</text><text x="71" y="355" class="tiny">1.4 / 2.0km</text><rect x="18" y="386" width="284" height="72" rx="16" class="raised"/><circle cx="45" cy="422" r="13" class="leaf"/><text x="40" y="427" font-family="Arial" font-size="14" fill="#FFFDF7">✓</text><text x="71" y="417" class="small">단서 3개 모으기</text><text x="71" y="438" class="tiny">완료 · 기록에 스탬프가 남았어요</text><rect x="18" y="469" width="284" height="72" rx="16" class="raised"/><circle cx="45" cy="505" r="13" fill="#FFFDF7" stroke="#6B8F7A" stroke-width="3"/><text x="71" y="500" class="small">미스터리 2건 해결</text><text x="71" y="521" class="tiny">1 / 2</text>
+<rect x="18" y="558" width="284" height="47" rx="15" fill="#FFF0D5"/><text x="33" y="586" class="tiny">오늘 목표는 점수판이 아니라 다음 산책의 작은 핑계입니다.</text>
+<use href="#nav"/><ellipse cx="224" cy="651" rx="23" ry="17" fill="#DDE9D6" stroke="#6B8F7A" stroke-width="2"/>
+<text x="160" y="744" text-anchor="middle" class="label">GOALS</text><text x="160" y="770" text-anchor="middle" class="small">expedition checklist, not KPI dashboard</text></g>
+
+<!-- Settings -->
+<g transform="translate(1515 145)"><rect width="320" height="700" rx="32" class="phone"/><rect x="0" y="0" width="320" height="700" rx="32" fill="#FCFCF8"/>
+<text x="20" y="47" class="title">설정</text><text x="20" y="72" class="small">탐험과 알림 방식을 조정합니다.</text>
+<text x="20" y="113" class="label">앱</text><rect x="18" y="128" width="284" height="92" rx="16" class="raised"/><text x="34" y="156" class="small">Daily Town · 0.x</text><text x="34" y="181" class="tiny">NAVER 지도 연결됨</text><text x="34" y="202" class="tiny">한국관광공사 TourAPI</text>
+<text x="20" y="257" class="label">탐험 리마인더</text><rect x="18" y="272" width="284" height="90" rx="16" class="raised"/><text x="34" y="300" class="small">저녁 산책 알림</text><rect x="244" y="288" width="42" height="24" rx="12" class="leaf2"/><circle cx="274" cy="300" r="9" class="leaf"/><text x="34" y="328" class="tiny">위치정보 없이 선택한 시간대에만 알려요.</text>
+<text x="20" y="402" class="label">데이터 출처</text><rect x="18" y="417" width="284" height="95" rx="16" class="raised"/><text x="34" y="445" class="small">POI 데이터 출처</text><text x="34" y="469" class="tiny">한국관광공사 TourAPI · attribution 표시</text><text x="34" y="490" class="tiny">Privacy / license wording remains plain.</text>
+<rect x="18" y="550" width="284" height="55" rx="15" fill="#EEF3F5"/><text x="34" y="575" class="small">개발 / Field Test</text><text x="34" y="594" class="tiny">debug only · visually isolated</text>
+<use href="#nav"/><ellipse cx="287" cy="651" rx="23" ry="17" fill="#DDE9D6" stroke="#6B8F7A" stroke-width="2"/>
+<text x="160" y="744" text-anchor="middle" class="label">SETTINGS</text><text x="160" y="770" text-anchor="middle" class="small">quiet utility; clarity over decoration</text></g>
+
+<g transform="translate(35 910)"><rect width="1800" height="72" rx="20" class="raised"/><text x="20" y="28" class="label">Parity gate</text><text x="20" y="52" class="small">Approve composition + Moru family before runtime implementation. This board intentionally uses familiar geometry; final iconography, typography and motion are still candidate work.</text></g>
+</svg>

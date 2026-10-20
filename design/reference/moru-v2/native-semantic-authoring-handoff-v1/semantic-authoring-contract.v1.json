@@ -1,0 +1,338 @@
+{
+  "version": "moru-native-semantic-authoring-handoff-v1-2026-09-14",
+  "status": "HANDOFF_READY_EXPRESSION_AFFINITY_NOT_PRODUCED",
+  "runtime_activation": false,
+  "authorities": {
+    "canonical_board": {
+      "path": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+      "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+      "dimensions": [
+        1122,
+        1402
+      ]
+    },
+    "accepted_neutral_png": {
+      "path": "design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "mode": "RGBA"
+    },
+    "accepted_neutral_ora": {
+      "path": "design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora",
+      "sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+      "layers": [
+        {
+          "name": "sprout",
+          "src": "data/00_sprout.png",
+          "visibility": "visible",
+          "opacity": "1.0",
+          "composite_op": "svg:src-over",
+          "depth": 1
+        },
+        {
+          "name": "face_anchor",
+          "src": "data/01_face_anchor.png",
+          "visibility": "visible",
+          "opacity": "1.0",
+          "composite_op": "svg:src-over",
+          "depth": 1
+        },
+        {
+          "name": "hood",
+          "src": "data/02_hood.png",
+          "visibility": "visible",
+          "opacity": "1.0",
+          "composite_op": "svg:src-over",
+          "depth": 1
+        },
+        {
+          "name": "satchel",
+          "src": "data/03_satchel.png",
+          "visibility": "visible",
+          "opacity": "1.0",
+          "composite_op": "svg:src-over",
+          "depth": 1
+        },
+        {
+          "name": "boots",
+          "src": "data/04_boots.png",
+          "visibility": "visible",
+          "opacity": "1.0",
+          "composite_op": "svg:src-over",
+          "depth": 1
+        },
+        {
+          "name": "body_remainder",
+          "src": "data/05_body_remainder.png",
+          "visibility": "visible",
+          "opacity": "1.0",
+          "composite_op": "svg:src-over",
+          "depth": 1
+        }
+      ]
+    },
+    "accepted_lighting_family": {
+      "path": "design/reference/moru-v2/native-lighting-family-v1/",
+      "status": "PASS_MORU_02_LIGHTING_FAMILY_V1"
+    }
+  },
+  "reference_crops": {
+    "expressions": {
+      "neutral": {
+        "path": "source/expression/expression_neutral_exact_reference_crop.png",
+        "source_box_xyxy": [
+          28,
+          690,
+          190,
+          905
+        ],
+        "dimensions": [
+          162,
+          215
+        ],
+        "mode": "RGBA",
+        "sha256": "30e80eeef6dca3f230851c5d27cd92e0c92ba6e12f79051da09e8536cf319e94",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "happy": {
+        "path": "source/expression/expression_happy_exact_reference_crop.png",
+        "source_box_xyxy": [
+          195,
+          690,
+          365,
+          905
+        ],
+        "dimensions": [
+          170,
+          215
+        ],
+        "mode": "RGBA",
+        "sha256": "17367902f9d2a5c6f3431bd740cdd8c32fd9c458400b8fedb1fad0b4debd9e0d",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "curious": {
+        "path": "source/expression/expression_curious_exact_reference_crop.png",
+        "source_box_xyxy": [
+          365,
+          690,
+          535,
+          905
+        ],
+        "dimensions": [
+          170,
+          215
+        ],
+        "mode": "RGBA",
+        "sha256": "3edaf14135ac9c8cf42e69924024e662f6a185865c40bc990cf7b8727a245ba9",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "surprised": {
+        "path": "source/expression/expression_surprised_exact_reference_crop.png",
+        "source_box_xyxy": [
+          535,
+          690,
+          705,
+          905
+        ],
+        "dimensions": [
+          170,
+          215
+        ],
+        "mode": "RGBA",
+        "sha256": "95e4a11444bbc0378cdbfb362dbb974d142f44135c22e05b80d7437d8f9dba00",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "clue_found": {
+        "path": "source/expression/expression_clue_found_exact_reference_crop.png",
+        "source_box_xyxy": [
+          705,
+          690,
+          885,
+          905
+        ],
+        "dimensions": [
+          180,
+          215
+        ],
+        "mode": "RGBA",
+        "sha256": "44412fbded8c8c4facdc0934c3373df50663fce762c49f402d1b13d56f516020",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "resolved": {
+        "path": "source/expression/expression_resolved_exact_reference_crop.png",
+        "source_box_xyxy": [
+          885,
+          690,
+          1085,
+          905
+        ],
+        "dimensions": [
+          200,
+          215
+        ],
+        "mode": "RGBA",
+        "sha256": "947f0c2779d884c1d34337e974399e75b6eeefaac4aa89e6a09488679fd25788",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      }
+    },
+    "affinity": {
+      "base": {
+        "path": "source/affinity/affinity_base_exact_reference_crop.png",
+        "source_box_xyxy": [
+          563,
+          952,
+          684,
+          1128
+        ],
+        "dimensions": [
+          121,
+          176
+        ],
+        "mode": "RGBA",
+        "sha256": "8391734ca280c5d68328b6b9693b4f61890132007cfb9263491c1f34d72019f3",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "familiar": {
+        "path": "source/affinity/affinity_familiar_exact_reference_crop.png",
+        "source_box_xyxy": [
+          688,
+          952,
+          809,
+          1128
+        ],
+        "dimensions": [
+          121,
+          176
+        ],
+        "mode": "RGBA",
+        "sha256": "a2bef204bed066a4e0783e05948086a668f8abbc01f05c77813ce896fddc16f7",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "trusted": {
+        "path": "source/affinity/affinity_trusted_exact_reference_crop.png",
+        "source_box_xyxy": [
+          812,
+          952,
+          940,
+          1128
+        ],
+        "dimensions": [
+          128,
+          176
+        ],
+        "mode": "RGBA",
+        "sha256": "37ecee75f3ad66c3e88735584b13d27183d3742984b032a1db28225f839eaac8",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      },
+      "best_friend": {
+        "path": "source/affinity/affinity_best_friend_exact_reference_crop.png",
+        "source_box_xyxy": [
+          944,
+          952,
+          1088,
+          1128
+        ],
+        "dimensions": [
+          144,
+          176
+        ],
+        "mode": "RGBA",
+        "sha256": "c53ceb180449c68c428a21ff82d32ec16396ca19e35a72f96765f881e23099a8",
+        "role": "PIXEL_EXACT_REFERENCE_CROP_NOT_PRODUCTION_MASTER"
+      }
+    }
+  },
+  "authoring_strategy": {
+    "principle": "Separate human/image-edit authoring sources from deterministic export fan-out. Do not hand-author the full Cartesian product.",
+    "expression_source_masters": {
+      "target": "1280x1600 RGBA result_large-equivalent master, LIGHT/base",
+      "count": 6,
+      "neutral": "reuse accepted neutral master; do not remake",
+      "new_required": [
+        "happy",
+        "curious",
+        "surprised",
+        "clue_found",
+        "resolved"
+      ],
+      "allowed_changes": [
+        "eyes/mouth expression",
+        "small head tilt/lean where reference supports it",
+        "limited forearm/hand gesture within canonical body envelope",
+        "clue interaction only for clue_found when directly supported by the canonical expression reference"
+      ],
+      "locked": [
+        "sprout count and asymmetric silhouette",
+        "hood shape/material",
+        "scarf diagonal and ochre family",
+        "cream jacket/botanical layering",
+        "satchel/compass identity",
+        "boots/body proportions/species",
+        "soft raster material language"
+      ]
+    },
+    "affinity_sources": {
+      "base": "no additional overlay",
+      "familiar": "small tag/stitching/shared-travel accent overlay",
+      "trusted": "route charm/compass/richer satchel keepsake overlay",
+      "best_friend": "BF-B restrained keepsake/patch cluster overlay",
+      "preferred_form": "transparent additive overlay anchored to jacket/scarf/satchel/compass region; do not repaint anatomy",
+      "pose_exception": "if a pose moves an anchor enough to misalign the overlay, author a pose-specific overlay instead of warping the whole character"
+    },
+    "lighting": "Apply the already accepted deterministic LIGHT/WARM_DUSK/DARK transform after expression + affinity composition; alpha/geometry remain controlled by the accepted semantic master.",
+    "usage_fan_out": "Only after a semantic master passes identity/semantic QA, derive map/HUD/encounter/result/Companion/journal framing from that master using the accepted usage-context rules."
+  },
+  "acceptance": {
+    "expression": {
+      "hood_iou_min": 0.95,
+      "sprout_iou_min": 0.94,
+      "subject_silhouette_iou_min": 0.9,
+      "face_anchor_deviation_max_head_width": 0.025,
+      "palette_deltaE76_median_max_LIGHT": 8,
+      "forbidden": [
+        "new costume",
+        "new species/anatomy",
+        "sprout reinterpretation",
+        "large body-envelope change",
+        "sharp/vector/sticker rendering",
+        "unsupported generated micro-detail"
+      ]
+    },
+    "affinity": {
+      "anatomy_invariant": true,
+      "base_character_silhouette_iou_min": 0.985,
+      "overlay_scope": "jacket/scarf/satchel/compass keepsake regions only",
+      "forbidden": [
+        "crown/royal evolution",
+        "body growth/species change",
+        "major costume replacement",
+        "large aura/effect changing silhouette",
+        "keepsakes unsupported by canonical affinity reference"
+      ]
+    },
+    "cross_family": [
+      "all six expressions read consistently at HUD/Companion/result contexts",
+      "LIGHT/WARM_DUSK/DARK preserve face/eye readability",
+      "affinity progression remains restrained AF-1 + AF-3/BF-B",
+      "transparent edge/halo checks remain PASS",
+      "neutral/LIGHT/base/static fallback remains exact",
+      "runtime activation stays false until MORU-03"
+    ]
+  },
+  "minimum_authoring_work": {
+    "new_expression_masters": 5,
+    "affinity_overlay_stages": 3,
+    "lighting_manual_variants": 0,
+    "usage_context_manual_redraws": 0,
+    "note": "Final exports may expand to required semantic tuples, but the authoring source set should remain compact and derivable."
+  },
+  "qa_artifacts": {
+    "moru_semantic_authoring_reference_board_v1.png": {
+      "sha256": "60baff5ee79a93a0259b11ef6c0e5724a4e216f50b0f5177253b0e73ecc95a50",
+      "bytes": 700131
+    }
+  }
+}

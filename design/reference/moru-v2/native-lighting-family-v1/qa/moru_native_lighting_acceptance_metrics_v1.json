@@ -1,0 +1,748 @@
+{
+  "version": "moru-native-lighting-family-v1-2026-09-14",
+  "verdict": "PASS_MORU_02_LIGHTING_FAMILY_V1",
+  "classification": "NATIVE_LIGHTING_QA_CANDIDATE_NOT_RUNTIME_ACTIVE",
+  "source_canonical_sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+  "source_usage_verdict": "PASS_MORU_02_NEUTRAL_USAGE_V1",
+  "reference_lighting_stats": {
+    "LIGHT": {
+      "background_rgb": [
+        203.0,
+        190.0,
+        149.0
+      ],
+      "foreground_pixels": 29366,
+      "lab_mean": [
+        68.30460872834588,
+        -0.6004254121550848,
+        17.305643201218558
+      ],
+      "lab_std": [
+        19.9051446820817,
+        5.914884509450998,
+        9.289990325874273
+      ],
+      "mean_luminance": 0.4447359460711684
+    },
+    "WARM_DUSK": {
+      "background_rgb": [
+        245.0,
+        236.0,
+        218.0
+      ],
+      "foreground_pixels": 25537,
+      "lab_mean": [
+        57.49879288369916,
+        10.030518865612011,
+        20.68989367029075
+      ],
+      "lab_std": [
+        19.00571318081693,
+        6.875007244726385,
+        11.539073961352125
+      ],
+      "mean_luminance": 0.3041705067442636
+    },
+    "DARK": {
+      "background_rgb": [
+        238.0,
+        225.0,
+        207.5
+      ],
+      "foreground_pixels": 25880,
+      "lab_mean": [
+        40.69109127914796,
+        5.25642224768301,
+        8.951395206240857
+      ],
+      "lab_std": [
+        20.903018737003197,
+        6.305971831754441,
+        14.647401019045413
+      ],
+      "mean_luminance": 0.16975273557893422
+    }
+  },
+  "transfer": {
+    "WARM_DUSK": {
+      "mu_light": [
+        68.30460872834588,
+        -0.6004254121550848,
+        17.305643201218558
+      ],
+      "scale": [
+        0.9548141188808125,
+        1.1623231584219897,
+        1.24209752180406
+      ],
+      "delta": [
+        -10.0,
+        10.630944277767096,
+        3.3842504690721924
+      ],
+      "blend": 0.88
+    },
+    "DARK": {
+      "mu_light": [
+        68.30460872834588,
+        -0.6004254121550848,
+        17.305643201218558
+      ],
+      "scale": [
+        1.050131464546438,
+        1.0661191814782776,
+        1.28
+      ],
+      "delta": [
+        -27.61351744919792,
+        5.8568476598380945,
+        -3.0
+      ],
+      "blend": 0.92
+    }
+  },
+  "assets": {
+    "map_avatar": {
+      "LIGHT": {
+        "sha256": "098df5b9b4b8e9cfe215c7fc8e9f1e9129b5673b7dc168893c5ea185f849d531",
+        "dimensions": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "alpha_bbox_xyxy": [
+          139,
+          28,
+          373,
+          495
+        ]
+      },
+      "WARM_DUSK": {
+        "path": "candidate/companion_moru_v2_map_avatar_neutral_WARM_DUSK_base.png",
+        "sha256": "635c89eb1f4668b77678fa47ac771d17e7a0964cedf323406ae111e50fc74a4d",
+        "dimensions": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          139,
+          28,
+          373,
+          495
+        ],
+        "visible_mean_luminance": 0.23477251789249368,
+        "mean_lab_delta_from_LIGHT": [
+          -8.232099406177277,
+          9.76716806667155,
+          2.9971997950728166
+        ],
+        "face": {
+          "pixels": 8424,
+          "mean_luminance": 0.2960312787566979,
+          "luminance_std": 0.19861653830828774
+        },
+        "sprout": {
+          "pixels": 4946,
+          "mean_luminance": 0.28138635217702646,
+          "luminance_std": 0.2149040530378722
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "warmer_a_or_b": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      },
+      "DARK": {
+        "path": "candidate/companion_moru_v2_map_avatar_neutral_DARK_base.png",
+        "sha256": "3018db41995faa2512cb3153b43a12a23736acf97fbe9cc36d5643f6a9942170",
+        "dimensions": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          139,
+          28,
+          373,
+          495
+        ],
+        "visible_mean_luminance": 0.12522602760386434,
+        "mean_lab_delta_from_LIGHT": [
+          -21.36544606979289,
+          5.597054499448651,
+          -2.7005250763921254
+        ],
+        "face": {
+          "pixels": 8424,
+          "mean_luminance": 0.16054059181243832,
+          "luminance_std": 0.12819244366419041
+        },
+        "sprout": {
+          "pixels": 4946,
+          "mean_luminance": 0.15096505405258093,
+          "luminance_std": 0.14630527707166535
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "meaningfully_darker": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      }
+    },
+    "hud_portrait": {
+      "LIGHT": {
+        "sha256": "c67bac8dd8eb7e8cd13b8434b2cf92ce2ab6b82c657291109230a2a672af79ab",
+        "dimensions": [
+          768,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_bbox_xyxy": [
+          110,
+          36,
+          639,
+          722
+        ]
+      },
+      "WARM_DUSK": {
+        "path": "candidate/companion_moru_v2_hud_portrait_neutral_WARM_DUSK_base.png",
+        "sha256": "135ac9102b2d66242c92c2ea44ddb164456efbecf3edd88df7a903ac73db1b76",
+        "dimensions": [
+          768,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          110,
+          36,
+          639,
+          722
+        ],
+        "visible_mean_luminance": 0.26168081688444866,
+        "mean_lab_delta_from_LIGHT": [
+          -8.365417926573663,
+          9.651340943389034,
+          3.1881275856835813
+        ],
+        "face": {
+          "pixels": 47545,
+          "mean_luminance": 0.29736387982700185,
+          "luminance_std": 0.19907442630069905
+        },
+        "sprout": {
+          "pixels": 27923,
+          "mean_luminance": 0.2830850253051738,
+          "luminance_std": 0.21432702402333334
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "warmer_a_or_b": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      },
+      "DARK": {
+        "path": "candidate/companion_moru_v2_hud_portrait_neutral_DARK_base.png",
+        "sha256": "79c30905ecfb089c6dabb204cda5eeeb60cbefb3bfb972485ad429b857ada12a",
+        "dimensions": [
+          768,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          110,
+          36,
+          639,
+          722
+        ],
+        "visible_mean_luminance": 0.14105014599097382,
+        "mean_lab_delta_from_LIGHT": [
+          -21.87387188294435,
+          5.5480979160109785,
+          -2.464732008125825
+        ],
+        "face": {
+          "pixels": 47545,
+          "mean_luminance": 0.16148303766841357,
+          "luminance_std": 0.12849286749911215
+        },
+        "sprout": {
+          "pixels": 27923,
+          "mean_luminance": 0.15194263970186325,
+          "luminance_std": 0.14591808446503335
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "meaningfully_darker": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      }
+    },
+    "encounter_halfbody": {
+      "LIGHT": {
+        "sha256": "00a643aa14661a9e8b511854b33c7f7f19c04230b781c786ab592e0504dd46e5",
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "mode": "RGBA",
+        "alpha_bbox_xyxy": [
+          147,
+          53,
+          877,
+          1229
+        ]
+      },
+      "WARM_DUSK": {
+        "path": "candidate/companion_moru_v2_encounter_halfbody_neutral_WARM_DUSK_base.png",
+        "sha256": "efa5e8bc2e420330908efc90ea80e570b3c2d5090e6edc43f2d58149551f4ef6",
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          147,
+          53,
+          877,
+          1229
+        ],
+        "visible_mean_luminance": 0.2418465050288349,
+        "mean_lab_delta_from_LIGHT": [
+          -8.265694717602244,
+          9.696627305666269,
+          3.129147387926185
+        ],
+        "face": {
+          "pixels": 84132,
+          "mean_luminance": 0.2971685972261967,
+          "luminance_std": 0.1992457226665304
+        },
+        "sprout": {
+          "pixels": 49356,
+          "mean_luminance": 0.28313782052778474,
+          "luminance_std": 0.2143309114403325
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "warmer_a_or_b": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      },
+      "DARK": {
+        "path": "candidate/companion_moru_v2_encounter_halfbody_neutral_DARK_base.png",
+        "sha256": "7cfb7e01d7db5db4b5044568756c9937f0111d6ff778c675cde9981fb6246d13",
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          147,
+          53,
+          877,
+          1229
+        ],
+        "visible_mean_luminance": 0.12911113538646313,
+        "mean_lab_delta_from_LIGHT": [
+          -21.563115261901913,
+          5.576235835662564,
+          -2.5400603017061965
+        ],
+        "face": {
+          "pixels": 84132,
+          "mean_luminance": 0.1614085964563688,
+          "luminance_std": 0.12856870556270694
+        },
+        "sprout": {
+          "pixels": 49356,
+          "mean_luminance": 0.15197155614693073,
+          "luminance_std": 0.1459321178273534
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "meaningfully_darker": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      }
+    },
+    "companion_portrait": {
+      "LIGHT": {
+        "sha256": "b57d5732a1f65a0b1cc5f108e267c422bd0fcfdbd144c403c23627de558e6b14",
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "mode": "RGBA",
+        "alpha_bbox_xyxy": [
+          110,
+          56,
+          914,
+          1229
+        ]
+      },
+      "WARM_DUSK": {
+        "path": "candidate/companion_moru_v2_companion_portrait_neutral_WARM_DUSK_base.png",
+        "sha256": "475f8e2155ebeed7ea73244a43e70cb8c556c26f2b232063deede4db3e96abb0",
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          110,
+          56,
+          914,
+          1229
+        ],
+        "visible_mean_luminance": 0.2557364444303817,
+        "mean_lab_delta_from_LIGHT": [
+          -8.327548770275179,
+          9.713157663390318,
+          3.1651419376136474
+        ],
+        "face": {
+          "pixels": 103846,
+          "mean_luminance": 0.2966316836240757,
+          "luminance_std": 0.1992593335754063
+        },
+        "sprout": {
+          "pixels": 60524,
+          "mean_luminance": 0.28314362645998004,
+          "luminance_std": 0.21445799282289185
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "warmer_a_or_b": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      },
+      "DARK": {
+        "path": "candidate/companion_moru_v2_companion_portrait_neutral_DARK_base.png",
+        "sha256": "7c336ee6d29d27d0bd9ff1b16ad6dcbeab13d18b11d6ac5c12316d0754349056",
+        "dimensions": [
+          1024,
+          1280
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          110,
+          56,
+          914,
+          1229
+        ],
+        "visible_mean_luminance": 0.1377984604193762,
+        "mean_lab_delta_from_LIGHT": [
+          -21.66256065985582,
+          5.580796687960417,
+          -2.4962652172771413
+        ],
+        "face": {
+          "pixels": 103846,
+          "mean_luminance": 0.16108295214132107,
+          "luminance_std": 0.12853160338696248
+        },
+        "sprout": {
+          "pixels": 60524,
+          "mean_luminance": 0.15199429506364984,
+          "luminance_std": 0.14602220318215284
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "meaningfully_darker": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      }
+    },
+    "journal_crop": {
+      "LIGHT": {
+        "sha256": "cbcae8d5a79bc5c68368fe0f36f57fbe385d3c35f5c069ce87a2224ba85540b4",
+        "dimensions": [
+          768,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_bbox_xyxy": [
+          128,
+          36,
+          640,
+          722
+        ]
+      },
+      "WARM_DUSK": {
+        "path": "candidate/companion_moru_v2_journal_crop_neutral_WARM_DUSK_base.png",
+        "sha256": "0700acf76b77145b68ee108f0aefa4155c571ffbcc811a17508c66acdb100a05",
+        "dimensions": [
+          768,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          128,
+          36,
+          640,
+          722
+        ],
+        "visible_mean_luminance": 0.26603450616522967,
+        "mean_lab_delta_from_LIGHT": [
+          -8.400171397442612,
+          9.62605206120624,
+          3.208189052601419
+        ],
+        "face": {
+          "pixels": 54252,
+          "mean_luminance": 0.2973461643619361,
+          "luminance_std": 0.1990806946333072
+        },
+        "sprout": {
+          "pixels": 31760,
+          "mean_luminance": 0.28336780628822344,
+          "luminance_std": 0.21452001475859858
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "warmer_a_or_b": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      },
+      "DARK": {
+        "path": "candidate/companion_moru_v2_journal_crop_neutral_DARK_base.png",
+        "sha256": "bd411f608b27e90e274be500b228d8aa04a496ab1a47e19ca7b32107248f1891",
+        "dimensions": [
+          768,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          128,
+          36,
+          640,
+          722
+        ],
+        "visible_mean_luminance": 0.1434272908938027,
+        "mean_lab_delta_from_LIGHT": [
+          -22.04384516525063,
+          5.52923881682498,
+          -2.4442203970295857
+        ],
+        "face": {
+          "pixels": 54252,
+          "mean_luminance": 0.16148562183021606,
+          "luminance_std": 0.1284906672916789
+        },
+        "sprout": {
+          "pixels": 31760,
+          "mean_luminance": 0.15213762188247948,
+          "luminance_std": 0.14607534458354948
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "meaningfully_darker": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      }
+    },
+    "result_large": {
+      "LIGHT": {
+        "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_bbox_xyxy": [
+          281,
+          75,
+          998,
+          1525
+        ]
+      },
+      "WARM_DUSK": {
+        "path": "candidate/companion_moru_v2_result_large_neutral_WARM_DUSK_base.png",
+        "sha256": "fcae19b837fb510bc298acb5fa840e037ba87547bdfa85bd8551f5e636998bb1",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          281,
+          75,
+          998,
+          1525
+        ],
+        "visible_mean_luminance": 0.23548109899516118,
+        "mean_lab_delta_from_LIGHT": [
+          -8.21228809406508,
+          9.741288989085122,
+          2.9967206453370423
+        ],
+        "face": {
+          "pixels": 82472,
+          "mean_luminance": 0.29666236964927173,
+          "luminance_std": 0.19931646223065871
+        },
+        "sprout": {
+          "pixels": 48252,
+          "mean_luminance": 0.2836845662026106,
+          "luminance_std": 0.2148958471213996
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "warmer_a_or_b": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      },
+      "DARK": {
+        "path": "candidate/companion_moru_v2_result_large_neutral_DARK_base.png",
+        "sha256": "06c9cd50d9349eef2828f37642ff82611f85d2eba022d994dd3b8bc2ee923fce",
+        "dimensions": [
+          1280,
+          1600
+        ],
+        "mode": "RGBA",
+        "alpha_minmax": [
+          0,
+          255
+        ],
+        "alpha_bbox_xyxy": [
+          281,
+          75,
+          998,
+          1525
+        ],
+        "visible_mean_luminance": 0.1257487107801475,
+        "mean_lab_delta_from_LIGHT": [
+          -21.30119551817488,
+          5.5996914417044135,
+          -2.701707612293516
+        ],
+        "face": {
+          "pixels": 82472,
+          "mean_luminance": 0.161107612460217,
+          "luminance_std": 0.1285682739505048
+        },
+        "sprout": {
+          "pixels": 48252,
+          "mean_luminance": 0.15235753421432757,
+          "luminance_std": 0.14644691300628784
+        },
+        "checks": {
+          "alpha_bit_identical": true,
+          "same_alpha_bbox": true,
+          "meaningfully_darker": true,
+          "face_readable": true,
+          "face_texture_preserved": true,
+          "sprout_readable": true
+        },
+        "verdict": "PASS"
+      }
+    }
+  },
+  "checks": {
+    "accepted_usage_hashes_match": true,
+    "canonical_lighting_reference_read": true,
+    "all_alpha_geometry_unchanged": true,
+    "all_12_new_assets_pass": true
+  },
+  "generation_used": false,
+  "geometry_edit_used": false,
+  "alpha_edit_used": false,
+  "expression_fan_out": false,
+  "affinity_fan_out": false,
+  "runtime_activation": false,
+  "qa_artifacts": {
+    "moru_native_lighting_family_qa_v1.png": {
+      "sha256": "563a66c61c3c0dc4c98d09c5e0ef837d6e2f09c5ee6f994507e6eff12b985dd7",
+      "bytes": 1552901
+    }
+  }
+}

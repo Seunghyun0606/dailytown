@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DailyTown — Final Design Review</title>
+<style>
+:root{
+  --canvas:#F4EBDD;--card:#FFF8EB;--inset:#EFE3CF;--edge:#D8C8AE;
+  --ink:#453B30;--muted:#74685B;--moss:#68704E;--leaf:#87906A;
+  --ochre:#B18B45;--terra:#B87358;--dark:#2D342C;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Noto Sans KR",sans-serif}
+a{color:inherit}
+.shell{max-width:1240px;margin:auto;padding:24px}
+.hero{padding:38px 30px;border:1px solid var(--edge);border-radius:28px;background:linear-gradient(145deg,var(--card),#f2e5cf);box-shadow:0 16px 50px rgba(69,59,48,.08)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);font-weight:800}
+h1{margin:7px 0 10px;font-size:clamp(32px,6vw,64px);line-height:1.02;letter-spacing:-.045em}
+h2{font-size:25px;margin:0 0 8px;letter-spacing:-.025em}
+h3{font-size:17px;margin:0 0 6px}
+p{margin:0;color:var(--muted)}
+.status{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.badge{padding:7px 11px;border-radius:999px;border:1px solid var(--edge);background:#fff8;backdrop-filter:blur(6px);font-size:12px;font-weight:750}
+.badge.pass{color:#40502c;border-color:#bdc8a5;background:#eff3e5}
+.badge.pending{color:#745d21;border-color:#dfca8a;background:#fff3cd}
+nav{position:sticky;top:10px;z-index:10;margin:18px 0 26px;padding:8px;display:flex;gap:6px;overflow:auto;border:1px solid var(--edge);border-radius:18px;background:rgba(255,248,235,.9);backdrop-filter:blur(12px)}
+nav a{white-space:nowrap;text-decoration:none;padding:9px 12px;border-radius:12px;font-size:13px;font-weight:700}
+nav a:hover{background:var(--inset)}
+section{margin:34px 0 44px}
+.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{grid-column:span 4;background:var(--card);border:1px solid var(--edge);border-radius:22px;padding:16px;overflow:hidden}
+.card.wide{grid-column:span 8}
+.card.full{grid-column:1/-1}
+.media{background:var(--inset);border-radius:16px;min-height:220px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:12px}
+.media img{display:block;max-width:100%;max-height:560px;object-fit:contain}
+.media.cover img{width:100%;height:100%;object-fit:cover}
+.caption{font-size:12px;color:var(--muted);margin-top:7px}
+.baseline .media{min-height:420px}
+.moru-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.moru-cell{background:var(--inset);border-radius:14px;padding:10px;text-align:center}
+.moru-cell img{width:100%;height:190px;object-fit:contain}
+.moru-cell small{display:block;margin-top:5px;color:var(--muted)}
+.ginkgo-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.ginkgo-grid img{width:100%;height:220px;object-fit:cover;border-radius:14px;background:var(--inset)}
+.icon-stage{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.icon-sample{padding:16px;border-radius:18px;text-align:center}
+.icon-sample.light{background:#f2eadc}
+.icon-sample.dark{background:#252b25;color:#fff}
+.icon-sample.mono{background:#d7dec7}
+.icon-wrap{position:relative;width:min(180px,70%);aspect-ratio:1;margin:auto;border-radius:28%;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.12)}
+.icon-wrap img{position:absolute;inset:0;width:100%;height:100%}
+.icon-wrap img:first-child{z-index:0}.icon-wrap img:last-child{z-index:1}
+.motion-stage{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.motion-box{padding:14px;background:var(--inset);border-radius:18px;text-align:center;overflow:hidden}
+.motion-box img{height:230px;max-width:100%;object-fit:contain;transform-origin:50% 86%}
+.motion-box b{display:block;text-align:left;font-size:12px;color:var(--moss);margin-bottom:6px}
+.moru-idle{animation:idle 2.6s cubic-bezier(.4,0,.2,1) infinite}
+.moru-clue{animation:clue 2.2s linear infinite}
+.moru-resolved{animation:resolved 2.6s linear infinite}
+@keyframes idle{0%,100%{transform:translateY(0) scale(1) rotate(0)}50%{transform:translateY(-2px) scale(1.008) rotate(.4deg)}}
+@keyframes clue{0%,65%,100%{transform:none}69%{transform:translateY(1px) scale(.99)}77%{transform:translateY(-6px) scale(1.025) rotate(1.8deg)}90%{transform:none}}
+@keyframes resolved{0%,65%,100%{transform:none}70%{transform:translateY(1px)}79%{transform:translateY(-4px) rotate(1.2deg)}92%{transform:none}}
+.note{padding:14px 16px;border-radius:16px;background:#fff3cd;border:1px solid #dfca8a;color:#6d5722}
+.source{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;color:var(--muted);word-break:break-all}
+footer{border-top:1px solid var(--edge);padding:22px 0 10px;color:var(--muted);font-size:12px}
+@media(max-width:850px){
+ .shell{padding:14px}.hero{padding:26px 20px}.card,.card.wide{grid-column:1/-1}
+ .moru-grid,.motion-stage,.icon-stage{grid-template-columns:1fr}
+ .ginkgo-grid{grid-template-columns:1fr}.ginkgo-grid img{height:auto}
+ .baseline .media{min-height:240px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.motion-box img{animation:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <div class="eyebrow">DailyTown · Approved Design Review Hub</div>
+    <h1>Final Design Review</h1>
+    <p>새 디자인 탐색이 아니라, Design Baseline v2와 승인된 production/reference 자산을 한 화면에서 검토하기 위한 정적 showcase입니다.</p>
+    <div class="status">
+      <span class="badge pass">Moru Candidate 3 · LOCKED</span>
+      <span class="badge pass">M-B2 Calm Reactive · LOCKED</span>
+      <span class="badge pass">ID-A2 Sprout Gate · LOCKED</span>
+      <span class="badge pass">Old Ginkgo · design candidate pack ready</span>
+      <span class="badge pending">R-B Outdoor · PHYSICAL DEVICE PENDING</span>
+    </div>
+  </header>
+
+  <nav>
+    <a href="#baseline">Baseline</a>
+    <a href="#surfaces">Explore / Companion / Records</a>
+    <a href="#moru">Moru</a>
+    <a href="#ginkgo">Old Ginkgo</a>
+    <a href="#identity">ID-A2</a>
+    <a href="#motion">M-B2 Motion</a>
+    <a href="#gate">R-B Gate</a>
+  </nav>
+
+  <section id="baseline" class="baseline">
+    <div class="section-head"><div><div class="eyebrow">01 · Visual Authority</div><h2>Design Baseline v2</h2><p>Explore 흐름과 전체 톤을 잠그는 승인 기준 이미지입니다.</p></div></div>
+    <div class="grid">
+      <article class="card full">
+        <div class="media"><img src="../../../../design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png" alt="DailyTown UX visual baseline v2"></div>
+        <h3>Overall UX / Visual Baseline</h3>
+        <p>Map-first Explore, cream/paper surface, botanical neighborhood framing, discovery → record → continue 흐름의 기준.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="surfaces">
+    <div class="section-head"><div><div class="eyebrow">02 · Product Surfaces</div><h2>Explore · Companion · Records</h2><p>현재 승인된 surface 언어를 빠르게 비교하는 reference pass입니다.</p></div></div>
+    <div class="grid">
+      <article class="card wide">
+        <div class="media"><img src="../../../../design/reference/ux-v2/raster/explore_detail_parity_v1.webp" alt="Explore detail parity"></div>
+        <h3>Explore Detail Parity</h3>
+        <p>Prepare / Detect / Discover / Resolved의 map-first 시각 위계와 paper overlay 방향.</p>
+      </article>
+      <article class="card">
+        <div class="media"><img src="../../../../design/reference/ux-v2/raster/mobile_readability_qa_v2.webp" alt="Mobile readability QA"></div>
+        <h3>Mobile-size QA Reference</h3>
+        <p>정적 QA 참고. 실제 outdoor R-B PASS를 대신하지 않습니다.</p>
+      </article>
+      <article class="card full">
+        <div class="media"><img src="../../../../design/reference/ux-v2/raster/companion_records_finish_pass_v1.webp" alt="Companion and Records finish pass"></div>
+        <h3>Companion / Records Finish Pass</h3>
+        <p>relationship notebook와 A3 journal의 paper/card surface 및 정보 위계 기준.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="moru">
+    <div class="section-head"><div><div class="eyebrow">03 · Companion</div><h2>Moru Candidate 3</h2><p>canonical identity는 변경하지 않고 usage-context production crop만 사용합니다.</p></div></div>
+    <div class="grid">
+      <article class="card wide">
+        <div class="media"><img src="../../../../design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png" alt="Moru Candidate 3 canonical baseline"></div>
+        <h3>Canonical Baseline</h3>
+        <p>정면/걷기/후면, 표정, sprout·hood·scarf·satchel·boots identity의 최종 authority.</p>
+      </article>
+      <article class="card">
+        <div class="moru-grid">
+          <div class="moru-cell"><img src="../../../../design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base.png" alt=""><small>map avatar</small></div>
+          <div class="moru-cell"><img src="../../../../design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_hud_portrait_neutral_LIGHT_base.png" alt=""><small>HUD portrait</small></div>
+          <div class="moru-cell"><img src="../../../../design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_result_large_neutral_LIGHT_base.png" alt=""><small>result large</small></div>
+        </div>
+        <h3 style="margin-top:12px">Usage Context</h3>
+        <p>실제 앱 context에 맞춘 투명 raster derivation.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="ginkgo">
+    <div class="section-head"><div><div class="eyebrow">04 · First Scenario</div><h2>Old Ginkgo</h2><p>첫 시나리오의 장소·단서·기억 asset family를 같은 자리에서 확인합니다.</p></div></div>
+    <article class="card full">
+      <div class="ginkgo-grid">
+        <img src="../../../../design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/place_old_ginkgo_main_master_v3_ref.webp" alt="Old Ginkgo place">
+        <img src="../../../../design/reference/discovery/old-ginkgo-note/isolation/clue_folded_note_ref_v1.webp" alt="Folded note clue">
+        <img src="../../../../design/reference/discovery/old-ginkgo-note/isolation/clue_ginkgo_leaf_ref_v1.webp" alt="Ginkgo leaf clue">
+      </div>
+      <div class="ginkgo-grid" style="margin-top:10px">
+        <img src="../../../../design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/memory_old_ginkgo_keepsake_master_v3_ref.webp" alt="Old Ginkgo memory keepsake">
+        <img src="../../../../design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/place_old_ginkgo_main_records_header_v3_ref.webp" alt="Old Ginkgo records header">
+        <img src="../../../../design/reference/discovery/old-ginkgo-note/production/runtime-v3/ref/memory_old_ginkgo_keepsake_companion_recent_memory_v3_ref.webp" alt="Old Ginkgo companion recent memory">
+      </div>
+      <h3 style="margin-top:12px">Scenario Asset Family</h3>
+      <p>Place → clue → memory → Records / Companion reuse 관계를 확인하기 위한 inspectable refs입니다.</p>
+    </article>
+  </section>
+
+  <section id="identity">
+    <div class="section-head"><div><div class="eyebrow">05 · Identity</div><h2>ID-A2 Sprout Gate</h2><p>최종 선택된 launcher identity. 현재 launcher는 mark-only입니다.</p></div></div>
+    <article class="card full">
+      <div class="icon-stage">
+        <div class="icon-sample light"><div class="icon-wrap"><img src="../id-a/candidates/id-a2-sprout-gate/background-light.svg" alt=""><img src="../id-a/candidates/id-a2-sprout-gate/foreground-light.svg" alt="ID-A2 light"></div><h3 style="margin-top:10px">Light</h3></div>
+        <div class="icon-sample dark"><div class="icon-wrap"><img src="../id-a/candidates/id-a2-sprout-gate/background-dark.svg" alt=""><img src="../id-a/candidates/id-a2-sprout-gate/foreground-dark.svg" alt="ID-A2 dark"></div><h3 style="margin-top:10px">Dark</h3></div>
+        <div class="icon-sample mono"><div class="icon-wrap"><img src="../id-a/candidates/id-a2-sprout-gate/monochrome.svg" alt="ID-A2 monochrome"></div><h3 style="margin-top:10px">Monochrome</h3></div>
+      </div>
+      <p style="margin-top:12px">두 잎 sprout + town/door arch + path entrance를 결합한 compact mark. Moru face/body는 브랜드 마크에 사용하지 않습니다.</p>
+    </article>
+  </section>
+
+  <section id="motion">
+    <div class="section-head"><div><div class="eyebrow">06 · Motion</div><h2>M-B2 Calm Reactive</h2><p>승인된 Moru raster를 재사용한 review-only motion preview입니다.</p></div></div>
+    <article class="card full">
+      <div class="motion-stage">
+        <div class="motion-box"><b>neutral · idle loop</b><img class="moru-idle" src="../../../../design/reference/moru-v2/native-usage-context-v1/candidate/companion_moru_v2_result_large_neutral_LIGHT_base.png" alt="Moru idle"></div>
+        <div class="motion-box"><b>clue_found · one-shot intent</b><img class="moru-clue" src="../../../../design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_clue_found_LIGHT_base.png" alt="Moru clue found"></div>
+        <div class="motion-box"><b>resolved · one-shot intent</b><img class="moru-resolved" src="../../../../design/reference/moru-v2/native-semantic-family-v1/master/companion_moru_v2_result_large_resolved_LIGHT_base.png" alt="Moru resolved"></div>
+      </div>
+      <p style="margin-top:12px">Preview에서는 반복 비교를 위해 reaction이 loop합니다. Runtime 계약은 clue_found/resolved가 one-shot 후 static semantic state를 유지합니다. Reduced Motion에서는 transform이 비활성화됩니다.</p>
+    </article>
+  </section>
+
+  <section id="gate">
+    <div class="section-head"><div><div class="eyebrow">07 · Remaining Human Gate</div><h2>R-B Outdoor Readability</h2></div></div>
+    <div class="note"><strong>아직 PASS가 아닙니다.</strong> 실제 Android physical device에서 map avatar 48/56/64dp와 HUD 56/64/72dp를 LIGHT/WARM_DUSK/DARK × cream/dark/map-heavy 조건으로 검수해야 합니다. 이 showcase와 emulator/static QA는 물리 기기 outdoor PASS를 대체하지 않습니다.</div>
+  </section>
+
+  <footer>
+    <div>Branch: <strong>design/final-human-gates-v3</strong></div>
+    <div>Showcase is review-only. Android runtime activation is intentionally out of scope.</div>
+  </footer>
+</main>
+</body>
+</html>

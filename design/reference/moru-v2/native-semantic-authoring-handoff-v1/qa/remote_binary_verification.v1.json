@@ -1,0 +1,116 @@
+{
+  "version": "moru-semantic-authoring-handoff-remote-verification-v1-2026-09-14",
+  "status": "PASS_REMOTE_BINARY_REVERIFY",
+  "handoff_status": "HANDOFF_READY_EXPRESSION_AFFINITY_NOT_PRODUCED",
+  "reference_files": {
+    "expressions:neutral": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/expression/expression_neutral_exact_reference_crop.png",
+      "sha256": "30e80eeef6dca3f230851c5d27cd92e0c92ba6e12f79051da09e8536cf319e94",
+      "dimensions": [
+        162,
+        215
+      ],
+      "mode": "RGBA",
+      "bytes": 76967
+    },
+    "expressions:happy": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/expression/expression_happy_exact_reference_crop.png",
+      "sha256": "17367902f9d2a5c6f3431bd740cdd8c32fd9c458400b8fedb1fad0b4debd9e0d",
+      "dimensions": [
+        170,
+        215
+      ],
+      "mode": "RGBA",
+      "bytes": 78851
+    },
+    "expressions:curious": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/expression/expression_curious_exact_reference_crop.png",
+      "sha256": "3edaf14135ac9c8cf42e69924024e662f6a185865c40bc990cf7b8727a245ba9",
+      "dimensions": [
+        170,
+        215
+      ],
+      "mode": "RGBA",
+      "bytes": 78574
+    },
+    "expressions:surprised": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/expression/expression_surprised_exact_reference_crop.png",
+      "sha256": "95e4a11444bbc0378cdbfb362dbb974d142f44135c22e05b80d7437d8f9dba00",
+      "dimensions": [
+        170,
+        215
+      ],
+      "mode": "RGBA",
+      "bytes": 78807
+    },
+    "expressions:clue_found": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/expression/expression_clue_found_exact_reference_crop.png",
+      "sha256": "44412fbded8c8c4facdc0934c3373df50663fce762c49f402d1b13d56f516020",
+      "dimensions": [
+        180,
+        215
+      ],
+      "mode": "RGBA",
+      "bytes": 83098
+    },
+    "expressions:resolved": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/expression/expression_resolved_exact_reference_crop.png",
+      "sha256": "947f0c2779d884c1d34337e974399e75b6eeefaac4aa89e6a09488679fd25788",
+      "dimensions": [
+        200,
+        215
+      ],
+      "mode": "RGBA",
+      "bytes": 92098
+    },
+    "affinity:base": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/affinity/affinity_base_exact_reference_crop.png",
+      "sha256": "8391734ca280c5d68328b6b9693b4f61890132007cfb9263491c1f34d72019f3",
+      "dimensions": [
+        121,
+        176
+      ],
+      "mode": "RGBA",
+      "bytes": 48232
+    },
+    "affinity:familiar": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/affinity/affinity_familiar_exact_reference_crop.png",
+      "sha256": "a2bef204bed066a4e0783e05948086a668f8abbc01f05c77813ce896fddc16f7",
+      "dimensions": [
+        121,
+        176
+      ],
+      "mode": "RGBA",
+      "bytes": 47136
+    },
+    "affinity:trusted": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/affinity/affinity_trusted_exact_reference_crop.png",
+      "sha256": "37ecee75f3ad66c3e88735584b13d27183d3742984b032a1db28225f839eaac8",
+      "dimensions": [
+        128,
+        176
+      ],
+      "mode": "RGBA",
+      "bytes": 51767
+    },
+    "affinity:best_friend": {
+      "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/source/affinity/affinity_best_friend_exact_reference_crop.png",
+      "sha256": "c53ceb180449c68c428a21ff82d32ec16396ca19e35a72f96765f881e23099a8",
+      "dimensions": [
+        144,
+        176
+      ],
+      "mode": "RGBA",
+      "bytes": 58534
+    }
+  },
+  "qa_artifact": {
+    "path": "design/reference/moru-v2/native-semantic-authoring-handoff-v1/qa/moru_semantic_authoring_reference_board_v1.png",
+    "sha256": "60baff5ee79a93a0259b11ef6c0e5724a4e216f50b0f5177253b0e73ecc95a50",
+    "bytes": 700131
+  },
+  "accepted_neutral_png_sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+  "accepted_neutral_ora_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+  "lighting_status": "PASS_MORU_02_LIGHTING_FAMILY_V1",
+  "runtime_activation": false
+}

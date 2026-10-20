@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="128" viewBox="-48 -48 96 128">
+<title>Daily Town DARK marker.encounter.revisit</title><desc>Production export candidate; geographic anchor=(0,76); non-color semantic state.</desc>
+<metadata>semantic_key=marker.encounter.revisit;family=DARK;anchor_x=0.5;anchor_y=0.96875;version=1</metadata>
+<path d="M0-38C25-38 42-20 42 3c0 30-42 73-42 73S-42 33-42 3C-42-20-25-38 0-38Z" fill="#78A7F6" stroke="#F7FAF5" stroke-width="5" stroke-linejoin="round"/>
+<circle cx="0" cy="2" r="23" fill="#1E2A44"/><path d="M10-12C-2-22-22-10-18 7C-15 20 4 23 15 11C24 1 17-11 6-7C-2-4-1 8 7 8M5-17L13-12L8-4" fill="none" stroke="#F7FAF5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>

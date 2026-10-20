@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import com.dailytown.app.MainActivity
+import com.dailytown.app.R
 import java.time.ZonedDateTime
 
 data class ReminderPreference(
@@ -74,7 +75,7 @@ class LocalReminderManager(context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val notification = Notification.Builder(appContext, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+            .setSmallIcon(R.drawable.ic_stat_daily_town)
             .setContentTitle("Daily Town 탐험")
             .setContentText("오늘 동네를 걸을 일이 있다면 새로운 탐험을 확인해 보세요.")
             .setContentIntent(openApp)

@@ -4,8 +4,8 @@
     "character_direction": "approved",
     "selected_candidate": "candidate_3",
     "canonical_visual_baseline": "locked",
-    "runtime_production_export": "pending",
-    "mobile_qa": "pending",
+    "runtime_production_export": "activation_readiness_pass_not_runtime_promoted",
+    "mobile_qa": "moru02_pass",
     "motion_final": "pending"
   },
   "source_of_truth": "docs/design/MORU_CANONICAL_V2.md",
@@ -17,9 +17,12 @@
     "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
     "width": 1122,
     "height": 1402,
+    "byte_size": 3625230,
+    "color_mode": "RGBA",
+    "effective_transparency": false,
     "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
     "role": "user-confirmed Moru Candidate 3 canonical visual baseline",
-    "status": "approved baseline; runtime export pending"
+    "status": "canonical exact source persisted and remote verified; native transparent runtime export pending"
   },
   "integrated_visual_reference": {
     "semantic_target": "design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png",
@@ -29,10 +32,33 @@
     "role": "approved Moru-in-product visual context"
   },
   "semantic_contract": {
-    "expressions": ["neutral", "happy", "curious", "surprised", "clue_found", "resolved"],
-    "lighting": ["LIGHT", "WARM_DUSK", "DARK"],
-    "affinity": ["base", "familiar", "trusted", "best_friend"],
-    "usage_contexts": ["map_avatar", "hud_portrait", "encounter_halfbody", "result_large", "companion_portrait", "journal_crop"]
+    "expressions": [
+      "neutral",
+      "happy",
+      "curious",
+      "surprised",
+      "clue_found",
+      "resolved"
+    ],
+    "lighting": [
+      "LIGHT",
+      "WARM_DUSK",
+      "DARK"
+    ],
+    "affinity": [
+      "base",
+      "familiar",
+      "trusted",
+      "best_friend"
+    ],
+    "usage_contexts": [
+      "map_avatar",
+      "hud_portrait",
+      "encounter_halfbody",
+      "result_large",
+      "companion_portrait",
+      "journal_crop"
+    ]
   },
   "promotion_gate": [
     "transparent raster production exports derived from the locked baseline",
@@ -44,5 +70,26 @@
     "physical-device outdoor readability gate"
   ],
   "superseded_reference_note": "Earlier generated comparison, fit or alternate composite boards are historical/reference-only and must not override the exact user-confirmed baseline hashes above.",
-  "production_note": "Do not generate another Moru design. Derive transparent raster exports and usage-context crops only from this locked baseline. Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack before QA passes."
+  "production_note": "Do not generate another Moru design. Derive transparent raster exports and usage-context crops only from this locked baseline. Do not silently substitute SVG/vector or overwrite/repoint the existing runtime v1 pack before QA passes.",
+  "native_neutral_master_v1": {
+    "status": "PASS_MORU_NATIVE_NEUTRAL_V1",
+    "path": "native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+    "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+    "layered_source": "native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora",
+    "layered_sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+    "runtime_active": false,
+    "family_fan_out_started": false
+  },
+  "native_semantic_family_v1": {
+    "status": "PASS_MORU_02_SEMANTIC_FAMILY_V1",
+    "path": "native-semantic-family-v1/",
+    "runtime_active": false
+  },
+  "runtime_active": false,
+  "moru03_activation_readiness_v1": {
+    "status": "PASS_MORU_03_ACTIVATION_READINESS_V1",
+    "path": "native-semantic-export-readiness-v1/",
+    "coverage_count": 432,
+    "runtime_active": false
+  }
 }

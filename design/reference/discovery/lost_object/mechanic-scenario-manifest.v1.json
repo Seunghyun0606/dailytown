@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "mechanic": "lost_object",
+  "status": "runtime_bound_owner_approved_2026_10_20",
+  "style_baseline": "Old Ginkgo production v3 (approved raster baseline); generated, not a new style family",
+  "provenance": {
+    "scene": {
+      "variant": "scene_lost_object_v02",
+      "generator": "ComfyUI",
+      "seed": 1882479378,
+      "attempt": 0,
+      "prompt": "anime background painting, studio ghibli inspired, soft painterly brushwork, small neighborhood park with a wooden bench under ginkgo trees and a tiny knitted pouch left on the bench, quiet korean neighborhood, warm golden afternoon light, ginkgo yellow and sage green and cream palette, scattered yellow ginkgo leaves, gentle atmosphere, highly detailed background art, no people, no text",
+      "negative": "photo, photorealistic, 3d render, people, person, character, text, letters, signage text, watermark, signature, logo, frame, border, dark, night, neon, horror, blurry, oversaturated",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "model_sha256": {
+        "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+      },
+      "workflow_sha256": "208f555e4c072553a96266d0bd1560e9813948e8d621f791f9a644be1f64b051"
+    },
+    "clue": {
+      "variant": "clue_lost_object_v02",
+      "generator": "ComfyUI",
+      "seed": 1764357916,
+      "attempt": 0,
+      "prompt": "game item icon, soft painterly anime illustration, exactly one single small hand-knitted cream pouch with a drawstring, gentle watercolor shading, warm cream and sage green and ginkgo yellow palette, subtle hand-drawn outline, one object only, centered, simple background, white background, isolated on plain white",
+      "negative": "photo, photograph, photorealistic, product photo, mockup, table, wood surface, 3d render, text, letters, words, watermark, signature, logo, frame, border, multiple objects, pattern, collage, duplicate, cropped, cast shadow, scenery, paper background, beige background, grey background, textured background, vignette, two objects, pair, set, branches, extra leaves, vines, decorations around",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "model_sha256": {
+        "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+      },
+      "workflow_sha256": "208f555e4c072553a96266d0bd1560e9813948e8d621f791f9a644be1f64b051"
+    },
+    "keepsake_item": {
+      "variant": "keepsake_lost_object_v04",
+      "generator": "ComfyUI",
+      "seed": 1708391264,
+      "attempt": 0,
+      "prompt": "game item icon, soft painterly anime illustration, exactly one single small brown acorn with its cap, gentle watercolor shading, warm cream and sage green and ginkgo yellow palette, subtle hand-drawn outline, one object only, centered, simple background, white background, isolated on plain white",
+      "negative": "photo, photograph, photorealistic, product photo, mockup, table, wood surface, 3d render, text, letters, words, watermark, signature, logo, frame, border, multiple objects, pattern, collage, duplicate, cropped, cast shadow, scenery, paper background, beige background, grey background, textured background, vignette, two objects, pair, set, branches, extra leaves, vines, decorations around",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "model_sha256": {
+        "sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+      },
+      "workflow_sha256": "208f555e4c072553a96266d0bd1560e9813948e8d621f791f9a644be1f64b051"
+    }
+  },
+  "curation_note": "bench under the tree; drawstring pouch reads best at 96dp",
+  "runtime_assets": [
+    {
+      "semantic_key": "place.lost_object.main",
+      "usage": "DISCOVERY_CARD",
+      "runtime_path": "scenario/lost_object/place-main-discovery-card.v1.webp",
+      "sha256": "015e46503aa3e9653db47a38067883e99187a2e6b3d39bc5d2d4b96110457360"
+    },
+    {
+      "semantic_key": "place.lost_object.main",
+      "usage": "RECORDS_HEADER",
+      "runtime_path": "scenario/lost_object/place-main-records-header.v1.webp",
+      "sha256": "86f692f7ce55c378c80ebc042c82479f1933c03222a0828c4bf982cb21ec31a3"
+    },
+    {
+      "semantic_key": "place.lost_object.main",
+      "usage": "MEMORY_THUMBNAIL",
+      "runtime_path": "scenario/lost_object/place-main-memory-thumbnail.v1.webp",
+      "sha256": "9d382ee2aaacc53d0eb9492e8b78cf6c0e410d5d2e5fd0ff8926d3e93939af59"
+    },
+    {
+      "semantic_key": "memory.lost_object.keepsake",
+      "usage": "RECORDS_CARD",
+      "runtime_path": "scenario/lost_object/memory-keepsake-records-card.v1.webp",
+      "sha256": "08ea8a46506811b2af85cea4380fc42e822662190a8c893720eb9d8ea2a6ecc1"
+    },
+    {
+      "semantic_key": "memory.lost_object.keepsake",
+      "usage": "COMPANION_RECENT_MEMORY",
+      "runtime_path": "scenario/lost_object/memory-keepsake-companion-recent.v1.webp",
+      "sha256": "27d2542b60e49050a413a9a28c1b4a876b20106ecc951baf2f3052ab509ed91a"
+    },
+    {
+      "semantic_key": "clue.lost_object.main",
+      "usage": "CLUE_ART",
+      "runtime_path": "scenario/lost_object/clue-main.v1.png",
+      "sha256": "dbc3fe342e99050e1fcb89e4cce679ebba214b89488cb020778c5567ba696fe0"
+    },
+    {
+      "semantic_key": "clue.lost_object.keepsake",
+      "usage": "CLUE_ART",
+      "runtime_path": "scenario/lost_object/clue-keepsake.v1.png",
+      "sha256": "ab33b0d98100b5a05f01825f53bd2878f1220b6416e722b6cdc58e048d5db295"
+    }
+  ]
+}

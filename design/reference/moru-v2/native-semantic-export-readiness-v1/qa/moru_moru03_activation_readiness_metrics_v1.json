@@ -1,0 +1,33 @@
+{
+  "version": "moru-moru03-activation-readiness-v1-2026-09-14",
+  "verdict": "PASS_MORU_03_ACTIVATION_READINESS_V1",
+  "expected_cartesian_count": 432,
+  "checks": {
+    "count": 432,
+    "dimension": 432,
+    "alpha": 432,
+    "edge_matches_authority": 432,
+    "derived_context_zero_edge": 360,
+    "neutral_authority_exact": 18
+  },
+  "fallback_tests": {
+    "exact_requests_tested": 432,
+    "single_exact_missing_tested": 432,
+    "same_expression_and_exact_missing_tested": 432,
+    "legacy_terminal_tested": 432,
+    "invalid_enum_fail_closed": 4
+  },
+  "max_edge_delta_from_accepted_authority": 0.0,
+  "accepted_result_large_edge": {
+    "LIGHT": 23.764554936968064,
+    "WARM_DUSK": 20.741882639022208,
+    "DARK": 15.196563639854098
+  },
+  "neutral_base_authority_exact_combinations": 18,
+  "legacy_v1_fallback_declared": true,
+  "no_silent_repoint_rule_present": true,
+  "runtime_binding_mutated": false,
+  "runtime_activation": false,
+  "main_head_observed": "b9551dff148ab3458b21aa83a244de90b0a49f05",
+  "first_attempt_note": "initial MORU-03 QA incorrectly applied derived-context edge==0 to result_large exact master; corrected to authority-relative edge gate without modifying any asset or acceptance authority"
+}

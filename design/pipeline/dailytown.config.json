@@ -1,0 +1,125 @@
+{
+  "_comment": "DailyTown project config for game_analysis/asset_pipeline. Run the game_analysis scripts with --config pointing here; every relative path resolves against this directory. Outputs are review candidates only: nothing under design/pipeline/output may be referenced by an Android source set until a human approves it (docs/visual/DEV_IMAGE_PIPELINE.md).",
+  "comfyui": {
+    "url": "http://127.0.0.1:8188",
+    "request_timeout_sec": 30,
+    "job_timeout_sec": 900,
+    "poll_interval_sec": 1.0
+  },
+  "paths": {
+    "manifest": "asset_manifest.csv",
+    "workflows": "workflows",
+    "palettes": "palettes",
+    "raw": "output/raw",
+    "processed": "output/processed",
+    "rejected": "output/rejected",
+    "attempts": "output/attempts",
+    "qc": "output/qc",
+    "retries": "seed_retries.json",
+    "sheets": "output/sheets",
+    "logs": "output/logs",
+    "export": null
+  },
+  "model_dirs": {
+    "checkpoints": "D:/AI/ComfyUI_windows_portable/ComfyUI/models/checkpoints",
+    "loras": "D:/AI/ComfyUI_windows_portable/ComfyUI/models/loras"
+  },
+  "styles": {
+    "storybook_item": {
+      "workflow": "sdxl_txt2img.json",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "prompt_prefix": "game item icon, storybook watercolor illustration of a single ",
+      "prompt_suffix": ", soft gouache shading, ginkgo yellow and sage green and cream palette, thin hand-drawn brown outline, one object only, centered, simple background, white background, isolated on plain white",
+      "negative": "photo, photograph, photorealistic, product photo, mockup, table, desk, wood surface, 3d render, text, letters, words, watermark, signature, logo, frame, border, multiple objects, pattern, collage, duplicate, cropped, cast shadow, scenery, paper background, beige background, grey background, textured background, watercolor wash background, vignette, stain, splash",
+      "steps": 30,
+      "cfg": 6.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras"
+    },
+    "storybook_scene": {
+      "workflow": "sdxl_txt2img.json",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "prompt_prefix": "cozy storybook illustration, ",
+      "prompt_suffix": ", quiet Seoul neighborhood, soft gouache and watercolor texture, warm afternoon sunlight, ginkgo yellow and sage green and cream palette, gentle hand-drawn lines, peaceful, no people, no text",
+      "negative": "photo, photorealistic, 3d render, text, letters, signage text, watermark, signature, logo, frame, border, people, crowd, dark, neon, horror, blurry",
+      "steps": 32,
+      "cfg": 6.0,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras"
+    },
+    "dt_scene": {
+      "workflow": "sdxl_txt2img.json",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "prompt_prefix": "anime background painting, studio ghibli inspired, soft painterly brushwork, ",
+      "prompt_suffix": ", quiet korean neighborhood, warm golden afternoon light, ginkgo yellow and sage green and cream palette, scattered yellow ginkgo leaves, gentle atmosphere, highly detailed background art, no people, no text",
+      "negative": "photo, photorealistic, 3d render, people, person, character, text, letters, signage text, watermark, signature, logo, frame, border, dark, night, neon, horror, blurry, oversaturated",
+      "steps": 32,
+      "cfg": 6.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras"
+    },
+    "dt_item": {
+      "workflow": "sdxl_txt2img.json",
+      "checkpoint": "sd_xl_base_1.0.safetensors",
+      "prompt_prefix": "game item icon, soft painterly anime illustration, exactly one single ",
+      "prompt_suffix": ", gentle watercolor shading, warm cream and sage green and ginkgo yellow palette, subtle hand-drawn outline, one object only, centered, simple background, white background, isolated on plain white",
+      "negative": "photo, photograph, photorealistic, product photo, mockup, table, wood surface, 3d render, text, letters, words, watermark, signature, logo, frame, border, multiple objects, pattern, collage, duplicate, cropped, cast shadow, scenery, paper background, beige background, grey background, textured background, vignette, two objects, pair, set, branches, extra leaves, vines, decorations around",
+      "steps": 30,
+      "cfg": 6.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras"
+    }
+  },
+  "post_presets": {
+    "storybook_sticker": {
+      "bg": "key",
+      "key_tolerance": 40,
+      "key_max_colors": 1,
+      "erode": 1,
+      "trim": true,
+      "fit": "contain",
+      "anchor": "center",
+      "padding": 24,
+      "resample": "lanczos",
+      "palette": null,
+      "alpha_threshold": 128
+    },
+    "storybook_scene": {
+      "bg": "none",
+      "trim": false,
+      "fit": "cover",
+      "anchor": "center",
+      "padding": 0,
+      "resample": "lanczos",
+      "palette": null
+    },
+    "dt_scene": {
+      "bg": "none",
+      "trim": false,
+      "fit": "cover",
+      "anchor": "center",
+      "padding": 0,
+      "resample": "lanczos",
+      "palette": null
+    }
+  },
+  "qc": {
+    "enabled": true,
+    "on_fail": "exclude",
+    "max_border_opaque": 0.02,
+    "min_coverage": 0.04,
+    "max_coverage": 0.85,
+    "max_objects": 1,
+    "object_min_ratio": 0.15,
+    "min_object_area": 0.002,
+    "max_fragment_area": 0.03
+  },
+  "retry": {
+    "max_attempts": 5,
+    "keep_rejected_raw": false
+  },
+  "sheets": {
+    "padding": 8,
+    "columns": 4
+  }
+}

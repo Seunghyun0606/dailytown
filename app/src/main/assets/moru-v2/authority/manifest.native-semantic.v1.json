@@ -1,0 +1,122 @@
+{
+  "version": "moru-native-semantic-family-v1-2026-09-14",
+  "status": "PASS_MORU_02_SEMANTIC_FAMILY_V1",
+  "runtime_activation": false,
+  "expressions": {
+    "neutral": {
+      "path": "../native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "reuse": true
+    },
+    "happy": {
+      "path": "master/companion_moru_v2_result_large_happy_LIGHT_base.png",
+      "sha256": "b96185d96bf92d5bfc2cea8ce06e82f9e583a4a1543b881caa66206a35ea0187",
+      "changed_rgb_pixels": 18973,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "curious": {
+      "path": "master/companion_moru_v2_result_large_curious_LIGHT_base.png",
+      "sha256": "70daccb16a72f57189e5071b841601e1cbd96425b9d46eb0c021dd121b7b25be",
+      "changed_rgb_pixels": 12583,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "surprised": {
+      "path": "master/companion_moru_v2_result_large_surprised_LIGHT_base.png",
+      "sha256": "ff8ac73cead939f96b7fd3be84df6211d4f4dab8c3d8483554cc7fe7de0e3c79",
+      "changed_rgb_pixels": 12583,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "clue_found": {
+      "path": "master/companion_moru_v2_result_large_clue_found_LIGHT_base.png",
+      "sha256": "6fc559a3a8085c95250fb4a53335c8c58c4544158319e3d799f3188f5c5a09cb",
+      "changed_rgb_pixels": 22635,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    },
+    "resolved": {
+      "path": "master/companion_moru_v2_result_large_resolved_LIGHT_base.png",
+      "sha256": "a85e30e1782b0371b549c18c470a74f4107b31d43d8c427f4ab5b5f16cf185c3",
+      "changed_rgb_pixels": 12583,
+      "changed_outside_allowed": 0,
+      "alpha_bit_identical": true,
+      "silhouette_iou": 1.0,
+      "face_anchor_deviation": 0.0,
+      "palette_deltaE76_median_visible": 0.0,
+      "palette_deltaE76_p95_visible": 0.0
+    }
+  },
+  "affinity": {
+    "base": {
+      "reuse": true,
+      "alpha_pixels": 0
+    },
+    "familiar": {
+      "path": "overlay/companion_moru_v2_affinity_familiar_overlay.png",
+      "sha256": "92294ff284d74fb0ce79d76c09b8517920f230ba347c7180844d608365f131d6",
+      "alpha_bbox_xyxy": [
+        471,
+        980,
+        517,
+        1039
+      ],
+      "alpha_pixels": 1073,
+      "anatomy_invariant": true,
+      "silhouette_iou": 1.0
+    },
+    "trusted": {
+      "path": "overlay/companion_moru_v2_affinity_trusted_overlay.png",
+      "sha256": "e8bbfc66b1326f1a93304f26299c14767595b64672768d99860be40d061021d2",
+      "alpha_bbox_xyxy": [
+        317,
+        920,
+        517,
+        1039
+      ],
+      "alpha_pixels": 2168,
+      "anatomy_invariant": true,
+      "silhouette_iou": 1.0
+    },
+    "best_friend": {
+      "path": "overlay/companion_moru_v2_affinity_best_friend_overlay.png",
+      "sha256": "be1f699b6dc8dc1b244b8bd2b5f642687afdcf6a0b3c51953a041c8ffd356fa9",
+      "alpha_bbox_xyxy": [
+        317,
+        920,
+        517,
+        1039
+      ],
+      "alpha_pixels": 4053,
+      "anatomy_invariant": true,
+      "silhouette_iou": 1.0
+    }
+  },
+  "lighting_authority": "../native-lighting-family-v1/",
+  "usage_authority": "../native-usage-context-v1/",
+  "qa": {
+    "metrics": "qa/moru_semantic_acceptance_metrics_v1.json",
+    "expression_hud64": "qa/moru_semantic_expression_hud64_qa_v1.png",
+    "affinity_companion": "qa/moru_semantic_affinity_companion_qa_v1.png",
+    "cross_family_companion": "qa/moru_semantic_cross_family_companion_qa_v1.png",
+    "expression_lighting_hud64": "qa/moru_semantic_expression_lighting_hud64_qa_v1.png"
+  },
+  "next": "MORU-03 semantic manifest/export activation readiness; no runtime activation in this work"
+}

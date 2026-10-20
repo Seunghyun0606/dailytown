@@ -10,3 +10,8 @@
 *.jks
 *.keystore
 secrets.properties
+
+# game_analysis image pipeline scratch output (reproducible from manifests + seeds)
+/design/pipeline/output/
+/design/pipeline/output_*.log
+/design/pipeline/palettes/

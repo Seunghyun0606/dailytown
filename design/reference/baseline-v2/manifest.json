@@ -3,12 +3,15 @@
   "status": "APPROVED_BASELINE",
   "source_of_truth": "docs/design/DESIGN_BASELINE_V2.md",
   "lock_rule": "Use only the exact user-confirmed visual references below. Do not generate alternate Moru/UI/art-direction concepts unless the user explicitly reopens the decision.",
-  "binary_transfer_status": "exact source bytes are checksum-locked; connector path does not currently provide direct local binary upload, so repository promotion must verify these hashes before treating any binary copy as authoritative",
+  "binary_transfer_status": "exact source bytes persisted and remote SHA-256 verified 2026-09-12",
   "references": [
     {
       "semantic_target": "design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png",
       "width": 1448,
       "height": 1086,
+      "byte_size": 3529527,
+      "color_mode": "RGBA",
+      "alpha_effective": false,
       "sha256": "f0fb31e1ea4aec946bba356ff2d084cc6bdd8dd05119e1b350f547f382f4d515",
       "role": "approved overall UX / visual / art-direction baseline"
     },
@@ -16,6 +19,9 @@
       "semantic_target": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
       "width": 1122,
       "height": 1402,
+      "byte_size": 3625230,
+      "color_mode": "RGBA",
+      "alpha_effective": false,
       "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
       "role": "approved Moru Candidate 3 canonical raster baseline"
     }

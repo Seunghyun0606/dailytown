@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130">
+<title>A3 Collection Locked Pattern</title><desc>Locked state pattern; non-color distinction.</desc><metadata>semantic_key=collection.locked.pattern;version=1</metadata>
+<defs><pattern id="p" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="12" height="12" fill="#EEF3F5"/><rect width="5" height="12" fill="#D8D3C3"/></pattern></defs><rect x="1" y="1" width="128" height="128" rx="20" fill="url(#p)" stroke="#D8D3C3" stroke-width="2"/><rect x="42" y="58" width="46" height="38" rx="8" fill="#F7F3E8" stroke="#66756D" stroke-width="3"/><path d="M52 58V46C52 29 78 29 78 46V58" fill="none" stroke="#66756D" stroke-width="3"/></svg>

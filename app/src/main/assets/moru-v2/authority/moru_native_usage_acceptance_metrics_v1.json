@@ -1,0 +1,616 @@
+{
+  "version": "moru-native-usage-context-v1-2026-09-14",
+  "verdict": "PASS_MORU_02_NEUTRAL_USAGE_V1",
+  "classification": "NATIVE_USAGE_QA_CANDIDATE_NOT_RUNTIME_ACTIVE",
+  "source": {
+    "path": "design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+    "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+    "dimensions": [
+      1280,
+      1600
+    ],
+    "mode": "RGBA",
+    "subject_alpha_bbox_xyxy": [
+      281,
+      75,
+      998,
+      1525
+    ]
+  },
+  "semantic_state": {
+    "expression": "neutral",
+    "lighting": "LIGHT",
+    "affinity": "base",
+    "motion": "static"
+  },
+  "density_reference": 2.625,
+  "assets": {
+    "map_avatar": {
+      "path": "candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "sha256": "098df5b9b4b8e9cfe215c7fc8e9f1e9129b5673b7dc168893c5ea185f849d531",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "alpha_bbox_xyxy": [
+        141,
+        30,
+        371,
+        493
+      ],
+      "content_coverage": {
+        "width": 0.44921875,
+        "height": 0.904296875
+      },
+      "edge_bleed_mean_abs_rgb_error": 0.0,
+      "transform": {
+        "source_crop_xyxy": [
+          267,
+          46,
+          1012,
+          1554
+        ],
+        "source_crop_dimensions": [
+          745,
+          1508
+        ],
+        "scale": 0.3191511936339522,
+        "resized_dimensions": [
+          238,
+          481
+        ],
+        "paste_offset": [
+          137,
+          21
+        ],
+        "anchor": "bottom"
+      },
+      "feature_boxes": {
+        "sprout": [
+          202.337,
+          30.255,
+          338.492,
+          108.926
+        ],
+        "face": [
+          204.168,
+          140.394,
+          311.948,
+          218.14
+        ],
+        "scarf": [
+          216.525,
+          218.14,
+          304.396,
+          269.97
+        ],
+        "satchel": [
+          141.468,
+          261.64,
+          234.145,
+          368.54
+        ],
+        "boots_base": [
+          175.793,
+          414.354,
+          338.263,
+          493.025
+        ]
+      }
+    },
+    "hud_portrait": {
+      "path": "candidate/companion_moru_v2_hud_portrait_neutral_LIGHT_base.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "sha256": "c67bac8dd8eb7e8cd13b8434b2cf92ce2ab6b82c657291109230a2a672af79ab",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "alpha_bbox_xyxy": [
+        114,
+        37,
+        634,
+        722
+      ],
+      "content_coverage": {
+        "width": 0.6770833333333334,
+        "height": 0.8919270833333334
+      },
+      "edge_bleed_mean_abs_rgb_error": 0.0,
+      "transform": {
+        "source_crop_xyxy": [
+          267,
+          46,
+          1012,
+          974
+        ],
+        "source_crop_dimensions": [
+          745,
+          928
+        ],
+        "scale": 0.7613793103448276,
+        "resized_dimensions": [
+          567,
+          707
+        ],
+        "paste_offset": [
+          100,
+          15
+        ],
+        "anchor": "top"
+      },
+      "feature_boxes": {
+        "sprout": [
+          255.871,
+          37.08,
+          580.687,
+          224.76
+        ],
+        "face": [
+          260.238,
+          299.832,
+          517.361,
+          485.304
+        ],
+        "scarf": [
+          289.717,
+          485.304,
+          499.346,
+          608.952
+        ],
+        "satchel": [
+          110.659,
+          589.08,
+          331.752,
+          768
+        ],
+        "boots_base": [
+          192.546,
+          953.4,
+          580.141,
+          768
+        ]
+      }
+    },
+    "encounter_halfbody": {
+      "path": "candidate/companion_moru_v2_encounter_halfbody_neutral_LIGHT_base.png",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "sha256": "00a643aa14661a9e8b511854b33c7f7f19c04230b781c786ab592e0504dd46e5",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "alpha_bbox_xyxy": [
+        149,
+        55,
+        875,
+        1229
+      ],
+      "content_coverage": {
+        "width": 0.708984375,
+        "height": 0.9171875
+      },
+      "edge_bleed_mean_abs_rgb_error": 0.0,
+      "transform": {
+        "source_crop_xyxy": [
+          267,
+          46,
+          1012,
+          1235
+        ],
+        "source_crop_dimensions": [
+          745,
+          1189
+        ],
+        "scale": 1.0119428090832632,
+        "resized_dimensions": [
+          754,
+          1203
+        ],
+        "paste_offset": [
+          135,
+          26
+        ],
+        "anchor": "top"
+      },
+      "feature_boxes": {
+        "sprout": [
+          342.167,
+          55.346,
+          773.877,
+          304.79
+        ],
+        "face": [
+          347.971,
+          404.568,
+          689.712,
+          651.077
+        ],
+        "scarf": [
+          387.152,
+          651.077,
+          665.768,
+          815.417
+        ],
+        "satchel": [
+          149.167,
+          789.005,
+          443.02,
+          1127.955
+        ],
+        "boots_base": [
+          258.002,
+          1273.22,
+          773.151,
+          1280
+        ]
+      }
+    },
+    "companion_portrait": {
+      "path": "candidate/companion_moru_v2_companion_portrait_neutral_LIGHT_base.png",
+      "dimensions": [
+        1024,
+        1280
+      ],
+      "mode": "RGBA",
+      "sha256": "b57d5732a1f65a0b1cc5f108e267c422bd0fcfdbd144c403c23627de558e6b14",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "alpha_bbox_xyxy": [
+        110,
+        58,
+        914,
+        1229
+      ],
+      "content_coverage": {
+        "width": 0.78515625,
+        "height": 0.91484375
+      },
+      "edge_bleed_mean_abs_rgb_error": 0.0,
+      "transform": {
+        "source_crop_xyxy": [
+          281,
+          46,
+          998,
+          1119
+        ],
+        "source_crop_dimensions": [
+          717,
+          1073
+        ],
+        "scale": 1.1213420316868592,
+        "resized_dimensions": [
+          804,
+          1203
+        ],
+        "paste_offset": [
+          110,
+          26
+        ],
+        "anchor": "top"
+      },
+      "feature_boxes": {
+        "sprout": [
+          323.865,
+          58.519,
+          802.246,
+          334.93
+        ],
+        "face": [
+          330.297,
+          445.494,
+          708.982,
+          718.653
+        ],
+        "scarf": [
+          373.713,
+          718.653,
+          682.45,
+          900.759
+        ],
+        "satchel": [
+          110.0,
+          871.492,
+          435.621,
+          1247.085
+        ],
+        "boots_base": [
+          230.6,
+          1408.054,
+          801.442,
+          1280
+        ]
+      }
+    },
+    "journal_crop": {
+      "path": "candidate/companion_moru_v2_journal_crop_neutral_LIGHT_base.png",
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "sha256": "cbcae8d5a79bc5c68368fe0f36f57fbe385d3c35f5c069ce87a2224ba85540b4",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "alpha_bbox_xyxy": [
+        128,
+        38,
+        640,
+        722
+      ],
+      "content_coverage": {
+        "width": 0.6666666666666666,
+        "height": 0.890625
+      },
+      "edge_bleed_mean_abs_rgb_error": 0.0,
+      "transform": {
+        "source_crop_xyxy": [
+          324,
+          46,
+          955,
+          916
+        ],
+        "source_crop_dimensions": [
+          631,
+          870
+        ],
+        "scale": 0.8121379310344828,
+        "resized_dimensions": [
+          512,
+          707
+        ],
+        "paste_offset": [
+          128,
+          15
+        ],
+        "anchor": "top"
+      },
+      "feature_boxes": {
+        "sprout": [
+          247.971,
+          38.552,
+          594.441,
+          238.744
+        ],
+        "face": [
+          252.629,
+          318.821,
+          526.894,
+          516.658
+        ],
+        "scarf": [
+          284.073,
+          516.658,
+          507.678,
+          648.549
+        ],
+        "satchel": [
+          93.078,
+          627.352,
+          328.911,
+          768
+        ],
+        "boots_base": [
+          180.424,
+          1015.96,
+          593.859,
+          768
+        ]
+      }
+    },
+    "result_large": {
+      "path": "candidate/companion_moru_v2_result_large_neutral_LIGHT_base.png",
+      "dimensions": [
+        1280,
+        1600
+      ],
+      "mode": "RGBA",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "alpha_bbox_xyxy": [
+        281,
+        75,
+        998,
+        1525
+      ],
+      "content_coverage": {
+        "width": 0.56015625,
+        "height": 0.90625
+      },
+      "edge_bleed_mean_abs_rgb_error": 0.0,
+      "transform": {
+        "source_crop_xyxy": [
+          0,
+          0,
+          1280,
+          1600
+        ],
+        "source_crop_dimensions": [
+          1280,
+          1600
+        ],
+        "scale": 1.0,
+        "resized_dimensions": [
+          1280,
+          1600
+        ],
+        "paste_offset": [
+          0,
+          0
+        ],
+        "anchor": "identity_copy"
+      },
+      "feature_boxes": {
+        "sprout": [
+          471.722,
+          75.0,
+          898.337,
+          321.5
+        ],
+        "face": [
+          477.458,
+          420.1,
+          815.165,
+          663.7
+        ],
+        "scarf": [
+          516.176,
+          663.7,
+          791.504,
+          826.1
+        ],
+        "satchel": [
+          281.0,
+          800.0,
+          571.385,
+          1134.95
+        ],
+        "boots_base": [
+          388.55,
+          1278.5,
+          897.62,
+          1525.0
+        ]
+      }
+    }
+  },
+  "mobile_checks": {
+    "map_avatar": [
+      {
+        "dp": 48,
+        "physical_px_at_2_625x": 126,
+        "visible_content_height_dp": 43.406,
+        "face_height_dp": 7.289,
+        "sprout_height_dp": 7.375,
+        "scarf_height_dp": 4.859
+      },
+      {
+        "dp": 56,
+        "physical_px_at_2_625x": 147,
+        "visible_content_height_dp": 50.641,
+        "face_height_dp": 8.503,
+        "sprout_height_dp": 8.605,
+        "scarf_height_dp": 5.669
+      },
+      {
+        "dp": 64,
+        "physical_px_at_2_625x": 168,
+        "visible_content_height_dp": 57.875,
+        "face_height_dp": 9.718,
+        "sprout_height_dp": 9.834,
+        "scarf_height_dp": 6.479
+      }
+    ],
+    "hud_portrait": [
+      {
+        "dp": 56,
+        "physical_px_at_2_625x": 147,
+        "visible_content_height_dp": 49.948,
+        "face_height_dp": 13.524,
+        "sprout_height_dp": 13.685,
+        "scarf_height_dp": 9.016
+      },
+      {
+        "dp": 64,
+        "physical_px_at_2_625x": 168,
+        "visible_content_height_dp": 57.083,
+        "face_height_dp": 15.456,
+        "sprout_height_dp": 15.64,
+        "scarf_height_dp": 10.304
+      },
+      {
+        "dp": 72,
+        "physical_px_at_2_625x": 189,
+        "visible_content_height_dp": 64.219,
+        "face_height_dp": 17.388,
+        "sprout_height_dp": 17.595,
+        "scarf_height_dp": 11.592
+      }
+    ],
+    "journal_crop": [
+      {
+        "dp": 56,
+        "physical_px_at_2_625x": 147,
+        "visible_content_height_dp": 49.875,
+        "face_height_dp": 14.426,
+        "sprout_height_dp": 14.597,
+        "scarf_height_dp": 9.617
+      },
+      {
+        "dp": 64,
+        "physical_px_at_2_625x": 168,
+        "visible_content_height_dp": 57.0,
+        "face_height_dp": 16.486,
+        "sprout_height_dp": 16.683,
+        "scarf_height_dp": 10.991
+      },
+      {
+        "dp": 72,
+        "physical_px_at_2_625x": 189,
+        "visible_content_height_dp": 64.125,
+        "face_height_dp": 18.547,
+        "sprout_height_dp": 18.768,
+        "scarf_height_dp": 12.365
+      }
+    ]
+  },
+  "checks": {
+    "accepted_master_hash": true,
+    "six_contexts_generated": true,
+    "all_rgba_genuine_alpha": true,
+    "all_dimensions_exact": true,
+    "context_framing_not_identical": true,
+    "transparent_side_edge_bleed": true,
+    "map_mobile_content": true,
+    "map_sprout": true,
+    "map_face_negative_space_proxy": true,
+    "hud_mobile_content": true,
+    "hud_face": true,
+    "hud_sprout": true,
+    "hud_scarf": true,
+    "journal_mobile_content": true,
+    "journal_face": true,
+    "journal_scarf": true,
+    "encounter_includes_satchel": true,
+    "result_full_sprout": true,
+    "result_full_boots": true,
+    "companion_face": true,
+    "result_is_exact_accepted_master": true
+  },
+  "qa_artifacts": {
+    "moru_native_usage_mobile_context_qa_v1.png": {
+      "sha256": "1966c976a747e79960ef4433b4d7291ac6a5101c1a71d31da0ca5f3582ebc53c",
+      "bytes": 396734
+    },
+    "moru_native_usage_framing_qa_v1.png": {
+      "sha256": "c42d6a5d628710bd9873827e4c3702294db001a21cff9fcaa259842a78770924",
+      "bytes": 938408
+    }
+  },
+  "generation_used": false,
+  "new_semantic_microdetail": false,
+  "expression_fan_out": false,
+  "lighting_fan_out": false,
+  "affinity_fan_out": false,
+  "runtime_activation": false
+}

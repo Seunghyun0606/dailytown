@@ -24,7 +24,7 @@
   "review_board": "00_ux_v2_reference_board.webp",
   "polish_manifest": "design/reference/ux-v2/polish-manifest.json",
   "moru_reference": "design/reference/moru-v2/manifest.json",
-  "binary_render_status": "approved baseline source bytes are checksum-locked under design/reference/baseline-v2/manifest.json; exact binary repository copies must match those hashes",
+  "binary_render_status": "approved baseline exact PNG is persisted at design/reference/baseline-v2/dailytown_ux_visual_baseline_v2.png and remote SHA-256 verified under design/reference/baseline-v2/manifest.json",
   "notes": [
     "The user-confirmed visual baseline is now authoritative; do not generate alternate Moru/UI/art-direction concepts unless the user explicitly reopens the decision.",
     "The six-screen composition and information hierarchy are approved as the implementation baseline.",

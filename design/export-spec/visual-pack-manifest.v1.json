@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "pack_id": "daily-town-visual-pack-v1",
+  "pack_version": "1.4.3",
+  "status": "design_independent_work_complete_waiting_integration_and_human_gates",
+  "direction": "Option A - Soft Botanical Explorer",
+  "canonical_companion": "moru-a2",
+  "shipping_companions": ["moru","luca"],
+  "approved_decisions": {"best_friend":"BF-B_signature_explorer","future_best_friend_variant_path":"BF-C_separate_character_variant_TODO","shipping_set":"SC-B_moru_plus_luca","motion":"M-B_responsive_soft","outdoor_readability":"R-B_balanced","evening":"EV-1_interpolation_first","app_identity":"ID-A_sprout_town_mark"},
+  "production_candidate_batches": ["../production/production-promotion-batch-01.v1.json","../production/production-promotion-batch-01-luca-derivatives.v1.json","../production/marker-split-export-v1.json","../production/a3-split-export-v1.json"],
+  "design_completion": {"companion_static_candidates":32,"marker_candidates":24,"a3_candidates":9,"design_qa_complete":true,"independent_design_work_remaining":false},
+  "runtime_policy": {"only_production_export_may_enter_runtime_resources":true,"raw_design_filename_as_domain_identifier_forbidden":true,"concept_board_as_runtime_asset_forbidden":true,"sha256_required_for_production_export":true,"fallback_relationship_required":true,"source_master_direct_runtime_use_forbidden":true,"evening_new_marker_family_forbidden":true,"evening_new_companion_lighting_family_forbidden":true,"affinity_slot_replacement_must_not_change_domain_semantics":true,"future_BF_C_must_use_separate_character_variant":true,"shipping_set_is_not_hardcoded_to_file_names":true,"sprite_gen_is_offline_authoring_only":true},
+  "remaining_integration_or_human_gates": ["companion_expression_lighting_runtime_composition_smoke_test","marker_real_NAVER_map_QA","a3_android_five_screen_fit_QA","sprite_gen_M_B_generated_frame_QA","EV1_E2_and_baseline_map_capture_QA","physical_outdoor_readability_RB_final_approval","ID_A1_A2_A3_final_human_lock"],
+  "human_gates": ["final_M_B_motion_timing_easing_intensity_after_generated_prototype","physical_outdoor_readability_RB_final_pass","ID_A_final_icon_logo_candidate_lock"],
+  "future_enhancement_todos": ["explicit_user_or_product_decision_may_activate_BF_C_variant_path","beri_next_companion_candidate","pino_silhouette_separation_rework"]
+}

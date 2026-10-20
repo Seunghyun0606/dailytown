@@ -1,0 +1,54 @@
+{
+  "version": "moru-native-neutral-v1-2026-09-14",
+  "status": "PASS_MORU_NATIVE_NEUTRAL_V1",
+  "canonical_authority": {
+    "path": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "base_commit": "7690d069e21f1fa1ed1e8e67aff0650ae0764bed"
+  },
+  "method": {
+    "classification": "layered_raster_reconstruction",
+    "generative": false,
+    "source": "exact canonical pixels + committed handoff alpha/guides",
+    "native_detail": "source-supported residual texture transfer; no new semantic micro-detail"
+  },
+  "outputs": {
+    "png": {
+      "path": "master/moru_candidate3_neutral_native_master_v1.png",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692"
+    },
+    "ora": {
+      "path": "master/moru_candidate3_neutral_native_master_v1.ora",
+      "sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+      "layers": 6
+    },
+    "qa": {
+      "path": "qa/moru_candidate3_native_neutral_acceptance_qa_v1.png",
+      "sha256": "755c18e8097af9417fda0df38e60145e4faa9cde0b709055ef9a8926f7403ca5"
+    }
+  },
+  "acceptance": {
+    "contract": "../native-master-handoff-v1/acceptance-contract.v1.json",
+    "checks": {
+      "canvas_rgba": true,
+      "genuine_alpha": true,
+      "silhouette": true,
+      "hood": true,
+      "sprout": true,
+      "mean_contour": true,
+      "max_contour": true,
+      "face_anchor": true,
+      "palette_median": true,
+      "palette_max": true,
+      "no_residue": true,
+      "layered_source": true,
+      "not_plain_upscale": true
+    }
+  },
+  "promotion": {
+    "neutral_passed": true,
+    "fan_out_started": false,
+    "runtime_activation": false,
+    "next": "MORU-02 native usage-context/mobile QA"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "approved_source",
+  "strategy": "EV-1_interpolation_first",
+  "phase": "EVENING",
+  "anchors": {
+    "sunset": "SUNSET",
+    "night": "NIGHT"
+  },
+  "checkpoints": {
+    "E0": {"progress": 0.0, "route": "#E8794F", "marker_family_fallback": "DAY", "companion_lighting": "WARM_DUSK", "hud_surface": {"base":"surface.ivory","deep_navy_mix":0.00}, "warm_local_point_weight":1.00, "cool_ambient_weight":0.00},
+    "E1": {"progress": 0.25, "route": "#CC8479", "marker_family_fallback": "DAY", "companion_lighting": "WARM_DUSK", "hud_surface": {"base":"surface.ivory","deep_navy_mix":0.12}, "warm_local_point_weight":0.85, "cool_ambient_weight":0.25},
+    "E2": {"progress": 0.5, "route": "#B090A2", "marker_family_fallback": "AUTO_BY_MAP_LUMINANCE", "companion_lighting": "WARM_DUSK_WITH_COOL_AMBIENT", "hud_surface": {"base":"surface.ivory","deep_navy_mix":0.38}, "warm_local_point_weight":0.70, "cool_ambient_weight":0.50, "qa_role":"EVENING_CORE"},
+    "E3": {"progress": 0.75, "route": "#949CCC", "marker_family_fallback": "DARK", "companion_lighting": "DARK_WITH_WARM_LOCAL_RETENTION", "hud_surface": {"base":"brand.deepNavy","ivory_mix":0.22}, "warm_local_point_weight":0.55, "cool_ambient_weight":0.75},
+    "E4": {"progress": 1.0, "route": "#78A7F6", "marker_family_fallback": "DARK", "companion_lighting": "DARK", "hud_surface": {"base":"brand.deepNavy","ivory_mix":0.00}, "warm_local_point_weight":0.40, "cool_ambient_weight":1.00}
+  },
+  "marker_policy": {
+    "new_evening_marker_family_forbidden": true,
+    "families": ["DAY","DARK"],
+    "preferred_selector": "map_background_luminance",
+    "luminance_threshold": 0.42,
+    "checkpoint_fallbacks": {"E0":"DAY","E1":"DAY","E2":"AUTO","E3":"DARK","E4":"DARK"},
+    "semantic_key_never_changes_with_phase": true
+  },
+  "route_policy": {
+    "interpolation_space": "sRGB_checkpoint_values_v1",
+    "sunset_token": "phase.sunset.route",
+    "night_token": "phase.night.route",
+    "checkpoint_values_are_design_QA_targets_not_gameplay_state": true
+  },
+  "halo_policy": {
+    "semantic_state_unchanged": true,
+    "early_evening_bias": "warm_soft",
+    "late_evening_bias": "cool_luminous",
+    "strong_state_ring_count_and_geometry_unchanged": true
+  },
+  "discovery_policy": {
+    "semantic_intensity_unchanged": true,
+    "warm_point_retained_through_E3": true,
+    "avoid_full_screen_phase_tint_on_particles": true
+  },
+  "companion_policy": {
+    "no_new_evening_lighting_family": true,
+    "E0_E1": "WARM_DUSK",
+    "E2": "WARM_DUSK_plus_cool_ambient_modifier",
+    "E3": "DARK_plus_warm_local_modifier",
+    "E4": "DARK",
+    "canonical_identity_color_preservation_required": true
+  },
+  "hud_policy": {
+    "contrast_first": true,
+    "no_abrupt_family_switch": true,
+    "text_role_light_side": "text.ink",
+    "text_role_dark_side": "text.onDark",
+    "text_role_switch": "contrast_evaluation_not_fixed_clock"
+  },
+  "implementation_handoff": {
+    "continuous_interpolation_allowed": true,
+    "E0_E1_E2_E3_E4_are_debug_forced_states": true,
+    "provider_neutral": true,
+    "gameplay_semantics_unchanged": true,
+    "reduced_motion_does_not_disable_color_atmosphere_interpolation": true
+  },
+  "qa": {
+    "mandatory_checkpoint": "E2",
+    "review": ["marker_readability","route_visibility","halo_visibility","HUD_contrast","Moru_face_readability","provider_map_label_readability"]
+  }
+}

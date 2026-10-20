@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Notification small icon: the ID-A2 monochrome mark re-framed to its own bounds (viewport 62 around the
+  mark instead of the 108 adaptive canvas) so it reads at 24dp. Android renders it as a white silhouette.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="62"
+    android:viewportHeight="62">
+    <group
+        android:translateX="-23"
+        android:translateY="-25">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M54,43 C44,43 37,36 38,27 C47,27 54,33 54,42Z"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M55,42 C56,33 63,27 72,27 C71,36 64,43 55,43Z"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineJoin="round"
+            android:strokeWidth="1" />
+        <path
+            android:pathData="M54,43 V52"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="5" />
+        <path
+            android:pathData="M39,61 L54,50 L69,61 V82 H39Z"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineJoin="round"
+            android:strokeWidth="6" />
+        <path
+            android:pathData="M50,82 V69 Q54,64 58,69 V82"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="6" />
+    </group>
+</vector>

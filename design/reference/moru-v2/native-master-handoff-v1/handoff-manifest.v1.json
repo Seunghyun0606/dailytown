@@ -1,0 +1,63 @@
+{
+  "version": "moru-native-master-handoff-v1-2026-09-13",
+  "status": "HANDOFF_READY_NATIVE_MASTER_NOT_PRODUCED",
+  "canonical_sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+  "acceptance_contract": "acceptance-contract.v1.json",
+  "files": [
+    {
+      "path": "HANDOFF.md",
+      "bytes": 1838,
+      "sha256": "fe8571b0e8a2b8e6203f11c4fa767bbe676d58a63c4bc90651e9702ba7b032fa"
+    },
+    {
+      "path": "acceptance-contract.v1.json",
+      "bytes": 4770,
+      "sha256": "6c7dc5d7ab9861d2a3e04fefb7f8cb17596df1a7bd702c7202a094accf1e4c89"
+    },
+    {
+      "path": "canonical-palette.v1.json",
+      "bytes": 2243,
+      "sha256": "a3161a122eee03b1447dbd4f40af0d04fe2ebaf2f579a8819e9302b172e3474c"
+    },
+    {
+      "path": "guides/moru_candidate3_canonical_palette_swatches.png",
+      "bytes": 12885,
+      "sha256": "4f6ade761322a0db495946eb5fb0762024268e2efbdecf1c82d0e111016c4d28"
+    },
+    {
+      "path": "guides/moru_candidate3_face_proportion_and_anchor_guide.png",
+      "bytes": 558009,
+      "sha256": "e17db01c2e5b989734bff105e35bc5b04a524f846ee9ebf2422936df376cc20e"
+    },
+    {
+      "path": "guides/moru_candidate3_hood_sprout_contour_guide.png",
+      "bytes": 203376,
+      "sha256": "77431c17aab227924d9e921b94bc27f356dfe76f14de8883f67a0c164e369e5c"
+    },
+    {
+      "path": "guides/moru_candidate3_neutral_reference_cutout.png",
+      "bytes": 258955,
+      "sha256": "c44b0e3af08d0003ddbf153d2553e5fc959e196a01185a4d7d44aa725a6a5c87"
+    },
+    {
+      "path": "guides/moru_candidate3_neutral_silhouette_mask.png",
+      "bytes": 11216,
+      "sha256": "8a43bf4a19277607579447baf925249a281e7a9079c570d0456014099b1e67d6"
+    },
+    {
+      "path": "guides/moru_candidate3_scarf_satchel_boots_reference.png",
+      "bytes": 785838,
+      "sha256": "05e131c1756b46c0641977e6e84a4564aa1f2479b229f92cae8294262f85282b"
+    },
+    {
+      "path": "source/moru_candidate3_canonical_baseline_v2_exact.png",
+      "bytes": 3625230,
+      "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500"
+    },
+    {
+      "path": "source/moru_candidate3_neutral_front_exact_crop.png",
+      "bytes": 445428,
+      "sha256": "ac280a5d942d8d7573991db833bba2e7d2e82d97e9d4e30badeaef87c7204aa3"
+    }
+  ]
+}

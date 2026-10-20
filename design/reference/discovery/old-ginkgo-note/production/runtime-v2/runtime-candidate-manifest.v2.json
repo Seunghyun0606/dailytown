@@ -1,6 +1,6 @@
 {
   "version": "old-ginkgo-runtime-candidate-v2",
-  "status": "technical_cleanup_and_static_mobile_qa_complete",
+  "status": "og02_v4_pass_og03_edge_reconstruction_visual_fail",
   "visual_authority": "docs/design/DESIGN_BASELINE_V2.md",
   "redesign": false,
   "runtime_activation": false,
@@ -9,25 +9,60 @@
       "semantic_key": "clue.old_ginkgo.folded_note",
       "local_master": "clue_old_ginkgo_folded_note_runtime_candidate_v2.png",
       "local_master_sha256": "59171439fe9fefea4a5040fa9034a213983dc360496c3474767b8f58e79e2e92",
-      "canvas_px": [768, 768],
+      "canvas_px": [
+        768,
+        768
+      ],
       "alpha": true,
       "github_reference": "folded_note_runtime_candidate_v2_ref.webp",
+      "github_reference_canvas_px": [
+        128,
+        128
+      ],
       "github_reference_sha256": "baad86cef05a94d17442fe34ec49d5ec18a1d48968c86273f0aceae12bf0c52c",
-      "preview_targets_px": [48, 64, 96, 144],
+      "preview_targets_px": [
+        48,
+        64,
+        96,
+        144
+      ],
       "max_density_preview_px": 432,
-      "status": "design_runtime_candidate_only"
+      "source_bytes_available": true,
+      "status": "superseded_by_edge_corrected_runtime_candidate_v4",
+      "source_github_path": "../runtime-v4/source/clue_old_ginkgo_folded_note_runtime_candidate_v2_exact.png",
+      "source_recovery_status": "EXACT_SHA256_VERIFIED_AND_PERSISTED",
+      "successor_corrected_candidate": "../runtime-v4/candidate/clue_old_ginkgo_folded_note_edge_corrected_runtime_candidate_v4.png",
+      "successor_corrected_sha256": "2adc914f6ca2e5648339943bc02afe62059948d52a672e382fad69b5e6c08869",
+      "successor_manifest": "../runtime-v4/runtime-candidate-manifest.v4.json"
     },
     {
       "semantic_key": "clue.old_ginkgo.ginkgo_leaf",
       "local_master": "clue_old_ginkgo_ginkgo_leaf_runtime_candidate_v2.png",
       "local_master_sha256": "ec37263d8e736809629d6d3d304712df1148110794a61e2b36286108f490d064",
-      "canvas_px": [512, 512],
+      "canvas_px": [
+        512,
+        512
+      ],
       "alpha": true,
       "github_reference": "ginkgo_leaf_runtime_candidate_v2_ref.webp",
+      "github_reference_canvas_px": [
+        96,
+        96
+      ],
       "github_reference_sha256": "584fc61494627fb82ee7f6dab88c0b82bfbc47d9a935ffe5111b4d19c794787f",
-      "preview_targets_px": [32, 48, 64, 96],
+      "preview_targets_px": [
+        32,
+        48,
+        64,
+        96
+      ],
       "max_density_preview_px": 288,
-      "status": "design_runtime_candidate_only"
+      "source_bytes_available": false,
+      "status": "exact_attachment_verified_edge_reconstruction_visual_fail",
+      "latest_exact_attachment_sha256_verified": true,
+      "latest_edge_reconstruction_status": "FAIL_EDGE_RECONSTRUCTION",
+      "latest_rejected_temp_candidate_sha256": "ef8f589ebf6a76a0be653e32491675502fddb4ee969f1e8ea0886ec7c777a360",
+      "rejected_candidate_persisted": false
     }
   ],
   "qa": {
@@ -37,10 +72,32 @@
     "map_heavy_context": "PASS_STATIC",
     "target_size_preview": "PASS_STATIC",
     "qa_reference": "runtime_candidate_qa_v2.webp",
-    "qa_reference_sha256": "738a34c61d6092be135fe123b37f90a93809dcdce1e2fb868e1f8c2dd5c29089",
-    "android_runtime_integration": "PENDING",
-    "physical_device_outdoor": "PENDING"
+    "qa_reference_sha256": "08305d83b83adebe128ca65850bf7589339cd0a2472850f1a639b83fa1b8b4d1",
+    "android_test_harness": "PR10 app/src/androidTest/java/com/dailytown/app/visualqa/OldGinkgoClueAssetQaTest.kt",
+    "android_ci_run": 34623925965,
+    "android_visual_qa_run": 34623925977,
+    "android_density": 2.625,
+    "android_managed_device_render": "PASS_API30",
+    "android_context_readability": "PASS_WITH_UPSCALE_SOFTNESS",
+    "android_alpha_transparent_corners": "PASS",
+    "android_edge_halo": "PASS_NO_OPAQUE_MATTE_OR_STRONG_LIGHT_HALO",
+    "folded_note_android_capture": "android-qa/folded_note_android_density_qa_v2.png",
+    "folded_note_android_capture_dimensions_px": [
+      1079,
+      1874
+    ],
+    "folded_note_android_capture_sha256": "0562c1b8056f0f8ef7b7a4a7ffc406b8900f72fe91ff66f645546ad0a89d06a0",
+    "ginkgo_leaf_android_capture": "android-qa/ginkgo_leaf_android_density_qa_v2.png",
+    "ginkgo_leaf_android_capture_dimensions_px": [
+      1079,
+      1496
+    ],
+    "ginkgo_leaf_android_capture_sha256": "e4cb1f896ceaa1eb48513902b2e986d162f0d72fa097a5b6c81cd8db1dfeae31",
+    "android_runtime_integration": "NOT_PERFORMED",
+    "high_density_source_quality": "OG02_PASS_OG03_FAIL_EDGE_RECONSTRUCTION",
+    "physical_device_outdoor": "PENDING_HUMAN_GATE"
   },
   "rule": "Technical matte/edge cleanup only. Do not alter shape, motif, palette, material treatment, or the locked discovery art direction during later QA.",
-  "promotion_rule": "Do not mark production/runtime until actual Android usage-context QA passes; physical outdoor readability remains a separate Human Gate."
+  "promotion_rule": "Use runtime-v4 for recovered exact sources and immutable-alpha edge-corrected design candidates. Android runtime activation and physical outdoor validation remain separate gates.",
+  "successor_manifest": "../runtime-v4/runtime-candidate-manifest.v4.json"
 }

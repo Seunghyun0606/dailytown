@@ -1,0 +1,42 @@
+{
+  "version": "moru-native-neutral-remote-verification-v1-2026-09-14",
+  "status": "PASS_REMOTE_BINARY_REVERIFY",
+  "remote_checkout_commit": "5ad823ff8cc5fd806bf9f65052197d2d3b8d60b7",
+  "branch": "design/production-consolidated-v2",
+  "canonical_sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+  "png_metadata": {
+    "width": 1280,
+    "height": 1600,
+    "bit_depth": 8,
+    "png_color_type": 6,
+    "mode": "RGBA"
+  },
+  "ora_integrity": {
+    "zip_test": "PASS",
+    "mimetype": "image/openraster",
+    "layer_files": 6
+  },
+  "outputs": {
+    "png": {
+      "path": "design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.png",
+      "sha256": "b9e4d08d3af8cc7fe0ddc354e4086d2c9c18c3b18212917515aefa581cba3692",
+      "git_blob_sha1": "fc94489c298b025371c929ebfc68de8f7d230ee4",
+      "bytes": 1577280,
+      "introduced_commit": "38445e229c6937e0856a73071eb8fc4e9007eb4c"
+    },
+    "ora": {
+      "path": "design/reference/moru-v2/native-master-v1/master/moru_candidate3_neutral_native_master_v1.ora",
+      "sha256": "2b64df529c308039fda608dbbde7514e7384b89e93ff76f384f98beb8e122505",
+      "git_blob_sha1": "5d58b6ee0b128173bc358f4f95e61214770ef691",
+      "bytes": 3091909,
+      "introduced_commit": "38445e229c6937e0856a73071eb8fc4e9007eb4c"
+    },
+    "qa": {
+      "path": "design/reference/moru-v2/native-master-v1/qa/moru_candidate3_native_neutral_acceptance_qa_v1.png",
+      "sha256": "755c18e8097af9417fda0df38e60145e4faa9cde0b709055ef9a8926f7403ca5",
+      "git_blob_sha1": "0e12d2591813414526349b70286de487335d60c6",
+      "bytes": 1187402,
+      "introduced_commit": "38445e229c6937e0856a73071eb8fc4e9007eb4c"
+    }
+  }
+}

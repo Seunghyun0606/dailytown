@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ID-A2 Sprout Gate foreground, converted 1:1 from the locked 108x108 masters
+  design/review/final-human-gates-v3/id-a/candidates/id-a2-sprout-gate/foreground-{light,dark}.svg.
+  Mark bounds stay inside the centred 66x66 safe zone (x 37-72, y 26-85).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="@color/id_a_mark_fill"
+        android:pathData="M54,43 C44,43 37,36 38,27 C47,27 54,33 54,42Z"
+        android:strokeColor="@color/id_a_mark_stroke"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1" />
+    <path
+        android:fillColor="@color/id_a_mark_fill"
+        android:pathData="M55,42 C56,33 63,27 72,27 C71,36 64,43 55,43Z"
+        android:strokeColor="@color/id_a_mark_stroke"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1" />
+    <path
+        android:pathData="M54,43 V52"
+        android:strokeColor="@color/id_a_mark_stroke"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="5" />
+    <path
+        android:pathData="M39,61 L54,50 L69,61 V82 H39Z"
+        android:strokeColor="@color/id_a_mark_stroke"
+        android:strokeLineJoin="round"
+        android:strokeWidth="6" />
+    <path
+        android:pathData="M50,82 V69 Q54,64 58,69 V82"
+        android:strokeColor="@color/id_a_mark_path"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="6" />
+</vector>

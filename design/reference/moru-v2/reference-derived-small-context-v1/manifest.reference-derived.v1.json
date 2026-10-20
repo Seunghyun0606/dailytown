@@ -1,0 +1,245 @@
+{
+  "version": "moru-reference-derived-small-context-v1-2026-09-13",
+  "classification": "REFERENCE_DERIVED_CANDIDATE",
+  "canonical": {
+    "path": "design/reference/baseline-v2/moru_candidate3_canonical_baseline_v2.png",
+    "sha256": "541b53464bbc589d86323faa3a7dbc8790cf9ab9573e0dd66812986c4a430500",
+    "dimensions": [
+      1122,
+      1402
+    ]
+  },
+  "method": {
+    "generative_processing": false,
+    "super_resolution": false,
+    "source_crop_xyxy": [
+      125,
+      35,
+      465,
+      660
+    ],
+    "segmentation": "manual component polygons + paper-distance edge matte",
+    "alpha_cleanup": "outer-edge matte + alpha-zero nearest-solid RGB bleed",
+    "native_master": false
+  },
+  "extraction": {
+    "source_crop_xyxy": [
+      125,
+      35,
+      465,
+      660
+    ],
+    "source_crop_dimensions": [
+      340,
+      625
+    ],
+    "paper_rgb_median": [
+      246,
+      237,
+      220
+    ],
+    "alpha_bbox_xyxy": [
+      43,
+      45,
+      317,
+      599
+    ],
+    "alpha_min": 0,
+    "alpha_max": 255,
+    "transparent_pixels": 124675,
+    "partial_alpha_pixels": 5264,
+    "opaque_pixels": 82561,
+    "visible_rgb_source_rule": "canonical crop RGB preserved for alpha>0; alpha-zero RGB uses nearest solid foreground bleed"
+  },
+  "artifact_registry": [
+    {
+      "path": "source/moru_candidate3_neutral_front_exact_crop.png",
+      "dimensions": [
+        340,
+        625
+      ],
+      "mode": "RGBA",
+      "sha256": "ac280a5d942d8d7573991db833bba2e7d2e82d97e9d4e30badeaef87c7204aa3",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "canonical_board_exact_crop_source_reference"
+    },
+    {
+      "path": "source/moru_candidate3_neutral_front_manual_mask.png",
+      "dimensions": [
+        340,
+        625
+      ],
+      "mode": "L",
+      "sha256": "8a43bf4a19277607579447baf925249a281e7a9079c570d0456014099b1e67d6",
+      "alpha_facts": "grayscale mask; not an RGBA asset",
+      "role": "segmentation_mask_reference"
+    },
+    {
+      "path": "source/moru_candidate3_neutral_front_reference_cutout.png",
+      "dimensions": [
+        340,
+        625
+      ],
+      "mode": "RGBA",
+      "sha256": "c44b0e3af08d0003ddbf153d2553e5fc959e196a01185a4d7d44aa725a6a5c87",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "role": "transparent_reference_cutout_not_native_master"
+    },
+    {
+      "path": "qa/extraction_context_and_alpha_qa.png",
+      "dimensions": [
+        1260,
+        760
+      ],
+      "mode": "RGBA",
+      "sha256": "c400c6817447dc8724d89c36394cbfaaa514ab6e166ca12ac476753e41ee42cd",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "opaque_qa_evidence_board"
+    },
+    {
+      "path": "qa/map_avatar_mobile_context_qa.png",
+      "dimensions": [
+        1200,
+        760
+      ],
+      "mode": "RGBA",
+      "sha256": "aaccf5d98c3b15f6b8c767b67a39a1a9f073faf2827a5b8f97d46b2ea8bb8984",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "role": "opaque_qa_evidence_board",
+      "bytes": 52244
+    }
+  ],
+  "assets": {
+    "map_avatar": {
+      "path": "candidate/companion_moru_v2_map_avatar_neutral_LIGHT_base_reference_candidate.png",
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "sha256": "cddb4f6c1722c8519f23223159991b499bbe29a4809165e9af49017b98d34531",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "transparent_pixels": 194743,
+      "partial_alpha_pixels": 7299,
+      "opaque_pixels": 60102,
+      "alpha_bbox_xyxy": [
+        137,
+        20,
+        374,
+        500
+      ],
+      "source_alpha_bbox_xyxy": [
+        43,
+        45,
+        317,
+        599
+      ],
+      "source_tight_dimensions": [
+        274,
+        554
+      ],
+      "deterministic_resample": "Pillow Lanczos; no enhancement or generated detail",
+      "scale_factor": 0.866426,
+      "content_bounds_xyxy": [
+        137,
+        20,
+        374,
+        500
+      ],
+      "canvas": [
+        512,
+        512
+      ],
+      "classification": "REFERENCE_DERIVED_CANDIDATE",
+      "qa_status": "REFERENCE_QA_PASS",
+      "checks_passed": [
+        "48/56/64dp silhouette",
+        "asymmetric sprout",
+        "face read",
+        "ochre scarf",
+        "boots/base",
+        "alpha edge on cream/dark/map-heavy"
+      ]
+    },
+    "hud_portrait": {
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "candidate_sha256": "c12ad1a990838e0683d1ef4028e1a3de441b5364102f35640b763e1aa95356e3",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "transparent_pixels": 522852,
+      "partial_alpha_pixels": 3136,
+      "opaque_pixels": 63836,
+      "source_tight_dimensions": [
+        272,
+        395
+      ],
+      "scale_factor": 1,
+      "processing": "exact source pixels + transparent canvas padding; no upscale",
+      "classification": "REFERENCE_DERIVED_CANDIDATE",
+      "qa_status": "REFERENCE_QA_FAIL",
+      "candidate_persisted": false,
+      "failure_reasons": [
+        "visible content is only 28.8/32.9/37.0dp on the requested 56/64/72dp full canvas",
+        "face anchors and scarf diagonal are not reliably readable"
+      ]
+    },
+    "journal_crop": {
+      "dimensions": [
+        768,
+        768
+      ],
+      "mode": "RGBA",
+      "candidate_sha256": "3142a26ca7871353f0c0fe16a95b8ce6644007e7fe2c9cd36588509bea8149b3",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "transparent_pixels": 520077,
+      "partial_alpha_pixels": 3303,
+      "opaque_pixels": 66444,
+      "source_tight_dimensions": [
+        274,
+        410
+      ],
+      "scale_factor": 1,
+      "processing": "exact source pixels + transparent canvas padding; no upscale",
+      "classification": "REFERENCE_DERIVED_CANDIDATE",
+      "qa_status": "REFERENCE_QA_FAIL",
+      "candidate_persisted": false,
+      "failure_reasons": [
+        "visible content is only 29.9/34.2/38.4dp on the requested 56/64/72dp full canvas",
+        "face/hood/scarf and A3 artifact presence are not reliably readable"
+      ]
+    }
+  },
+  "runtime_activation": false,
+  "development_recommendation": "Only map_avatar may be bound behind an explicit temporary/reference QA profile or debug flag. HUD and journal failed the no-upscale full-canvas mobile check. Do not activate companion.moru.canonical.v2 production runtime.",
+  "qa_summary": {
+    "map_avatar": "REFERENCE_QA_PASS",
+    "hud_portrait": "REFERENCE_QA_FAIL",
+    "journal_crop": "REFERENCE_QA_FAIL",
+    "pass_count": 1,
+    "fail_count": 2
+  }
+}

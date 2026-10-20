@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "partial_production_export",
+  "design_source_complete": true,
+  "completed_production_exports": [
+    {"group":"moru_static_and_affinity","asset_count":18,"development_gate":"PASS","evidence_run":32958759449},
+    {"group":"luca_static","asset_count":14,"development_gate":"PASS","evidence_run":32958759449},
+    {"group":"a3","asset_count":9,"development_gate":"PASS","evidence_run":32958759449}
+  ],
+  "queues": {
+    "production_derivative_generation": [
+      {"group":"markers","source":"marker-family-v1.svg","gate":"split_export_plus_real_map_qa_plus_sha256","status":"BLOCKED_MANAGED_DEVICE_BASE_MAP_QA"}
+    ],
+    "motion_generation": [
+      {"group":"moru_M_B","source":"moru-m-b-storyboard-v1.svg","pipeline":"sprite-gen_optional","states":["idle_breathe","clue_react","resolved_settle"],"gate":"human_motion_QA"}
+    ],
+    "development_qa": [
+      "EV1_E2_real_map_capture",
+      "baseline_map_overlay_capture_matrix",
+      "sprite_atlas_runtime_playback",
+      "R_B_result_band_reporting"
+    ],
+    "human_final_gates": [
+      "M_B_final_timing_easing_intensity",
+      "physical_outdoor_R_B_pass",
+      "ID_A1_A2_A3_final_lock"
+    ]
+  },
+  "blocked": {
+    "markers": "NAVER credentialed managed-device job reaches the map runtime but marker-free provider base-map texture proof fails; marker production export remains forbidden until real-map evidence passes."
+  },
+  "rule": "No source or candidate becomes production_export until its listed gate passes."
+}

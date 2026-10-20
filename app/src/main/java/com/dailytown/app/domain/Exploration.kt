@@ -1,7 +1,5 @@
 package com.dailytown.app.domain
 
-import kotlin.math.*
-
 data class GeoPoint(val latitude: Double, val longitude: Double)
 
 data class Companion(
@@ -29,7 +27,9 @@ data class ExplorationUpdate(
     val newlyDiscovered: List<MysterySpot>,
 )
 
-class ExplorationEngine {
+class ExplorationEngine(
+    private val distance: GeoDistance = HaversineGeoDistance,
+) {
     fun update(
         state: ExplorationState,
         previous: GeoPoint?,
@@ -50,13 +50,6 @@ class ExplorationEngine {
         )
     }
 
-    fun distanceMeters(a: GeoPoint, b: GeoPoint): Double {
-        val earthRadius = 6_371_000.0
-        val lat1 = Math.toRadians(a.latitude)
-        val lat2 = Math.toRadians(b.latitude)
-        val dLat = Math.toRadians(b.latitude - a.latitude)
-        val dLon = Math.toRadians(b.longitude - a.longitude)
-        val h = sin(dLat / 2).pow(2) + cos(lat1) * cos(lat2) * sin(dLon / 2).pow(2)
-        return earthRadius * 2 * atan2(sqrt(h), sqrt(1 - h))
-    }
+    /** Compatibility API for gameplay callers; geographic math is owned by [GeoDistance]. */
+    fun distanceMeters(a: GeoPoint, b: GeoPoint): Double = distance.meters(a, b)
 }
