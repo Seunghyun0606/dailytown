@@ -3,7 +3,9 @@ package com.dailytown.app.ui.visual
 import android.content.Context
 import android.view.View
 import com.dailytown.app.domain.GeoPoint
+import com.dailytown.app.map.MapAreaEmphasis
 import com.dailytown.app.map.MapBrightnessFamily
+import com.dailytown.app.map.MapEncounterAreaSpec
 import com.dailytown.app.map.MapHealth
 import com.dailytown.app.map.MapHealthStatus
 import com.dailytown.app.map.MapMarkerSpec
@@ -13,6 +15,7 @@ import com.dailytown.app.map.MapViewAdapter
 import com.dailytown.app.map.UserLocationSpec
 import com.dailytown.app.mystery.EncounterContext
 import com.dailytown.app.mystery.EncounterPhase
+import com.dailytown.app.mystery.EncounterProximityController
 import com.dailytown.app.mystery.EncounterSelection
 import com.dailytown.app.mystery.MysteryEncounter
 import com.dailytown.app.mystery.MysteryMechanic
@@ -33,6 +36,25 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MapGameplayVisualBinderTest {
+    @Test
+    fun discoveryZoneUsesTheRealDomainRadiusOnlyWhileFollowingOrInvestigating() {
+        val adapter = RecordingMapAdapter()
+        val binder = MapGameplayVisualBinder(adapter, currentTime = { LocalTime.NOON })
+
+        binder.applyEncounter(selection(EncounterPhase.HINTED), emptyList())
+        val hinted = requireNotNull(adapter.recordedArea)
+        assertEquals(MapAreaEmphasis.DISCOVERY_ZONE, hinted.emphasis)
+        assertEquals(EncounterProximityController.DISCOVERY_RADIUS_METERS, hinted.radiusMeters, 0.0)
+
+        binder.applyEncounter(selection(EncounterPhase.DISCOVERED), emptyList())
+        assertEquals(MapAreaEmphasis.ACTIVE, adapter.recordedArea?.emphasis)
+
+        binder.applyEncounter(selection(EncounterPhase.RESOLVED), emptyList())
+        assertEquals(null, adapter.recordedArea)
+        binder.applyEncounter(selection(EncounterPhase.HIDDEN), emptyList())
+        assertEquals("a hidden signal must not reveal its area", null, adapter.recordedArea)
+    }
+
     @Test
     fun hiddenEncounterKeepsOnlyPersistentMarkers() {
         val adapter = RecordingMapAdapter()
@@ -142,6 +164,7 @@ class MapGameplayVisualBinderTest {
         var recordedMarkers: List<MapMarkerSpec> = emptyList()
         var recordedOverlayState: MapOverlaySemanticState = MapOverlaySemanticState()
         var recordedTheme: MapThemeSpec = MapThemeSpec()
+        var recordedArea: MapEncounterAreaSpec? = null
 
         override fun createView(context: Context): View = error("Not used in JVM binder test")
         override fun setCamera(target: GeoPoint, zoom: Double) = Unit
@@ -155,5 +178,8 @@ class MapGameplayVisualBinderTest {
             recordedOverlayState = state
         }
         override fun setUserLocation(location: UserLocationSpec?) = Unit
+        override fun setEncounterArea(area: MapEncounterAreaSpec?) {
+            recordedArea = area
+        }
     }
 }

@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.sound_pattern.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/sound_pattern/clue-main.v1.png",
-      "sha256": "50ef234ff3b29b2caaefb7d55023e62549c75ca6821f5f5ff70e854a3e398a70"
+      "runtime_path": "scenario/sound_pattern/clue-main.v1.webp",
+      "sha256": "952b583a40284fb6f01ec4f0d4fa31985f6fb787a914d64372019861546b7a85"
     },
     {
       "semantic_key": "clue.sound_pattern.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/sound_pattern/clue-keepsake.v1.png",
-      "sha256": "b7e4fbf0650f953a0d8fb94e2d17b0785d8ebb6c6d70977a922714f03a54545f"
+      "runtime_path": "scenario/sound_pattern/clue-keepsake.v1.webp",
+      "sha256": "c959c590e14cacd5244f69bd9f42d85578dbdb73cceecc6cf1e96245fd83259e"
     }
   ]
 }

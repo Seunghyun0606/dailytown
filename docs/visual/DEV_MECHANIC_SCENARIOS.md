@@ -33,7 +33,8 @@ python tools/visual/package_mechanic_scenarios.py
 ```
 
 The packager writes reference masters + provenance to `design/reference/discovery/<mechanic>/`,
-exact runtime bytes to `app/src/main/assets/scenario/<mechanic>/` (same 7 usages as Old Ginkgo), and
+exact runtime bytes to `app/src/main/assets/scenario/<mechanic>/` (same 7 usages as Old Ginkgo; scenes as
+WebP, transparent items as lossy WebP with full-quality alpha), and
 regenerates `GeneratedMechanicScenarioAssets.kt` with SHA-256 bindings. On-device tests verify every
 packaged byte and dimension. Auto-QC false passes (a bird instead of a feather, twice) were rejected
 during curation and recorded in `mechanic_selection.v1.json`.

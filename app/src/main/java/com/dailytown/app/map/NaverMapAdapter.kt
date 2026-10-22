@@ -14,7 +14,9 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapSdk
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +49,9 @@ class NaverMapAdapter(
     private var pendingTheme: MapThemeSpec = MapThemeSpec()
     private var pendingOverlayState: MapOverlaySemanticState = MapOverlaySemanticState()
     private val renderedMarkers = mutableMapOf<String, Marker>()
+    private var pendingArea: MapEncounterAreaSpec? = null
+    private var renderedArea: CircleOverlay? = null
+    private var markerClickListener: ((MapMarkerSpec) -> Unit)? = null
 
     private val isConfigured: Boolean
         get() = isConfiguredValue(ncpKeyId)
@@ -159,6 +164,17 @@ class NaverMapAdapter(
         pendingTheme = theme
         applyTheme()
         syncMarkers()
+        syncArea()
+    }
+
+    override fun setEncounterArea(area: MapEncounterAreaSpec?) {
+        pendingArea = area
+        syncArea()
+    }
+
+    override fun setMarkerClickListener(listener: ((MapMarkerSpec) -> Unit)?) {
+        markerClickListener = listener
+        syncMarkers()
     }
 
     override fun setMarkers(markers: List<MapMarkerSpec>) {
@@ -206,6 +222,7 @@ class NaverMapAdapter(
         applyTheme()
         syncMarkers()
         syncUserLocation()
+        syncArea()
     }
 
     private fun applyTheme() {
@@ -223,6 +240,12 @@ class NaverMapAdapter(
             val marker = renderedMarkers.getOrPut(spec.id) { Marker() }
             marker.position = spec.position.toLatLng()
             marker.captionText = spec.title
+            marker.onClickListener = markerClickListener?.let { listener ->
+                Overlay.OnClickListener {
+                    listener(spec)
+                    true
+                }
+            }
             val visual = markerVisualSource?.resolve(spec, pendingTheme)
             if (visual != null) {
                 marker.icon = OverlayImage.fromBitmap(visual.bitmap)
@@ -234,6 +257,37 @@ class NaverMapAdapter(
             marker.map = map
         }
     }
+
+    /**
+     * Discovery zone circle. Colours come from approved visual tokens (day: status.success outline on a
+     * butter wash; dark: text.onDark outline on a warm night-point wash), kept translucent so streets
+     * and POI labels under it stay readable (R-B hierarchy: decoration below markers and user dot).
+     */
+    private fun syncArea() {
+        val map = naverMap ?: return
+        val area = pendingArea
+        if (area == null) {
+            renderedArea?.map = null
+            renderedArea = null
+            return
+        }
+        val dark = pendingTheme.markerFamily == com.dailytown.app.visual.MarkerFamily.DARK
+        val circle = renderedArea ?: CircleOverlay().also { renderedArea = it }
+        circle.center = area.center.toLatLng()
+        circle.radius = area.radiusMeters
+        val active = area.emphasis == MapAreaEmphasis.ACTIVE
+        circle.color = if (dark) {
+            if (active) 0x40FFBE68 else 0x26FFBE68
+        } else {
+            if (active) 0x40FFD36B else 0x2EFFD36B
+        }
+        circle.outlineColor = if (dark) 0xD9F7FAF5.toInt() else 0xD948836C.toInt()
+        circle.outlineWidth = (if (active) 3f else 2f).dpToPx()
+        circle.zIndex = -1
+        circle.map = map
+    }
+
+    private fun Float.dpToPx(): Int = (this * (mapView?.resources?.displayMetrics?.density ?: 2.625f)).toInt()
 
     private fun syncUserLocation() {
         val map = naverMap ?: return

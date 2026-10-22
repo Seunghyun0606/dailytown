@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.time_layer.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/time_layer/clue-main.v1.png",
-      "sha256": "7f266233846a9d46e7fedda59f0a5cb33dff4db47f29d3c0e37c88c66f28cb15"
+      "runtime_path": "scenario/time_layer/clue-main.v1.webp",
+      "sha256": "d4526676eb299bee3c10b97d9edf6f40d57de4ac7cd9ad6a58e798802948351e"
     },
     {
       "semantic_key": "clue.time_layer.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/time_layer/clue-keepsake.v1.png",
-      "sha256": "f0eb269cea3f9423fc253772e3523e4ef8affd949a18cc41d5c0bc34686bcda6"
+      "runtime_path": "scenario/time_layer/clue-keepsake.v1.webp",
+      "sha256": "c1cc88e3a351f9ce09804078f9493c5fc7b882fc0d1c6ba27390e3b007527534"
     }
   ]
 }

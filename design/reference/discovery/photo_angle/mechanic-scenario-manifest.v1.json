@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.photo_angle.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/photo_angle/clue-main.v1.png",
-      "sha256": "2d89bac62a9f3cb56e0898e6c7b03b48c711ce1317c5e17c3dcb945fff8b3f59"
+      "runtime_path": "scenario/photo_angle/clue-main.v1.webp",
+      "sha256": "b3e24737f44551c4ee14216f6b11c083b8025e8c92117b701b775e0cb168c0d2"
     },
     {
       "semantic_key": "clue.photo_angle.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/photo_angle/clue-keepsake.v1.png",
-      "sha256": "2d701cf1c8af9a2777eb48753f1005cb945c77adf1624ca48105bd2f6c18f35d"
+      "runtime_path": "scenario/photo_angle/clue-keepsake.v1.webp",
+      "sha256": "8a619e137b169ef43d41ed6fb36e99cb09d3d6345c56e4eb37266d604efa0666"
     }
   ]
 }

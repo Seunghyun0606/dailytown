@@ -79,14 +79,14 @@
     {
       "semantic_key": "clue.local_memory.main",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/local_memory/clue-main.v1.png",
-      "sha256": "b50ea5fcdfd2eeb642f335ddd8351131a6c72dfea0f8dd2ab070ee4153912103"
+      "runtime_path": "scenario/local_memory/clue-main.v1.webp",
+      "sha256": "583f3835d00191aff92c4f0aaac23a7b11a8aeee3213dcee7a9be4e1da0e6f03"
     },
     {
       "semantic_key": "clue.local_memory.keepsake",
       "usage": "CLUE_ART",
-      "runtime_path": "scenario/local_memory/clue-keepsake.v1.png",
-      "sha256": "4a2e0e2af5b9725726e9d172eb4e4a08a4809408953a0fd5abf196fd5e895b0d"
+      "runtime_path": "scenario/local_memory/clue-keepsake.v1.webp",
+      "sha256": "0d62bbd8095e58ee5cb67c843c3f21db18940db6e9124f7315848f9bce3ffd48"
     }
   ]
 }
